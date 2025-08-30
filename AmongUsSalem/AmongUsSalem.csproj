@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <LangVersion>latest</LangVersion>
+        <Description>Object Workshop</Description>
+        <RootNamespace>ObjectWorkshop</RootNamespace>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\**\*.*"/>
+    </ItemGroup>
+
+    <Import Project="../AmongUs.props"/>
+
+</Project>

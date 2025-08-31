@@ -12,6 +12,9 @@ namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class InvestigatorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Hunter;
     public string RoleName => TouLocale.Get(TouNames.Investigator, "Investigator");

@@ -19,8 +19,6 @@ public sealed class PlayerStats(byte playerId)
     public List<PlayerControl> SlightSuspicion = new List<PlayerControl>();
     public bool ReceivedInformation;
     public List<byte> RevealedPlayers { get; set; } = [];
-
-    public bool attractsMetal;
 }
 
 public static class PlayerStatsExtentions

@@ -18,7 +18,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class PestilenceRole(IntPtr cppPtr)
     : NeutralRole(cppPtr), IAUSRole, IDoomable, IUnguessable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public bool Announced { get; set; }
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<AurialRole>());
     public DoomableType DoomHintType => DoomableType.Fearmonger;

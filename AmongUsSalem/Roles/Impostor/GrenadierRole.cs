@@ -10,7 +10,9 @@ namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class GrenadierRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public DoomableType DoomHintType => DoomableType.Protective;
     public string RoleName => TouLocale.Get(TouNames.Grenadier, "Grenadier");
     public string RoleDescription => "Hinder The Crewmates' Vision";

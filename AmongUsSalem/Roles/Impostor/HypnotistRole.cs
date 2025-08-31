@@ -19,7 +19,9 @@ namespace AmongUsSalem.Roles.Impostor;
 public sealed class HypnotistRole(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     private MeetingMenu meetingMenu;
 
     public bool HysteriaActive { get; set; }

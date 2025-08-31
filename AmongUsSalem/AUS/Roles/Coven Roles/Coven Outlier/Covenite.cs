@@ -15,13 +15,14 @@ public sealed class Covenite(IntPtr cppPtr)
     public string revealText => "placeholder.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
-    public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
+    public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
     public Faction RoleFaction => Faction.Coven;
     public Color RoleColor => AUSColors.Coven;
     public Alignment Alignment => Alignment.CovenOutlier;
-    public Attack Attack => Attack.Basic;
-    public Defense Defense => Defense.None;
+    public Attack Attack { get; set; } = Attack.Basic;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {

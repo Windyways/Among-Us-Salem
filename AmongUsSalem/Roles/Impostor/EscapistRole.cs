@@ -21,7 +21,9 @@ namespace AmongUsSalem.Roles.Impostor;
 public sealed class EscapistRole(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public Vector2? MarkedLocation { get; set; }
     public GameObject? EscapeMark { get; set; }
 

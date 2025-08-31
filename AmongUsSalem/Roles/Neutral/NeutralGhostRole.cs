@@ -14,7 +14,9 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
 {
     private Minigame _hauntMenu = null!;
 
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public override bool IsDead => true;
     public override bool IsAffectedByComms => false;
 

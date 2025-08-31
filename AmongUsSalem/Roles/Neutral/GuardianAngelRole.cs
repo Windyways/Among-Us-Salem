@@ -26,7 +26,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole,
     IDoomable, IAssignableTargets, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public PlayerControl? Target { get; set; }
     public int Priority { get; set; } = 1;
 

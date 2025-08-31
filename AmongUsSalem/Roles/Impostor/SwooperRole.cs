@@ -11,7 +11,9 @@ namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class SwooperRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public DoomableType DoomHintType => DoomableType.Hunter;
     public string RoleName => TouLocale.Get(TouNames.Swooper, "Swooper");
     public string RoleDescription => "Turn Invisible Temporarily";

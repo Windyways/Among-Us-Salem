@@ -11,7 +11,9 @@ namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class VenererRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public DoomableType DoomHintType => DoomableType.Trickster;
     public string RoleName => TouLocale.Get(TouNames.Venerer, "Venerer");
     public string RoleDescription => "With Each Kill Your Ability Becomes Stronger";

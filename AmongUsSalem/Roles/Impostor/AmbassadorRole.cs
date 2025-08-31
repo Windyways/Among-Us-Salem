@@ -22,7 +22,9 @@ namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public DoomableType DoomHintType => DoomableType.Insight;
     public string RoleName => TouLocale.Get(TouNames.Ambassador, "Ambassador");
     public string RoleDescription => "Lead The Impostors To Victory";

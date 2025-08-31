@@ -15,7 +15,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class WerewolfRole(IntPtr cppPtr)
     : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public bool Rampaging { get; set; }
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<HunterRole>());
     public DoomableType DoomHintType => DoomableType.Hunter;

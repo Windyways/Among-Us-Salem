@@ -14,7 +14,9 @@ namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class JuggernautRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public int KillCount { get; set; }
     public DoomableType DoomHintType => DoomableType.Relentless;
     public string RoleName => TouLocale.Get(TouNames.Juggernaut, "Juggernaut");

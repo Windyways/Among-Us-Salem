@@ -25,7 +25,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class DoomsayerRole(IntPtr cppPtr)
     : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     private MeetingMenu meetingMenu;
 
     public int NumberOfGuesses { get; set; }

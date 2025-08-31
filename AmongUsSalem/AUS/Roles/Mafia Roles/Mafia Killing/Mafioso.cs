@@ -20,8 +20,9 @@ public sealed class Mafioso(IntPtr cppPtr)
     public Faction RoleFaction => Faction.Mafia;
     public Color RoleColor => AUSColors.Mafia;
     public Alignment Alignment => Alignment.MafiaKilling;
-    public Attack Attack => Attack.Basic;
-    public Defense Defense => Defense.None;
+    public Attack Attack { get; set; } = Attack.Basic;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {

@@ -20,8 +20,9 @@ public sealed class Veteran(IntPtr cppPtr)
     public Faction RoleFaction => Faction.Town;
     public Color RoleColor => AUSColors.Town;
     public Alignment Alignment => Alignment.TownKilling;
-    public Attack Attack => Attack.Powerful;
-    public Defense Defense => Defense.None;
+    public Attack Attack { get; set; } = Attack.Powerful;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -82,6 +83,7 @@ public sealed class Veteran(IntPtr cppPtr)
 
         var veteran = player.GetRole<Veteran>();
         veteran.isAlerted = true;
+        veteran.Defense = Defense.Basic;
     }
 
     [MethodRpc((uint)AUSRpc.Veteran_Notify, SendImmediately = true)]

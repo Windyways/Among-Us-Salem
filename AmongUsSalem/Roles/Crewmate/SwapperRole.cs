@@ -15,6 +15,9 @@ namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class SwapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     private MeetingMenu meetingMenu;
 
     public string revealText => "";

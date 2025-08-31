@@ -14,7 +14,9 @@ namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class SurvivorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public DoomableType DoomHintType => DoomableType.Protective;
     public string RoleName => TouLocale.Get(TouNames.Survivor, "Survivor");
     public string RoleDescription => "Do Whatever It Takes To Live";

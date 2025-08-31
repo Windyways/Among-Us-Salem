@@ -15,7 +15,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class GlitchRole(IntPtr cppPtr)
     : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<SheriffRole>());
     public DoomableType DoomHintType => DoomableType.Perception;
     public string RoleName => TouLocale.Get(TouNames.Glitch, "Glitch");

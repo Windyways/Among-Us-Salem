@@ -50,6 +50,8 @@ public sealed class WarlockRole(IntPtr cppPtr)
             TouAssets.KillSprite)
     ];
 
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
 
 }

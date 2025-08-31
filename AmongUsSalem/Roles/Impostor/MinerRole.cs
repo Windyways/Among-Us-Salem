@@ -20,7 +20,9 @@ namespace AmongUsSalem.Roles.Impostor;
 public sealed class MinerRole(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     [HideFromIl2Cpp] public List<Vent> Vents { get; set; } = [];
 
     public void FixedUpdate()

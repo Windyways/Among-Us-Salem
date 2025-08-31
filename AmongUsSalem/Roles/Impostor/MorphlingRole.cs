@@ -17,7 +17,9 @@ namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class MorphlingRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public PlayerControl? Sampled { get; set; }
     public DoomableType DoomHintType => DoomableType.Perception;
     public string RoleName => TouLocale.Get(TouNames.Morphling, "Morphling");

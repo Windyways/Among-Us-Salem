@@ -21,7 +21,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class MercenaryRole(IntPtr cppPtr)
     : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public static int BrideCost => (int)OptionGroupSingleton<MercenaryOptions>.Instance.BribeCost;
 
     public int Gold { get; set; }

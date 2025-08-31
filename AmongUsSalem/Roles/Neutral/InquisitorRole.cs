@@ -24,7 +24,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable,
     IAssignableTargets, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public bool CanVanquish { get; set; } = true;
 
     [HideFromIl2Cpp] public List<PlayerControl> Targets { get; set; } = [];

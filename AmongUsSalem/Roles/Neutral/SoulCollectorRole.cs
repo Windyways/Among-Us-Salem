@@ -15,7 +15,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class SoulCollectorRole(IntPtr cppPtr)
     : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<MediumRole>());
     public DoomableType DoomHintType => DoomableType.Death;
     public string RoleName => TouLocale.Get(TouNames.SoulCollector, "Soul Collector");

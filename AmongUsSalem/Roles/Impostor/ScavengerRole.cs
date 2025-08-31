@@ -22,7 +22,9 @@ namespace AmongUsSalem.Roles.Impostor;
 public sealed class ScavengerRole(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public bool GameStarted { get; set; }
     public float TimeRemaining { get; set; }
     public PlayerControl? Target { get; set; }

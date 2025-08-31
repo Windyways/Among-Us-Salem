@@ -21,6 +21,9 @@ namespace AmongUsSalem.Roles.Crewmate;
 public sealed class MayorRole(IntPtr cppPtr)
     : CrewmateRole(cppPtr), ITouCrewRole, IDoomable, IUnguessable
 {
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public static GameObject MayorPlayer;
 
     public string revealText => "";

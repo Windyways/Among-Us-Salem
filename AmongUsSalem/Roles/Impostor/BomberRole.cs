@@ -18,7 +18,9 @@ namespace AmongUsSalem.Roles.Impostor;
 public sealed class BomberRole(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     [HideFromIl2Cpp] public Bomb? Bomb { get; set; }
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<TrapperRole>());
     public DoomableType DoomHintType => DoomableType.Relentless;

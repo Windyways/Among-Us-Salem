@@ -18,6 +18,9 @@ public sealed class SeerRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, ID
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
     public Alignment Alignment => Alignment.None;
 
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = TouRoleIcons.Seer,

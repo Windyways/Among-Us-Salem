@@ -11,15 +11,14 @@ public interface IAUSRole : ICustomRole
 {
     Faction RoleFaction => Faction.None;
     Alignment Alignment { get; }
-    string revealText { get; }
+    string revealText => "";
     float visionValue => GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
 
     
-    Attack Attack => Attack.None;
-    Defense Defense => Defense.None;
-    EtherealDefense EtherealDefense => EtherealDefense.None;
+    Attack Attack { get; set; }
+    Defense Defense { get; set; }
+    EtherealDefense EtherealDefense { get; set; }
     bool Necronomicon => false;
-
 
 
 
@@ -115,17 +114,25 @@ public interface IAUSRole : ICustomRole
             ? touRole.Alignment.ToDisplayString()
             : "Custom";
 
-        if (alignment.Contains("Crewmate"))
+        if (alignment.Contains("Town"))
         {
-            alignment = alignment.Replace("Crewmate", "<color=#68ACF4>Crewmate");
+            alignment = alignment.Replace("Town", "<color=#06e00c>Town");
         }
         else if (alignment.Contains("Mafia"))
         {
-            alignment = alignment.Replace("Mafia", "<color=#D63F42>Impostor");
+            alignment = alignment.Replace("Mafia", "<color=#dd0000>Mafia");
         }
         else if (alignment.Contains("Neutral"))
         {
-            alignment = alignment.Replace("Neutral", "<color=#8A8A8A>Neutral");
+            alignment = alignment.Replace("Neutral", "<color=#a9a9a9>Neutral");
+        }
+        else if (alignment.Contains("Coven"))
+        {
+            alignment = alignment.Replace("Coven", "<color=#ab42ef>Coven");
+        }
+        else if (alignment.Contains("Traitor"))
+        {
+            alignment = alignment.Replace("Traitor", "<color=#ce36fa>Traitor");
         }
 
         var prefix = " a";
@@ -151,6 +158,13 @@ public interface IAUSRole : ICustomRole
         stringB.Append("<size=70%>");
         stringB.AppendLine(CultureInfo.InvariantCulture, $"{role.RoleLongDescription}");
 
+        if (role is IAUSRole ausRole)
+        {
+            stringB.AppendLine(CultureInfo.InvariantCulture, $"Attack: {ausRole.Attack}");
+            stringB.AppendLine(CultureInfo.InvariantCulture, $"Defense: {ausRole.Defense}");
+            stringB.AppendLine(CultureInfo.InvariantCulture, $"Ethereal Defense: {ausRole.Defense}");
+        }
+
         return stringB;
     }
 
@@ -160,17 +174,25 @@ public interface IAUSRole : ICustomRole
             ? touRole.Alignment.ToDisplayString()
             : "Custom";
 
-        if (alignment.Contains("Crewmate"))
+        if (alignment.Contains("Town"))
         {
-            alignment = alignment.Replace("Crewmate", "<color=#68ACF4>Crewmate");
+            alignment = alignment.Replace("Town", "<color=#06e00c>Town");
         }
-        else if (alignment.Contains("Impostor"))
+        else if (alignment.Contains("Mafia"))
         {
-            alignment = alignment.Replace("Impostor", "<color=#D63F42>Impostor");
+            alignment = alignment.Replace("Mafia", "<color=#dd0000>Mafia");
         }
         else if (alignment.Contains("Neutral"))
         {
-            alignment = alignment.Replace("Neutral", "<color=#8A8A8A>Neutral");
+            alignment = alignment.Replace("Neutral", "<color=#a9a9a9>Neutral");
+        }
+        else if (alignment.Contains("Coven"))
+        {
+            alignment = alignment.Replace("Coven", "<color=#ab42ef>Coven");
+        }
+        else if (alignment.Contains("Traitor"))
+        {
+            alignment = alignment.Replace("Traitor", "<color=#ce36fa>Traitor");
         }
 
         var prefix = " a";

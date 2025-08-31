@@ -18,7 +18,9 @@ namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class ArsonistRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public DoomableType DoomHintType => DoomableType.Fearmonger;
     public string RoleName => TouLocale.Get(TouNames.Arsonist, "Arsonist");
     public string RoleDescription => "Douse Players And Ignite The Light";

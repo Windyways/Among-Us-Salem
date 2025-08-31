@@ -24,7 +24,9 @@ namespace AmongUsSalem.Roles.Neutral;
 public sealed class PlaguebearerRole(IntPtr cppPtr)
     : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
-    public string revealText => "";
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public void FixedUpdate()
     {
         if (Player == null || Player.Data.Role is not PlaguebearerRole || Player.HasDied() || !Player.AmOwner)

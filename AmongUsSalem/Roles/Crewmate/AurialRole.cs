@@ -15,6 +15,9 @@ namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class AurialRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
+    public Attack Attack { get; set; } = Attack.None;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
     public string revealText => "";
     private readonly Dictionary<(Vector3, int), ArrowBehaviour> _senseArrows = new();
     public DoomableType DoomHintType => DoomableType.Perception;

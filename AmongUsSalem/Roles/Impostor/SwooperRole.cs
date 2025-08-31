@@ -14,6 +14,7 @@ public sealed class SwooperRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole,
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public DoomableType DoomHintType => DoomableType.Hunter;
     public string RoleName => TouLocale.Get(TouNames.Swooper, "Swooper");
     public string RoleDescription => "Turn Invisible Temporarily";

@@ -19,9 +19,15 @@ public sealed class Pilgrim(IntPtr cppPtr)
     public Faction RoleFaction => Faction.Town;
     public Color RoleColor => AUSColors.Town;
     public Alignment Alignment => Alignment.TownOutlier;
+
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public Attack ogAttack => Attack;
+    public Defense ogDefense => Defense;
+    public EtherealDefense ogEtherealDefense => EtherealDefense;
+    
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
     public CustomRoleConfiguration Configuration => new(this)
     {

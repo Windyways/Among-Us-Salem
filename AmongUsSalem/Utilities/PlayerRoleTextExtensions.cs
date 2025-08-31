@@ -137,14 +137,6 @@ public static class PlayerRoleTextExtensions
             name += "<color=#E6FFB3> ¥</color>";
         }
 
-        if ((player.HasModifier<ArsonistDousedModifier>(x => x.ArsonistId == PlayerControl.LocalPlayer.PlayerId) &&
-             PlayerControl.LocalPlayer.IsRole<ArsonistRole>())
-            || (player.HasModifier<ArsonistDousedModifier>() && PlayerControl.LocalPlayer.HasDied() &&
-                genOpt.TheDeadKnow && !hidden))
-        {
-            name += "<color=#FF4D00> Δ</color>";
-        }
-
         if ((player.HasModifier<BlackmailedModifier>(x => x.BlackMailerId == PlayerControl.LocalPlayer.PlayerId) &&
              PlayerControl.LocalPlayer.IsRole<BlackmailerRole>())
             || (player.HasModifier<BlackmailedModifier>() && PlayerControl.LocalPlayer.IsImpostor() &&

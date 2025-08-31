@@ -28,6 +28,7 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRo
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public PlayerControl? Target { get; set; }
     public bool TargetVoted { get; set; }
     public bool AboutToWin { get; set; }

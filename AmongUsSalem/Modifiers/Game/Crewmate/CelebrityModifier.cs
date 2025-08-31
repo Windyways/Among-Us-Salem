@@ -93,9 +93,6 @@ public sealed class CelebrityModifier : TouGameModifier
             case InquisitorRole:
                 cod = "vanquished";
                 break;
-            case ArsonistRole:
-                cod = "ignited";
-                break;
             case GlitchRole:
                 cod = "bugged";
                 break;
@@ -110,9 +107,6 @@ public sealed class CelebrityModifier : TouGameModifier
                 break;
             case VampireRole:
                 cod = "bitten";
-                break;
-            case WerewolfRole:
-                cod = "rampaged";
                 break;
             case JesterRole:
                 cod = "haunted";

@@ -23,6 +23,7 @@ public sealed class Covenite(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.Basic;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
     public CustomRoleConfiguration Configuration => new(this)
     {

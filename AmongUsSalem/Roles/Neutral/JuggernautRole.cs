@@ -17,6 +17,7 @@ public sealed class JuggernautRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRol
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public int KillCount { get; set; }
     public DoomableType DoomHintType => DoomableType.Relentless;
     public string RoleName => TouLocale.Get(TouNames.Juggernaut, "Juggernaut");
@@ -37,6 +38,7 @@ public sealed class JuggernautRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRol
 
     public bool HasImpostorVision => true;
 
+
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
@@ -56,6 +58,10 @@ public sealed class JuggernautRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRol
 
         var result = Helpers.GetAlivePlayers().Count <= 2 && MiscUtils.KillersAliveCount() == 1;
         return result;
+    }
+    public override bool DidWin(GameOverReason gameOverReason)
+    {
+        return WinConditionMet();
     }
 
     public string GetAdvancedDescription()
@@ -83,11 +89,6 @@ public sealed class JuggernautRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRol
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouAssets.VentSprite.LoadAsset();
             HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Mafia);
         }
-    }
-
-    public override bool DidWin(GameOverReason gameOverReason)
-    {
-        return WinConditionMet();
     }
 
     public override bool CanUse(IUsable usable)

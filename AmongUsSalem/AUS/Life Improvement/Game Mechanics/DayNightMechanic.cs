@@ -29,6 +29,18 @@ public static class DayNightMechanic
     public static void StartMeetingEventHandler(StartMeetingEvent @event)
     {
         DayCount++;
+        
+        foreach (var role in GameHistory.AllRoles)
+        {
+            if (!role || role is not IAUSRole ausRole)
+            {
+                continue;
+            }
+
+            ausRole.Attack = ausRole.ogAttack;
+            ausRole.Defense = ausRole.ogDefense;
+            ausRole.EtherealDefense = ausRole.ogEtherealDefense;
+        }
     }
 
     [RegisterEvent]

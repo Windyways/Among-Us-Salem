@@ -41,7 +41,8 @@ public static class HudManagerPatches
             (PlayerControl.LocalPlayer.Is(Faction.Coven) && player.Is(Faction.Coven)) ||
             (PlayerControl.LocalPlayer.Is(Faction.Traitor) && player.Is(Faction.Traitor)) ||
             (PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse) && player.Is(Alignment.NeutralApocalypse)) ||
-            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasDied())
+            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasDied()) ||
+            (PlayerControl.LocalPlayer == player)
             ;
     }
 
@@ -296,6 +297,10 @@ public static class HudManagerPatches
                     // This shows the role -.-
                     color = role.TeamColor;
                     roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
+                    if (player.HasDied() && player.Data.Role is IAUSRole ausRole)
+                    {
+                        roleName += player.GetDeathReason(ausRole.deathReasonShow);
+                    }
 
                     var revealedRole = revealMods.FirstOrDefault(x => x.Visible && x.RevealRole && x.ShownRole != null);
                     if (revealedRole != null)
@@ -319,10 +324,7 @@ public static class HudManagerPatches
                         roleName = $"<size=80%>{gaRole.TeamColor.ToTextColor()}{gaRole?.NiceName}</color></size>";
                     }
 
-                    if (VisibilityFlag(player) || (player.Data.IsDead &&
-                                                                        role is not PhantomTouRole &&
-                                                                        role is not GuardianAngelRole &&
-                                                                        role is not HaunterRole))
+                    if (VisibilityFlag(player) || player.Data.IsDead)
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
                         color = roleWhenAlive.TeamColor;

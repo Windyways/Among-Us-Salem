@@ -12,7 +12,7 @@ public sealed class Mafioso(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IAUSRole, IWikiDiscoverable
 {
     public string RoleName => TouLocale.Get(TouNames.Mafioso, "Mafioso");
-    public string revealText => "placeholder.";
+    public string revealText => "does the Godfather's dirty work.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
@@ -20,9 +20,15 @@ public sealed class Mafioso(IntPtr cppPtr)
     public Faction RoleFaction => Faction.Mafia;
     public Color RoleColor => AUSColors.Mafia;
     public Alignment Alignment => Alignment.MafiaKilling;
+
     public Attack Attack { get; set; } = Attack.Basic;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public Attack ogAttack => Attack;
+    public Defense ogDefense => Defense;
+    public EtherealDefense ogEtherealDefense => EtherealDefense;
+
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
     public CustomRoleConfiguration Configuration => new(this)
     {

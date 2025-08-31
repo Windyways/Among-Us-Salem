@@ -25,6 +25,7 @@ public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRo
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public DoomableType DoomHintType => DoomableType.Insight;
     public string RoleName => TouLocale.Get(TouNames.Ambassador, "Ambassador");
     public string RoleDescription => "Lead The Impostors To Victory";

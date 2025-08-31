@@ -17,6 +17,7 @@ public sealed class SurvivorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole,
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public DoomableType DoomHintType => DoomableType.Protective;
     public string RoleName => TouLocale.Get(TouNames.Survivor, "Survivor");
     public string RoleDescription => "Do Whatever It Takes To Live";

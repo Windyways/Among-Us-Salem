@@ -110,11 +110,6 @@ public static class MirrorcasterEvents
     {
         button?.ResetCooldownAndOrEffect();
 
-        if (source.Data.Role is WerewolfRole)
-        {
-            CustomButtonSingleton<WerewolfRampageButton>.Instance.ResetCooldownAndOrEffect();
-        }
-
         // Reset impostor kill cooldown if they attack a shielded player
         if (!source.AmOwner || !source.IsImpostor())
         {

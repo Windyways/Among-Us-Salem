@@ -4,6 +4,7 @@ public enum AUSRpc : uint
 {
     Veteran_Alert,
     Veteran_Notify,
+    Framer_Frame,
 
 
 

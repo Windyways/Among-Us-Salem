@@ -41,4 +41,11 @@ public static class MessageTexts
         }
         return target.GetDefaultAppearance().PlayerName + "'s defense was too high to kill!";
     }
+
+    public static string GetDeathReason(this PlayerControl player, DeathReasonShow reason)
+    {
+        if (reason == DeathReasonShow.ShotByAVeteran) return $"<color=#06e00c>Shot By A Veteran</color>";
+        if (reason == DeathReasonShow.KilledByAMemberOfTheMafia) return $"<color=#dd0000>Killed By A Member Of The Mafia</color>";
+        return "";
+    }
 }

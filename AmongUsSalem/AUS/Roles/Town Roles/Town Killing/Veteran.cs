@@ -20,9 +20,15 @@ public sealed class Veteran(IntPtr cppPtr)
     public Faction RoleFaction => Faction.Town;
     public Color RoleColor => AUSColors.Town;
     public Alignment Alignment => Alignment.TownKilling;
+
     public Attack Attack { get; set; } = Attack.Powerful;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public Attack ogAttack => Attack;
+    public Defense ogDefense => Defense;
+    public EtherealDefense ogEtherealDefense => EtherealDefense;
+
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -128,14 +134,17 @@ public sealed class Veteran_Alert : AmongUsSalemRoleButton<Veteran>
 
     public override void ClickHandler()
     {
-        if (!Role.isAlerted)
+        if (MiscUtils.SuccessfulVisit(Role.Player, Role.Player, false, false))
         {
-            if (MiscUtils.SuccessfulVisit(Role.Player, Role.Player, false, false))
-            {
-                base.ClickHandler();
-            }
+            base.ClickHandler();
         }
     }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && !Role.isAlerted;
+    }
+
 
     protected override void OnClick()
     {

@@ -23,6 +23,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, 
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public string revealText => "";
     private Dictionary<byte, ArrowBehaviour>? _snitchArrows;
     public ArrowBehaviour? SnitchRevealArrow { get; private set; }

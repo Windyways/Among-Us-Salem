@@ -14,6 +14,7 @@ public sealed class TraitorRole(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     [HideFromIl2Cpp] public List<RoleBehaviour> ChosenRoles { get; } = [];
     public RoleBehaviour? RandomRole { get; set; }
     public RoleBehaviour? SelectedRole { get; set; }

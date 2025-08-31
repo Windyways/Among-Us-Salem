@@ -101,25 +101,20 @@ public enum AbilityType
     VenererSprintAbility,
     VenererFreezeAbility,
 
-    // WarlockBurstKill,
     AmnesiacPreRemember,
     AmnesiacPostRemember,
     ArsonistDouse,
 
-    // ArsonistIgnite,
-    // DoomsayerObserve,
     GlitchInitialHack,
     GlitchHackTrigger,
     GlitchMimic,
     GlitchUnmimic,
     GuardianAngelProtect,
 
-    // InquisitorInquire,
     MercenaryGuard,
     MercenaryBribe,
     PlaguebearerInfect,
     SurvivorVest,
 
     VampireBite
-    // WerewolfRampage
 }

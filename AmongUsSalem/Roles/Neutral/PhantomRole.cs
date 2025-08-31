@@ -27,6 +27,7 @@ public sealed class PhantomTouRole(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public bool Setup { get; set; }
     public bool Caught { get; set; }
     public bool Faded { get; set; }

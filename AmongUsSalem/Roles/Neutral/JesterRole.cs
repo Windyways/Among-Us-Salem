@@ -20,6 +20,7 @@ public sealed class JesterRole(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public bool Voted { get; set; }
     public bool AboutToWin { get; set; }
     public bool SentWinMsg { get; set; }

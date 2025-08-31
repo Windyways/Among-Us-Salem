@@ -26,8 +26,7 @@ public static class WerewolfEvents
             return;
         }
 
-        if (!PlayerControl.LocalPlayer.inVent && PlayerControl.LocalPlayer.Data.Role is WerewolfRole werewolf &&
-            !werewolf.Rampaging)
+        if (!PlayerControl.LocalPlayer.inVent && PlayerControl.LocalPlayer.Data.Role is LookoutRole)
         {
             @event.Cancel();
         }

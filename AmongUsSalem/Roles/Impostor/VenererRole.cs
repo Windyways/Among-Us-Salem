@@ -14,6 +14,7 @@ public sealed class VenererRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole,
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public DoomableType DoomHintType => DoomableType.Trickster;
     public string RoleName => TouLocale.Get(TouNames.Venerer, "Venerer");
     public string RoleDescription => "With Each Kill Your Ability Becomes Stronger";

@@ -28,6 +28,7 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<MysticRole>());
     public DoomableType DoomHintType => DoomableType.Death;
     public string RoleName => TouLocale.Get(TouNames.Amnesiac, "Amnesiac");
@@ -123,10 +124,6 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
         else if (player.Data.Role is PlaguebearerRole || player.Data.Role is PestilenceRole)
         {
             ModifierUtils.GetActiveModifiers<PlaguebearerInfectedModifier>().Do(x => x.ModifierComponent?.RemoveModifier(x));
-        }
-        else if (player.Data.Role is ArsonistRole)
-        {
-            ModifierUtils.GetActiveModifiers<ArsonistDousedModifier>().Do(x => x.ModifierComponent?.RemoveModifier(x));
         }
         else if (player.Data.Role is MayorRole mayor)
         {

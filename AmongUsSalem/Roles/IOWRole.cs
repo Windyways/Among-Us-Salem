@@ -18,6 +18,16 @@ public interface IAUSRole : ICustomRole
     Attack Attack { get; set; }
     Defense Defense { get; set; }
     EtherealDefense EtherealDefense { get; set; }
+    
+    Attack ogAttack => Attack.None;
+    Defense ogDefense => Defense.None;
+    EtherealDefense ogEtherealDefense => EtherealDefense.None;
+
+    DeathReasonShow deathReasonShow { get; set; }
+
+
+
+
     bool Necronomicon => false;
 
 

@@ -83,10 +83,6 @@ public sealed class ClericCleanseModifier(PlayerControl cleric) : BaseModifier
     private void CleansePlayer()
     {
         // Logger<AUSPlugin>.Error($"ClericCleanseModifier.CleansePlayer");
-        if (Effects.Contains(EffectType.Douse))
-        {
-            Player.RemoveModifier<ArsonistDousedModifier>();
-        }
 
         if (Effects.Contains(EffectType.Hack))
         {
@@ -122,11 +118,6 @@ public sealed class ClericCleanseModifier(PlayerControl cleric) : BaseModifier
     public static List<EffectType> FindNegativeEffects(PlayerControl player)
     {
         var effects = new List<EffectType>();
-
-        if (player.HasModifier<ArsonistDousedModifier>())
-        {
-            effects.Add(EffectType.Douse);
-        }
 
         if (player.HasModifier<GlitchHackedModifier>())
         {

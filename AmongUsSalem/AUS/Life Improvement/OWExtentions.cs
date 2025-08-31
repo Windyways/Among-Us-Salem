@@ -82,11 +82,11 @@ public static class OWExtentions
 
     public static bool IsFramed(this PlayerControl player)
     {
-        /*foreach (var framers in MiscUtils.GetPlayersWithRole<Framer>())
+        foreach (var framers in MiscUtils.GetPlayersWithRole<Framer>())
         {
             var framer = framers.GetRole<Framer>();
             return framer.FramedPlayers.Contains(player.PlayerId);
-        }*/
+        }
         return false;
     }
 

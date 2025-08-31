@@ -20,9 +20,15 @@ public sealed class Sheriff(IntPtr cppPtr)
     public Faction RoleFaction => Faction.Town;
     public Color RoleColor => AUSColors.Town;
     public Alignment Alignment => Alignment.TownInvestigative;
+
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public Attack ogAttack => Attack;
+    public Defense ogDefense => Defense;
+    public EtherealDefense ogEtherealDefense => EtherealDefense;
+    
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -44,6 +50,7 @@ public sealed class Sheriff(IntPtr cppPtr)
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
             "\n<color=#ab42ef>Enchanters</color> can make their targets look suspicious." +
+            "\n<color=#dd0000>Framers</color> can make their targets look suspicious." +
             "\n<color=#ab42ef>Illusionists</color> can make their targets look not suspicious." +
             MiscUtils.AppendOptionsText(GetType());
     }
@@ -129,7 +136,7 @@ public sealed class Sheriff_Search : AmongUsSalemRoleButton<Sheriff, PlayerContr
         {
             return;
         }
-        
+
         var stats = Role.Player.GetPlayerStats();
         if (stats != null)
         {

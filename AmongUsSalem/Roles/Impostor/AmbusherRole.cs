@@ -33,6 +33,7 @@ public sealed class AmbusherRole(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public DoomableType DoomHintType => DoomableType.Fearmonger;
 
     public string RoleName => TouLocale.Get(TouNames.Ambusher, "Ambusher");

@@ -2,20 +2,20 @@ using MiraAPI.GameOptions;
 using MiraAPI.Networking;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class PestilenceKillButton : ObjectWorkshopRoleButton<PestilenceRole, PlayerControl>, IDiseaseableButton,
+public sealed class PestilenceKillButton : AmongUsSalemRoleButton<PestilenceRole, PlayerControl>, IDiseaseableButton,
     IKillButton
 {
     public override string Name => "Kill";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Pestilence;
+    public override Color TextOutlineColor => AUSColors.Pestilence;
     public override float Cooldown => OptionGroupSingleton<PlaguebearerOptions>.Instance.PestKillCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.PestKillSprite;
 
@@ -37,7 +37,7 @@ public sealed class PestilenceKillButton : ObjectWorkshopRoleButton<PestilenceRo
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Pestilence Shoot: Target is null");
+            Logger<AUSPlugin>.Error("Pestilence Shoot: Target is null");
             return;
         }
 

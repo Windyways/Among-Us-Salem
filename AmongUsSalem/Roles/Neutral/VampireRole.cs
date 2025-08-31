@@ -10,25 +10,25 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers.Game.Neutral;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers.Game.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
-public sealed class VampireRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, IDoomable
+public sealed class VampireRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Death;
     public string RoleName => TouLocale.Get(TouNames.Vampire, "Vampire");
     public string RoleDescription => "Convert Crewmates And Kill The Rest";
     public string RoleLongDescription => "Bite all other players";
-    public Color RoleColor => OWColors.Vampire;
+    public Color RoleColor => AUSColors.Vampire;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -44,7 +44,7 @@ public sealed class VampireRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var alignment = RoleAlignment.ToDisplayString().Replace("Neutral", "<color=#8A8A8AFF>Neutral");
+        var alignment = Alignment.ToDisplayString().Replace("Neutral", "<color=#8A8A8AFF>Neutral");
 
         var stringB = new StringBuilder();
         stringB.AppendLine(CultureInfo.InvariantCulture,
@@ -89,7 +89,7 @@ public sealed class VampireRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, I
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouNeutAssets.VampVentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Vampire);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Vampire);
         }
     }
 
@@ -99,7 +99,7 @@ public sealed class VampireRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, I
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouAssets.VentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Infiltrator);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Mafia);
         }
     }
 
@@ -119,12 +119,12 @@ public sealed class VampireRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, I
         return WinConditionMet();
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.VampireBite, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.VampireBite, SendImmediately = true)]
     public static void RpcVampireBite(PlayerControl player, PlayerControl target)
     {
         if (player.Data.Role is not VampireRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcVampireBite - Invalid vampire");
+            Logger<AUSPlugin>.Error("RpcVampireBite - Invalid vampire");
             return;
         }
 

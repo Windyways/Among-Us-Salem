@@ -2,17 +2,17 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Impostor.Venerer;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Modifiers.Impostor.Venerer;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class VenererAbilityButton : ObjectWorkshopRoleButton<VenererRole>, IAftermathableButton
+public sealed class VenererAbilityButton : AmongUsSalemRoleButton<VenererRole>, IAftermathableButton
 {
     private VenererAbility _queuedAbility = VenererAbility.None;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override string Keybind => Keybinds.SecondaryAction;
     public override LoadableAsset<Sprite> Sprite => TouImpAssets.NoAbilitySprite;
     public override float Cooldown => OptionGroupSingleton<VenererOptions>.Instance.AbilityCooldown;
@@ -43,7 +43,7 @@ public sealed class VenererAbilityButton : ObjectWorkshopRoleButton<VenererRole>
         if (ability != VenererAbility.None && PlayerControl.LocalPlayer.Data.Role is VenererRole)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Infiltrator.ToTextColor()}You have unlocked the {ability.ToString()} ability for getting a kill. {(EffectActive ? "You must wait until your current ability is over." : string.Empty)}</color></b>",
+                $"<b>{AUSColors.Mafia.ToTextColor()}You have unlocked the {ability.ToString()} ability for getting a kill. {(EffectActive ? "You must wait until your current ability is over." : string.Empty)}</color></b>",
                 Color.white, spr: TouRoleIcons.Venerer.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);

@@ -1,10 +1,10 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities.Appearances;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class MorphlingMorphModifier(PlayerControl target) : ConcealedModifier, IVisualAppearance
 {
@@ -17,7 +17,7 @@ public sealed class MorphlingMorphModifier(PlayerControl target) : ConcealedModi
 
     public VisualAppearance GetVisualAppearance()
     {
-        return new VisualAppearance(target.GetDefaultModifiedAppearance(), ObjectWorkshopAppearances.Morph);
+        return new VisualAppearance(target.GetDefaultModifiedAppearance(), AmongUsSalemAppearances.Morph);
     }
 
     public override void OnActivate()

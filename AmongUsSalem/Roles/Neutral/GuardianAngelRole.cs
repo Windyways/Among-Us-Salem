@@ -12,18 +12,18 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Random = System.Random;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
-public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole,
+public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole,
     IDoomable, IAssignableTargets, ICrewVariant
 {
     public string revealText => "";
@@ -32,7 +32,7 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
 
     public void AssignTargets()
     {
-        if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error($"SelectGATargets");
+        if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error($"SelectGATargets");
         var evilTargetPercent = (int)OptionGroupSingleton<GuardianAngelOptions>.Instance.EvilTargetPercent;
 
         var gas = PlayerControl.AllPlayerControls.ToArray()
@@ -52,7 +52,7 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
 
                 if (chance <= evilTargetPercent)
                 {
-                    filtered = [.. filtered.Where(x => x.IsImpostor() || x.Is(RoleAlignment.NeutralPredator))];
+                    filtered = [.. filtered.Where(x => x.IsImpostor() || x.Is(Alignment.NeutralKilling))];
                 }
             }
             else
@@ -60,12 +60,12 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
                 filtered = [.. filtered.Where(x => x.Is(ModdedRoleTeams.Crewmate))];
             }
 
-            filtered = [.. filtered.Where(x => !x.Is(RoleAlignment.NeutralEvil))];
+            filtered = [.. filtered.Where(x => !x.Is(Alignment.NeutralEvil))];
 
             Random rndIndex = new();
             var randomTarget = filtered[rndIndex.Next(0, filtered.Count)];
 
-            if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Info($"Setting GA Target: {randomTarget.Data.PlayerName}");
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Info($"Setting GA Target: {randomTarget.Data.PlayerName}");
             RpcSetGATarget(ga, randomTarget);
         }
     }
@@ -75,9 +75,9 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
     public string RoleName => TouLocale.Get(TouNames.GuardianAngel, "Guardian Angel");
     public string RoleDescription => TargetString();
     public string RoleLongDescription => TargetString();
-    public Color RoleColor => OWColors.GuardianAngel;
+    public Color RoleColor => AUSColors.GuardianAngel;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -89,7 +89,7 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public bool SetupIntroTeam(IntroCutscene instance,
@@ -191,7 +191,7 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
             return;
         }
 
-        if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error($"OnPlayerDeath '{victim.Data.PlayerName}'");
+        if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error($"OnPlayerDeath '{victim.Data.PlayerName}'");
         if (Target == null || victim == Target)
         {
             var roleType = OptionGroupSingleton<GuardianAngelOptions>.Instance.OnTargetDeath switch
@@ -204,7 +204,7 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
                 _ => (ushort)RoleTypes.Crewmate
             };
 
-            if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error($"OnPlayerDeath - ChangeRole: '{roleType}'");
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error($"OnPlayerDeath - ChangeRole: '{roleType}'");
             Player.ChangeRole(roleType);
 
             if ((roleType == RoleId.Get<JesterRole>() && OptionGroupSingleton<JesterOptions>.Instance.ScatterOn) ||
@@ -226,12 +226,12 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
         return $"Protect {Target?.Data.PlayerName} With Your Life!";
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SetGATarget, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SetGATarget, SendImmediately = true)]
     public static void RpcSetGATarget(PlayerControl player, PlayerControl target)
     {
         if (player.Data.Role is not GuardianAngelTouRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcSetGATarget - Invalid guardian angel");
+            Logger<AUSPlugin>.Error("RpcSetGATarget - Invalid guardian angel");
             return;
         }
 
@@ -247,7 +247,7 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
             return;
         }
 
-        // Logger<ObjectWorkshopPlugin>.Message($"RpcSetGATarget - Target: '{target.Data.PlayerName}'");
+        // Logger<AUSPlugin>.Message($"RpcSetGATarget - Target: '{target.Data.PlayerName}'");
         role.Target = target;
 
         target.AddModifier<GuardianAngelTargetModifier>(player.PlayerId);

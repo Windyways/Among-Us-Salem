@@ -4,11 +4,11 @@ using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.GameOptions;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class VeteranRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -20,9 +20,9 @@ public sealed class VeteranRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewR
     public string RoleName => TouLocale.Get(TouNames.Veteran, "Veteran");
     public string RoleDescription => "Alert To Kill Anyone Who Interacts With You";
     public string RoleLongDescription => "Alert to kill whoever who interacts with you.";
-    public Color RoleColor => OWColors.Veteran;
+    public Color RoleColor => AUSColors.Veteran;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public bool IsPowerCrew => Alerts > 0; // Stop end game checks if the veteran can still alert
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -34,7 +34,7 @@ public sealed class VeteranRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewR
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

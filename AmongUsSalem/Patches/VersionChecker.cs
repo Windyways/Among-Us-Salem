@@ -4,7 +4,7 @@ using Twitch;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
 public static class VersionCheckPatch
@@ -12,7 +12,7 @@ public static class VersionCheckPatch
     public static void Prefix()
     {
         var data = GetVersioning()
-            ?.FirstOrDefault(x => x.ModVersion.Equals(ObjectWorkshopPlugin.Version, StringComparison.Ordinal));
+            ?.FirstOrDefault(x => x.ModVersion.Equals(AUSPlugin.Version, StringComparison.Ordinal));
         if (data != null)
         {
             var RequiredVersions = data.InternalVersions;
@@ -21,7 +21,7 @@ public static class VersionCheckPatch
             {
                 var action = AUversion > RequiredVersions.Keys.Max() ? "downgrade" : "update";
                 var info =
-                    $"ALERT\nObject Workshop {ObjectWorkshopPlugin.Version} requires {RequiredVersions.Values.Last()}\nyou have {Application.version}\nPlease {action} your among us version"
+                    $"ALERT\nAmong Us Salem {AUSPlugin.Version} requires {RequiredVersions.Values.Last()}\nyou have {Application.version}\nPlease {action} your among us version"
                     + "\nvisit Github or Discord for any help";
                 var man = TwitchManager.Instance;
                 ModUpdater.InfoPopup = Object.Instantiate(man.TwitchPopup);
@@ -57,7 +57,7 @@ public class ModUpdater
     {
         DefaultRequestHeaders =
         {
-            { "User-Agent", "ObjectWorkshop Updater" }
+            { "User-Agent", "AmongUsSalem Updater" }
         }
     };
 

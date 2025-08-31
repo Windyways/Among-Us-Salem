@@ -10,15 +10,15 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     private Dictionary<byte, ArrowBehaviour>? _snitchArrows;
@@ -51,9 +51,9 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     public string RoleLongDescription =>
         CompletedAllTasks ? "Find the Impostors!" : "Complete all your tasks to discover the Impostors.";
 
-    public Color RoleColor => OWColors.Snitch;
+    public Color RoleColor => AUSColors.Snitch;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -64,7 +64,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var alignment = RoleAlignment.ToDisplayString().Replace("Crewmate", "<color=#68ACF4FF>Crewmate");
+        var alignment = Alignment.ToDisplayString().Replace("Crewmate", "<color=#68ACF4FF>Crewmate");
 
         var stringB = new StringBuilder();
         stringB.AppendLine(CultureInfo.InvariantCulture,
@@ -102,7 +102,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
         if (IsTargetOfSnitch(PlayerControl.LocalPlayer) && OnLastTask)
         {
             CreateRevealingArrow();
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Snitch, alpha: 0.5f));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Snitch, alpha: 0.5f));
             var text = "The Snitch is getting closer to reveal you!";
             if (Player.HasModifier<EgotistModifier>())
             {
@@ -110,7 +110,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
             }
 
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Snitch.ToTextColor()}{text}</color></b>", Color.white,
+                $"<b>{AUSColors.Snitch.ToTextColor()}{text}</color></b>", Color.white,
                 spr: TouRoleIcons.Snitch.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);
@@ -121,7 +121,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
 
         if (OnLastTask && Player.AmOwner && !CompletedAllTasks)
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Snitch, alpha: 0.5f));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Snitch, alpha: 0.5f));
             var text = "The impostors know of your whereabouts!";
             if (Player.HasModifier<EgotistModifier>())
             {
@@ -129,7 +129,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
             }
 
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Snitch.ToTextColor()}{text}</color></b>", Color.white,
+                $"<b>{AUSColors.Snitch.ToTextColor()}{text}</color></b>", Color.white,
                 spr: TouRoleIcons.Snitch.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);
@@ -138,7 +138,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
 
         if (CompletedAllTasks && IsTargetOfSnitch(PlayerControl.LocalPlayer))
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Snitch, alpha: 0.5f));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Snitch, alpha: 0.5f));
             var text = "The Snitch knows what you are now!";
             if (Player.HasModifier<EgotistModifier>())
             {
@@ -146,7 +146,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
             }
 
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Snitch.ToTextColor()}{text}</color></b>", Color.white,
+                $"<b>{AUSColors.Snitch.ToTextColor()}{text}</color></b>", Color.white,
                 spr: TouRoleIcons.Snitch.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);
@@ -163,7 +163,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
             }
 
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Snitch.ToTextColor()}{text}</color></b>", Color.white,
+                $"<b>{AUSColors.Snitch.ToTextColor()}{text}</color></b>", Color.white,
                 spr: TouRoleIcons.Snitch.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);
@@ -180,7 +180,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
 
         return (player.IsImpostor() && !player.IsTraitor()) ||
                (player.IsTraitor() && OptionGroupSingleton<SnitchOptions>.Instance.SnitchSeesTraitor) ||
-               (player.Is(RoleAlignment.NeutralPredator) &&
+               (player.Is(Alignment.NeutralKilling) &&
                 OptionGroupSingleton<SnitchOptions>.Instance.SnitchNeutralRoles);
     }
 
@@ -225,8 +225,8 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
 
         Player.AddModifier<SnitchPlayerRevealModifier>(RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<SnitchRole>()));
         PlayerNameColor.Set(Player);
-        Coroutines.Start(MiscUtils.CoFlash(OWColors.Snitch, alpha: 0.5f));
-        SnitchRevealArrow = MiscUtils.CreateArrow(Player.transform, OWColors.Snitch);
+        Coroutines.Start(MiscUtils.CoFlash(AUSColors.Snitch, alpha: 0.5f));
+        SnitchRevealArrow = MiscUtils.CreateArrow(Player.transform, AUSColors.Snitch);
     }
 
     private void CreateSnitchArrows()
@@ -236,32 +236,32 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
             return;
         }
 
-        Coroutines.Start(MiscUtils.CoFlash(OWColors.Snitch, alpha: 0.5f));
+        Coroutines.Start(MiscUtils.CoFlash(AUSColors.Snitch, alpha: 0.5f));
         _snitchArrows = new Dictionary<byte, ArrowBehaviour>();
         var imps = Helpers.GetAlivePlayers().Where(plr => plr.Data.Role.IsImpostor && !plr.IsTraitor());
         var traitor = Helpers.GetAlivePlayers().FirstOrDefault(plr => plr.IsTraitor());
         imps.ToList().ForEach(imp =>
         {
-            _snitchArrows.Add(imp.PlayerId, MiscUtils.CreateArrow(imp.transform, OWColors.Infiltrator));
+            _snitchArrows.Add(imp.PlayerId, MiscUtils.CreateArrow(imp.transform, AUSColors.Mafia));
             PlayerNameColor.Set(imp);
             imp.AddModifier<SnitchImpostorRevealModifier>();
         });
 
         if (OptionGroupSingleton<SnitchOptions>.Instance.SnitchSeesTraitor && traitor != null)
         {
-            _snitchArrows.Add(traitor.PlayerId, MiscUtils.CreateArrow(traitor.transform, OWColors.Infiltrator));
+            _snitchArrows.Add(traitor.PlayerId, MiscUtils.CreateArrow(traitor.transform, AUSColors.Mafia));
             PlayerNameColor.Set(traitor);
             traitor.AddModifier<SnitchImpostorRevealModifier>();
         }
 
         if (OptionGroupSingleton<SnitchOptions>.Instance.SnitchNeutralRoles)
         {
-            var neutrals = MiscUtils.GetRoles(RoleAlignment.NeutralPredator)
+            var neutrals = MiscUtils.GetRoles(Alignment.NeutralKilling)
                 .Where(role => !role.Player.Data.IsDead && !role.Player.Data.Disconnected);
             neutrals.ToList().ForEach(neutral =>
             {
                 _snitchArrows.Add(neutral.Player.PlayerId,
-                    MiscUtils.CreateArrow(neutral.Player.transform, OWColors.Neutral));
+                    MiscUtils.CreateArrow(neutral.Player.transform, AUSColors.Neutral));
                 PlayerNameColor.Set(neutral.Player);
                 neutral.Player.AddModifier<SnitchImpostorRevealModifier>();
             });
@@ -294,7 +294,7 @@ public sealed class SnitchRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
 
             if (OptionGroupSingleton<SnitchOptions>.Instance.SnitchSeesTraitor && traitor != null)
             {
-                _snitchArrows.Add(traitor.PlayerId, MiscUtils.CreateArrow(traitor.transform, OWColors.Infiltrator));
+                _snitchArrows.Add(traitor.PlayerId, MiscUtils.CreateArrow(traitor.transform, AUSColors.Mafia));
                 PlayerNameColor.Set(traitor);
                 Player.AddModifier<SnitchImpostorRevealModifier>();
             }

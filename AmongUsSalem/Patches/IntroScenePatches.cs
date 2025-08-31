@@ -8,15 +8,15 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Buttons;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = Il2CppSystem.Object;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class IntroScenePatches
@@ -33,7 +33,7 @@ public static class IntroScenePatches
 
         __instance.TeamTitle.text =
             DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.Impostor, Array.Empty<Object>());
-        __instance.TeamTitle.color = OWColors.Infiltrator;
+        __instance.TeamTitle.color = AUSColors.Mafia;
 
         var player = __instance.CreatePlayer(0, 1, PlayerControl.LocalPlayer.Data, true);
         __instance.ourCrewmate = player;
@@ -172,7 +172,7 @@ public static class ModifierIntroPatch
         public static void Postfix(IntroCutscene._ShowRole_d__41 __instance)
         {
             HudManagerPatches.ResetZoom();
-            if (PlayerControl.LocalPlayer.Data.Role is IOWRole custom)
+            if (PlayerControl.LocalPlayer.Data.Role is IAUSRole custom)
             {
                 __instance.__4__this.RoleText.text = custom.RoleName;
                 if (__instance.__4__this.YouAreText.transform.TryGetComponent<TextTranslatorTMP>(out var tmp))
@@ -204,7 +204,7 @@ public static class ModifierIntroPatch
     {
         public static void Postfix(IntroCutscene._ShowRole_d__41 __instance)
         {
-            if (PlayerControl.LocalPlayer.Data.Role is IOWRole custom)
+            if (PlayerControl.LocalPlayer.Data.Role is IAUSRole custom)
             {
                 __instance.__4__this.RoleText.text = custom.RoleName;
                 if (__instance.__4__this.YouAreText.transform.TryGetComponent<TextTranslatorTMP>(out var tmp))
@@ -237,7 +237,7 @@ public static class ModifierIntroPatch
     {
         public static void Postfix(IntroCutscene._ShowRole_d__41 __instance)
         {
-            if (PlayerControl.LocalPlayer.Data.Role is IOWRole custom)
+            if (PlayerControl.LocalPlayer.Data.Role is IAUSRole custom)
             {
                 __instance.__4__this.RoleText.text = custom.RoleName;
                 __instance.__4__this.YouAreText.text = custom.YouAreText;
@@ -274,8 +274,8 @@ public static class ModifierIntroPatch
     public static void SetHiddenImpostors(IntroCutscene __instance)
     {
         var amount = Helpers.GetAlivePlayers().Count(x => x.IsImpostor());
-        if (amount == 1) __instance.ImpostorText.text = $"There is {amount} Infiltrator among us.";
-        else if (amount > 0) __instance.ImpostorText.text = $"There are {amount} Infiltrators among us.";
+        if (amount == 1) __instance.ImpostorText.text = $"There is {amount} Mafia among us.";
+        else if (amount > 0) __instance.ImpostorText.text = $"There are {amount} Mafias among us.";
 
         /*__instance.ImpostorText.text = DestroyableSingleton<TranslationController>.Instance.GetString(amount == 1 ? StringNames.NumImpostorsS : StringNames.NumImpostorsP, amount);
         __instance.ImpostorText.text = __instance.ImpostorText.text.Replace("[FF1919FF]", "<color=#FF1919FF>");

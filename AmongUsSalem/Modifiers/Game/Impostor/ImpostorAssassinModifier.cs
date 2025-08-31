@@ -1,10 +1,10 @@
 ﻿using MiraAPI.GameOptions;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Impostor;
+namespace AmongUsSalem.Modifiers.Game.Impostor;
 
 public sealed class ImpostorAssassinModifier : AssassinModifier
 {
@@ -23,6 +23,6 @@ public sealed class ImpostorAssassinModifier : AssassinModifier
 
     public override bool IsModifierValidOn(RoleBehaviour role)
     {
-        return role is IOWRole { RoleName: "Assassin" };
+        return role is IAUSRole { RoleName: "Assassin" };
     }
 }

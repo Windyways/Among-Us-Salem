@@ -3,20 +3,20 @@ using System.Collections;
 using Il2CppSystem.Runtime.InteropServices;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement;
+namespace AmongUsSalem.LifeImprovement;
 
 public static class Sabotages
 {
     public static bool AnyActive()
     {
-        if (ObjectWorkshopPlugin.InGame())
+        if (AUSPlugin.InGame())
         {
             if (OnGameStart.SequenceCheck >= 3)
             {
                 var system = ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>();
                 var specials = system.specials.ToArray();
 
-                return specials.Any((IActivatable s) => s.IsActive)/* || Flood.isActive*/;
+                return specials.Any((IActivatable s) => s.IsActive);
             }
         }
 

@@ -2,12 +2,12 @@
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class EgotistEvents
 {
@@ -28,7 +28,7 @@ public static class EgotistEvents
             {
                 PlayerControl.LocalPlayer.RpcPlayerExile();
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>You have successfully won as the {OWColors.Egotist.ToTextColor()}Egotist</color>, as no more crewmates remain!</b>",
+                    $"<b>You have successfully won as the {AUSColors.Egotist.ToTextColor()}Egotist</color>, as no more crewmates remain!</b>",
                     Color.white, spr: TouModifierIcons.Egotist.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -37,7 +37,7 @@ public static class EgotistEvents
             else
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>The {OWColors.Egotist.ToTextColor()}Egotist</color>, {ego.Player.Data.PlayerName}, has successfully won, as no more crewmates remain!</b>",
+                    $"<b>The {AUSColors.Egotist.ToTextColor()}Egotist</color>, {ego.Player.Data.PlayerName}, has successfully won, as no more crewmates remain!</b>",
                     Color.white, spr: TouModifierIcons.Egotist.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);

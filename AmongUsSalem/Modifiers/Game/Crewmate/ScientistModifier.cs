@@ -2,16 +2,16 @@
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Buttons.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Modifiers;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class ScientistModifier : TouGameModifier
 {

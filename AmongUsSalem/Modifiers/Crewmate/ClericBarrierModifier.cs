@@ -3,15 +3,15 @@ using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using PowerTools;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class ClericBarrierModifier(PlayerControl cleric) : BaseShieldModifier
 {
@@ -27,7 +27,7 @@ public sealed class ClericBarrierModifier(PlayerControl cleric) : BaseShieldModi
         get
         {
             var showBarrier = OptionGroupSingleton<ClericOptions>.Instance.ShowBarriered;
-            return !ObjectWorkshopPlugin.ShowShieldHud.Value || (showBarrier is BarrierOptions.Cleric);
+            return !AUSPlugin.ShowShieldHud.Value || (showBarrier is BarrierOptions.Cleric);
         }
     }
 

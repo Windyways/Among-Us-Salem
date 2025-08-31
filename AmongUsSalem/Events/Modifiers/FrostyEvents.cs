@@ -3,11 +3,11 @@ using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Options.Modifiers.Crewmate;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class FrostyEvents
 {
@@ -23,7 +23,7 @@ public static class FrostyEvents
         if (@event.Source.AmOwner)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Frosty.ToTextColor()}{@event.Target.Data.PlayerName} was Frosty, causing you to be slower for {Math.Round(OptionGroupSingleton<FrostyOptions>.Instance.ChillDuration, 2)} seconds.</color></b>",
+                $"<b>{AUSColors.Frosty.ToTextColor()}{@event.Target.Data.PlayerName} was Frosty, causing you to be slower for {Math.Round(OptionGroupSingleton<FrostyOptions>.Instance.ChillDuration, 2)} seconds.</color></b>",
                 Color.white, spr: TouModifierIcons.Frosty.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);

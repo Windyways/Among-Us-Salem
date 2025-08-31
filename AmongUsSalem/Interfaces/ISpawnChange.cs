@@ -1,4 +1,4 @@
-namespace ObjectWorkshop.Extensions;
+namespace AmongUsSalem.Extensions;
 
 public interface ISpawnChange
 {

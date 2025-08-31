@@ -1,7 +1,7 @@
 using HarmonyLib;
 using Reactor.Utilities;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class AmongUsClientPatches
@@ -12,7 +12,7 @@ public static class AmongUsClientPatches
     {
         if (AmongUsClient.Instance != __instance)
         {
-            Logger<ObjectWorkshopPlugin>.Error("AmongUsClient duplicate detected.");
+            Logger<AUSPlugin>.Error("AmongUsClient duplicate detected.");
         }
     }
 }

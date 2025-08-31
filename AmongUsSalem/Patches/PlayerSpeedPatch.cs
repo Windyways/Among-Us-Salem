@@ -1,11 +1,11 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Impostor.Venerer;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modifiers.Impostor.Venerer;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities.Appearances;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(LogicOptions), nameof(LogicOptions.GetPlayerSpeedMod))]
 public static class PlayerSpeedPatch

@@ -1,9 +1,9 @@
 ﻿using MiraAPI.GameOptions;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class SnitchImpostorRevealModifier()
     : RevealModifier((int)ChangeRoleResult.Nothing, true, null!)
@@ -13,7 +13,7 @@ public sealed class SnitchImpostorRevealModifier()
     public override void OnActivate()
     {
         base.OnActivate();
-        SetNewInfo(false, null,null, null, OWColors.Infiltrator);
+        SetNewInfo(false, null,null, null, AUSColors.Mafia);
     }
 
     public override void FixedUpdate()
@@ -26,7 +26,7 @@ public sealed class SnitchImpostorRevealModifier()
 
         if (Player.IsImpostor())
         {
-            NameColor = OWColors.Infiltrator;
+            NameColor = AUSColors.Mafia;
         }
         else if (!Player.HasDied())
         {

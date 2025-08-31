@@ -1,20 +1,20 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class MorphlingMorphButton : ObjectWorkshopRoleButton<MorphlingRole>, IAftermathableButton
+public sealed class MorphlingMorphButton : AmongUsSalemRoleButton<MorphlingRole>, IAftermathableButton
 {
     public override string Name => "Morph";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<MorphlingOptions>.Instance.MorphlingCooldown + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<MorphlingOptions>.Instance.MorphlingDuration;
     public override int MaxUses => (int)OptionGroupSingleton<MorphlingOptions>.Instance.MaxMorphs;

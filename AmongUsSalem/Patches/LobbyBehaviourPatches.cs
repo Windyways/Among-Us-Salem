@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class LobbyBehaviourPatches
@@ -13,7 +13,7 @@ public static class LobbyBehaviourPatches
     {
         foreach (var role in GameHistory.AllRoles)
         {
-            if (!role || role is not IOWRole touRole)
+            if (!role || role is not IAUSRole touRole)
             {
                 continue;
             }

@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 internal static class CancelCountdownStart
@@ -26,7 +26,7 @@ internal static class CancelCountdownStart
         cancelButtonInactiveRenderer.color = new Color(0.8f, 0f, 0f, 1f);
 
         var cancelButtonActiveRenderer = CancelStartButton.activeSprites.GetComponent<SpriteRenderer>();
-        cancelButtonActiveRenderer.color = OWColors.Infiltrator;
+        cancelButtonActiveRenderer.color = AUSColors.Mafia;
 
         var cancelButtonInactiveShine = CancelStartButton.inactiveSprites.transform.Find("Shine");
 

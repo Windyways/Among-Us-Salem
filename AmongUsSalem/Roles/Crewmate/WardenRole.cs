@@ -6,13 +6,13 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class WardenRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class WardenRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -36,9 +36,9 @@ public sealed class WardenRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     public string RoleName => TouLocale.Get(TouNames.Warden, "Warden");
     public string RoleDescription => "Fortify Crewmates";
     public string RoleLongDescription => "Fortify crewmates to prevent interactions with them";
-    public Color RoleColor => OWColors.Warden;
+    public Color RoleColor => AUSColors.Warden;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -49,7 +49,7 @@ public sealed class WardenRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         if (Fortified != null)
         {
@@ -103,12 +103,12 @@ public sealed class WardenRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
         Fortified?.AddModifier<WardenFortifiedModifier>(Player);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.WardenFortify, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.WardenFortify, SendImmediately = true)]
     public static void RpcWardenFortify(PlayerControl player, PlayerControl target)
     {
         if (player.Data.Role is not WardenRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcWardenFortify - Invalid warden");
+            Logger<AUSPlugin>.Error("RpcWardenFortify - Invalid warden");
             return;
         }
 
@@ -116,12 +116,12 @@ public sealed class WardenRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
         warden?.SetFortifiedPlayer(target);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.ClearWardenFortify, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.ClearWardenFortify, SendImmediately = true)]
     public static void RpcClearWardenFortify(PlayerControl player)
     {
         if (player.Data.Role is not WardenRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcClearWardenFortify - Invalid warden");
+            Logger<AUSPlugin>.Error("RpcClearWardenFortify - Invalid warden");
             return;
         }
 
@@ -129,24 +129,24 @@ public sealed class WardenRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
         warden?.SetFortifiedPlayer(null);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.WardenNotify, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.WardenNotify, SendImmediately = true)]
     public static void RpcWardenNotify(PlayerControl player, PlayerControl source, PlayerControl target)
     {
         if (player.Data.Role is not WardenRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcWardenNotify - Invalid warden");
+            Logger<AUSPlugin>.Error("RpcWardenNotify - Invalid warden");
             return;
         }
 
-        // Logger<ObjectWorkshopPlugin>.Error("RpcWardenNotify");
+        // Logger<AUSPlugin>.Error("RpcWardenNotify");
         if (player.AmOwner)
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Warden));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Warden));
         }
 
         if (source.AmOwner)
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Warden));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Warden));
         }
     }
 }

@@ -2,12 +2,12 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Impostor;
+namespace AmongUsSalem.Modifiers.Game.Impostor;
 
 public sealed class UnderdogModifier : TouGameModifier
 {
@@ -72,7 +72,7 @@ public sealed class UnderdogModifier : TouGameModifier
         var kc = ExtraImpsKillCooldown ? upperKc : baseKillCooldown;
         var timer = LastImpostor() ? lowerKc : kc;
 
-        // Logger<ObjectWorkshopPlugin>.Error($"GetKillCooldown({player.Data.PlayerName}) baseKillCooldown: {baseKillCooldown}, baseKillCooldown2: {baseKillCooldown2}, lowerKc {lowerKc}, upperKc {upperKc}, kc {kc}, timer {timer}");
+        // Logger<AUSPlugin>.Error($"GetKillCooldown({player.Data.PlayerName}) baseKillCooldown: {baseKillCooldown}, baseKillCooldown2: {baseKillCooldown2}, lowerKc {lowerKc}, upperKc {upperKc}, kc {kc}, timer {timer}");
 
         return timer;
     }

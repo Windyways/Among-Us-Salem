@@ -2,12 +2,12 @@
 using MiraAPI.Events;
 using MiraAPI.Modifiers;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class ClericCleanseModifier(PlayerControl cleric) : BaseModifier
 {
@@ -37,7 +37,7 @@ public sealed class ClericCleanseModifier(PlayerControl cleric) : BaseModifier
 
         Effects = FindNegativeEffects(Player);
 
-        // Logger<ObjectWorkshopPlugin>.Error($"ClericCleanseModifier.OnActivate");
+        // Logger<AUSPlugin>.Error($"ClericCleanseModifier.OnActivate");
     }
 
     public override void OnDeath(DeathReason reason)
@@ -47,14 +47,14 @@ public sealed class ClericCleanseModifier(PlayerControl cleric) : BaseModifier
 
     public override void OnMeetingStart()
     {
-        // Logger<ObjectWorkshopPlugin>.Error($"ClericCleanseModifier.OnMeetingStart");
+        // Logger<AUSPlugin>.Error($"ClericCleanseModifier.OnMeetingStart");
         if (Cleric.AmOwner)
         {
             var text = new StringBuilder($"Cleansed effects on {Player.Data.PlayerName}:");
 
             foreach (var effect in Effects)
             {
-                text.Append(ObjectWorkshopPlugin.Culture, $" {effect.ToString()},");
+                text.Append(AUSPlugin.Culture, $" {effect.ToString()},");
             }
 
             text = text.Remove(text.Length - 1, 1);
@@ -64,7 +64,7 @@ public sealed class ClericCleanseModifier(PlayerControl cleric) : BaseModifier
                 text = new StringBuilder($"No negative effects were found on {Player.Data.PlayerName}.");
             }
 
-            var title = $"<color=#{OWColors.Cleric.ToHtmlStringRGBA()}>Cleric Feedback</color>";
+            var title = $"<color=#{AUSColors.Cleric.ToHtmlStringRGBA()}>Cleric Feedback</color>";
             MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.Data, title, text.ToString(), false, true);
         }
     }
@@ -82,7 +82,7 @@ public sealed class ClericCleanseModifier(PlayerControl cleric) : BaseModifier
 
     private void CleansePlayer()
     {
-        // Logger<ObjectWorkshopPlugin>.Error($"ClericCleanseModifier.CleansePlayer");
+        // Logger<AUSPlugin>.Error($"ClericCleanseModifier.CleansePlayer");
         if (Effects.Contains(EffectType.Douse))
         {
             Player.RemoveModifier<ArsonistDousedModifier>();

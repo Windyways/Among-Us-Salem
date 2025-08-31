@@ -1,9 +1,9 @@
 ﻿using HarmonyLib;
 using Reactor.Utilities;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext))]
 public static class SubmergedStartPatch

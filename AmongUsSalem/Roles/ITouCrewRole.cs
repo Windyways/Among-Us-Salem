@@ -1,6 +1,6 @@
-namespace ObjectWorkshop.Roles;
+namespace AmongUsSalem.Roles;
 
-public interface ITouCrewRole : IOWRole
+public interface ITouCrewRole : IAUSRole
 {
     bool IsPowerCrew { get; }
 }

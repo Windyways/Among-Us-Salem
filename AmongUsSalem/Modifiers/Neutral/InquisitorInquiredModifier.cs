@@ -1,6 +1,6 @@
 using MiraAPI.Modifiers;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class InquisitorInquiredModifier : BaseModifier
 {

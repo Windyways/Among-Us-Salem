@@ -7,20 +7,20 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 using UnityEngine.UI;
 
 // using Reactor.Utilities.Extensions;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IOWRole, IGhostRole
+public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IAUSRole, IGhostRole
 {
     public string revealText => "";
     public bool Revealed { get; private set; }
@@ -43,7 +43,7 @@ public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IOWR
         }
 
         if (options.HaunterCanBeClickedBy == HaunterRoleClickableType.NonCrew &&
-            !(PlayerControl.LocalPlayer.IsImpostor() || PlayerControl.LocalPlayer.Is(RoleAlignment.NeutralPredator)
+            !(PlayerControl.LocalPlayer.IsImpostor() || PlayerControl.LocalPlayer.Is(Alignment.NeutralKilling)
                 || PlayerControl.LocalPlayer.TryGetModifier<AllianceGameModifier>(out var allyMod) && allyMod.GetsPunished))
         {
             return false;
@@ -56,7 +56,7 @@ public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IOWR
     {
         Setup = true;
 
-        if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error($"Setup HaunterRole '{Player.Data.PlayerName}'");
+        if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error($"Setup HaunterRole '{Player.Data.PlayerName}'");
         Player.gameObject.layer = LayerMask.NameToLayer("Players");
 
         Player.gameObject.GetComponent<PassiveButton>().OnClick = new Button.ButtonClickedEvent();
@@ -93,13 +93,13 @@ public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IOWR
 
             Faded = false;
 
-            // Logger<ObjectWorkshopPlugin>.Message($"HaunterRole.FadeUpdate UnFaded");
+            // Logger<AUSPlugin>.Message($"HaunterRole.FadeUpdate UnFaded");
         }
     }
 
     public void Clicked()
     {
-        if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Message($"HaunterRole.Clicked");
+        if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Message($"HaunterRole.Clicked");
         Caught = true;
         Player.Exiled();
 
@@ -114,9 +114,9 @@ public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IOWR
     public string RoleName => TouLocale.Get(TouNames.Haunter, "Haunter");
     public string RoleDescription => string.Empty;
     public string RoleLongDescription => "Complete all your tasks without getting caught to reveal impostors!";
-    public Color RoleColor => OWColors.Haunter;
+    public Color RoleColor => AUSColors.Haunter;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -129,7 +129,7 @@ public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IOWR
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -275,25 +275,25 @@ public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IOWR
 
         if (!Revealed && tasksRemaining == (int)OptionGroupSingleton<HaunterOptions>.Instance.NumTasksLeftBeforeAlerted)
         {
-            // Logger<ObjectWorkshopPlugin>.Error($"CheckTaskRequirements Revealed");
+            // Logger<AUSPlugin>.Error($"CheckTaskRequirements Revealed");
             Revealed = true;
 
             if (Player.AmOwner)
             {
                 Coroutines.Start(MiscUtils.CoFlash(RoleColor));
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{OWColors.Haunter.ToTextColor()}You have alerted the Killers!</b></color>", Color.white,
+                    $"<b>{AUSColors.Haunter.ToTextColor()}You have alerted the Killers!</b></color>", Color.white,
                     new Vector3(0f, 1f, -20f), spr: TouRoleIcons.Haunter.LoadAsset());
                 notif1.Text.SetOutlineThickness(0.35f);
             }
             else if (IsTargetOfHaunter(PlayerControl.LocalPlayer))
             {
-                // Logger<ObjectWorkshopPlugin>.Error($"CheckTaskRequirements IsTargetOfHaunter");
+                // Logger<AUSPlugin>.Error($"CheckTaskRequirements IsTargetOfHaunter");
                 Coroutines.Start(MiscUtils.CoFlash(RoleColor));
 
                 Player.AddModifier<HaunterArrowModifier>(PlayerControl.LocalPlayer, RoleColor);
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{OWColors.Haunter.ToTextColor()}A Haunter is loose, catch them before they reveal you!</b></color>",
+                    $"<b>{AUSColors.Haunter.ToTextColor()}A Haunter is loose, catch them before they reveal you!</b></color>",
                     Color.white, new Vector3(0f, 1f, -20f), spr: TouRoleIcons.Haunter.LoadAsset());
                 notif1.Text.SetOutlineThickness(0.35f);
             }
@@ -307,7 +307,7 @@ public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IOWR
             return false;
         }
 
-        return player.IsImpostor() || (player.Is(RoleAlignment.NeutralPredator) &&
+        return player.IsImpostor() || (player.Is(Alignment.NeutralKilling) &&
                                        OptionGroupSingleton<HaunterOptions>.Instance.RevealNeutralRoles);
     }
 

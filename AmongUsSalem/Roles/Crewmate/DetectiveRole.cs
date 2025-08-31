@@ -6,15 +6,15 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -27,9 +27,9 @@ public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole
     public string RoleName => TouLocale.Get(TouNames.Detective, "Detective");
     public string RoleDescription => "Inspect Crime Scenes To Catch The Killer";
     public string RoleLongDescription => "Inspect crime scenes, then examine players to see if they were at the scene.";
-    public Color RoleColor => OWColors.Detective;
+    public Color RoleColor => AUSColors.Detective;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -48,7 +48,7 @@ public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -81,12 +81,12 @@ public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole
     {
         if (InvestigatedPlayers.Contains(player.PlayerId))
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Infiltrator));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
 
             var deadPlayer = InvestigatingScene?.DeadPlayer!;
 
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Detective.ToTextColor()}{player.Data.PlayerName} was at the scene of {deadPlayer.Data.PlayerName}'s death!\nThey might be the killer or a witness.</b></color>",
+                $"<b>{AUSColors.Detective.ToTextColor()}{player.Data.PlayerName} was at the scene of {deadPlayer.Data.PlayerName}'s death!\nThey might be the killer or a witness.</b></color>",
                 Color.white, new Vector3(0f, 1f, -20f), spr: TouRoleIcons.Detective.LoadAsset());
             notif1.Text.SetOutlineThickness(0.35f);
         }
@@ -94,7 +94,7 @@ public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole
         {
             Coroutines.Start(MiscUtils.CoFlash(Color.green));
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Detective.ToTextColor()}{player.Data.PlayerName} was not at the scene of the crime.</b></color>",
+                $"<b>{AUSColors.Detective.ToTextColor()}{player.Data.PlayerName} was not at the scene of the crime.</b></color>",
                 Color.white, new Vector3(0f, 1f, -20f), spr: TouRoleIcons.Detective.LoadAsset());
             notif1.Text.SetOutlineThickness(0.35f);
         }
@@ -139,7 +139,7 @@ public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole
         }
 
         // Send the message through chat only visible to the detective
-        var title = $"<color=#{OWColors.Detective.ToHtmlStringRGBA()}>Detective Report</color>";
+        var title = $"<color=#{AUSColors.Detective.ToHtmlStringRGBA()}>Detective Report</color>";
         var reported = Player;
         if (br.Body != null)
         {

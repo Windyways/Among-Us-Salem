@@ -3,13 +3,13 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class JailedModifier(byte jailorId) : BaseModifier
 {
@@ -38,7 +38,7 @@ public sealed class JailedModifier(byte jailorId) : BaseModifier
 
         if (Player.AmOwner)
         {
-            var title = $"<color=#{OWColors.Jailor.ToHtmlStringRGBA()}>Jailee Feedback</color>";
+            var title = $"<color=#{AUSColors.Jailor.ToHtmlStringRGBA()}>Jailee Feedback</color>";
             var text =
                 "You are jailed, convince the Jailor that you are Crew to avoid being executed in the <b>RED</b> private chatbox next to the <b>REGULAR</b> chatbox.";
             if (PlayerControl.LocalPlayer.Is(ModdedRoleTeams.Crewmate))
@@ -50,7 +50,7 @@ public sealed class JailedModifier(byte jailorId) : BaseModifier
             MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.Data, title, text, false, true);
 
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Jailor.ToTextColor()}{text}</color></b>", Color.white,
+                $"<b>{AUSColors.Jailor.ToTextColor()}{text}</color></b>", Color.white,
                 spr: TouRoleIcons.Jailor.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);

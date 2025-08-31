@@ -1,10 +1,10 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class AftermathModifier : TouGameModifier
 {

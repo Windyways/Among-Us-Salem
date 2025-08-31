@@ -4,14 +4,14 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class DeputyEvents
 {
@@ -93,12 +93,12 @@ public static class DeputyEvents
         if (mod.Deputy.AmOwner)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Deputy.ToTextColor()}Your camped target, {target.Data.PlayerName}, has died! Avenge them in the meeting.</color></b>",
+                $"<b>{AUSColors.Deputy.ToTextColor()}Your camped target, {target.Data.PlayerName}, has died! Avenge them in the meeting.</color></b>",
                 Color.white, spr: TouRoleIcons.Deputy.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);
             notif1.transform.localPosition = new Vector3(0f, 1f, -20f);
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Deputy));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Deputy));
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Impostor;
+namespace AmongUsSalem.Modifiers.Game.Impostor;
 
 public sealed class SaboteurModifier : TouGameModifier
 {

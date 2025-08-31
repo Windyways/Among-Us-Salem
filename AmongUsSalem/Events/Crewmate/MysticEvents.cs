@@ -1,10 +1,10 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class MysticEvents
 {

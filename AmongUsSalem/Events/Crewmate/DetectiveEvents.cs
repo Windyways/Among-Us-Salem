@@ -2,12 +2,12 @@
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Events.Vanilla.Meeting;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class DetectiveEvents
 {

@@ -3,12 +3,12 @@ using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.GameEnd;
 using MiraAPI.Roles;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.GameOver;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.GameOver;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Roles;
 
-namespace ObjectWorkshop.Events;
+namespace AmongUsSalem.Events;
 
 public static class EndGameEvents
 {
@@ -19,13 +19,13 @@ public static class EndGameEvents
     {
         winType = 0;
         var reason = EndGameResult.CachedGameOverReason;
-        var neutralWinner = CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom).Any(x => x is IOWRole role && role.WinConditionMet());
+        var neutralWinner = CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom).Any(x => x is IAUSRole role && role.WinConditionMet());
 
         if (neutralWinner)
         {
             FactionReferences.UpdateFactionResult("Crewmate", false);
             FactionReferences.UpdateFactionResult("Neutral", true);
-            FactionReferences.UpdateFactionResult("Infiltrator", false);
+            FactionReferences.UpdateFactionResult("Mafia", false);
             return;
         }
 
@@ -33,19 +33,19 @@ public static class EndGameEvents
             or GameOverReason.ImpostorDisconnect)
         {
             winType = 1;
-            GameHistory.WinningFaction = $"<color=#{OWColors.Crewmate.ToHtmlStringRGBA()}>Crewmates</color>";
+            GameHistory.WinningFaction = $"<color=#{AUSColors.Town.ToHtmlStringRGBA()}>Crewmates</color>";
             FactionReferences.UpdateFactionResult("Crewmate", true);
             FactionReferences.UpdateFactionResult("Neutral", false);
-            FactionReferences.UpdateFactionResult("Infiltrator", false);
+            FactionReferences.UpdateFactionResult("Mafia", false);
         }
         else if (reason is GameOverReason.ImpostorsByKill or GameOverReason.ImpostorsBySabotage
                  or GameOverReason.ImpostorsByVote or GameOverReason.CrewmateDisconnect)
         {
             winType = 2;
-            GameHistory.WinningFaction = $"<color=#{OWColors.Infiltrator.ToHtmlStringRGBA()}>Infiltrators</color>";
+            GameHistory.WinningFaction = $"<color=#{AUSColors.Mafia.ToHtmlStringRGBA()}>Mafias</color>";
             FactionReferences.UpdateFactionResult("Crewmate", false);
             FactionReferences.UpdateFactionResult("Neutral", false);
-            FactionReferences.UpdateFactionResult("Infiltrator", true);
+            FactionReferences.UpdateFactionResult("Mafia", true);
         }
 
         if (reason == CustomGameOver.GameOverReason<DrawGameOver>())

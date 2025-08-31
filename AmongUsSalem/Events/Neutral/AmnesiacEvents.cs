@@ -5,14 +5,14 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Color = UnityEngine.Color;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class AmnesiacEvents
 {

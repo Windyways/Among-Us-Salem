@@ -1,17 +1,17 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class EngineerFixButton : ObjectWorkshopRoleButton<EngineerTouRole>
+public sealed class EngineerFixButton : AmongUsSalemRoleButton<EngineerTouRole>
 {
     public override string Name => "Fix";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Engineer;
+    public override Color TextOutlineColor => AUSColors.Engineer;
     public override float Cooldown => 0.001f + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<EngineerOptions>.Instance.FixDelay + 0.01f;
     public override int MaxUses => (int)OptionGroupSingleton<EngineerOptions>.Instance.MaxFixes;

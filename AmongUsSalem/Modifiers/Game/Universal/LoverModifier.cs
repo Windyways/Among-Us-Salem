@@ -9,17 +9,17 @@ using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.GameOver;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.GameOver;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Random = System.Random;
 
-namespace ObjectWorkshop.Modifiers.Game.Alliance;
+namespace AmongUsSalem.Modifiers.Game.Alliance;
 
 public sealed class LoverModifier : AllianceGameModifier, IAssignableTargets
 {
@@ -74,13 +74,13 @@ public sealed class LoverModifier : AllianceGameModifier, IAssignableTargets
 
             foreach (var player in players.SelectMany(_ => players))
             {
-                if (player.IsImpostor() || (player.Is(RoleAlignment.NeutralPredator) &&
+                if (player.IsImpostor() || (player.Is(Alignment.NeutralKilling) &&
                                             loveOpt.NeutralLovers))
                 {
                     impostors.Add(player);
                 }
                 else if (player.Is(ModdedRoleTeams.Crewmate) ||
-                         ((player.Is(RoleAlignment.NeutralAssociative) || player.Is(RoleAlignment.NeutralEvil)) &&
+                         ((player.Is(Alignment.NeutralAssociative) || player.Is(Alignment.NeutralEvil)) &&
                           loveOpt.NeutralLovers))
                 {
                     crewmates.Add(player);
@@ -89,7 +89,7 @@ public sealed class LoverModifier : AllianceGameModifier, IAssignableTargets
 
             if (crewmates.Count < 2 || impostors.Count < 1)
             {
-                Logger<ObjectWorkshopPlugin>.Error("Not enough players to select lovers");
+                Logger<AUSPlugin>.Error("Not enough players to select lovers");
                 return;
             }
 
@@ -176,13 +176,13 @@ public sealed class LoverModifier : AllianceGameModifier, IAssignableTargets
 
         foreach (var player in players.SelectMany(_ => players))
         {
-            if (player.IsImpostor() || (player.Is(RoleAlignment.NeutralPredator) &&
+            if (player.IsImpostor() || (player.Is(Alignment.NeutralKilling) &&
                                         OptionGroupSingleton<LoversOptions>.Instance.NeutralLovers))
             {
                 impostors.Add(player);
             }
             else if (player.Is(ModdedRoleTeams.Crewmate) ||
-                     ((player.Is(RoleAlignment.NeutralAssociative) || player.Is(RoleAlignment.NeutralEvil)) &&
+                     ((player.Is(Alignment.NeutralAssociative) || player.Is(Alignment.NeutralEvil)) &&
                       OptionGroupSingleton<LoversOptions>.Instance.NeutralLovers))
             {
                 crewmates.Add(player);
@@ -266,12 +266,12 @@ public sealed class LoverModifier : AllianceGameModifier, IAssignableTargets
         return OtherLover;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SetOtherLover, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SetOtherLover, SendImmediately = true)]
     private static void RpcSetOtherLover(PlayerControl player, PlayerControl target)
     {
         if (PlayerControl.AllPlayerControls.ToArray().Where(x => x.HasModifier<LoverModifier>()).ToList().Count > 0)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcSetOtherLover - Lovers Already Spawned!");
+            Logger<AUSPlugin>.Error("RpcSetOtherLover - Lovers Already Spawned!");
             return;
         }
 

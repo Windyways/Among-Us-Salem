@@ -6,12 +6,12 @@ using MiraAPI.Events.Vanilla.Usables;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Roles;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class PlumberEvents
 {

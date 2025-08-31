@@ -1,9 +1,9 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Meeting;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class SleuthEvents
 {
@@ -21,6 +21,6 @@ public static class SleuthEvents
         var mod = player.GetModifier<SleuthModifier>();
         mod?.Reported.Add(target.PlayerId);
 
-        // Logger<ObjectWorkshopPlugin>.Error($"SleuthEvents.ReportBodyEventHandler '{target.PlayerName}'");
+        // Logger<AUSPlugin>.Error($"SleuthEvents.ReportBodyEventHandler '{target.PlayerName}'");
     }
 }

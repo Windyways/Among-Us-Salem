@@ -3,22 +3,22 @@ using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Hud;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
-using ObjectWorkshop.Buttons.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
-public sealed class VenererRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole, IDoomable
+public sealed class VenererRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Trickster;
     public string RoleName => TouLocale.Get(TouNames.Venerer, "Venerer");
     public string RoleDescription => "With Each Kill Your Ability Becomes Stronger";
     public string RoleLongDescription => "Kill players to unlock ability perks";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -28,7 +28,7 @@ public sealed class VenererRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole, 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

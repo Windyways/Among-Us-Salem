@@ -3,14 +3,14 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Utilities;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class ImitatorCacheModifier : BaseModifier, ICachedRole
 {
@@ -49,7 +49,7 @@ public sealed class ImitatorCacheModifier : BaseModifier, ICachedRole
     {
         if (!Player.IsCrewmate())
         {
-            if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error($"Removed Imitator Cache Modifier On Meeting Start");
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error($"Removed Imitator Cache Modifier On Meeting Start");
             ModifierComponent?.RemoveModifier(this);
             return;
         }
@@ -166,7 +166,7 @@ public sealed class ImitatorCacheModifier : BaseModifier, ICachedRole
     {
         if (!Player.IsCrewmate())
         {
-            if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error($"Removed Imitator Cache Modifier On Attempt To Update Role");
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error($"Removed Imitator Cache Modifier On Attempt To Update Role");
             ModifierComponent?.RemoveModifier(this);
             return;
         }

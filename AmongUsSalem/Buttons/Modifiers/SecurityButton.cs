@@ -3,21 +3,21 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Modifiers.Crewmate;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Buttons.Modifiers;
+namespace AmongUsSalem.Buttons.Modifiers;
 
-public sealed class SecurityButton : ObjectWorkshopButton
+public sealed class SecurityButton : AmongUsSalemButton
 {
     public Minigame? securityMinigame;
     public override string Name => "Security";
     public override string Keybind => Keybinds.ModifierAction;
-    public override Color TextOutlineColor => OWColors.Operative;
+    public override Color TextOutlineColor => AUSColors.Operative;
     public override float Cooldown => OptionGroupSingleton<OperativeOptions>.Instance.DisplayCooldown + MapCooldown;
     public float AvailableCharge { get; set; } = OptionGroupSingleton<OperativeOptions>.Instance.StartingCharge;
 
@@ -137,7 +137,7 @@ public sealed class SecurityButton : ObjectWorkshopButton
 
     protected override void OnClick()
     {
-        // Logger<ObjectWorkshopPlugin>.Warning($"Checking Base Conditions");
+        // Logger<AUSPlugin>.Warning($"Checking Base Conditions");
         var mapId = (MapNames)GameOptionsManager.Instance.currentNormalGameOptions.MapId;
         if (TutorialManager.InstanceExists)
         {
@@ -150,7 +150,7 @@ public sealed class SecurityButton : ObjectWorkshopButton
             x.name.Contains("BinocularsSecurityConsole"));
         if (mapId is MapNames.Airship)
         {
-            // Logger<ObjectWorkshopPlugin>.Warning($"Checking Airship Conditions");
+            // Logger<AUSPlugin>.Warning($"Checking Airship Conditions");
             basicCams = Object.FindObjectsOfType<SystemConsole>()
                 .FirstOrDefault(x => x.gameObject.name.Contains("task_cams"));
             PlayerControl.LocalPlayer.NetTransform.Halt();
@@ -158,7 +158,7 @@ public sealed class SecurityButton : ObjectWorkshopButton
         }
         else if (mapId is MapNames.Skeld or MapNames.Dleks)
         {
-            // Logger<ObjectWorkshopPlugin>.Warning($"Checking Skeld Conditions");
+            // Logger<AUSPlugin>.Warning($"Checking Skeld Conditions");
             basicCams = Object.FindObjectsOfType<SystemConsole>()
                 .FirstOrDefault(x => x.gameObject.name.Contains("SurvConsole"));
             PlayerControl.LocalPlayer.NetTransform.Halt();
@@ -166,7 +166,7 @@ public sealed class SecurityButton : ObjectWorkshopButton
         }
         else if (mapId is MapNames.MiraHQ)
         {
-            // Logger<ObjectWorkshopPlugin>.Warning($"Checking Mira HQ Conditions");
+            // Logger<AUSPlugin>.Warning($"Checking Mira HQ Conditions");
             basicCams = Object.FindObjectsOfType<SystemConsole>()
                 .FirstOrDefault(x => x.gameObject.name.Contains("SurvLogConsole"));
             if (!OptionGroupSingleton<OperativeOptions>.Instance.MoveOnMira)
@@ -177,14 +177,14 @@ public sealed class SecurityButton : ObjectWorkshopButton
         }
         else if (mapId is MapNames.Fungle)
         {
-            // Logger<ObjectWorkshopPlugin>.Warning($"Checking Fungle Conditions");
+            // Logger<AUSPlugin>.Warning($"Checking Fungle Conditions");
             PlayerControl.LocalPlayer.NetTransform.Halt();
             canMoveWithMinigame = false;
         }
 
         if (basicCams == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"No Camera System Found!");
+            Logger<AUSPlugin>.Error($"No Camera System Found!");
             return;
         }
 

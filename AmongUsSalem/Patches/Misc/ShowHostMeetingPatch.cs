@@ -2,7 +2,7 @@ using HarmonyLib;
 using TMPro;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 [HarmonyPatch(typeof(MeetingHud))]
 public static class ShowHostMeetingPatch

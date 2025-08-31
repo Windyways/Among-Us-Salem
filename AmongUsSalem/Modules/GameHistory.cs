@@ -3,15 +3,15 @@ using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modules;
+namespace AmongUsSalem.Modules;
 
 public record PlayerEvent(byte PlayerId, float Unix, Vector3 Position);
 
@@ -120,7 +120,7 @@ public static class GameHistory
 
     public static void RegisterRole(PlayerControl player, RoleBehaviour role, bool clean = false)
     {
-        //Logger<ObjectWorkshopPlugin>.Message($"RegisterRole - player: '{player.Data.PlayerName}', role: '{role.NiceName}'");
+        //Logger<AUSPlugin>.Message($"RegisterRole - player: '{player.Data.PlayerName}', role: '{role.NiceName}'");
 
         if (clean)
         {

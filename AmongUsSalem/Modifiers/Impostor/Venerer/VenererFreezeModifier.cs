@@ -1,12 +1,12 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers.Types;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Impostor.Venerer;
+namespace AmongUsSalem.Modifiers.Impostor.Venerer;
 
 public sealed class VenererFreezeModifier(PlayerControl venerer) : TimedModifier, IVenererModifier
 {

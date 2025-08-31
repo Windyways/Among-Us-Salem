@@ -2,10 +2,10 @@
 
 using HarmonyLib;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Roles.Impostor;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch(typeof(GameData))]
 public static class DisconnectHandler

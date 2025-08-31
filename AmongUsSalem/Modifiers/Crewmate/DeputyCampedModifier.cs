@@ -1,9 +1,9 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Events.TouEvents;
+using AmongUsSalem.Events.TouEvents;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class DeputyCampedModifier(PlayerControl deputy) : BaseModifier
 {
@@ -31,17 +31,17 @@ public sealed class DeputyCampedModifier(PlayerControl deputy) : BaseModifier
 
         if (Deputy.AmOwner)
         {
-            Player?.cosmetics.SetOutline(true, new Il2CppSystem.Nullable<Color>(OWColors.Deputy));
+            Player?.cosmetics.SetOutline(true, new Il2CppSystem.Nullable<Color>(AUSColors.Deputy));
         }
     }
 
     public override void OnDeath(DeathReason reason)
     {
-        Player.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(OWColors.Deputy));
+        Player.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(AUSColors.Deputy));
     }
 
     public override void OnDeactivate()
     {
-        Player.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(OWColors.Deputy));
+        Player.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(AUSColors.Deputy));
     }
 }

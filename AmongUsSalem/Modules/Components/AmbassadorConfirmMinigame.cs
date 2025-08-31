@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace ObjectWorkshop.Modules.Components;
+namespace AmongUsSalem.Modules.Components;
 
 [RegisterInIl2Cpp]
 [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Unity")]

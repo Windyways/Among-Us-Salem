@@ -11,19 +11,19 @@ using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class DoomsayerRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     private MeetingMenu meetingMenu;
@@ -42,9 +42,9 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
     public string RoleLongDescription =>
         $"Win by guessing the roles of {(int)OptionGroupSingleton<DoomsayerOptions>.Instance.DoomsayerGuessesToWin} players";
 
-    public Color RoleColor => OWColors.Doomsayer;
+    public Color RoleColor => AUSColors.Doomsayer;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -58,7 +58,7 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public bool WinConditionMet()
@@ -155,7 +155,7 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
 
     private void GenerateReport()
     {
-        Logger<ObjectWorkshopPlugin>.Info($"Generating Doomsayer report");
+        Logger<AUSPlugin>.Info($"Generating Doomsayer report");
 
         var reportBuilder = new StringBuilder();
 
@@ -204,35 +204,35 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
             switch (hintType)
             {
                 case DoomableType.Perception:
-                    reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                    reportBuilder.AppendLine(AUSPlugin.Culture,
                         $"You observe that {player.PlayerName} has an altered perception of reality\n");
                     break;
                 case DoomableType.Insight:
-                    reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                    reportBuilder.AppendLine(AUSPlugin.Culture,
                         $"You observe that {player.PlayerName} has an insight for private information\n");
                     break;
                 case DoomableType.Death:
-                    reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                    reportBuilder.AppendLine(AUSPlugin.Culture,
                         $"You observe that {player.PlayerName} has an unusual obsession with dead bodies\n");
                     break;
                 case DoomableType.Hunter:
-                    reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                    reportBuilder.AppendLine(AUSPlugin.Culture,
                         $"You observe that {player.PlayerName} is well trained in hunting down prey\n");
                     break;
                 case DoomableType.Fearmonger:
-                    reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                    reportBuilder.AppendLine(AUSPlugin.Culture,
                         $"You observe that {player.PlayerName} spreads fear amonst the group\n");
                     break;
                 case DoomableType.Protective:
-                    reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                    reportBuilder.AppendLine(AUSPlugin.Culture,
                         $"You observe that {player.PlayerName} hides to guard themself or others\n");
                     break;
                 case DoomableType.Trickster:
-                    reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                    reportBuilder.AppendLine(AUSPlugin.Culture,
                         $"You observe that {player.PlayerName} has a trick up their sleeve\n");
                     break;
                 case DoomableType.Relentless:
-                    reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                    reportBuilder.AppendLine(AUSPlugin.Culture,
                         $"You observe that {player.PlayerName} is capable of performing relentless attacks\n");
                     break;
             }
@@ -245,14 +245,14 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
 
             if (roles.Count != 0)
             {
-                reportBuilder.Append(ObjectWorkshopPlugin.Culture, $"(");
+                reportBuilder.Append(AUSPlugin.Culture, $"(");
                 foreach (var role2 in roles)
                 {
-                    reportBuilder.Append(ObjectWorkshopPlugin.Culture, $"{role2.NiceName}, ");
+                    reportBuilder.Append(AUSPlugin.Culture, $"{role2.NiceName}, ");
                 }
 
                 reportBuilder = reportBuilder.Remove(reportBuilder.Length - 2, 2);
-                reportBuilder.Append(ObjectWorkshopPlugin.Culture, $" or {lastRole.NiceName})");
+                reportBuilder.Append(AUSPlugin.Culture, $" or {lastRole.NiceName})");
             }
 
             player.Object.RemoveModifier<DoomsayerObservedModifier>();
@@ -262,7 +262,7 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
 
         if (HudManager.Instance && report.Length > 0)
         {
-            var title = $"<color=#{OWColors.Doomsayer.ToHtmlStringRGBA()}>Doomsayer Report</color>";
+            var title = $"<color=#{AUSColors.Doomsayer.ToHtmlStringRGBA()}>Doomsayer Report</color>";
             MiscUtils.AddFakeChat(Player.Data, title, report, false, true);
         }
     }
@@ -335,7 +335,7 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
                 IncorrectGuesses++;
                 if (!opts.DoomsayerGuessAllAtOnce)
                 {
-                    Coroutines.Start(MiscUtils.CoFlash(OWColors.Infiltrator));
+                    Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
                     meetingMenu?.HideButtons();
                     shapeMenu.Close();
                     return;
@@ -370,7 +370,7 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
                 notif1.Text.SetOutlineThickness(0.35f);
                 notif1.transform.localPosition = new Vector3(0f, 1f, -20f);
 
-                Coroutines.Start(MiscUtils.CoFlash(OWColors.Infiltrator));
+                Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
             }
             else if (opts.DoomsayerGuessAllAtOnce)
             {
@@ -442,13 +442,13 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
     private static bool IsRoleValid(RoleBehaviour role)
     {
         var unguessableRole = role as IUnguessable;
-        var touRole = role as IOWRole;
+        var touRole = role as IAUSRole;
         if (role.IsDead || role is IGhostRole || (unguessableRole != null && !unguessableRole.IsGuessable))
         {
             return false;
         }
         
-        if (touRole?.RoleAlignment == RoleAlignment.CrewmateInvestigative)
+        if (touRole?.Alignment == Alignment.TownInvestigative)
         {
             return OptionGroupSingleton<DoomsayerOptions>.Instance.DoomGuessInvest;
         }
@@ -456,12 +456,12 @@ public sealed class DoomsayerRole(IntPtr cppPtr)
         return true;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.DoomsayerWin, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.DoomsayerWin, SendImmediately = true)]
     public static void RpcDoomsayerWin(PlayerControl player)
     {
         if (player.Data.Role is not DoomsayerRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcDoomsayerWin - Invalid Doomsayer");
+            Logger<AUSPlugin>.Error("RpcDoomsayerWin - Invalid Doomsayer");
             return;
         }
 

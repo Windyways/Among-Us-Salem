@@ -1,7 +1,7 @@
 using HarmonyLib;
-using ObjectWorkshop.Modules;
+using AmongUsSalem.Modules;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class FirstDeadPatch

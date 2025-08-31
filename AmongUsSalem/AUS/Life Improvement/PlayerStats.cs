@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement;
+namespace AmongUsSalem.LifeImprovement;
 
 public sealed class PlayerStats(byte playerId)
 {

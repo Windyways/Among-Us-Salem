@@ -1,8 +1,8 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Options;
+using AmongUsSalem.Options;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class SkipButtonPatches

@@ -6,14 +6,14 @@ using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class PoliticianRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -26,9 +26,9 @@ public sealed class PoliticianRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCr
     public string RoleName => TouLocale.Get(TouNames.Politician, "Politician");
     public string RoleDescription => $"Campaign To Become The {TouLocale.Get(TouNames.Mayor, "Mayor")}!";
     public string RoleLongDescription => $"Spread your campaign to become the {TouLocale.Get(TouNames.Mayor, "Mayor")}!";
-    public Color RoleColor => OWColors.Politician;
+    public Color RoleColor => AUSColors.Politician;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public bool IsPowerCrew => true;
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -41,7 +41,7 @@ public sealed class PoliticianRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCr
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         if (PlayerControl.LocalPlayer.HasModifier<EgotistModifier>())
         {
             stringB.AppendLine(CultureInfo.InvariantCulture,
@@ -97,7 +97,7 @@ public sealed class PoliticianRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCr
         CanCampaign = true;
 
         if (Player.AmOwner)
-            // Logger<ObjectWorkshopPlugin>.Message($"PoliticianRole.OnMeetingStart '{Player.Data.PlayerName}' {Player.AmOwner && !Player.HasDied() && !Player.HasModifier<JailedModifier>()}");
+            // Logger<AUSPlugin>.Message($"PoliticianRole.OnMeetingStart '{Player.Data.PlayerName}' {Player.AmOwner && !Player.HasDied() && !Player.HasModifier<JailedModifier>()}");
         {
             meetingMenu.GenButtons(MeetingHud.Instance,
                 Player.AmOwner && !Player.HasDied() && !Player.HasModifier<JailedModifier>());
@@ -158,7 +158,7 @@ public sealed class PoliticianRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCr
                 text = "You need to campaign more Crewmates! However, you may not campaign next round.";
             }
 
-            var title = $"<color=#{OWColors.Mayor.ToHtmlStringRGBA()}>{RoleName} Feedback</color>";
+            var title = $"<color=#{AUSColors.Mayor.ToHtmlStringRGBA()}>{RoleName} Feedback</color>";
             MiscUtils.AddFakeChat(Player.Data, title, text, false, true);
         }
     }

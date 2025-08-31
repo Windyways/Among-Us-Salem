@@ -11,18 +11,18 @@ using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.Utilities;
+namespace AmongUsSalem.Utilities;
 
 public static class MiscUtils
 {
@@ -55,14 +55,14 @@ public static class MiscUtils
                 var taskText = Regex.Replace(query, pattern, string.Empty);
                 taskText = taskText.Replace(Environment.NewLine, "");
 
-                ShowNotification($"<b>{OWColors.Crewmate.ToTextColor()}The task '{taskText}' has been completed!</b></color>", OWColors.Crewmate);
+                ShowNotification($"<b>{AUSColors.Town.ToTextColor()}The task '{taskText}' has been completed!</b></color>", AUSColors.Town);
             }
         }
     }
 
     public static void ShowNotification(string text, Color color, Sprite sprite = null, float thickness = 0.35f)
     {
-        if (sprite == null) sprite = OWAssets.Placeholder.LoadAsset();
+        if (sprite == null) sprite = AUSAssets.Placeholder.LoadAsset();
 
         var notif = Helpers.CreateAndShowNotification($"<b>{text}</color></b>", color, spr: sprite);
 
@@ -77,7 +77,18 @@ public static class MiscUtils
 
     public static IEnumerable<RoleBehaviour> GetRoles(string name)
     {
-        return CustomRoleUtils.GetActiveRoles().Where(x => x is IOWRole role && role.RoleName == name);
+        return CustomRoleUtils.GetActiveRoles().Where(x => x is IAUSRole role && role.RoleName == name);
+    }
+
+    public static bool AmOwner(this PlayerControl player)
+    {
+        return player.AmOwner || Debugger.IsDebuggerActive;
+    }
+
+    public static bool SuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
+    {
+        if (target.IsAlerted()) return Veteran.RpcVeteran_Notify(player, target, isAttacking);
+        return true;
     }
 
 
@@ -92,21 +103,21 @@ public static class MiscUtils
     public static int KillersAliveCount()
     {
         return
-            Helpers.GetAlivePlayers().Count(x => x.IsImpostor() || x.Is(RoleAlignment.NeutralPredator) ||
+            Helpers.GetAlivePlayers().Count(x => x.IsImpostor() || x.Is(Alignment.NeutralKilling) ||
             (x.Data.Role is InquisitorRole inquis && OptionGroupSingleton<InquisitorOptions>.Instance.StallGame && inquis is { CanVanquish: true, TargetsDead: false } && Helpers.GetAlivePlayers().Count <= 3) ||
             (x.Data.Role is ITouCrewRole { IsPowerCrew: true } && !(x.TryGetModifier<AllianceGameModifier>(out var allyMod) && !allyMod.CrewContinuesGame)) ||
             (x.Data.Role is IContinueGame { continueGame: true }));
     }
 
     public static int RealKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.IsImpostor() || x.Is(RoleAlignment.NeutralPredator) || (x.Data.Role is InquisitorRole inquis &&
+        x.IsImpostor() || x.Is(Alignment.NeutralKilling) || (x.Data.Role is InquisitorRole inquis &&
                                                                  OptionGroupSingleton<InquisitorOptions>.Instance
                                                                      .StallGame && inquis is
                                                                      { CanVanquish: true, TargetsDead: false }
                                                                  && Helpers.GetAlivePlayers().Count <= 3));
 
     public static int NKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.Is(RoleAlignment.NeutralPredator) || (x.Data.Role is InquisitorRole inquis &&
+        x.Is(Alignment.NeutralKilling) || (x.Data.Role is InquisitorRole inquis &&
                                                OptionGroupSingleton<InquisitorOptions>.Instance.StallGame &&
                                                inquis is { CanVanquish: true, TargetsDead: false }
                                                && Helpers.GetAlivePlayers().Count <= 3));
@@ -114,7 +125,7 @@ public static class MiscUtils
     public static int NonImpKillersAliveCount()
     {
         return 
-            Helpers.GetAlivePlayers().Count(x => x.Is(RoleAlignment.NeutralPredator) ||
+            Helpers.GetAlivePlayers().Count(x => x.Is(Alignment.NeutralKilling) ||
             (x.Data.Role is InquisitorRole inquis && OptionGroupSingleton<InquisitorOptions>.Instance.StallGame && inquis is { CanVanquish: true, TargetsDead: false } && Helpers.GetAlivePlayers().Count <= 3) ||
             (x.Data.Role is ITouCrewRole { IsPowerCrew: true } && !(x.TryGetModifier<AllianceGameModifier>(out var allyMod) && !allyMod.CrewContinuesGame)) ||
             (x.Data.Role is IContinueGame { continueGame: true }));
@@ -151,7 +162,7 @@ public static class MiscUtils
 
         var builder = new StringBuilder();
         builder.AppendLine(CultureInfo.InvariantCulture,
-            $"\n<size=50%> \n</size><b>{OWColors.Vigilante.ToTextColor()}Options</color></b>");
+            $"\n<size=50%> \n</size><b>{AUSColors.Vigilante.ToTextColor()}Options</color></b>");
 
         foreach (var option in options)
         {
@@ -209,59 +220,59 @@ public static class MiscUtils
         return builder.ToString();
     }
 
-    public static RoleAlignment GetRoleAlignment(this RoleBehaviour role)
+    public static Alignment GetAlignment(this RoleBehaviour role)
     {
-        if (role is IOWRole touRole)
+        if (role is IAUSRole touRole)
         {
-            return touRole.RoleAlignment;
+            return touRole.Alignment;
         }
         else if (role is ICustomRole customRole)
         {
-            var alignments = Enum.GetValues<RoleAlignment>();
-            foreach (var alignment in alignments)
+            var alignments = Enum.GetValues<Alignment>();
+            foreach (var alignment2 in alignments)
             {
-                var roleAlignment = alignment;
-                if (customRole.RoleOptionsGroup.Name.Replace(" Roles", "") == roleAlignment.ToDisplayString())
+                var alignment = alignment2;
+                if (customRole.RoleOptionsGroup.Name.Replace(" Roles", "") == alignment.ToDisplayString())
                 {
-                    return roleAlignment;
+                    return alignment;
                 }
             }
         }
         if (role.IsNeutral())
         {
-            return RoleAlignment.NeutralAssociative;
+            return Alignment.NeutralAssociative;
         }
         else if (role.IsImpostor())
         {
-            return RoleAlignment.InfiltratorSupport;
+            return Alignment.MafiaSupport;
         }
         else
         {
-            return RoleAlignment.CrewmateSupport;
+            return Alignment.TownSupport;
         }
     }
 
-    public static IEnumerable<RoleBehaviour> GetRegisteredRoles(RoleAlignment alignment)
+    public static IEnumerable<RoleBehaviour> GetRegisteredRoles(Alignment alignment)
     {
-        var roles = AllRoles.Where(x => x.GetRoleAlignment() == alignment);
+        var roles = AllRoles.Where(x => x.GetAlignment() == alignment);
         
         var registeredRoles = roles.ToList();
 
         switch (alignment)
         {
-            case RoleAlignment.CrewmateInvestigative:
+            case Alignment.TownInvestigative:
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Tracker));
                 break;
-            case RoleAlignment.CrewmateSupport:
+            case Alignment.TownSupport:
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Crewmate));
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Scientist));
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Noisemaker));
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Engineer));
                 break;
-            case RoleAlignment.InfiltratorSupport:
+            case Alignment.MafiaSupport:
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Impostor));
                 break;
-            case RoleAlignment.InfiltratorDisruption:
+            case Alignment.MafiaDisruption:
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Shapeshifter));
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Phantom));
                 break;
@@ -316,10 +327,10 @@ public static class MiscUtils
         return PlayerControl.AllPlayerControls.ToArray().ToList().Find(x => x.Data.Role is T)?.Data?.Role as T;
     }
 
-    public static IEnumerable<RoleBehaviour> GetRoles(RoleAlignment alignment)
+    public static IEnumerable<RoleBehaviour> GetRoles(Alignment alignment)
     {
         return CustomRoleUtils.GetActiveRoles()
-            .Where(x => x is IOWRole role && role.RoleAlignment == alignment);
+            .Where(x => x is IAUSRole role && role.Alignment == alignment);
     }
 
     public static PlayerControl? GetPlayerWithModifier<T>() where T : BaseModifier
@@ -339,11 +350,11 @@ public static class MiscUtils
 
     public static Color GetRoleColour(string name)
     {
-        var pInfo = typeof(OWColors).GetProperty(name, BindingFlags.Public | BindingFlags.Static);
+        var pInfo = typeof(AUSColors).GetProperty(name, BindingFlags.Public | BindingFlags.Static);
 
         if (pInfo == null)
         {
-            return OWColors.Infiltrator;
+            return AUSColors.Mafia;
         }
 
         var colour = (Color)pInfo.GetValue(null)!;
@@ -354,15 +365,18 @@ public static class MiscUtils
     public static Color GetFactionColour(PlayerControl player)
     {
         string faction = string.Empty;
-        if (player.IsFaction(Faction.Crewmate, true)) faction = "Crewmate";
-        if (player.IsFaction(Faction.Neutral, true)) faction = "Neutral";
-        if (player.IsFaction(Faction.Infiltrator, true)) faction = "Infiltrator";
+        if (player.Is(Faction.Town)) faction = "Town";
+        if (player.Is(Faction.Neutral)) faction = "Neutral";
+        if (player.Is(Faction.Traitor)) faction = "Traitor";
+        if (player.Is(Faction.Coven)) faction = "Coven";
+        if (player.Is(Faction.Mafia)) faction = "Mafia";
+        if (player.Is(Faction.Town)) faction = "Town";
 
-        var pInfo = typeof(OWColors).GetProperty(faction, BindingFlags.Public | BindingFlags.Static);
+        var pInfo = typeof(AUSColors).GetProperty(faction, BindingFlags.Public | BindingFlags.Static);
 
         if (pInfo == null)
         {
-            return OWColors.Infiltrator;
+            return AUSColors.Mafia;
         }
 
         var colour = (Color)pInfo.GetValue(null)!;
@@ -388,13 +402,13 @@ public static class MiscUtils
 
         var crewmateRole = RoleManager.Instance.AllRoles.FirstOrDefault(x => x.Role == RoleTypes.Crewmate);
         roleList = roleList.AddItem(crewmateRole!);
-        //Logger<ObjectWorkshopPlugin>.Error($"GetPotentialRoles - crewmateRole: '{crewmateRole?.NiceName}'");
+        //Logger<AUSPlugin>.Error($"GetPotentialRoles - crewmateRole: '{crewmateRole?.NiceName}'");
 
         var impostorRole = RoleManager.Instance.AllRoles.FirstOrDefault(x => x.Role == RoleTypes.Impostor);
         roleList = roleList.AddItem(impostorRole!);
-        //Logger<ObjectWorkshopPlugin>.Error($"GetPotentialRoles - impostorRole: '{impostorRole?.NiceName}'");
+        //Logger<AUSPlugin>.Error($"GetPotentialRoles - impostorRole: '{impostorRole?.NiceName}'");
 
-        //roleList.Do(x => Logger<ObjectWorkshopPlugin>.Error($"GetPotentialRoles - role: '{x.NiceName}'"));
+        //roleList.Do(x => Logger<AUSPlugin>.Error($"GetPotentialRoles - role: '{x.NiceName}'"));
 
         return roleList;
     }
@@ -525,7 +539,7 @@ public static class MiscUtils
         return GetRolesToAssign(roles, filter);
     }
 
-    public static List<(ushort RoleType, int Chance)> GetRolesToAssign(RoleAlignment alignment,
+    public static List<(ushort RoleType, int Chance)> GetRolesToAssign(Alignment alignment,
         Func<RoleBehaviour, bool>? filter = null)
     {
         var roles = GetRegisteredRoles(alignment);
@@ -560,7 +574,7 @@ public static class MiscUtils
         return GetMaxRolesToAssign(roles, max, filter);
     }
 
-    public static List<ushort> GetMaxRolesToAssign(RoleAlignment alignment, int max,
+    public static List<ushort> GetMaxRolesToAssign(Alignment alignment, int max,
         Func<RoleBehaviour, bool>? filter = null)
     {
         var roles = GetRegisteredRoles(alignment);
@@ -978,16 +992,16 @@ public static class MiscUtils
         var color = Color.yellow;
         if (completed <= 0)
         {
-            color = OWColors.Infiltrator;
+            color = AUSColors.Mafia;
         }
         else if (completed >= totalTasks)
         {
-            color = OWColors.Doomsayer;
+            color = AUSColors.Doomsayer;
         }
         else if (completed > totalTasks / 2)
         {
             var fraction = ((completed * 0.4f) / totalTasks);
-            Color color2 = OWColors.Doomsayer;
+            Color color2 = AUSColors.Doomsayer;
             color = new
                 ((color2.r * fraction + colorbase.r * (1 - fraction)),
                 (color2.g * fraction + colorbase.g * (1 - fraction)),
@@ -996,7 +1010,7 @@ public static class MiscUtils
         else if (completed < totalTasks / 2)
         {
             var fraction = ((completed * 0.9f) / totalTasks);
-            Color color2 = OWColors.Infiltrator;
+            Color color2 = AUSColors.Mafia;
             color = new
             ((colorbase.r * fraction + color2.r * (1 - fraction)),
                 (colorbase.g * fraction + color2.g * (1 - fraction)),

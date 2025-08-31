@@ -3,21 +3,21 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class SeerRevealButton : ObjectWorkshopRoleButton<SeerRole, PlayerControl>
+public sealed class SeerRevealButton : AmongUsSalemRoleButton<SeerRole, PlayerControl>
 {
     public override string Name => "Reveal";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Seer;
+    public override Color TextOutlineColor => AUSColors.Seer;
     public override float Cooldown => OptionGroupSingleton<SeerOptions>.Instance.SeerCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.SeerSprite;
 
@@ -42,7 +42,7 @@ public sealed class SeerRevealButton : ObjectWorkshopRoleButton<SeerRole, Player
         RevealAlliance(Target);
         TouAudio.PlaySound(TouAudio.QuestionSound);
 
-        Target?.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(OWColors.Seer));
+        Target?.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(AUSColors.Seer));
     }
 
     public static void RevealAlliance(PlayerControl target)
@@ -53,19 +53,19 @@ public sealed class SeerRevealButton : ObjectWorkshopRoleButton<SeerRole, Player
         if (IsEvil(target))
         {
             target.AddModifier<SeerEvilRevealModifier>();
-            var possiblyGood = options.ShowCrewmateKillingAsRed ? "possibly" : string.Empty;
+            var possiblyGood = options.ShowTownKillingAsRed ? "possibly" : string.Empty;
             if (options.ShowNeutralBenignAsRed)
             {
                 possiblyGood = "possibly";
             }
 
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Infiltrator.ToTextColor()}You have revealed that {target.Data.PlayerName} is {possiblyGood} evil!</color></b>",
+                $"<b>{AUSColors.Mafia.ToTextColor()}You have revealed that {target.Data.PlayerName} is {possiblyGood} evil!</color></b>",
                 Color.white, spr: TouRoleIcons.Seer.LoadAsset());
             notif1.Text.SetOutlineThickness(0.35f);
             notif1.transform.localPosition = new Vector3(0f, 1f, -20f);
 
-            if (options.ShowCrewmateKillingAsRed)
+            if (options.ShowTownKillingAsRed)
             {
                 possibleAlignment.Append("Crew Killer, ");
             }
@@ -98,7 +98,7 @@ public sealed class SeerRevealButton : ObjectWorkshopRoleButton<SeerRole, Player
             var impString = possibleAlignment.Length > 1 ? ", or Impostor!" : "Impostor!";
             possibleAlignment.Append(impString);
 
-            Helpers.CreateAndShowNotification($"They must be a {possibleAlignment}", OWColors.Infiltrator);
+            Helpers.CreateAndShowNotification($"They must be a {possibleAlignment}", AUSColors.Mafia);
         }
         else
         {
@@ -153,10 +153,10 @@ public sealed class SeerRevealButton : ObjectWorkshopRoleButton<SeerRole, Player
     {
         var options = OptionGroupSingleton<SeerOptions>.Instance;
         return !target.HasModifier<ImitatorCacheModifier>() &&
-               ((target.Is(RoleAlignment.CrewmateKilling) && options.ShowCrewmateKillingAsRed) ||
-                (target.Is(RoleAlignment.NeutralAssociative) && options.ShowNeutralBenignAsRed) ||
-                (target.Is(RoleAlignment.NeutralEvil) && options.ShowNeutralEvilAsRed) ||
-                (target.Is(RoleAlignment.NeutralPredator) && options.ShowNeutralKillingAsRed) ||
+               ((target.Is(Alignment.TownKilling) && options.ShowTownKillingAsRed) ||
+                (target.Is(Alignment.NeutralAssociative) && options.ShowNeutralBenignAsRed) ||
+                (target.Is(Alignment.NeutralEvil) && options.ShowNeutralEvilAsRed) ||
+                (target.Is(Alignment.NeutralKilling) && options.ShowNeutralKillingAsRed) ||
                 (target.IsImpostor() && !target.HasModifier<TraitorCacheModifier>()) ||
                 (target.HasModifier<TraitorCacheModifier>() && options.SwapTraitorColors));
     }

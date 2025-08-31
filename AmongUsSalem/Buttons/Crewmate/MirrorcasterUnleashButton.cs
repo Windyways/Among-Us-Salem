@@ -2,19 +2,19 @@
 using MiraAPI.Networking;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class MirrorcasterUnleashButton : ObjectWorkshopRoleButton<MirrorcasterRole, PlayerControl>, IDiseaseableButton, IKillButton
+public sealed class MirrorcasterUnleashButton : AmongUsSalemRoleButton<MirrorcasterRole, PlayerControl>, IDiseaseableButton, IKillButton
 {
     public override string Name => "Unleash";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Mirrorcaster;
+    public override Color TextOutlineColor => AUSColors.Mirrorcaster;
     public override float Cooldown => OptionGroupSingleton<MirrorcasterOptions>.Instance.UnleashCooldown.Value + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.UnleashSprite;
 
@@ -27,7 +27,7 @@ public sealed class MirrorcasterUnleashButton : ObjectWorkshopRoleButton<Mirrorc
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Mirrorcaster Unleash: Target is null");
+            Logger<AUSPlugin>.Error("Mirrorcaster Unleash: Target is null");
             return;
         }
 

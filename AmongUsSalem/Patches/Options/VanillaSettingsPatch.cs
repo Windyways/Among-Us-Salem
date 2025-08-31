@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 [HarmonyPatch]
 public static class VanillaSettingsPatch

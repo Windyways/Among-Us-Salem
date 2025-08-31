@@ -1,6 +1,6 @@
 ﻿using Il2CppSystem.Text;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public abstract class NeutralRole(IntPtr cppPtr) : RoleBehaviour(cppPtr)
 {

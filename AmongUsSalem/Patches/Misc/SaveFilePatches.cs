@@ -2,7 +2,7 @@ using AmongUs.Data.Player;
 using AmongUs.Data.Settings;
 using HarmonyLib;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 [HarmonyPatch]
 public static class SaveFilePatches

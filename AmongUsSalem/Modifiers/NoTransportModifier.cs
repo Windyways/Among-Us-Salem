@@ -1,7 +1,7 @@
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 // This modifier is used to prevent transports with anyone who has this
 [MiraIgnore]

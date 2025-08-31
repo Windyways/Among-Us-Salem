@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ObjectWorkshop.Utilities;
+namespace AmongUsSalem.Utilities;
 
 public static class TransformExtensions
 {

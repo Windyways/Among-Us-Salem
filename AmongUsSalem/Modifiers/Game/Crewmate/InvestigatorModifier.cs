@@ -3,13 +3,13 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class InvestigatorModifier : TouGameModifier, IColoredModifier
 {

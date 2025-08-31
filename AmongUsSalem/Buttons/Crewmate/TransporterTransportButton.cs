@@ -2,18 +2,18 @@
 using MiraAPI.Hud;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class TransporterTransportButton : ObjectWorkshopRoleButton<TransporterRole>
+public sealed class TransporterTransportButton : AmongUsSalemRoleButton<TransporterRole>
 {
     public override string Name => "Transport";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Transporter;
+    public override Color TextOutlineColor => AUSColors.Transporter;
 
     public override float Cooldown =>
         OptionGroupSingleton<TransporterOptions>.Instance.TransporterCooldown + MapCooldown;

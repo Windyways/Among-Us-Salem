@@ -3,13 +3,13 @@ using MiraAPI.Events;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers.Types;
-using ObjectWorkshop.Buttons;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class GlitchHackedModifier(byte glitchId) : TimedModifier
 {

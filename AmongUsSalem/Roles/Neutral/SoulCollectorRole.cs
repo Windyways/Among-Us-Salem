@@ -5,15 +5,15 @@ using MiraAPI.GameOptions;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class SoulCollectorRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<MediumRole>());
@@ -21,9 +21,9 @@ public sealed class SoulCollectorRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.SoulCollector, "Soul Collector");
     public string RoleDescription => "Reap The Souls From Your Crewmates";
     public string RoleLongDescription => "Reap the souls of others, leaving behind a lasting image";
-    public Color RoleColor => OWColors.SoulCollector;
+    public Color RoleColor => AUSColors.SoulCollector;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -51,7 +51,7 @@ public sealed class SoulCollectorRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -75,7 +75,7 @@ public sealed class SoulCollectorRole(IntPtr cppPtr)
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouNeutAssets.ReaperVentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.SoulCollector);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.SoulCollector);
         }
     }
 
@@ -85,7 +85,7 @@ public sealed class SoulCollectorRole(IntPtr cppPtr)
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouAssets.VentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Infiltrator);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Mafia);
         }
     }
 

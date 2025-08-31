@@ -1,7 +1,7 @@
 using Reactor.Localization;
 using Reactor.Localization.Utilities;
 
-namespace ObjectWorkshop.Modules.Localization;
+namespace AmongUsSalem.Modules.Localization;
 
 public sealed class TaskProvider : LocalizationProvider
 {

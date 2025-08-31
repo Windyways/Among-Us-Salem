@@ -2,19 +2,19 @@ using MiraAPI.GameOptions;
 using MiraAPI.Networking;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class InquisitorVanquishButton : ObjectWorkshopRoleButton<InquisitorRole, PlayerControl>, IDiseaseableButton,
+public sealed class InquisitorVanquishButton : AmongUsSalemRoleButton<InquisitorRole, PlayerControl>, IDiseaseableButton,
     IKillButton
 {
     public override string Name => "Vanquish";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Inquisitor;
+    public override Color TextOutlineColor => AUSColors.Inquisitor;
     public override float Cooldown => OptionGroupSingleton<InquisitorOptions>.Instance.VanquishCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.InquisKillSprite;
 
@@ -37,7 +37,7 @@ public sealed class InquisitorVanquishButton : ObjectWorkshopRoleButton<Inquisit
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Inquisitor Vanquish: Target is null");
+            Logger<AUSPlugin>.Error("Inquisitor Vanquish: Target is null");
             return;
         }
 

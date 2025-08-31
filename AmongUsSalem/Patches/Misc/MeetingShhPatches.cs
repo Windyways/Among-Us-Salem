@@ -3,11 +3,11 @@ using HarmonyLib;
 using MiraAPI.Modifiers;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 // used for jailer and blackmailed players.
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]

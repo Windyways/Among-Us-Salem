@@ -1,10 +1,10 @@
 ﻿using MiraAPI.Colors;
 using UnityEngine;
 
-namespace ObjectWorkshop;
+namespace AmongUsSalem;
 
 [RegisterCustomColors]
-public static class ObjectWorkshopPlayerColors
+public static class AmongUsSalemPlayerColors
 {
     public static CustomColor Watermelon { get; } = new("Watermelon", new Color32(168, 50, 62, byte.MaxValue),
         new Color32(101, 30, 37, byte.MaxValue))

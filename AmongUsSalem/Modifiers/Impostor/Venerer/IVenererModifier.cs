@@ -1,3 +1,3 @@
-﻿namespace ObjectWorkshop.Modifiers.Impostor.Venerer;
+﻿namespace AmongUsSalem.Modifiers.Impostor.Venerer;
 
 public interface IVenererModifier;

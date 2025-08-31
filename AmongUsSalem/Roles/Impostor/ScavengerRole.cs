@@ -9,18 +9,18 @@ using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class ScavengerRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public bool GameStarted { get; set; }
@@ -61,7 +61,7 @@ public sealed class ScavengerRole(IntPtr cppPtr)
         // scavenge mode starts once kill timer reaches 0
         if (Player.killTimer <= 0f && !Scavenging && GameStarted && !Player.HasDied())
         {
-            // Logger<ObjectWorkshopPlugin>.Message($"Scavenge Begin");
+            // Logger<AUSPlugin>.Message($"Scavenge Begin");
             Scavenging = true;
             TimeRemaining = OptionGroupSingleton<ScavengerOptions>.Instance.ScavengeDuration;
 
@@ -74,7 +74,7 @@ public sealed class ScavengerRole(IntPtr cppPtr)
                     x => !x.HasModifier<FirstDeadShield>() && !x.HasModifier<LoverModifier>())!;
             }
 
-            Target.AddModifier<ScavengerArrowModifier>(Player, OWColors.Infiltrator);
+            Target.AddModifier<ScavengerArrowModifier>(Player, AUSColors.Mafia);
         }
 
         if (TimeRemaining > 0)
@@ -86,7 +86,7 @@ public sealed class ScavengerRole(IntPtr cppPtr)
         {
             Clear();
 
-            // Logger<ObjectWorkshopPlugin>.Message($"Scavenge End");
+            // Logger<AUSPlugin>.Message($"Scavenge End");
             Player.SetKillTimer(PlayerControl.LocalPlayer.GetKillCooldown());
         }
     }
@@ -96,9 +96,9 @@ public sealed class ScavengerRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Scavenger, "Scavenger");
     public string RoleDescription => "Hunt Down Your Prey";
     public string RoleLongDescription => "Kill your given targets for a reduced kill cooldown";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -109,7 +109,7 @@ public sealed class ScavengerRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         if (Target != null && Scavenging)
         {
@@ -157,7 +157,7 @@ public sealed class ScavengerRole(IntPtr cppPtr)
         scav.Scavenging = false;
         if (player.killTimer <= 0f && !player.HasDied())
         {
-            // Logger<ObjectWorkshopPlugin>.Message($"Scavenge Begin");
+            // Logger<AUSPlugin>.Message($"Scavenge Begin");
             scav.Scavenging = true;
             scav.TimeRemaining = OptionGroupSingleton<ScavengerOptions>.Instance.ScavengeDuration;
 
@@ -170,7 +170,7 @@ public sealed class ScavengerRole(IntPtr cppPtr)
                     x => !x.HasModifier<FirstDeadShield>() && !x.HasModifier<LoverModifier>())!;
             }
 
-            scav.Target.AddModifier<ScavengerArrowModifier>(player, OWColors.Infiltrator);
+            scav.Target.AddModifier<ScavengerArrowModifier>(player, AUSColors.Mafia);
         }
     }
 
@@ -219,7 +219,7 @@ public sealed class ScavengerRole(IntPtr cppPtr)
             }
 
             // update arrow to point to new target
-            Target.AddModifier<ScavengerArrowModifier>(Player, OWColors.Infiltrator);
+            Target.AddModifier<ScavengerArrowModifier>(Player, AUSColors.Mafia);
         }
         else
         {

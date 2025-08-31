@@ -2,20 +2,20 @@
 using MiraAPI.Networking;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class JuggernautKillButton : ObjectWorkshopRoleButton<JuggernautRole, PlayerControl>, IDiseaseableButton,
+public sealed class JuggernautKillButton : AmongUsSalemRoleButton<JuggernautRole, PlayerControl>, IDiseaseableButton,
     IKillButton
 {
     public override string Name => "Kill";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Juggernaut;
+    public override Color TextOutlineColor => AUSColors.Juggernaut;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.JuggKillSprite;
     public override float Cooldown => GetCooldown();
 
@@ -30,7 +30,7 @@ public sealed class JuggernautKillButton : ObjectWorkshopRoleButton<JuggernautRo
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Juggernaut Shoot: Target is null");
+            Logger<AUSPlugin>.Error("Juggernaut Shoot: Target is null");
             return;
         }
 

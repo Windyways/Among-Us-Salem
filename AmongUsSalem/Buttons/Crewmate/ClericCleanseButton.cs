@@ -3,19 +3,19 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class ClericCleanseButton : ObjectWorkshopRoleButton<ClericRole, PlayerControl>
+public sealed class ClericCleanseButton : AmongUsSalemRoleButton<ClericRole, PlayerControl>
 {
     public override string Name => "Cleanse";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Cleric;
+    public override Color TextOutlineColor => AUSColors.Cleric;
     public override float Cooldown => OptionGroupSingleton<ClericOptions>.Instance.CleanseCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.CleanseSprite;
 
@@ -28,7 +28,7 @@ public sealed class ClericCleanseButton : ObjectWorkshopRoleButton<ClericRole, P
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"{Name}: Target is null");
+            Logger<AUSPlugin>.Error($"{Name}: Target is null");
             return;
         }
 
@@ -41,7 +41,7 @@ public sealed class ClericCleanseButton : ObjectWorkshopRoleButton<ClericRole, P
 
         if (ClericCleanseModifier.FindNegativeEffects(Target).Count > 0)
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Cleric));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Cleric));
         }
 
         CustomButtonSingleton<ClericBarrierButton>.Instance.ResetCooldownAndOrEffect();

@@ -6,19 +6,19 @@ using MiraAPI.PluginLoading;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game;
+namespace AmongUsSalem.Modifiers.Game;
 
 [MiraIgnore]
 public abstract class AssassinModifier : ExcludedGameModifier
@@ -58,7 +58,7 @@ public abstract class AssassinModifier : ExcludedGameModifier
 
         maxKills = 15;
 
-        //Logger<ObjectWorkshopPlugin>.Error($"AssassinModifier.OnActivate maxKills: {maxKills}");
+        //Logger<AUSPlugin>.Error($"AssassinModifier.OnActivate maxKills: {maxKills}");
         if (Player.AmOwner)
         {
             meetingMenu = new MeetingMenu(
@@ -73,7 +73,7 @@ public abstract class AssassinModifier : ExcludedGameModifier
 
     public override void OnMeetingStart()
     {
-        //Logger<ObjectWorkshopPlugin>.Error($"AssassinModifier.OnMeetingStart maxKills: {maxKills}");
+        //Logger<AUSPlugin>.Error($"AssassinModifier.OnMeetingStart maxKills: {maxKills}");
         if (Player.AmOwner)
         {
             //meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && maxKills > 0);
@@ -163,10 +163,10 @@ public abstract class AssassinModifier : ExcludedGameModifier
             {
                 modifier!.Used = true;
 
-                Coroutines.Start(MiscUtils.CoFlash(OWColors.Infiltrator));
+                Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
 
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{OWColors.Infiltrator.ToTextColor()}Your Double Shot has prevented you from dying this meeting!</color></b>",
+                    $"<b>{AUSColors.Mafia.ToTextColor()}Your Double Shot has prevented you from dying this meeting!</color></b>",
                     Color.white, spr: TouModifierIcons.DoubleShot.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -228,8 +228,8 @@ public abstract class AssassinModifier : ExcludedGameModifier
         }
 
         var options = OptionGroupSingleton<AssassinOptions>.Instance;
-        var touRole = role as IOWRole;
-        var assassinRole = Player.Data.Role as IOWRole;
+        var touRole = role as IAUSRole;
+        var assassinRole = Player.Data.Role as IAUSRole;
         var unguessableRole = role as IUnguessable;
 
         if (touRole is IGhostRole)
@@ -242,7 +242,7 @@ public abstract class AssassinModifier : ExcludedGameModifier
             return false;
         }
 
-        if (touRole?.RoleAlignment == RoleAlignment.CrewmateInvestigative)
+        if (touRole?.Alignment == Alignment.TownInvestigative)
         {
             return options.AssassinGuessInvest;
         }
@@ -258,22 +258,22 @@ public abstract class AssassinModifier : ExcludedGameModifier
         }
 
         if (role.IsImpostor() && OptionGroupSingleton<AssassinOptions>.Instance.AssassinGuessImpostors &&
-            assassinRole?.RoleAlignment is RoleAlignment.NeutralPredator or RoleAlignment.NeutralEvil)
+            assassinRole?.Alignment is Alignment.NeutralKilling or Alignment.NeutralEvil)
         {
             return true;
         }
 
-        if (touRole?.RoleAlignment == RoleAlignment.NeutralAssociative)
+        if (touRole?.Alignment == Alignment.NeutralAssociative)
         {
             return options.AssassinGuessNeutralBenign;
         }
 
-        if (touRole?.RoleAlignment == RoleAlignment.NeutralEvil)
+        if (touRole?.Alignment == Alignment.NeutralEvil)
         {
             return options.AssassinGuessNeutralEvil;
         }
 
-        if (touRole?.RoleAlignment == RoleAlignment.NeutralPredator)
+        if (touRole?.Alignment == Alignment.NeutralKilling)
         {
             return options.AssassinGuessNeutralKilling;
         }

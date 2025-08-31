@@ -1,6 +1,6 @@
 using MiraAPI.Events;
 
-namespace ObjectWorkshop.Events.TouEvents;
+namespace AmongUsSalem.Events.TouEvents;
 
 /// <summary>
 ///     Event that is invoked after a player is revived. This event is not cancelable.

@@ -6,13 +6,13 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using PowerTools;
 using TMPro;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Options.Modifiers.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Options.Modifiers.Universal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.Modules;
+namespace AmongUsSalem.Modules;
 
 // Code Review: Should be using a MonoBehaviour
 public sealed class FakePlayer : IDisposable

@@ -7,13 +7,13 @@ using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace ObjectWorkshop.Modules.Components;
+namespace AmongUsSalem.Modules.Components;
 
 [RegisterInIl2Cpp]
 public sealed class GuesserMenu(IntPtr cppPtr) : Minigame(cppPtr)

@@ -1,7 +1,7 @@
 using Discord;
 using HarmonyLib;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 [HarmonyPatch]
 public static class DiscordStatus
@@ -10,6 +10,6 @@ public static class DiscordStatus
     [HarmonyPrefix]
     public static void Prefix([HarmonyArgument(0)] Activity activity)
     {
-        activity.Details += $" - Object Workshop v{ObjectWorkshopPlugin.Version}" + (ObjectWorkshopPlugin.IsDevBuild ? " (DEV)" : string.Empty);
+        activity.Details += $" - Among Us Salem v{AUSPlugin.Version}" + (AUSPlugin.IsDevBuild ? " (DEV)" : string.Empty);
     }
 }

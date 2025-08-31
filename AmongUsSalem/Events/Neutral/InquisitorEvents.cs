@@ -7,14 +7,14 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class InquisitorEvents
 {
@@ -42,27 +42,27 @@ public static class InquisitorEvents
         {
             if (victim.HasModifier<InquisitorHereticModifier>() && !victim.AmOwner && !source.AmOwner)
             {
-                Coroutines.Start(MiscUtils.CoFlash(OWColors.Inquisitor, alpha: 0.1f));
+                Coroutines.Start(MiscUtils.CoFlash(AUSColors.Inquisitor, alpha: 0.1f));
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{OWColors.Inquisitor.ToTextColor()}A Heretic has perished!</b></color>", Color.white,
+                    $"<b>{AUSColors.Inquisitor.ToTextColor()}A Heretic has perished!</b></color>", Color.white,
                     spr: TouRoleIcons.Inquisitor.LoadAsset());
                 notif1.Text.SetOutlineThickness(0.35f);
                 notif1.transform.localPosition = new Vector3(0f, 1f, -20f);
             }
             else if (!victim.HasModifier<InquisitorHereticModifier>() && !victim.AmOwner && source.AmOwner)
             {
-                Coroutines.Start(MiscUtils.CoFlash(OWColors.Inquisitor, alpha: 0.4f));
+                Coroutines.Start(MiscUtils.CoFlash(AUSColors.Inquisitor, alpha: 0.4f));
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{OWColors.Inquisitor.ToTextColor()}{victim.Data.PlayerName} was not a heretic!\nYou can no longer vanquish players.</b></color>",
+                    $"<b>{AUSColors.Inquisitor.ToTextColor()}{victim.Data.PlayerName} was not a heretic!\nYou can no longer vanquish players.</b></color>",
                     Color.white, spr: TouRoleIcons.Inquisitor.LoadAsset());
                 notif1.Text.SetOutlineThickness(0.35f);
                 notif1.transform.localPosition = new Vector3(0f, 1f, -20f);
             }
             else if (victim.HasModifier<InquisitorHereticModifier>() && !victim.AmOwner && source.AmOwner)
             {
-                Coroutines.Start(MiscUtils.CoFlash(OWColors.Doomsayer, alpha: 0.4f));
+                Coroutines.Start(MiscUtils.CoFlash(AUSColors.Doomsayer, alpha: 0.4f));
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{OWColors.Inquisitor.ToTextColor()}{victim.Data.PlayerName} was a heretic!</b></color>",
+                    $"<b>{AUSColors.Inquisitor.ToTextColor()}{victim.Data.PlayerName} was a heretic!</b></color>",
                     Color.white, spr: TouRoleIcons.Inquisitor.LoadAsset());
                 notif1.Text.SetOutlineThickness(0.35f);
                 notif1.transform.localPosition = new Vector3(0f, 1f, -20f);
@@ -101,7 +101,7 @@ public static class InquisitorEvents
             if (inquis.Player.AmOwner)
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>You have successfully won as the {OWColors.Inquisitor.ToTextColor()}Inquisitor</color>, as all Heretics have perished!</b>",
+                    $"<b>You have successfully won as the {AUSColors.Inquisitor.ToTextColor()}Inquisitor</color>, as all Heretics have perished!</b>",
                     Color.white, spr: TouRoleIcons.Inquisitor.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -113,7 +113,7 @@ public static class InquisitorEvents
             else
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>The {OWColors.Inquisitor.ToTextColor()}Inquisitor</color>, {inquis.Player.Data.PlayerName}, has successfully won, as all Heretics have perished!</b>",
+                    $"<b>The {AUSColors.Inquisitor.ToTextColor()}Inquisitor</color>, {inquis.Player.Data.PlayerName}, has successfully won, as all Heretics have perished!</b>",
                     Color.white, spr: TouRoleIcons.Inquisitor.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -137,7 +137,7 @@ public static class InquisitorEvents
             if (inquis.Player.AmOwner)
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>You have successfully won as the {OWColors.Inquisitor.ToTextColor()}Inquisitor</color>, as all Heretics have perished!</b>",
+                    $"<b>You have successfully won as the {AUSColors.Inquisitor.ToTextColor()}Inquisitor</color>, as all Heretics have perished!</b>",
                     Color.white, spr: TouRoleIcons.Inquisitor.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -147,7 +147,7 @@ public static class InquisitorEvents
             else
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>The {OWColors.Inquisitor.ToTextColor()}Inquisitor</color>, {inquis.Player.Data.PlayerName}, has successfully won, as all Heretics have perished!</b>",
+                    $"<b>The {AUSColors.Inquisitor.ToTextColor()}Inquisitor</color>, {inquis.Player.Data.PlayerName}, has successfully won, as all Heretics have perished!</b>",
                     Color.white, spr: TouRoleIcons.Inquisitor.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);

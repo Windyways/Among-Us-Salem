@@ -6,23 +6,23 @@ using MiraAPI.Networking;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class SheriffShootButton : ObjectWorkshopRoleButton<SheriffRole, PlayerControl>, IKillButton
+public sealed class SheriffShootButton : AmongUsSalemRoleButton<SheriffRole, PlayerControl>, IKillButton
 {
     public override string Name => "Shoot";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Sheriff;
+    public override Color TextOutlineColor => AUSColors.Sheriff;
     public override float Cooldown => OptionGroupSingleton<SheriffOptions>.Instance.KillCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.SheriffShootSprite;
 
@@ -40,7 +40,7 @@ public sealed class SheriffShootButton : ObjectWorkshopRoleButton<SheriffRole, P
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Misfire: Target is null");
+            Logger<AUSPlugin>.Error("Misfire: Target is null");
             return;
         }
 
@@ -66,7 +66,7 @@ public sealed class SheriffShootButton : ObjectWorkshopRoleButton<SheriffRole, P
         notif1.Text.SetOutlineThickness(0.35f);
         notif1.transform.localPosition = new Vector3(0f, 1f, -20f);
 
-        Coroutines.Start(MiscUtils.CoFlash(OWColors.Infiltrator));
+        Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
     }
 
     private static IEnumerator CoSetBodyReportable(byte bodyId)
@@ -87,7 +87,7 @@ public sealed class SheriffShootButton : ObjectWorkshopRoleButton<SheriffRole, P
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Sheriff Shoot: Target is null");
+            Logger<AUSPlugin>.Error("Sheriff Shoot: Target is null");
             return;
         }
 
@@ -101,16 +101,16 @@ public sealed class SheriffShootButton : ObjectWorkshopRoleButton<SheriffRole, P
             return;
         }
 
-        var alignment = RoleAlignment.CrewmateSupport;
+        var alignment = Alignment.TownSupport;
         var options = OptionGroupSingleton<SheriffOptions>.Instance;
 
-        if (Target.Data.Role is IOWRole touRole)
+        if (Target.Data.Role is IAUSRole touRole)
         {
-            alignment = touRole.RoleAlignment;
+            alignment = touRole.Alignment;
         }
         else if (Target.IsImpostor())
         {
-            alignment = RoleAlignment.InfiltratorSupport;
+            alignment = Alignment.MafiaSupport;
         }
 
         if (!(PlayerControl.LocalPlayer.TryGetModifier<AllianceGameModifier>(out var allyMod) &&
@@ -119,19 +119,19 @@ public sealed class SheriffShootButton : ObjectWorkshopRoleButton<SheriffRole, P
         {
             switch (alignment)
             {
-                case RoleAlignment.None:
+                case Alignment.None:
                     PlayerControl.LocalPlayer.RpcCustomMurder(Target);
                     break;
 
-                case RoleAlignment.NeutralAssociative:
-                case RoleAlignment.CrewmateInvestigative:
-                case RoleAlignment.CrewmateKilling:
-                case RoleAlignment.CrewmateProtective:
-                case RoleAlignment.CrewmateSupport:
+                case Alignment.NeutralAssociative:
+                case Alignment.TownInvestigative:
+                case Alignment.TownKilling:
+                case Alignment.TownProtective:
+                case Alignment.TownSupport:
                     Misfire();
                     break;
 
-                case RoleAlignment.NeutralPredator:
+                case Alignment.NeutralKilling:
                     if (!options.ShootNeutralKiller)
                     {
                         Misfire();
@@ -143,7 +143,7 @@ public sealed class SheriffShootButton : ObjectWorkshopRoleButton<SheriffRole, P
 
                     break;
 
-                case RoleAlignment.NeutralEvil:
+                case Alignment.NeutralEvil:
                     if (!options.ShootNeutralEvil)
                     {
                         Misfire();

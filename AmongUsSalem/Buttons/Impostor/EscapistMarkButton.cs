@@ -1,15 +1,15 @@
 using MiraAPI.Hud;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class EscapistMarkButton : ObjectWorkshopRoleButton<EscapistRole>, IAftermathableButton
+public sealed class EscapistMarkButton : AmongUsSalemRoleButton<EscapistRole>, IAftermathableButton
 {
     public override string Name => "Mark Location";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => 0.001f;
     public override float InitialCooldown => 0.001f;
     public override LoadableAsset<Sprite> Sprite => TouImpAssets.MarkSprite;

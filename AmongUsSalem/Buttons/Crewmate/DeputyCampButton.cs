@@ -2,19 +2,19 @@
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class CampButton : ObjectWorkshopRoleButton<DeputyRole, PlayerControl>
+public sealed class CampButton : AmongUsSalemRoleButton<DeputyRole, PlayerControl>
 {
     public bool Usable = true;
     public override string Name => "Camp";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Deputy;
+    public override Color TextOutlineColor => AUSColors.Deputy;
     public override float Cooldown => 0.001f + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.CampButtonSprite;
 
@@ -37,7 +37,7 @@ public sealed class CampButton : ObjectWorkshopRoleButton<DeputyRole, PlayerCont
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Camp: Target is null");
+            Logger<AUSPlugin>.Error("Camp: Target is null");
             return;
         }
 

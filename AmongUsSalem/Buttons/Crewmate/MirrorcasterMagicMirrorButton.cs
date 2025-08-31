@@ -2,20 +2,20 @@
 using MiraAPI.Hud;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class MirrorcasterMagicMirrorButton : ObjectWorkshopRoleButton<MirrorcasterRole>, IAftermathableButton
+public sealed class MirrorcasterMagicMirrorButton : AmongUsSalemRoleButton<MirrorcasterRole>, IAftermathableButton
 {
     public override string Name => "Magic Mirror";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Mirrorcaster;
+    public override Color TextOutlineColor => AUSColors.Mirrorcaster;
     public override float Cooldown => OptionGroupSingleton<MirrorcasterOptions>.Instance.MirrorCooldown.Value + MapCooldown + 0.001f;
     public override float EffectDuration => OptionGroupSingleton<MirrorcasterOptions>.Instance.MirrorDuration.Value;
     public override int MaxUses => (int)OptionGroupSingleton<MirrorcasterOptions>.Instance.MaxMirrors;

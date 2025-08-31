@@ -1,11 +1,11 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Impostor;
+namespace AmongUsSalem.Modifiers.Game.Impostor;
 
 public sealed class TelepathModifier : TouGameModifier
 {

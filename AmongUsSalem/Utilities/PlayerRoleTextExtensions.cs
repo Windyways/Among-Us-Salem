@@ -1,20 +1,20 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
-namespace ObjectWorkshop.Utilities;
+namespace AmongUsSalem.Utilities;
 
 public static class PlayerRoleTextExtensions
 {
@@ -24,9 +24,9 @@ public static class PlayerRoleTextExtensions
         {
             color = Color.green;
 
-            if (player.Is(RoleAlignment.NeutralEvil) || player.IsRole<AmnesiacRole>() || player.IsRole<MercenaryRole>())
+            if (player.Is(Alignment.NeutralEvil) || player.IsRole<AmnesiacRole>() || player.IsRole<MercenaryRole>())
             {
-                color = OWColors.Infiltrator;
+                color = AUSColors.Mafia;
             }
         }
 
@@ -35,12 +35,12 @@ public static class PlayerRoleTextExtensions
 
     public static string UpdateTargetSymbols(this string name, PlayerControl player, bool hidden = false)
     {
-        var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
+        /*var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
         if ((player.IsPeacockAssociate() && PlayerControl.LocalPlayer.IsRole<Peacock>()) ||
             (player.IsPeacockAssociate() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#d8a0ff> ↭</color>";
-        }
+        }*/
 
         return name;
     }

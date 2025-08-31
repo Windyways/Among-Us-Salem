@@ -2,11 +2,11 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers.Types;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class MysticDeathNotifierModifier(PlayerControl mystic) : TimedModifier
 {

@@ -3,9 +3,9 @@ using MiraAPI.Events;
 using MiraAPI.Events.Mira;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Roles;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class AurialEvents
 {

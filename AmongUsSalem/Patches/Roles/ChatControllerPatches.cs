@@ -2,13 +2,13 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using TMPro;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Patches.Options;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Patches.Options;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch(typeof(ChatController))]
 public static class ChatControllerPatches

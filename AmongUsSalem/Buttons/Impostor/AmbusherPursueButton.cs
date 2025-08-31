@@ -3,20 +3,20 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class AmbusherPursueButton : ObjectWorkshopRoleButton<AmbusherRole, PlayerControl>
+public sealed class AmbusherPursueButton : AmongUsSalemRoleButton<AmbusherRole, PlayerControl>
 {
     public override string Name => "Pursue";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => 0.001f;
     public override float InitialCooldown => 0.001f;
     public override LoadableAsset<Sprite> Sprite => TouImpAssets.PursueSprite;
@@ -43,7 +43,7 @@ public sealed class AmbusherPursueButton : ObjectWorkshopRoleButton<AmbusherRole
         TouAudio.PlaySound(TouAudio.TrackerActivateSound);
 
         var notif1 = Helpers.CreateAndShowNotification(
-            $"<b>{OWColors.Infiltrator.ToTextColor()}You are now pursuing {Target.Data.PlayerName}. Ambush anyone near them at any time you wish.</b></color>",
+            $"<b>{AUSColors.Mafia.ToTextColor()}You are now pursuing {Target.Data.PlayerName}. Ambush anyone near them at any time you wish.</b></color>",
             Color.white, spr: TouRoleIcons.Ambusher.LoadAsset());
         notif1.Text.SetOutlineThickness(0.35f);
         notif1.transform.localPosition = new Vector3(0f, 1f, -20f);

@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using ObjectWorkshop.LifeImprovement.MCI.SmartMCI;
+using AmongUsSalem.LifeImprovement.MCI.SmartMCI;
 
-namespace ObjectWorkshop.LifeImprovement.Patches;
+namespace AmongUsSalem.LifeImprovement.Patches;
 
 [HarmonyPatch(typeof(MeetingHud))]
 public static class MeetingHud_Start
@@ -12,6 +12,6 @@ public static class MeetingHud_Start
     public static void StartPostfix()
     {
         Keyboard_Joystick.RefreshSwapTargets();
-        CalculatedVoting.infiltratorsAreSkipping = false;
+        CalculatedVoting.mafiasAreSkipping = false;
     }
 }

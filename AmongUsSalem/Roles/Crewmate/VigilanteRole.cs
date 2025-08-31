@@ -10,20 +10,20 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class VigilanteRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -36,9 +36,9 @@ public sealed class VigilanteRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCre
     public string RoleName => TouLocale.Get(TouNames.Vigilante, "Vigilante");
     public string RoleDescription => "Kill Impostors If You Can Guess Their Roles";
     public string RoleLongDescription => "Guess the roles of impostors mid-meeting to kill them!";
-    public Color RoleColor => OWColors.Vigilante;
+    public Color RoleColor => AUSColors.Vigilante;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public bool IsPowerCrew => MaxKills > 0; // Always disable end game checks with a vigi running around
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -50,7 +50,7 @@ public sealed class VigilanteRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCre
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         if (PlayerControl.LocalPlayer.TryGetModifier<AllianceGameModifier>(out var allyMod) && !allyMod.GetsPunished)
         {
             stringB.AppendLine(CultureInfo.InvariantCulture, $"You can also guess Crewmates.");
@@ -202,10 +202,10 @@ public sealed class VigilanteRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCre
             if (victim == Player && SafeShotsLeft != 0)
             {
                 SafeShotsLeft--;
-                Coroutines.Start(MiscUtils.CoFlash(OWColors.Infiltrator));
+                Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
 
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{OWColors.Vigilante.ToTextColor()}Your Multi Shot has prevented you from dying this meeting! You have {SafeShotsLeft} safe shot(s) left!</color></b>",
+                    $"<b>{AUSColors.Vigilante.ToTextColor()}Your Multi Shot has prevented you from dying this meeting! You have {SafeShotsLeft} safe shot(s) left!</color></b>",
                     Color.white, spr: TouRoleIcons.Vigilante.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -252,7 +252,7 @@ public sealed class VigilanteRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCre
         }
 
         var options = OptionGroupSingleton<VigilanteOptions>.Instance;
-        var touRole = role as IOWRole;
+        var touRole = role as IAUSRole;
         var unguessableRole = role as IUnguessable;
 
         if (unguessableRole != null && !unguessableRole.IsGuessable)
@@ -267,7 +267,7 @@ public sealed class VigilanteRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCre
         }
 
         // If Vigilante is Egotist, then guessing investigative roles is based off assassin settings
-        if (!OptionGroupSingleton<AssassinOptions>.Instance.AssassinGuessInvest && touRole?.RoleAlignment == RoleAlignment.CrewmateInvestigative)
+        if (!OptionGroupSingleton<AssassinOptions>.Instance.AssassinGuessInvest && touRole?.Alignment == Alignment.TownInvestigative)
         {
             return false;
         }
@@ -282,17 +282,17 @@ public sealed class VigilanteRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCre
             return true;
         }
 
-        if (touRole?.RoleAlignment == RoleAlignment.NeutralAssociative)
+        if (touRole?.Alignment == Alignment.NeutralAssociative)
         {
             return options.VigilanteGuessNeutralBenign;
         }
 
-        if (touRole?.RoleAlignment == RoleAlignment.NeutralEvil)
+        if (touRole?.Alignment == Alignment.NeutralEvil)
         {
             return options.VigilanteGuessNeutralEvil;
         }
 
-        if (touRole?.RoleAlignment == RoleAlignment.NeutralPredator)
+        if (touRole?.Alignment == Alignment.NeutralKilling)
         {
             return options.VigilanteGuessNeutralKilling;
         }

@@ -3,11 +3,11 @@ using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Buttons;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
+using AmongUsSalem.Buttons;
+using AmongUsSalem.Modifiers.Game.Crewmate;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class AftermathEvents
 {
@@ -29,7 +29,7 @@ public static class AftermathEvents
         }
 
         var notif1 = Helpers.CreateAndShowNotification(
-            $"<b>{OWColors.Aftermath.ToTextColor()}{@event.Target.Data.PlayerName} was an Aftermath, forcing you to use your ability.</color></b>",
+            $"<b>{AUSColors.Aftermath.ToTextColor()}{@event.Target.Data.PlayerName} was an Aftermath, forcing you to use your ability.</color></b>",
             Color.white, spr: TouModifierIcons.Aftermath.LoadAsset());
 
         notif1.Text.SetOutlineThickness(0.35f);

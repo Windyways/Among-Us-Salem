@@ -4,13 +4,13 @@ using InnerNet;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modules;
+namespace AmongUsSalem.Modules;
 
 // Code Review: Should be using a MonoBehaviour
 public sealed class Trap : IDisposable
@@ -56,7 +56,7 @@ public sealed class Trap : IDisposable
                 continue;
             }
 
-            // PluginSingleton<ObjectWorkshop>.Instance.Log.LogMessage($"player with byte {player.PlayerId} is {Vector2.Distance(transform.position, player.GetTruePosition())} away");
+            // PluginSingleton<AmongUsSalem>.Instance.Log.LogMessage($"player with byte {player.PlayerId} is {Vector2.Distance(transform.position, player.GetTruePosition())} away");
             if (Vector2.Distance(_transform!.position, player.GetTruePosition()) <
                 (TrapSize + 0.01f) * ShipStatus.Instance.MaxLightRadius)
             {
@@ -80,10 +80,10 @@ public sealed class Trap : IDisposable
                     role = cachedMod.CachedRole;
                 }
 
-                // Logger<ObjectWorkshopPlugin>.Error($"player with byte {entry.PlayerId} is logged with time {_players[entry.PlayerId]}");
+                // Logger<AUSPlugin>.Error($"player with byte {entry.PlayerId} is logged with time {_players[entry.PlayerId]}");
                 if (_players[entry.PlayerId] > MinAmountOfTimeInTrap && !_owner!.TrappedPlayers.Contains(role) &&
                     entry != _owner.Player)
-                    // Logger<ObjectWorkshopPlugin>.Error($"Trap.Updated add role: {role.NiceName}");
+                    // Logger<AUSPlugin>.Error($"Trap.Updated add role: {role.NiceName}");
                 {
                     _owner.TrappedPlayers.Add(role);
                 }

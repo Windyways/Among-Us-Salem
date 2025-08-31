@@ -1,6 +1,6 @@
 ﻿using MiraAPI.Modifiers;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 public sealed class VentModifier : BaseModifier
 {

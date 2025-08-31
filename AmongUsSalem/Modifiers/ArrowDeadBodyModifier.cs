@@ -1,10 +1,10 @@
 ﻿using MiraAPI.Modifiers;
 using MiraAPI.PluginLoading;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 [MiraIgnore]
 public abstract class ArrowDeadBodyModifier(DeadBody deadBody, Color color, float updateInterval) : BaseModifier

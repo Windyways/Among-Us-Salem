@@ -1,8 +1,8 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Usables;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 
 namespace TouSidemen.Events.Impostor;
 

@@ -5,70 +5,51 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.LifeImprovement.MCI.SmartMCI;
+namespace AmongUsSalem.LifeImprovement.MCI.SmartMCI;
 
 public static class CalculatedVoting
 {
-    public static PlayerControl Detective;
-    public static PlayerControl Inquisitor;
-    public static PlayerControl FortuneTeller;
-
-    public static PlayerControl FortuneSuspicion; // Fortune Teller
-
-    public static PlayerControl PairInfiltratorVotingTarget;
-    public static bool infiltratorsAreSkipping;
+    public static PlayerControl PairMafiaVotingTarget;
+    public static bool mafiasAreSkipping;
 
     public static PlayerControl KillerContagious;
     public static PlayerControl EvidenceAgainst;
     public static float VoteChance = 30f;
 
-    #region Infiltrator
+    #region Mafia
     #endregion
-    public static void RandomInfiltratorVoting(PlayerControl player, MeetingHud __instance)
+    public static void RandomMafiaVoting(PlayerControl player, MeetingHud __instance)
     {
-        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.IsFaction(Faction.Infiltrator)).ToList();
-        var mimics = 0; //PlayerControl.AllPlayerControls.ToArray().Where(x => x.IsRole<Mimic>()).ToList();
-
-        if (mimics > 0/*mimics.Count > 0*/)
-        {
-            alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != player).ToList();
-        }
-
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Faction.Mafia)).ToList();
         if (alivePlayers.Count > 0)
         {
             int num = Random.Range(0, 100);
 
             PlayerControl? playerToVote = null;
-            if ((PairInfiltratorVotingTarget != null && num <= 25) || (PairInfiltratorVotingTarget != null && alivePlayers.Count <= 6) || (infiltratorsAreSkipping && num <= 25) && PairInfiltratorVotingTarget != null)
+            if ((PairMafiaVotingTarget != null && num <= 25) || (PairMafiaVotingTarget != null && alivePlayers.Count <= 6) || (mafiasAreSkipping && num <= 25) && PairMafiaVotingTarget != null)
             {
-                playerToVote = PairInfiltratorVotingTarget;
+                playerToVote = PairMafiaVotingTarget;
             }
             else
             {
-                if (num <= 80 && FortuneSuspicion != null && !FortuneSuspicion.IsFaction(Faction.Infiltrator) && !FortuneSuspicion.HasDied() && FortuneSuspicion != null)
+
+                if (num <= VoteChance && KillerContagious != null && !KillerContagious.Is(Faction.Mafia) && !KillerContagious.HasDied() && KillerContagious != null)
                 {
-                    playerToVote = FortuneSuspicion;
+                    playerToVote = KillerContagious;
                 }
                 else
                 {
-                    if (num <= VoteChance && KillerContagious != null && !KillerContagious.IsFaction(Faction.Infiltrator) && !KillerContagious.HasDied() && KillerContagious != null)
+                    if (Random.Range(0, 100) <= 5)
                     {
-                        playerToVote = KillerContagious;
+                        mafiasAreSkipping = true;
+                        __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
                     }
                     else
                     {
-                        if (Random.Range(0, 100) <= 5)
-                        {
-                            infiltratorsAreSkipping = true;
-                            __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-                        }
-                        else
-                        {
-                            PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
-                            alivePlayers.Remove(newTarget);
-                            playerToVote = newTarget;
-                            PairInfiltratorVotingTarget = newTarget;
-                        }
+                        PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
+                        alivePlayers.Remove(newTarget);
+                        playerToVote = newTarget;
+                        PairMafiaVotingTarget = newTarget;
                     }
                 }
             }
@@ -78,9 +59,9 @@ public static class CalculatedVoting
         }
     }
 
-    #region Crewmate
+    #region Town
     #endregion
-    public static void RandomCrewmateVoting(PlayerControl player, MeetingHud __instance)
+    public static void RandomTownVoting(PlayerControl player, MeetingHud __instance)
     {
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != player && !x.ReceivedInformation()).ToList();
 
@@ -89,7 +70,7 @@ public static class CalculatedVoting
             foreach (var revealed in player.GetRevealedPlayers())
             {
                 var revealedPlayer = MiscUtils.PlayerById(revealed);
-                if (revealedPlayer != null && revealedPlayer.IsFaction(Faction.Crewmate, true)) alivePlayers.Remove(revealedPlayer);
+                if (revealedPlayer != null && revealedPlayer.Is(Faction.Town)) alivePlayers.Remove(revealedPlayer);
             }
         }
         
@@ -101,22 +82,7 @@ public static class CalculatedVoting
             PlayerControl? playerToVote = null;
             if (num <= 80 && EvidenceAgainst != null && EvidenceAgainst != player && !EvidenceAgainst.HasDied())
             {
-                int num2 = Random.Range(0, 100);
-                if (num2 <= 20 && Detective != player && Detective != null && !Detective.HasDied() && Detective != null)
-                {
-                    playerToVote = Detective;
-                }
-                else
-                {
-                    if (num2 <= 20 && Inquisitor != player && Inquisitor != null && !Inquisitor.HasDied() && Inquisitor != null)
-                    {
-                        playerToVote = Inquisitor;
-                    }
-                    else
-                    {
-                        playerToVote = EvidenceAgainst;
-                    }
-                }
+                playerToVote = EvidenceAgainst;
             }
             else
             {
@@ -126,25 +92,16 @@ public static class CalculatedVoting
                 }
                 else
                 {
-                    int num3 = Random.Range(0, 100);
-                    if (num3 <= 80 && FortuneSuspicion != null && FortuneSuspicion != player && !FortuneSuspicion.HasDied() && FortuneSuspicion != null)
+                    int num4 = Random.Range(0, 100);
+                    if (num4 <= 5 && alivePlayers.Count > 5)
                     {
-                        if (num3 <= 10 && FortuneTeller != player) playerToVote = FortuneTeller;
-                        else playerToVote = FortuneSuspicion;
+                        __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
                     }
                     else
                     {
-                        int num4 = Random.Range(0, 100);
-                        if (num4 <= 5 && alivePlayers.Count > 5)
-                        {
-                            __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-                        }
-                        else
-                        {
-                            PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
-                            alivePlayers.Remove(newTarget);
-                            playerToVote = newTarget;
-                        }
+                        PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
+                        alivePlayers.Remove(newTarget);
+                        playerToVote = newTarget;
                     }
                 }
             }
@@ -198,7 +155,7 @@ public static class CalculatedVoting
         int setEvidenceAgainst = 0;
         foreach (PlayerControl players in PlayerControl.AllPlayerControls)
         {
-            var stats2 = player.GetPlayerStats();
+            var stats2 = players.GetPlayerStats();
             if (stats2 != null && KillerContagious != null)
             {
                 if (stats2.WitnessedKills.Contains(KillerContagious))
@@ -226,14 +183,10 @@ public static class CalculatedVoting
             {
                 EvidenceAgainst = stats.EvidenceAgainst[0];
 
-                //if (player.IsRole<Detective>()) Detective = player;
-
                 if (EvidenceAgainst.HasDied())
                 {
                     stats.EvidenceAgainst.Remove(EvidenceAgainst);
                     EvidenceAgainst = null;
-                    Detective = null;
-                    Inquisitor = null;
                     SetEvidenceAgainst(player);
                 }
             }
@@ -253,24 +206,4 @@ public static class CalculatedVoting
         }
         return false;
     }
-
-    /*public static void SetFortuneSuspicion(PlayerControl player)
-    {
-        FortuneTeller role = Role.GetRole<FortuneTeller>(player);
-        bool flag = role.EvidenceAgainst.Count > 0 && !player.IsSilenced();
-        if (flag)
-        {
-            role.Suspects.Shuffle<PlayerControl>();
-            MCIPlugin.SameVoteAll.FortuneSuspicion = role.Suspects.First<PlayerControl>();
-            MCIPlugin.SameVoteAll.FortuneTeller = role.Player;
-            bool flag2 = Role.Dead(MCIPlugin.SameVoteAll.FortuneSuspicion);
-            if (flag2)
-            {
-                role.Suspects.Remove(MCIPlugin.SameVoteAll.FortuneSuspicion);
-                MCIPlugin.SameVoteAll.FortuneSuspicion = null;
-                MCIPlugin.SameVoteAll.FortuneTeller = null;
-                MCIPlugin.SetFortuneSuspicion(player);
-            }
-        }
-    }*/
 }

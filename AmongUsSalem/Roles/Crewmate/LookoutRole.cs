@@ -4,13 +4,13 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class LookoutRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class LookoutRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -18,9 +18,9 @@ public sealed class LookoutRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
     public string RoleName => TouLocale.Get(TouNames.Lookout, "Lookout");
     public string RoleDescription => "Keep Your Eyes Wide Open";
     public string RoleLongDescription => "Watch other crewmates to see what roles interact with them";
-    public Color RoleColor => OWColors.Lookout;
+    public Color RoleColor => AUSColors.Lookout;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -31,7 +31,7 @@ public sealed class LookoutRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -49,12 +49,12 @@ public sealed class LookoutRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
             TouCrewAssets.WatchSprite)
     ];
 
-    [MethodRpc((uint)ObjectWorkshopRpc.LookoutSeePlayer, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.LookoutSeePlayer, SendImmediately = true)]
     public static void RpcSeePlayer(PlayerControl target, PlayerControl source)
     {
         if (!target.TryGetModifier<LookoutWatchedModifier>(out var mod))
         {
-            Logger<ObjectWorkshopPlugin>.Error("Not a watched player");
+            Logger<AUSPlugin>.Error("Not a watched player");
             return;
         }
 

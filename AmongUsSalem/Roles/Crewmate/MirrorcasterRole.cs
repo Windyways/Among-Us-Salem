@@ -10,15 +10,15 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class MirrorcasterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -47,9 +47,9 @@ public sealed class MirrorcasterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITou
     public string RoleName => TouLocale.Get(TouNames.Mirrorcaster, "Mirrorcaster");
     public string RoleDescription => "Reflect Attacks Onto Others";
     public string RoleLongDescription => "Protect a player with a Magic Mirror.\nIf they are directly attacked, then\nunleash the attack onto another player!";
-    public Color RoleColor => OWColors.Mirrorcaster;
+    public Color RoleColor => AUSColors.Mirrorcaster;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -61,7 +61,7 @@ public sealed class MirrorcasterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITou
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         if (Protected != null)
         {
@@ -121,30 +121,30 @@ public sealed class MirrorcasterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITou
         Coroutines.Start(MiscUtils.CoFlash(new Color32(144, 162, 195, 255)));
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.MagicMirror, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.MagicMirror, SendImmediately = true)]
     public static void RpcMagicMirror(PlayerControl mc, PlayerControl target)
     {
         if (mc.Data.Role is not MirrorcasterRole role)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcMagicMirror - Invalid mirrorcaster");
+            Logger<AUSPlugin>.Error("RpcMagicMirror - Invalid mirrorcaster");
             return;
         }
 
         role?.SetProtectedPlayer(target);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.ClearMagicMirror, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.ClearMagicMirror, SendImmediately = true)]
     public static void RpcClearMagicMirror(PlayerControl mc)
     {
         ClearMagicMirror(mc);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.MirrorcasterUnleash, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.MirrorcasterUnleash, SendImmediately = true)]
     public static void RpcMirrorcasterUnleash(PlayerControl mc)
     {
         if (mc.Data.Role is not MirrorcasterRole role)
         {
-            Logger<ObjectWorkshopPlugin>.Error("ClearMagicMirror - Invalid mirrorcaster");
+            Logger<AUSPlugin>.Error("ClearMagicMirror - Invalid mirrorcaster");
             return;
         }
         role.UnleashesAvailable--;
@@ -154,18 +154,18 @@ public sealed class MirrorcasterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITou
     {
         if (mc.Data.Role is not MirrorcasterRole role)
         {
-            Logger<ObjectWorkshopPlugin>.Error("ClearMagicMirror - Invalid mirrorcaster");
+            Logger<AUSPlugin>.Error("ClearMagicMirror - Invalid mirrorcaster");
             return;
         }
         role?.SetProtectedPlayer(null);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.MagicMirrorAttacked, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.MagicMirrorAttacked, SendImmediately = true)]
     public static void RpcMagicMirrorAttacked(PlayerControl mirrorcaster, PlayerControl source, PlayerControl protectedPlayer)
     {
         if (mirrorcaster.Data.Role is not MirrorcasterRole role)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcMagicMirrorAttacked - Invalid mirrorcaster");
+            Logger<AUSPlugin>.Error("RpcMagicMirrorAttacked - Invalid mirrorcaster");
             return;
         }
 

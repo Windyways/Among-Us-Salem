@@ -5,13 +5,13 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class MediumRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class MediumRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -22,9 +22,9 @@ public sealed class MediumRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     public string RoleName => TouLocale.Get(TouNames.Medium, "Medium");
     public string RoleDescription => "Watch The Spooky Ghosts";
     public string RoleLongDescription => "Follow ghosts to get clues from them";
-    public Color RoleColor => OWColors.Medium;
+    public Color RoleColor => AUSColors.Medium;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -35,7 +35,7 @@ public sealed class MediumRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -60,7 +60,7 @@ public sealed class MediumRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
         MediatedPlayers.ForEach(mod => mod.Player?.GetModifierComponent()?.RemoveModifier(mod));
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.Mediate, LocalHandling = RpcLocalHandling.Before, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.Mediate, LocalHandling = RpcLocalHandling.Before, SendImmediately = true)]
     public static void RpcMediate(PlayerControl source, PlayerControl target)
     {
         if ((!source.AmOwner && !target.AmOwner) || (source.Data.Role is not MediumRole && !target.Data.IsDead))

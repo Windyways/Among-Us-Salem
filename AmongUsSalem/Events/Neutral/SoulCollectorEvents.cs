@@ -1,10 +1,10 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class SoulCollectorEvents
 {
@@ -16,7 +16,7 @@ public static class SoulCollectorEvents
 
         if (source.IsRole<SoulCollectorRole>() && !MeetingHud.Instance)
             // leave behind standing body
-            // Logger<ObjectWorkshopPlugin>.Message($"Leaving behind soulless player '{target.Data.PlayerName}'");
+            // Logger<AUSPlugin>.Message($"Leaving behind soulless player '{target.Data.PlayerName}'");
         {
             _ = new FakePlayer(target);
         }

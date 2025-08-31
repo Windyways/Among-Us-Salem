@@ -5,10 +5,10 @@ using UnityEngine;
 using HarmonyLib;
 using MiraAPI.Modifiers;
 using MiraAPI.Modifiers.Types;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.LifeImprovement.MCI.SmartMCI;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.LifeImprovement.MCI.SmartMCI;
 
-namespace ObjectWorkshop.LifeImprovement.MCI;
+namespace AmongUsSalem.LifeImprovement.MCI;
 
 public static class InstanceControlPatches
 {
@@ -205,13 +205,9 @@ public static class InstanceControlPatches
 
                 if (!player.HasDied())
                 {
-                    var role = player.GetOWRole();
-                    if (role == null)
-                        return;
-
-                    if (role.Team == ModdedRoleTeams.Crewmate) CalculatedVoting.RandomCrewmateVoting(player, __instance);
-                    else if (role.Team == ModdedRoleTeams.Impostor) CalculatedVoting.RandomInfiltratorVoting(player, __instance);
-                    else if (role.Team == ModdedRoleTeams.Custom) CalculatedVoting.RandomNeutralVoting(player, __instance);
+                    if (player.Is(Faction.Town)) CalculatedVoting.RandomTownVoting(player, __instance);
+                    else if (player.Is(Faction.Mafia)) CalculatedVoting.RandomMafiaVoting(player, __instance);
+                    else if (player.Is(Faction.Neutral)) CalculatedVoting.RandomNeutralVoting(player, __instance);
                 }
             }
         }
@@ -222,7 +218,7 @@ public static class InstanceControlPatches
     {
         public static void Postfix()
         {
-            if (Debugger.IsDebuggerActive && ObjectWorkshopPlugin.Persistence && Clients.Count != 0)
+            if (Debugger.IsDebuggerActive && AUSPlugin.Persistence && Clients.Count != 0)
             {
                 var count = Clients.Count;
                 Clients.Clear();
@@ -259,14 +255,14 @@ public static class InstanceControlPatches
 
             foreach (var player in PlayerControl.AllPlayerControls)
             {
-                if (!ObjectWorkshopPlugin.IsBot.Contains(player))
+                if (!AUSPlugin.IsBot.Contains(player))
                 {
                     var random = UnityEngine.Random.Range(0, __instance.Locations.Count);
                     player.gameObject.SetActive(true);
                     player.NetTransform.RpcSnapTo(__instance.Locations[random].Location);
                 }
 
-                if (!player.Data.PlayerName.Contains(ObjectWorkshopPlugin.RobotName))
+                if (!player.Data.PlayerName.Contains(AUSPlugin.RobotName))
                     continue;
 
                 var rand = UnityEngine.Random.Range(0, __instance.Locations.Count);
@@ -306,7 +302,7 @@ public static class InstanceControlPatches
         {
             byte color2 = (byte)((int)bot.PlayerId % Palette.PlayerColors.Length);
             bot.SetColor(14);
-            bot.SetName("CoolInfiltratory");
+            bot.SetName("CoolMafiay");
             bot.SetHat("hat_bearyCold", bot.Data.DefaultOutfit.ColorId);
             bot.SetPet("pet_EmptyPet");
             bot.SetSkin("skin_MilitarySnowskin", (int)color2);
@@ -403,6 +399,6 @@ public static class InstanceControlPatches
             bot.SetVisor(HatManager.Instance.allVisors[UnityEngine.Random.Range(0, HatManager.Instance.allVisors.Count)].ProdId, 0);
 
         }
-        ObjectWorkshopPlugin.IsBot.Add(bot);
+        AUSPlugin.IsBot.Add(bot);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using MiraAPI.Modifiers;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class BlackmailedModifier(byte blackMailerId) : BaseModifier
 {

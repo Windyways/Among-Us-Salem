@@ -1,11 +1,11 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class NoisemakerEvents
 {

@@ -9,17 +9,17 @@ using MiraAPI.Modifiers.Types;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class MercenaryRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public static int BrideCost => (int)OptionGroupSingleton<MercenaryOptions>.Instance.BribeCost;
@@ -31,9 +31,9 @@ public sealed class MercenaryRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Mercenary, "Mercenary");
     public string RoleDescription => "Bribe The Crewmates";
     public string RoleLongDescription => "Guard crewmates, and then bribe the winners!";
-    public Color RoleColor => OWColors.Mercenary;
+    public Color RoleColor => AUSColors.Mercenary;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -45,7 +45,7 @@ public sealed class MercenaryRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         var players = ModifierUtils.GetPlayersWithModifier<MercenaryBribedModifier>();
 
         stringB.Append(CultureInfo.InvariantCulture, $"\n<b>Gold:</b> {Gold}");
@@ -107,12 +107,12 @@ public sealed class MercenaryRole(IntPtr cppPtr)
         CustomButtonSingleton<MercenaryBribeButton>.Instance.SetActive(false, this);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.Guarded, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.Guarded, SendImmediately = true)]
     public static void RpcGuarded(PlayerControl player)
     {
         if (player.Data.Role is not MercenaryRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcGuarded - Invalid mercenary");
+            Logger<AUSPlugin>.Error("RpcGuarded - Invalid mercenary");
             return;
         }
 

@@ -2,19 +2,19 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class MediumMediateButton : ObjectWorkshopRoleButton<MediumRole>
+public sealed class MediumMediateButton : AmongUsSalemRoleButton<MediumRole>
 {
     public override string Name => "Mediate";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Medium;
+    public override Color TextOutlineColor => AUSColors.Medium;
     public override float Cooldown => OptionGroupSingleton<MediumOptions>.Instance.MediateCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.MediateSprite;
 

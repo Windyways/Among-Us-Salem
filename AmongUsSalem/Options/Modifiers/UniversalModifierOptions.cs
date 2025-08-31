@@ -3,7 +3,7 @@ using MiraAPI.GameOptions.Attributes;
 using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Utilities;
 
-namespace ObjectWorkshop.Options.Modifiers;
+namespace AmongUsSalem.Options.Modifiers;
 
 public sealed class UniversalModifierOptions : AbstractOptionGroup
 {

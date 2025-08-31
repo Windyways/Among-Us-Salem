@@ -1,8 +1,8 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
-using ObjectWorkshop.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class ButtonBarryEvents
 {

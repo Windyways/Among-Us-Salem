@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 
-namespace ObjectWorkshop.Utilities.Appearances;
+namespace AmongUsSalem.Utilities.Appearances;
 
 public sealed class VisualAppearance : NetworkedPlayerInfo.PlayerOutfit
 {
-    public VisualAppearance(ObjectWorkshopAppearances appearanceType)
+    public VisualAppearance(AmongUsSalemAppearances appearanceType)
     {
         AppearanceType = appearanceType;
     }
 
-    public VisualAppearance(NetworkedPlayerInfo.PlayerOutfit outfit, ObjectWorkshopAppearances appearanceType)
+    public VisualAppearance(NetworkedPlayerInfo.PlayerOutfit outfit, AmongUsSalemAppearances appearanceType)
     {
         ColorId = outfit.ColorId;
         HatId = outfit.HatId;
@@ -21,7 +21,7 @@ public sealed class VisualAppearance : NetworkedPlayerInfo.PlayerOutfit
         AppearanceType = appearanceType;
     }
 
-    public VisualAppearance(VisualAppearance outfit, ObjectWorkshopAppearances appearanceType)
+    public VisualAppearance(VisualAppearance outfit, AmongUsSalemAppearances appearanceType)
     {
         ColorId = outfit.ColorId;
         HatId = outfit.HatId;
@@ -55,5 +55,5 @@ public sealed class VisualAppearance : NetworkedPlayerInfo.PlayerOutfit
     public float Speed { get; set; } = 1f;
     public Vector3 Size { get; set; } = new(0.7f, 0.7f, 1f);
 
-    public ObjectWorkshopAppearances AppearanceType { get; set; }
+    public AmongUsSalemAppearances AppearanceType { get; set; }
 }

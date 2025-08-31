@@ -6,17 +6,17 @@ using MiraAPI.GameOptions;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class BomberRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     [HideFromIl2Cpp] public Bomb? Bomb { get; set; }
@@ -26,9 +26,9 @@ public sealed class BomberRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Bomber, "Bomber");
     public string RoleDescription => "Plant Bombs To Kill Multiple Crewmates At Once";
     public string RoleLongDescription => "Plant bombs to kill several crewmates at once";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -39,7 +39,7 @@ public sealed class BomberRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -57,12 +57,12 @@ public sealed class BomberRole(IntPtr cppPtr)
             TouImpAssets.PlaceSprite)
     ];
 
-    [MethodRpc((uint)ObjectWorkshopRpc.PlantBomb, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.PlantBomb, SendImmediately = true)]
     public static void RpcPlantBomb(PlayerControl player, Vector2 position)
     {
         if (player.Data.Role is not BomberRole role)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcPlantBomb - Invalid bomber");
+            Logger<AUSPlugin>.Error("RpcPlantBomb - Invalid bomber");
             return;
         }
 

@@ -5,20 +5,20 @@ using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 [HarmonyPatch]
 public static class MapPatches
 {
-    [MethodRpc((uint)ObjectWorkshopRpc.SetMap, SendImmediately = true, LocalHandling = RpcLocalHandling.Before)]
+    [MethodRpc((uint)AUSRpc.SetMap, SendImmediately = true, LocalHandling = RpcLocalHandling.Before)]
     public static void RpcSetMap(PlayerControl player, byte mapId)
     {
         if (!player.IsHost())
         {
-            Logger<ObjectWorkshopPlugin>.Error("Only the host can change the map.");
+            Logger<AUSPlugin>.Error("Only the host can change the map.");
             return;
         }
 
@@ -43,18 +43,18 @@ public static class MapPatches
 
     private static byte GetSelectedMap()
     {
-        if (!OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.RandomMaps)
+        if (!OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.RandomMaps)
         {
             return GameOptionsManager.Instance.CurrentGameOptions.MapId;
         }
 
-        var skeldChance = OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.SkeldChance.Value;
-        var miraChance = OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.MiraChance.Value;
-        var polusChance = OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.PolusChance.Value;
-        var airshipChance = OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.AirshipChance.Value;
-        var fungleChance = OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.FungleChance.Value;
-        var submergedChance = OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.SubmergedChance.Value;
-        var liChance = OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.LevelImpostorChance.Value;
+        var skeldChance = OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.SkeldChance.Value;
+        var miraChance = OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.MiraChance.Value;
+        var polusChance = OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.PolusChance.Value;
+        var airshipChance = OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.AirshipChance.Value;
+        var fungleChance = OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.FungleChance.Value;
+        var submergedChance = OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.SubmergedChance.Value;
+        var liChance = OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.LevelImpostorChance.Value;
 
         Random rnd = new();
         float totalWeight = 0;

@@ -3,16 +3,26 @@ using System.Text;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Roles;
+namespace AmongUsSalem.Roles;
 
-public interface IOWRole : ICustomRole
+public interface IAUSRole : ICustomRole
 {
-    RoleAlignment RoleAlignment { get; }
+    Faction RoleFaction => Faction.None;
+    Alignment Alignment { get; }
     string revealText { get; }
     float visionValue => GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
-    bool attractsMetal => false;
+
+    
+    Attack Attack => Attack.None;
+    Defense Defense => Defense.None;
+    EtherealDefense EtherealDefense => EtherealDefense.None;
+    bool Necronomicon => false;
+
+
+
+
 
     void OnDeath(DeathReason? reason)
     {
@@ -53,19 +63,35 @@ public interface IOWRole : ICustomRole
     {
         get
         {
-            if (RoleAlignment == RoleAlignment.CrewmateInvestigative) return TouRoleGroups.CrewmateInvestigative;
-            if (RoleAlignment == RoleAlignment.CrewmateKilling) return TouRoleGroups.CrewmateKilling;
-            if (RoleAlignment == RoleAlignment.CrewmateProtective) return TouRoleGroups.CrewmateProtective;
-            if (RoleAlignment == RoleAlignment.CrewmateSupport) return TouRoleGroups.CrewmateSupport;
+            if (Alignment == Alignment.TownInvestigative) return TouRoleGroups.TownInvestigative;
+            if (Alignment == Alignment.TownKilling) return TouRoleGroups.TownKilling;
+            if (Alignment == Alignment.TownOutlier) return TouRoleGroups.TownOutlier;
+            if (Alignment == Alignment.TownPower) return TouRoleGroups.TownPower;
+            if (Alignment == Alignment.TownProtective) return TouRoleGroups.TownProtective;
+            if (Alignment == Alignment.TownSupport) return TouRoleGroups.TownSupport;
+            if (Alignment == Alignment.TownUtility) return TouRoleGroups.TownUtility;
             
-            if (RoleAlignment == RoleAlignment.NeutralAssociative) return TouRoleGroups.NeutralAssociative;
-            if (RoleAlignment == RoleAlignment.NeutralEvil) return TouRoleGroups.NeutralEvil;
-            if (RoleAlignment == RoleAlignment.NeutralPredator) return TouRoleGroups.NeutralPredator;
+            if (Alignment == Alignment.NeutralApocalypse) return TouRoleGroups.NeutralApocalypse;
+            if (Alignment == Alignment.NeutralBenign) return TouRoleGroups.NeutralBenign;
+            if (Alignment == Alignment.NeutralChaos) return TouRoleGroups.NeutralChaos;
+            if (Alignment == Alignment.NeutralEvil) return TouRoleGroups.NeutralEvil;
+            if (Alignment == Alignment.NeutralKilling) return TouRoleGroups.NeutralKilling;
+            if (Alignment == Alignment.NeutralOutlier) return TouRoleGroups.NeutralOutlier;
+            if (Alignment == Alignment.NeutralPariah) return TouRoleGroups.NeutralPariah;
             
-            if (RoleAlignment == RoleAlignment.InfiltratorDisruption) return TouRoleGroups.InfiltratorDisruption;
-            if (RoleAlignment == RoleAlignment.InfiltratorEvacuative) return TouRoleGroups.InfiltratorEvacuative;
-            if (RoleAlignment == RoleAlignment.InfiltratorGunsman) return TouRoleGroups.InfiltratorGunsman;
-            if (RoleAlignment == RoleAlignment.InfiltratorSupport) return TouRoleGroups.InfiltratorSupport;
+            if (Alignment == Alignment.MafiaDeception) return TouRoleGroups.MafiaDeception;
+            if (Alignment == Alignment.MafiaKilling) return TouRoleGroups.MafiaKilling;
+            if (Alignment == Alignment.MafiaSupport) return TouRoleGroups.MafiaSupport;
+            
+            if (Alignment == Alignment.CovenDeception) return TouRoleGroups.CovenDeception;
+            if (Alignment == Alignment.CovenKilling) return TouRoleGroups.CovenKilling;
+            if (Alignment == Alignment.CovenOutlier) return TouRoleGroups.CovenOutlier;
+            if (Alignment == Alignment.CovenPower) return TouRoleGroups.CovenPower;
+            if (Alignment == Alignment.CovenUtility) return TouRoleGroups.CovenUtility;
+            
+            if (Alignment == Alignment.TraitorDeceptive) return TouRoleGroups.TraitorDeceptive;
+            if (Alignment == Alignment.TraitorPower) return TouRoleGroups.TraitorPower;
+            if (Alignment == Alignment.TraitorUtility) return TouRoleGroups.TraitorUtility;
 
             return TouRoleGroups.None;
         }
@@ -85,17 +111,17 @@ public interface IOWRole : ICustomRole
 
     public static StringBuilder SetNewTabText(ICustomRole role)
     {
-        var alignment = role is IOWRole touRole
-            ? touRole.RoleAlignment.ToDisplayString()
+        var alignment = role is IAUSRole touRole
+            ? touRole.Alignment.ToDisplayString()
             : "Custom";
 
         if (alignment.Contains("Crewmate"))
         {
             alignment = alignment.Replace("Crewmate", "<color=#68ACF4>Crewmate");
         }
-        else if (alignment.Contains("Infiltrator"))
+        else if (alignment.Contains("Mafia"))
         {
-            alignment = alignment.Replace("Infiltrator", "<color=#D63F42>Impostor");
+            alignment = alignment.Replace("Mafia", "<color=#D63F42>Impostor");
         }
         else if (alignment.Contains("Neutral"))
         {
@@ -130,8 +156,8 @@ public interface IOWRole : ICustomRole
 
     public static StringBuilder SetDeadTabText(ICustomRole role)
     {
-        var alignment = role is IOWRole touRole
-            ? touRole.RoleAlignment.ToDisplayString()
+        var alignment = role is IAUSRole touRole
+            ? touRole.Alignment.ToDisplayString()
             : "Custom";
 
         if (alignment.Contains("Crewmate"))
@@ -180,20 +206,43 @@ public interface IOWRole : ICustomRole
     }
 }
 
-public enum RoleAlignment
+public enum Alignment
 {
     None,
-    CrewmateInvestigative,
-    CrewmateKilling,
-    CrewmateProtective,
-    CrewmateSupport,
 
     NeutralAssociative,
-    NeutralEvil,
-    NeutralPredator,
 
-    InfiltratorDisruption,
-    InfiltratorGunsman,
-    InfiltratorEvacuative,
-    InfiltratorSupport
+    MafiaDisruption,
+    MafiaGunsman,
+    MafiaEvacuative,
+
+    TownInvestigative,
+    TownKilling,
+    TownProtective,
+    TownPower,
+    TownOutlier,
+    TownSupport,
+    TownUtility,
+
+    NeutralApocalypse,
+    NeutralBenign,
+    NeutralChaos,
+    NeutralEvil,
+    NeutralKilling,
+    NeutralOutlier,
+    NeutralPariah,
+
+    MafiaDeception,
+    MafiaKilling,
+    MafiaSupport,
+
+    CovenDeception,
+    CovenKilling,
+    CovenOutlier,
+    CovenPower,
+    CovenUtility,
+
+    TraitorDeceptive,
+    TraitorPower,
+    TraitorUtility
 }

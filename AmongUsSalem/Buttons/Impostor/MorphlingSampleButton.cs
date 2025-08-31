@@ -2,18 +2,18 @@
 using MiraAPI.Hud;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class MorphlingSampleButton : ObjectWorkshopRoleButton<MorphlingRole, PlayerControl>, IAftermathablePlayerButton
+public sealed class MorphlingSampleButton : AmongUsSalemRoleButton<MorphlingRole, PlayerControl>, IAftermathablePlayerButton
 {
     public override string Name => "Sample";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => 0.001f;
     public override float InitialCooldown => 0.001f;
     public override int MaxUses => (int)OptionGroupSingleton<MorphlingOptions>.Instance.MaxSamples;
@@ -34,7 +34,7 @@ public sealed class MorphlingSampleButton : ObjectWorkshopRoleButton<MorphlingRo
         Role.Sampled = Target;
 
         var notif1 = Helpers.CreateAndShowNotification(
-            $"<b>{OWColors.Infiltrator.ToTextColor()}You have sampled {Target.Data.PlayerName}. The sample will be reset after this round.</b></color>",
+            $"<b>{AUSColors.Mafia.ToTextColor()}You have sampled {Target.Data.PlayerName}. The sample will be reset after this round.</b></color>",
             Color.white, spr: TouRoleIcons.Morphling.LoadAsset());
         notif1.Text.SetOutlineThickness(0.35f);
         notif1.transform.localPosition = new Vector3(0f, 1f, -20f);

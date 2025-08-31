@@ -2,12 +2,12 @@ using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Assets;
+namespace AmongUsSalem.Assets;
 
 public static class TouAssets
 {
-    private const string ShortPath = "ObjectWorkshop.Resources";
-    private const string CounterPath = "ObjectWorkshop.Resources.AbilityCounters";
+    private const string ShortPath = "AmongUsSalem.Resources";
+    private const string CounterPath = "AmongUsSalem.Resources.AbilityCounters";
 
     public static readonly AssetBundle MainBundle = AssetBundleManager.Load("tou-assets");
 
@@ -203,7 +203,7 @@ public static class TouAssets
         get
         {
             var sprite = ArrowBasicSprite;
-            switch (ObjectWorkshopPlugin.ArrowStyle.Value)
+            switch (AUSPlugin.ArrowStyle.Value)
             {
                 case 1:
                     sprite = ArrowDarkOutSprite;
@@ -223,7 +223,7 @@ public static class TouAssets
         get
         {
             var name = "Default";
-            switch (ObjectWorkshopPlugin.ArrowStyle.Value)
+            switch (AUSPlugin.ArrowStyle.Value)
             {
                 case 1:
                     name = "Dark Glow";

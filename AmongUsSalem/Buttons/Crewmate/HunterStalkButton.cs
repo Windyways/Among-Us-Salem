@@ -3,20 +3,20 @@ using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class HunterStalkButton : ObjectWorkshopRoleButton<HunterRole, PlayerControl>
+public sealed class HunterStalkButton : AmongUsSalemRoleButton<HunterRole, PlayerControl>
 {
     public override string Name => "Stalk";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Hunter;
+    public override Color TextOutlineColor => AUSColors.Hunter;
     public override float Cooldown => OptionGroupSingleton<HunterOptions>.Instance.HunterStalkCooldown + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<HunterOptions>.Instance.HunterStalkDuration;
     public override int MaxUses => (int)OptionGroupSingleton<HunterOptions>.Instance.StalkUses;
@@ -27,7 +27,7 @@ public sealed class HunterStalkButton : ObjectWorkshopRoleButton<HunterRole, Pla
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Stalk: Target is null");
+            Logger<AUSPlugin>.Error("Stalk: Target is null");
             return;
         }
 

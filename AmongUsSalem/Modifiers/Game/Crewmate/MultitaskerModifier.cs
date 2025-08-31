@@ -1,12 +1,12 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class MultitaskerModifier : TouGameModifier
 {

@@ -4,22 +4,22 @@ using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class PlumberBlockButton : ObjectWorkshopRoleButton<PlumberRole, Vent>
+public sealed class PlumberBlockButton : AmongUsSalemRoleButton<PlumberRole, Vent>
 {
     private static readonly ContactFilter2D Filter = Helpers.CreateFilter(Constants.Usables);
     public override string Name => "Block";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Plumber;
+    public override Color TextOutlineColor => AUSColors.Plumber;
     public override float Cooldown => OptionGroupSingleton<PlumberOptions>.Instance.BlockCooldown + MapCooldown;
     public override int MaxUses => (int)OptionGroupSingleton<PlumberOptions>.Instance.MaxBarricades;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.BarricadeSprite;
@@ -85,12 +85,12 @@ public sealed class PlumberBlockButton : ObjectWorkshopRoleButton<PlumberRole, V
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"{Name}: Target is null");
+            Logger<AUSPlugin>.Error($"{Name}: Target is null");
             return;
         }
 
         var notif1 = Helpers.CreateAndShowNotification(
-            $"<b>{OWColors.Plumber.ToTextColor()}This vent will be blocked at the beginning of the next round.</b></color>",
+            $"<b>{AUSColors.Plumber.ToTextColor()}This vent will be blocked at the beginning of the next round.</b></color>",
             Color.white, new Vector3(0f, 1f, -20f), spr: TouRoleIcons.Plumber.LoadAsset());
         notif1.Text.SetOutlineThickness(0.35f);
 

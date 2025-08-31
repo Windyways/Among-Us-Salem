@@ -1,12 +1,12 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Utilities.Appearances;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class GlitchMimicModifier(PlayerControl target) : ConcealedModifier, IVisualAppearance
 {
@@ -19,7 +19,7 @@ public sealed class GlitchMimicModifier(PlayerControl target) : ConcealedModifie
 
     public VisualAppearance GetVisualAppearance()
     {
-        return new VisualAppearance(target.GetDefaultModifiedAppearance(), ObjectWorkshopAppearances.Mimic);
+        return new VisualAppearance(target.GetDefaultModifiedAppearance(), AmongUsSalemAppearances.Mimic);
     }
 
     public override void OnActivate()

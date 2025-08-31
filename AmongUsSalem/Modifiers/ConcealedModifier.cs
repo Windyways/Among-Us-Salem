@@ -1,7 +1,7 @@
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 // This modifier is used to hide player animations and whatnot, very useful for the shield modifiers
 [MiraIgnore]

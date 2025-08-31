@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles;
 
-namespace ObjectWorkshop.LifeImprovement.Patches;
+namespace AmongUsSalem.LifeImprovement.Patches;
 
 [HarmonyPatch]
 public static class LobbyBehaviour_Start
@@ -13,5 +13,7 @@ public static class LobbyBehaviour_Start
     {
         Statistics.Round = 1;
         OnGameStart.SequenceCheck = 0;
+
+        DayNightMechanic.OnLobbyStart();
     }
 }

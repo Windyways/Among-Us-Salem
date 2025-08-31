@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches.AprilFools;
+namespace AmongUsSalem.Patches.AprilFools;
 
 [HarmonyPatch]
 public static class AprilFoolsPatches

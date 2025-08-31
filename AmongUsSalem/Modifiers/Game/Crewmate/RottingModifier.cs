@@ -2,14 +2,14 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class RottingModifier : TouGameModifier
 {

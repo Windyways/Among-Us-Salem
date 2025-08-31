@@ -1,11 +1,11 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches.CustomPolus;
+namespace AmongUsSalem.Patches.CustomPolus;
 
 [HarmonyPatch(typeof(ShipStatus))]
 public static class BetterPolusPatches

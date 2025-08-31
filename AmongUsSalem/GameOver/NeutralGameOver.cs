@@ -2,14 +2,14 @@
 using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.GameOver;
+namespace AmongUsSalem.GameOver;
 
 public sealed class NeutralGameOver : CustomGameOver
 {
@@ -18,20 +18,20 @@ public sealed class NeutralGameOver : CustomGameOver
 
     public override bool VerifyCondition(PlayerControl playerControl, NetworkedPlayerInfo[] winners)
     {
-        if (winners is not [{ Role: RoleBehaviour role and IOWRole tRole }])
+        if (winners is not [{ Role: RoleBehaviour role and IAUSRole tRole }])
         {
             return false;
         }
 
         var mainRole = role;
 
-        Logger<ObjectWorkshopPlugin>.Error($"VerifyCondition - mainRole: '{mainRole.NiceName}', IsDead: '{role.IsDead}'");
+        Logger<AUSPlugin>.Error($"VerifyCondition - mainRole: '{mainRole.NiceName}', IsDead: '{role.IsDead}'");
 
         if (role.IsDead && role is not PhantomTouRole or HaunterRole)
         {
             mainRole = role.Player.GetRoleWhenAlive();
 
-            Logger<ObjectWorkshopPlugin>.Error($"VerifyCondition - RoleWhenAlive: '{mainRole?.NiceName}'");
+            Logger<AUSPlugin>.Error($"VerifyCondition - RoleWhenAlive: '{mainRole?.NiceName}'");
         }
 
         _roleName = mainRole!.NiceName;

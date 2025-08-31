@@ -1,10 +1,10 @@
 ﻿using HarmonyLib;
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
-using ObjectWorkshop.Modules;
+using AmongUsSalem.Modules;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 // This is intended to be used for roles such as Snitch or Mayor
 // for getting the role, use this: RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<ImitatorRole>())
 [MiraIgnore]

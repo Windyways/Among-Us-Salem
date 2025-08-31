@@ -1,17 +1,17 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class BomberPlantButton : ObjectWorkshopRoleButton<BomberRole>, IAftermathableButton, IDiseaseableButton
+public sealed class BomberPlantButton : AmongUsSalemRoleButton<BomberRole>, IAftermathableButton, IDiseaseableButton
 {
     public override string Name => "Place";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => PlayerControl.LocalPlayer.GetKillCooldown() + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<BomberOptions>.Instance.DetonateDelay;
     public override int MaxUses => (int)OptionGroupSingleton<BomberOptions>.Instance.MaxBombs;

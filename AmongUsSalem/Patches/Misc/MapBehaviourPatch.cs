@@ -1,12 +1,12 @@
 using HarmonyLib;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 [HarmonyPatch]
 public static class ShowVentsPatch

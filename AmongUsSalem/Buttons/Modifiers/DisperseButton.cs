@@ -2,17 +2,17 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Networking.Rpc;
-using ObjectWorkshop.Modifiers.Game.Impostor;
-using ObjectWorkshop.Networking;
+using AmongUsSalem.Modifiers.Game.Impostor;
+using AmongUsSalem.Networking;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Modifiers;
+namespace AmongUsSalem.Buttons.Modifiers;
 
-public sealed class DisperseButton : ObjectWorkshopButton
+public sealed class DisperseButton : AmongUsSalemButton
 {
     public override string Name => "Disperse";
     public override string Keybind => Keybinds.ModifierAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => 0.001f + MapCooldown;
     public override int MaxUses => 1;
     public override ButtonLocation Location => ButtonLocation.BottomLeft;

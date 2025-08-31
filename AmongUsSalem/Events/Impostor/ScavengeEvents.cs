@@ -1,9 +1,9 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Impostor;
+namespace AmongUsSalem.Events.Impostor;
 
 public static class ScavengerEvents
 {

@@ -1,13 +1,13 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class SpyMapCountOverlayPatch

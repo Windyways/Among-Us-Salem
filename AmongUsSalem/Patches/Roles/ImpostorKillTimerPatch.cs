@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class ImpostorKillTimerPatch

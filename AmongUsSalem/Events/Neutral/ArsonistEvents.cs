@@ -3,11 +3,11 @@ using MiraAPI.Events.Mira;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class ArsonistEvents
 {

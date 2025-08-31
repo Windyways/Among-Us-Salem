@@ -3,19 +3,19 @@ using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class WatchButton : ObjectWorkshopRoleButton<LookoutRole, PlayerControl>
+public sealed class WatchButton : AmongUsSalemRoleButton<LookoutRole, PlayerControl>
 {
     public override string Name => "Watch";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Lookout;
+    public override Color TextOutlineColor => AUSColors.Lookout;
     public override float Cooldown => OptionGroupSingleton<LookoutOptions>.Instance.WatchCooldown + MapCooldown;
     public override int MaxUses => (int)OptionGroupSingleton<LookoutOptions>.Instance.MaxWatches;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.WatchSprite;
@@ -35,7 +35,7 @@ public sealed class WatchButton : ObjectWorkshopRoleButton<LookoutRole, PlayerCo
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Watch: Target is null");
+            Logger<AUSPlugin>.Error("Watch: Target is null");
             return;
         }
 

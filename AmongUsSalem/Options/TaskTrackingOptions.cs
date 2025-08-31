@@ -1,7 +1,7 @@
 using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 
-namespace ObjectWorkshop.Options;
+namespace AmongUsSalem.Options;
 
 public sealed class TaskTrackingOptions : AbstractOptionGroup
 {

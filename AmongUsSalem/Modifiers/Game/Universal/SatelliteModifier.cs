@@ -3,16 +3,16 @@ using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Buttons.Modifiers;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Universal;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Modifiers;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Universal;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers.Game.Universal;
+namespace AmongUsSalem.Modifiers.Game.Universal;
 
 public sealed class SatelliteModifier : UniversalGameModifier
 {

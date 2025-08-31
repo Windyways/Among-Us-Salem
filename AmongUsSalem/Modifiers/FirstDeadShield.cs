@@ -1,20 +1,20 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 public sealed class FirstDeadShield : ExcludedGameModifier, IAnimated
 {
     public override string ModifierName => TouLocale.Get(TouNames.FirstDeathShield, "First Death Shield");
     public override LoadableAsset<Sprite>? ModifierIcon => TouModifierIcons.FirstRoundShield;
 
-    public override bool HideOnUi => !ObjectWorkshopPlugin.ShowShieldHud.Value;
+    public override bool HideOnUi => !AUSPlugin.ShowShieldHud.Value;
     public override Color FreeplayFileColor => new Color32(100, 220, 100, 255);
 
     public GameObject? FirstRoundShield { get; set; }

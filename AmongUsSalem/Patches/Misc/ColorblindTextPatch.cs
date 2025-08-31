@@ -1,7 +1,7 @@
 using HarmonyLib;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.GetColorBlindText))]
 public static class ColorblindTextPatch

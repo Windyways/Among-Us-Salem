@@ -1,8 +1,8 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Options;
+using AmongUsSalem.Options;
 
-namespace ObjectWorkshop.Patches.PrefabSwitching;
+namespace AmongUsSalem.Patches.PrefabSwitching;
 
 [HarmonyPatch]
 public static class AirshipDoors

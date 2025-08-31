@@ -2,11 +2,11 @@
 using MiraAPI.Modifiers;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches.Modifiers;
+namespace AmongUsSalem.Patches.Modifiers;
 
 [HarmonyPatch]
 public static class CelebrityMeetingIntroPatch
@@ -42,7 +42,7 @@ public static class CelebrityMeetingIntroPatch
 
         if (HudManager.Instance != null)
         {
-            var title = $"<color=#{OWColors.Celebrity.ToHtmlStringRGBA()}>Celebrity Report</color>";
+            var title = $"<color=#{AUSColors.Celebrity.ToHtmlStringRGBA()}>Celebrity Report</color>";
             MiscUtils.AddFakeChat(celebrity.Player.Data, title, celebrity.DeathMessage, false, true);
         }
     }

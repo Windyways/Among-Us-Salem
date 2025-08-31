@@ -5,13 +5,13 @@ using MiraAPI.Networking;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modules;
+namespace AmongUsSalem.Modules;
 
 // Code Review: Should be using a MonoBehaviour
 public sealed class Bomb : IDisposable

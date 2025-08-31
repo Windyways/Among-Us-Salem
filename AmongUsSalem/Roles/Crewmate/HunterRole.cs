@@ -8,13 +8,13 @@ using MiraAPI.Networking;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class HunterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -29,9 +29,9 @@ public sealed class HunterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
     public string RoleName => TouLocale.Get(TouNames.Hunter, "Hunter");
     public string RoleDescription => "Stalk The <color=#FF0000FF>Impostor</color>";
     public string RoleLongDescription => "Stalk player interactions and kill impostors, but not Crewmates";
-    public Color RoleColor => OWColors.Hunter;
+    public Color RoleColor => AUSColors.Hunter;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public bool IsPowerCrew =>
         CaughtPlayers.Any(x => !x.HasDied()); // Disable end game checks if a Hunter has alive targets
@@ -45,7 +45,7 @@ public sealed class HunterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         var stalkedPlayer = ModifierUtils.GetPlayersWithModifier<HunterStalkedModifier>(x => x.Hunter.AmOwner)
             .FirstOrDefault();
         var stalked = stalkedPlayer != null && !stalkedPlayer.HasDied() ? stalkedPlayer.Data.PlayerName : "Nobody";
@@ -81,12 +81,12 @@ public sealed class HunterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
             TouCrewAssets.StalkButtonSprite)
     ];
 
-    [MethodRpc((uint)ObjectWorkshopRpc.CatchPlayer, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.CatchPlayer, SendImmediately = true)]
     public static void RpcCatchPlayer(PlayerControl hunter, PlayerControl source)
     {
         if (hunter.Data.Role is not HunterRole role)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcCatchPlayer - Invalid hunter");
+            Logger<AUSPlugin>.Error("RpcCatchPlayer - Invalid hunter");
             return;
         }
 
@@ -96,7 +96,7 @@ public sealed class HunterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
 
             if (hunter.AmOwner)
             {
-                Coroutines.Start(MiscUtils.CoFlash(OWColors.Hunter));
+                Coroutines.Start(MiscUtils.CoFlash(AUSColors.Hunter));
 
                 CustomButtonSingleton<HunterStalkButton>.Instance.ResetCooldownAndOrEffect();
             }
@@ -107,7 +107,7 @@ public sealed class HunterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
     {
         if (hunter.Data.Role is not HunterRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcCatchPlayer - Invalid hunter");
+            Logger<AUSPlugin>.Error("RpcCatchPlayer - Invalid hunter");
             return;
         }
 

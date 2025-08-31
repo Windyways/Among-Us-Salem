@@ -4,19 +4,19 @@ using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class GlitchHackButton : ObjectWorkshopRoleButton<GlitchRole, PlayerControl>, IAftermathablePlayerButton
+public sealed class GlitchHackButton : AmongUsSalemRoleButton<GlitchRole, PlayerControl>, IAftermathablePlayerButton
 {
     public override string Name => "Hack";
     public override string Keybind => "tou.ActionCustom";
-    public override Color TextOutlineColor => OWColors.Glitch;
+    public override Color TextOutlineColor => AUSColors.Glitch;
     public override float Cooldown => OptionGroupSingleton<GlitchOptions>.Instance.HackCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.HackSprite;
     public override ButtonLocation Location => ButtonLocation.BottomRight;
@@ -31,7 +31,7 @@ public sealed class GlitchHackButton : ObjectWorkshopRoleButton<GlitchRole, Play
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Glitch Hack: Target is null");
+            Logger<AUSPlugin>.Error("Glitch Hack: Target is null");
             return;
         }
 

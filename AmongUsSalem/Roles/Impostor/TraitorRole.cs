@@ -2,14 +2,14 @@
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class TraitorRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IOWRole, IDoomable, ISpawnChange
+    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ISpawnChange
 {
     public string revealText => "";
     [HideFromIl2Cpp] public List<RoleBehaviour> ChosenRoles { get; } = [];
@@ -20,9 +20,9 @@ public sealed class TraitorRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Traitor, "Traitor");
     public string RoleDescription => "Betray The Crewmates!";
     public string RoleLongDescription => "Betray the Crewmates!";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -33,7 +33,7 @@ public sealed class TraitorRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

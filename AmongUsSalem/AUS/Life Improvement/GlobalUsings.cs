@@ -21,24 +21,23 @@ global using Reactor.Networking.Attributes;
 
 global using System.Globalization;
 
-global using ObjectWorkshop.Buttons;
-global using ObjectWorkshop.Utilities;
-global using ObjectWorkshop.LifeImprovement;
-global using ObjectWorkshop.Modules.RainbowMod;
-global using ObjectWorkshop.Utilities.Appearances;
-global using ObjectWorkshop.Roles.Crewmate;
-global using ObjectWorkshop.Roles.Neutral;
-global using ObjectWorkshop.Modules;
-global using ObjectWorkshop.LifeImprovement.MCI;
-global using ObjectWorkshop.LifeImprovement.MCI.SmartMCI;
-global using ObjectWorkshop.Roles.Impostor;
-global using ObjectWorkshop.Roles;
-global using ObjectWorkshop.LifeImprovement.Roles;
-global using ObjectWorkshop.LifeImprovement.Modifiers;
-global using ObjectWorkshop.LifeImprovement.Objects;
-global using ObjectWorkshop.LifeImprovement.Events;
-global using ObjectWorkshop.Modifiers.Game;
-global using ObjectWorkshop.Modifiers.Impostor;
+global using AmongUsSalem.Buttons;
+global using AmongUsSalem.Utilities;
+global using AmongUsSalem.LifeImprovement;
+global using AmongUsSalem.Modules.RainbowMod;
+global using AmongUsSalem.Utilities.Appearances;
+global using AmongUsSalem.Roles.Crewmate;
+global using AmongUsSalem.Roles.Neutral;
+global using AmongUsSalem.Modules;
+global using AmongUsSalem.LifeImprovement.MCI;
+global using AmongUsSalem.LifeImprovement.MCI.SmartMCI;
+global using AmongUsSalem.Roles.Impostor;
+global using AmongUsSalem.Roles;
+global using AmongUsSalem.LifeImprovement.Roles;
+global using AmongUsSalem.LifeImprovement.Events;
+global using AmongUsSalem.Modifiers.Game;
+global using AmongUsSalem.Modifiers.Impostor;
+global using AmongUsSalem.LifeImprovement.GameMechanics;
 
 global using InnerNet;
 

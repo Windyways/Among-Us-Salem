@@ -9,27 +9,27 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
-public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole, IDoomable
+public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Insight;
     public string RoleName => TouLocale.Get(TouNames.Ambassador, "Ambassador");
     public string RoleDescription => "Lead The Impostors To Victory";
     public string RoleLongDescription => "Retrain yourself or fellow impostors into other roles\n<b>Imp Killing cannot be a Power role</b>\n<b>Imp Concealing/Support cannot be a Killing/Power role</b>";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public NetworkedPlayerInfo? SelectedPlr { get; private set; }
     public RoleBehaviour? SelectedRole { get; private set; }
     public int RetrainsAvailable { get; set; }
@@ -50,7 +50,7 @@ public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRol
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         stringB.AppendLine(CultureInfo.InvariantCulture, $"{RetrainsAvailable} / {OptionGroupSingleton<AmbassadorOptions>.Instance.MaxRetrains} Retrains Remaining");
 
@@ -157,7 +157,7 @@ public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRol
             }
         }
         
-        var excluded = MiscUtils.AllRoles.Where(x => x is ISpawnChange { NoSpawn: true } || x is IOWRole { RoleAlignment: RoleAlignment.None }).Select(x => x.Role).ToList();
+        var excluded = MiscUtils.AllRoles.Where(x => x is ISpawnChange { NoSpawn: true } || x is IAUSRole { Alignment: Alignment.None }).Select(x => x.Role).ToList();
         var impRoles = MiscUtils.GetRolesToAssign(ModdedRoleTeams.Impostor, x => !excluded.Contains(x.Role)).Select(x => x.RoleType).ToList();
 
         foreach (var player2 in PlayerControl.AllPlayerControls)
@@ -181,7 +181,7 @@ public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRol
             .Where(role => impRoles.Contains(RoleId.Get(role.GetType())))
             .ToList();
 
-        if (!player._object.Is(RoleAlignment.None))
+        if (!player._object.Is(Alignment.None))
         {
             var curRoleList = MiscUtils.GetPotentialRoles()
                 .Where(role => role is ICustomRole)
@@ -189,7 +189,7 @@ public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRol
                 .ToList();
             foreach (var roleBehaviour in curRoleList)
             {
-                if (roleBehaviour is IOWRole touRole && touRole.RoleAlignment == RoleAlignment.None)
+                if (roleBehaviour is IAUSRole touRole && touRole.Alignment == Alignment.None)
                 {
                     roleList.Remove(roleBehaviour);
                 }
@@ -218,28 +218,28 @@ public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRol
                voteArea.GetPlayer()?.HasModifier<AmbassadorRetrainedModifier>() == true;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.RetrainConfirm, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.RetrainConfirm, SendImmediately = true)]
     public static void RpcRetrainConfirm(PlayerControl ambassador, PlayerControl player, int cooldown, ushort role = 0, bool accepted = false)
     {
         if (ambassador.Data.Role is not AmbassadorRole ambassadorRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcRetrainConfirm - Invalid ambassador");
+            Logger<AUSPlugin>.Error("RpcRetrainConfirm - Invalid ambassador");
             return;
         }
         if (player != ambassadorRole.SelectedPlr?._object)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcRetrainConfirm - Retrainee is not valid!");
+            Logger<AUSPlugin>.Error("RpcRetrainConfirm - Retrainee is not valid!");
             return;
         }
         if (ambassadorRole.SelectedPlr == null || ambassadorRole.SelectedRole == null || ambassadorRole.Player.Data.IsDead || ambassadorRole.SelectedPlr.IsDead)
         {
             ambassadorRole.Clear();
-            Logger<ObjectWorkshopPlugin>.Error("RpcRetrainConfirm - A player or role check failed");
+            Logger<AUSPlugin>.Error("RpcRetrainConfirm - A player or role check failed");
             return;
         }
         if (MeetingHud.Instance || ExileController.Instance)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcRetrainConfirm - You thought you were slick, huh? No, you can't retrain outside of rounds!");
+            Logger<AUSPlugin>.Error("RpcRetrainConfirm - You thought you were slick, huh? No, you can't retrain outside of rounds!");
             return;
         }
         
@@ -290,12 +290,12 @@ public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRol
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.RetrainImpostor, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.RetrainImpostor, SendImmediately = true)]
     private static void RpcRetrain(PlayerControl player, byte playerId = byte.MaxValue, ushort role = 0)
     {
         if (player.Data.Role is not AmbassadorRole ambassador)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcRetrain - Invalid ambassador");
+            Logger<AUSPlugin>.Error("RpcRetrain - Invalid ambassador");
             return;
         }
 
@@ -325,22 +325,22 @@ public sealed class AmbassadorRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRol
         if (PlayerControl.LocalPlayer.IsImpostor())
         {
             var text =
-                $"<b>The Ambassador has decided to retrain {ambassador.SelectedPlr.PlayerName} into {OWColors.Infiltrator.ToTextColor()}{ambassador.SelectedRole.NiceName}</color></b>";
+                $"<b>The Ambassador has decided to retrain {ambassador.SelectedPlr.PlayerName} into {AUSColors.Mafia.ToTextColor()}{ambassador.SelectedRole.NiceName}</color></b>";
             if (ambassador.SelectedPlr.Object.AmOwner && player.AmOwner)
             {
                 text =
-                    $"<b>You have decided to retrain yourself into {OWColors.Infiltrator.ToTextColor()}{ambassador.SelectedRole.NiceName}</color></b>";
+                    $"<b>You have decided to retrain yourself into {AUSColors.Mafia.ToTextColor()}{ambassador.SelectedRole.NiceName}</color></b>";
             }
             else if (ambassador.SelectedPlr.Object == player)
             {
                 text =
-                    $"<b>The Ambassador has decided to retrain themselves into {OWColors.Infiltrator.ToTextColor()}{ambassador.SelectedRole.NiceName}</color></b>";
+                    $"<b>The Ambassador has decided to retrain themselves into {AUSColors.Mafia.ToTextColor()}{ambassador.SelectedRole.NiceName}</color></b>";
 
             }
             else if (ambassador.SelectedPlr.Object.AmOwner)
             {
                 text =
-                    $"<b>The Ambassador has decided to retrain you into {OWColors.Infiltrator.ToTextColor()}{ambassador.SelectedRole.NiceName}</color></b>";
+                    $"<b>The Ambassador has decided to retrain you into {AUSColors.Mafia.ToTextColor()}{ambassador.SelectedRole.NiceName}</color></b>";
 
             }
             var notif1 = Helpers.CreateAndShowNotification(text, Color.white, spr: ambassador.SelectedRole.RoleIconWhite != null ? ambassador.SelectedRole.RoleIconWhite : TouRoleIcons.Ambassador.LoadAsset());

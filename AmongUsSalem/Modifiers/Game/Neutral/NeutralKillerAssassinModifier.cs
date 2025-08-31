@@ -1,8 +1,8 @@
 ﻿using MiraAPI.GameOptions;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles;
 
-namespace ObjectWorkshop.Modifiers.Game.Neutral;
+namespace AmongUsSalem.Modifiers.Game.Neutral;
 
 public sealed class NeutralKillerAssassinModifier : AssassinModifier
 {
@@ -20,6 +20,6 @@ public sealed class NeutralKillerAssassinModifier : AssassinModifier
 
     public override bool IsModifierValidOn(RoleBehaviour role)
     {
-        return role is IOWRole { RoleAlignment: RoleAlignment.NeutralPredator };
+        return role is IAUSRole { Alignment: Alignment.NeutralKilling };
     }
 }

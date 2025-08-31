@@ -3,19 +3,19 @@ using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class AmbusherAmbushButton : ObjectWorkshopRoleButton<AmbusherRole, PlayerControl>, IKillButton, IDiseaseableButton
+public sealed class AmbusherAmbushButton : AmongUsSalemRoleButton<AmbusherRole, PlayerControl>, IKillButton, IDiseaseableButton
 {
     public override string Name => "Ambush";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => PlayerControl.LocalPlayer.GetKillCooldown() + MapCooldown;
     public override int MaxUses => (int)OptionGroupSingleton<AmbusherOptions>.Instance.MaxAmbushes;
     public override LoadableAsset<Sprite> Sprite => TouImpAssets.AmbushSprite;

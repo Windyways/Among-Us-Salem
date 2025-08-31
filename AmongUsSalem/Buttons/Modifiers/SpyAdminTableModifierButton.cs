@@ -2,19 +2,19 @@
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Crewmate;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Crewmate;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Modifiers;
+namespace AmongUsSalem.Buttons.Modifiers;
 
-public sealed class SpyAdminTableModifierButton : ObjectWorkshopButton
+public sealed class SpyAdminTableModifierButton : AmongUsSalemButton
 {
     public override string Name => "Admin";
     public override string Keybind => Keybinds.ModifierAction;
-    public override Color TextOutlineColor => OWColors.Spy;
+    public override Color TextOutlineColor => AUSColors.Spy;
     public override float Cooldown => OptionGroupSingleton<SpyOptions>.Instance.DisplayCooldown.Value + MapCooldown;
     public float AvailableCharge { get; set; } = OptionGroupSingleton<SpyOptions>.Instance.StartingCharge.Value;
     public bool usingPortable { get; set; }

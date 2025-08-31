@@ -1,10 +1,10 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Universal;
+namespace AmongUsSalem.Modifiers.Game.Universal;
 
 public sealed class SleuthModifier : UniversalGameModifier
 {

@@ -3,7 +3,7 @@ using MiraAPI.GameOptions.Attributes;
 using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Utilities;
 
-namespace ObjectWorkshop.Options;
+namespace AmongUsSalem.Options;
 
 public sealed class AssassinOptions : AbstractOptionGroup
 {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class ScavengerArrowModifier(PlayerControl owner, Color color) : ArrowTargetModifier(owner, color, 0)
 {

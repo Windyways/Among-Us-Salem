@@ -2,15 +2,15 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.GameOver;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.GameOver;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Alliance;
+namespace AmongUsSalem.Modifiers.Game.Alliance;
 
 public sealed class EgotistModifier : AllianceGameModifier
 {
@@ -60,7 +60,7 @@ public sealed class EgotistModifier : AllianceGameModifier
     public static bool EgoVisibilityFlag(PlayerControl player)
     {
         return player.HasModifier<EgotistModifier>() &&
-               (PlayerControl.LocalPlayer.IsImpostor() || player.Is(RoleAlignment.NeutralPredator));
+               (PlayerControl.LocalPlayer.IsImpostor() || player.Is(Alignment.NeutralKilling));
     }
 
     public override bool IsModifierValidOn(RoleBehaviour role)

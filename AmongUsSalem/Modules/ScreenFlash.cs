@@ -2,7 +2,7 @@ using HarmonyLib;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modules;
+namespace AmongUsSalem.Modules;
 
 // Code Review: Should be using a MonoBehaviour
 public sealed class ScreenFlash : IDisposable

@@ -16,33 +16,33 @@ using MiraAPI.Utilities;
 using PowerTools;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Buttons;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Buttons.Impostor;
-using ObjectWorkshop.Buttons.Modifiers;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Modifiers.Universal;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Buttons.Impostor;
+using AmongUsSalem.Buttons.Modifiers;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Modifiers.Universal;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.Events;
+namespace AmongUsSalem.Events;
 
-public static class ObjectWorkshopEventHandlers
+public static class AmongUsSalemEventHandlers
 {
     [RegisterEvent]
     public static void StartMeetingEventHandler(StartMeetingEvent @event)
@@ -82,7 +82,7 @@ public static class ObjectWorkshopEventHandlers
             
             stringB = stringB.Remove(stringB.Length - 2, 2);
             
-            Logger<ObjectWorkshopPlugin>.Warning(stringB.ToString());
+            Logger<AUSPlugin>.Warning(stringB.ToString());
         }
         FirstDeadPatch.PlayerNames = [];
 
@@ -166,15 +166,15 @@ public static class ObjectWorkshopEventHandlers
         {
             foreach (var button in CustomButtonManager.Buttons)
             {
-                if (button is ObjectWorkshopTargetButton<PlayerControl> touPlayerButton && touPlayerButton.Target != null)
+                if (button is AmongUsSalemTargetButton<PlayerControl> touPlayerButton && touPlayerButton.Target != null)
                 {
                     touPlayerButton.Target.cosmetics.currentBodySprite.BodySprite.SetOutline(null);
                 }
-                else if (button is ObjectWorkshopTargetButton<DeadBody> touBodyButton && touBodyButton.Target != null)
+                else if (button is AmongUsSalemTargetButton<DeadBody> touBodyButton && touBodyButton.Target != null)
                 {
                     touBodyButton.Target.bodyRenderers.Do(x => x.SetOutline(null));
                 }
-                else if (button is ObjectWorkshopTargetButton<Vent> touVentButton && touVentButton.Target != null)
+                else if (button is AmongUsSalemTargetButton<Vent> touVentButton && touVentButton.Target != null)
                 {
                     touVentButton.Target.SetOutline(false, true, player.Data.Role.TeamColor);
                 }
@@ -430,7 +430,7 @@ public static class ObjectWorkshopEventHandlers
         voteArea.Overlay.gameObject.SetActive(false);
         animation.gameObject.SetActive(false);
 
-        Coroutines.Start(MiscUtils.CoFlash(OWColors.Infiltrator, 0.5f, 0.15f));
+        Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia, 0.5f, 0.15f));
         var seconds = Random.RandomRange(0.4f, 1.1f);
         // if there's less than 6 players alive, animation will play instantly
         if (Helpers.GetAlivePlayers().Count <= 5)

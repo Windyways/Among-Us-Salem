@@ -1,11 +1,11 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers.Types;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class VeteranAlertModifier : TimedModifier
 {

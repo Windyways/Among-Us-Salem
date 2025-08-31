@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ObjectWorkshop.Extensions;
+namespace AmongUsSalem.Extensions;
 
 public interface IColoredModifier
 {

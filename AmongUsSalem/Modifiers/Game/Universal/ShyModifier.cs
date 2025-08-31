@@ -1,16 +1,16 @@
 ﻿using AmongUs.Data;
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Universal;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Universal;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Universal;
+namespace AmongUsSalem.Modifiers.Game.Universal;
 
 public sealed class ShyModifier : UniversalGameModifier
 {
@@ -123,7 +123,7 @@ public sealed class ShyModifier : UniversalGameModifier
             LastMoved = DateTime.UtcNow;
         }
 
-        if (Player.GetAppearanceType() == ObjectWorkshopAppearances.Swooper)
+        if (Player.GetAppearanceType() == AmongUsSalemAppearances.Swooper)
         {
             var opacity = 0f;
 
@@ -135,11 +135,11 @@ public sealed class ShyModifier : UniversalGameModifier
 
             SetVisibility(Player, opacity, true);
         }
-        else if (Player.GetAppearanceType() == ObjectWorkshopAppearances.Camouflage)
+        else if (Player.GetAppearanceType() == AmongUsSalemAppearances.Camouflage)
         {
             SetVisibility(Player, 1f, true);
         }
-        else if (Player.GetAppearanceType() == ObjectWorkshopAppearances.Morph || Player.GetAppearanceType() == ObjectWorkshopAppearances.Mimic)
+        else if (Player.GetAppearanceType() == AmongUsSalemAppearances.Morph || Player.GetAppearanceType() == AmongUsSalemAppearances.Mimic)
         {
             SetVisibility(Player, 1f);
         }

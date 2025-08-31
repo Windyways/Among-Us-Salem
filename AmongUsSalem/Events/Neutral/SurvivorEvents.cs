@@ -4,12 +4,12 @@ using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Buttons;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class SurvivorEvents
 {

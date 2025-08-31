@@ -1,10 +1,10 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers.Types;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Impostor;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Impostor;
 
-namespace ObjectWorkshop.Modifiers.Impostor.Venerer;
+namespace AmongUsSalem.Modifiers.Impostor.Venerer;
 
 public sealed class VenererSprintModifier : TimedModifier, IVenererModifier
 {

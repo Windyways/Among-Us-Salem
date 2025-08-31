@@ -2,7 +2,7 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
 namespace TownOfUs.Modules.Wiki;
@@ -37,7 +37,7 @@ public static class SoftWikiEntries
         {
             var entry = roleEntry.Value;
             entry.EntryName = role.NiceName;
-            var teamName = role.GetRoleAlignment().ToDisplayString();
+            var teamName = role.GetAlignment().ToDisplayString();
 
             entry.TeamName = teamName;
             entry.EntryColor = role is ICustomRole miraRole2 ? miraRole2.RoleColor : role.TeamColor;

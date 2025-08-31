@@ -1,11 +1,11 @@
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
-namespace ObjectWorkshop.Assets;
+namespace AmongUsSalem.Assets;
 
 public static class TouNeutAssets
 {
-    private const string ShortPath = "ObjectWorkshop.Resources";
+    private const string ShortPath = "AmongUsSalem.Resources";
 
     // private const string BannerPath = $"{ShortPath}.RoleBanners"; // Commenting until it is used, so that the warnings stop screaming
     private const string ButtonPath = $"{ShortPath}.NeutButtons";

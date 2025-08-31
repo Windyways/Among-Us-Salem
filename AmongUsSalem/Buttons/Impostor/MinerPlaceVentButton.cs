@@ -1,18 +1,18 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class MinerPlaceVentButton : ObjectWorkshopRoleButton<MinerRole>, IAftermathableButton
+public sealed class MinerPlaceVentButton : AmongUsSalemRoleButton<MinerRole>, IAftermathableButton
 {
     public override string Name => "Mine";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<MinerOptions>.Instance.MineCooldown + MapCooldown;
 
     public override float EffectDuration =>

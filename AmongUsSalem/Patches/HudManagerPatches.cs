@@ -8,38 +8,41 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Utilities;
 using TMPro;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modifiers.Impostor.Venerer;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Patches.Options;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Impostor.Venerer;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Patches.Options;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Color = UnityEngine.Color;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class HudManagerPatches
 {
     public static bool VisibilityFlag(PlayerControl player)
     {
-        var stats = PlayerControl.LocalPlayer.GetPlayerStats();
-        if (stats == null) return false;
-        
-        return stats.RevealedPlayers.Contains(player.PlayerId);
+        return
+            (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.Is(Faction.Mafia)) ||
+            (PlayerControl.LocalPlayer.Is(Faction.Coven) && player.Is(Faction.Coven)) ||
+            (PlayerControl.LocalPlayer.Is(Faction.Traitor) && player.Is(Faction.Traitor)) ||
+            (PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse) && player.Is(Alignment.NeutralApocalypse)) ||
+            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasDied())
+            ;
     }
 
     public static GameObject ZoomButton;
@@ -59,7 +62,7 @@ public static class HudManagerPatches
         }
 
         yield return new WaitForSeconds(0.01f);
-        ResizeUI(ObjectWorkshopPlugin.ButtonUIFactor.Value);
+        ResizeUI(AUSPlugin.ButtonUIFactor.Value);
     }
 
     public static void ResizeUI(float scaleFactor)
@@ -118,7 +121,7 @@ public static class HudManagerPatches
                 }
                 catch
                 {
-                    // Logger<ObjectWorkshopPlugin>.Error($"Error arranging child objects in GridArrange: {e}");
+                    // Logger<AUSPlugin>.Error($"Error arranging child objects in GridArrange: {e}");
                 }
             }
         }
@@ -258,7 +261,7 @@ public static class HudManagerPatches
 
                 if (PlayerControl.LocalPlayer.IsImpostor() && player.IsImpostor() && PlayerControl.LocalPlayer != player && !genOpt.FFAImpostorMode)
                 {
-                    playerColor = OWColors.Infiltrator;
+                    playerColor = AUSColors.Mafia;
                 }
 
                 playerColor = playerColor.UpdateTargetColor(player);
@@ -284,7 +287,6 @@ public static class HudManagerPatches
                 var roleName = "";
 
                 if (player.AmOwner ||
-                    (PlayerControl.LocalPlayer.IsImpostor() && player.IsImpostor() && genOpt is { ImpsKnowRoles.Value: true, FFAImpostorMode: false }) ||
                     (PlayerControl.LocalPlayer.GetRoleWhenAlive() is VampireRole && role is VampireRole) ||
                     (PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow) ||
                     GuardianAngelTouRole.GASeesRoleVisibilityFlag(player) ||
@@ -352,9 +354,9 @@ public static class HudManagerPatches
                         ModdedRoleTeams.Crewmate =>
                             $"\n<size=75%>{Palette.CrewmateBlue.ToTextColor()}({accuracy}% Crew) </color></size>",
                         ModdedRoleTeams.Custom =>
-                            $"\n<size=75%>{OWColors.Neutral.ToTextColor()}({accuracy}% Neut) </color></size>",
+                            $"\n<size=75%>{AUSColors.Neutral.ToTextColor()}({accuracy}% Neut) </color></size>",
                         ModdedRoleTeams.Impostor =>
-                            $"\n<size=75%>{OWColors.Infiltrator.ToTextColor()}({accuracy}% Imp) </color></size>",
+                            $"\n<size=75%>{AUSColors.Mafia.ToTextColor()}({accuracy}% Imp) </color></size>",
                         _ => string.Empty
                     };
 
@@ -405,7 +407,7 @@ public static class HudManagerPatches
 
                 if (!string.IsNullOrEmpty(roleName))
                 {
-                    if (ObjectWorkshopPlugin.ColorPlayerName.Value)
+                    if (AUSPlugin.ColorPlayerName.Value)
                     {
                         playerName = $"{roleName}\n{color.ToTextColor()}<size=92%>{playerName}</size></color>";
                     }
@@ -438,7 +440,7 @@ public static class HudManagerPatches
 
                 if (PlayerControl.LocalPlayer.IsImpostor() && player.IsImpostor() && PlayerControl.LocalPlayer != player && !genOpt.FFAImpostorMode)
                 {
-                    playerColor = OWColors.Infiltrator;
+                    playerColor = AUSColors.Mafia;
                 }
 
                 playerColor = playerColor.UpdateTargetColor(player, !isVisible);
@@ -488,7 +490,7 @@ public static class HudManagerPatches
                         roleName = $"<size=80%>{gaRole.TeamColor.ToTextColor()}{gaRole.NiceName}</color></size>";
                     }
 
-                    if (VisibilityFlag(player) || (player.Data.IsDead && role is not UndeadReaper))
+                    if (VisibilityFlag(player) || player.Data.IsDead)
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
                         color = roleWhenAlive.TeamColor;
@@ -537,14 +539,14 @@ public static class HudManagerPatches
                     playerName += $"\n<size=75%> </size>";
                 }
 
-                if (player.AmOwner && player.Data.Role is UndeadReaper)
+                if (player.AmOwner)
                 {
                     playerColor = Color.clear;
                 }
 
                 if (!string.IsNullOrEmpty(roleName))
                 {
-                    playerName = ObjectWorkshopPlugin.ColorPlayerName.Value
+                    playerName = AUSPlugin.ColorPlayerName.Value
                         ? $"{roleName}\n{color.ToTextColor()}{playerName}</color>"
                         : $"{roleName}\n{playerName}";
                 }

@@ -1,10 +1,10 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Roles.Crewmate;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Universal;
+namespace AmongUsSalem.Modifiers.Game.Universal;
 
 public sealed class SixthSenseModifier : UniversalGameModifier
 {

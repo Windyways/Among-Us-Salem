@@ -3,7 +3,7 @@ using MiraAPI.GameOptions.Attributes;
 using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Utilities;
 
-namespace ObjectWorkshop.Options;
+namespace AmongUsSalem.Options;
 
 public sealed class GeneralOptions : AbstractOptionGroup
 {
@@ -40,13 +40,6 @@ public sealed class GeneralOptions : AbstractOptionGroup
 
     [ModdedToggleOption("First Death Shield Next Game")]
     public bool FirstDeathShield { get; set; } = true;
-}
-
-public enum ModReveal
-{
-    Alliance,
-    Universal,
-    Neither
 }
 
 public enum SkipState

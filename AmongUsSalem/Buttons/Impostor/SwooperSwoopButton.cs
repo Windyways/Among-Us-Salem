@@ -1,18 +1,18 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class SwooperSwoopButton : ObjectWorkshopRoleButton<SwooperRole>, IAftermathableButton
+public sealed class SwooperSwoopButton : AmongUsSalemRoleButton<SwooperRole>, IAftermathableButton
 {
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override string Name => "Swoop";
     public override string Keybind => Keybinds.SecondaryAction;
     public override float Cooldown => OptionGroupSingleton<SwooperOptions>.Instance.SwoopCooldown + MapCooldown;

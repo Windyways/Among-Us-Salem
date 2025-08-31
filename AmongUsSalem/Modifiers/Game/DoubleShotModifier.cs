@@ -1,9 +1,9 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game;
+namespace AmongUsSalem.Modifiers.Game;
 
 public class DoubleShotModifier : TouGameModifier
 {

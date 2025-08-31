@@ -1,9 +1,9 @@
 using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Options.Roles.Crewmate;
+namespace AmongUsSalem.Options.Roles.Crewmate;
 
 public sealed class SeerOptions : AbstractOptionGroup<SeerRole>
 {
@@ -13,7 +13,7 @@ public sealed class SeerOptions : AbstractOptionGroup<SeerRole>
     public float SeerCooldown { get; set; } = 25f;
 
     [ModdedToggleOption("Crewmate Killing Roles Are Red")]
-    public bool ShowCrewmateKillingAsRed { get; set; } = false;
+    public bool ShowTownKillingAsRed { get; set; } = false;
 
     [ModdedToggleOption("Neutral Benign Roles Are Red")]
     public bool ShowNeutralBenignAsRed { get; set; } = false;

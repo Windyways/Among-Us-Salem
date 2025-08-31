@@ -10,20 +10,20 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers.Game.Impostor;
-using ObjectWorkshop.Modifiers.Game.Neutral;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers.Game.Impostor;
+using AmongUsSalem.Modifiers.Game.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class AmnesiacRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<MysticRole>());
@@ -31,9 +31,9 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Amnesiac, "Amnesiac");
     public string RoleDescription => "Remember A Role Of A Deceased Player";
     public string RoleLongDescription => "Find a dead body to remember and become their role";
-    public Color RoleColor => OWColors.Amnesiac;
+    public Color RoleColor => AUSColors.Amnesiac;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -45,7 +45,7 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -80,12 +80,12 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
         return false;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.Remember, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.Remember, SendImmediately = true)]
     public static void RpcRemember(PlayerControl player, PlayerControl target)
     {
         if (player.Data.Role is not AmnesiacRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcRemember - Invalid amnesiac");
+            Logger<AUSPlugin>.Error("RpcRemember - Invalid amnesiac");
             return;
         }
 
@@ -96,7 +96,7 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
             if (player.AmOwner)
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{target.CachedPlayerData.PlayerName} was an {OWColors.Amnesiac.ToTextColor()}Amnesiac</color>, so their role cannot be picked up.</b>",
+                    $"<b>{target.CachedPlayerData.PlayerName} was an {AUSColors.Amnesiac.ToTextColor()}Amnesiac</color>, so their role cannot be picked up.</b>",
                     Color.white, new Vector3(0f, 1f, -20f), spr: TouRoleIcons.Amnesiac.LoadAsset());
                 notif1.Text.SetOutlineThickness(0.35f);
             }
@@ -183,17 +183,17 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
             {
                 target.ChangeRole((ushort)RoleTypes.Impostor);
             }
-            /*else if (target.IsNeutral() && player.Data.Role is IOWRole touRole)
+            /*else if (target.IsNeutral() && player.Data.Role is IAUSRole touRole)
             {
-                switch (touRole.RoleAlignment)
+                switch (touRole.Alignment)
                 {
                     default:
                         target.ChangeRole(RoleId.Get<SurvivorRole>());
                         break;
-                    case RoleAlignment.NeutralEvil:
+                    case Alignment.NeutralEvil:
                         target.ChangeRole(RoleId.Get<JesterRole>());
                         break;
-                    case RoleAlignment.NeutralPredator:
+                    case Alignment.NeutralKilling:
                         target.ChangeRole(RoleId.Get<MercenaryRole>());
                         player.AddModifier<MercenaryBribedModifier>(target)!.alerted = true;
                         break;

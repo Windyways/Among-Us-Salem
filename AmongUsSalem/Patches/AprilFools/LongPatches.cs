@@ -1,7 +1,7 @@
 using HarmonyLib;
 using InnerNet;
 
-namespace ObjectWorkshop.Patches.AprilFools;
+namespace AmongUsSalem.Patches.AprilFools;
 
 [HarmonyPatch(typeof(LongBoiPlayerBody))]
 public static class LongBoiPatches

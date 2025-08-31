@@ -3,17 +3,17 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Networking.Attributes;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Options.Modifiers.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Options.Modifiers.Universal;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Modifiers;
+namespace AmongUsSalem.Buttons.Modifiers;
 
-public sealed class BarryButton : ObjectWorkshopButton
+public sealed class BarryButton : AmongUsSalemButton
 {
     public override string Name => "Button";
     public override string Keybind => Keybinds.ModifierAction;
-    public override Color TextOutlineColor => OWColors.ButtonBarry;
+    public override Color TextOutlineColor => AUSColors.ButtonBarry;
     public override float Cooldown => OptionGroupSingleton<ButtonBarryOptions>.Instance.Cooldown + MapCooldown;
     public override int MaxUses => (int)OptionGroupSingleton<ButtonBarryOptions>.Instance.MaxNumButtons;
     public override ButtonLocation Location => ButtonLocation.BottomLeft;
@@ -42,7 +42,7 @@ public sealed class BarryButton : ObjectWorkshopButton
         CallButtonBarry(PlayerControl.LocalPlayer);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.ButtonBarry, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.ButtonBarry, SendImmediately = true)]
     public static void CallButtonBarry(PlayerControl player)
     {
         if (AmongUsClient.Instance.AmHost)

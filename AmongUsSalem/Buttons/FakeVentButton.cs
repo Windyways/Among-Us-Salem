@@ -4,7 +4,7 @@ using MiraAPI.Utilities.Assets;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ObjectWorkshop.Buttons;
+namespace AmongUsSalem.Buttons;
 
 public sealed class FakeVentButton : CustomActionButton
 {
@@ -38,7 +38,7 @@ public sealed class FakeVentButton : CustomActionButton
 
     public override bool Enabled(RoleBehaviour? role)
     {
-        return ObjectWorkshopPlugin.OffsetButtons.Value && Show && HudManager.InstanceExists && !MeetingHud.Instance &&
+        return AUSPlugin.OffsetButtons.Value && Show && HudManager.InstanceExists && !MeetingHud.Instance &&
                role != null && !role.IsImpostor
                && (!role.CanVent || (role is ICustomRole customRole && !customRole.Configuration.CanUseVent));
     }

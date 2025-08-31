@@ -2,18 +2,18 @@ using System.Collections;
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class EscapistRecallButton : ObjectWorkshopRoleButton<EscapistRole>, IAftermathableButton
+public sealed class EscapistRecallButton : AmongUsSalemRoleButton<EscapistRole>, IAftermathableButton
 {
     public override string Name => "Recall";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<EscapistOptions>.Instance.RecallCooldown + MapCooldown;
     public override int MaxUses => (int)OptionGroupSingleton<EscapistOptions>.Instance.MaxEscapes;
     public override LoadableAsset<Sprite> Sprite => TouImpAssets.RecallSprite;

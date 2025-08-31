@@ -9,13 +9,13 @@ using Reactor.Utilities;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.Modules.Components;
+namespace AmongUsSalem.Modules.Components;
 
 [RegisterInIl2Cpp]
 [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Unity")]
@@ -96,11 +96,11 @@ public sealed class TraitorSelectionMinigame(IntPtr cppPtr) : Minigame(cppPtr)
 
         foreach (var role in availableRoles)
         {
-            var teamName = role.GetRoleAlignment().ToDisplayString();
+            var teamName = role.GetAlignment().ToDisplayString();
 
-            if (role is IOWRole touRole)
+            if (role is IAUSRole touRole)
             {
-                teamName = touRole.RoleAlignment.ToDisplayString();
+                teamName = touRole.Alignment.ToDisplayString();
             }
 
             var roleName = role.NiceName;

@@ -1,7 +1,7 @@
 using HarmonyLib;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class JesterNoVentMovePatch

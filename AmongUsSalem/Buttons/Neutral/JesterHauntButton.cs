@@ -2,19 +2,19 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Networking;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class JesterHauntButton : ObjectWorkshopButton
+public sealed class JesterHauntButton : AmongUsSalemButton
 {
     public override string Name => "Haunt";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Jester;
+    public override Color TextOutlineColor => AUSColors.Jester;
     public override float Cooldown => 0.01f;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.JesterHauntSprite;
     public override ButtonLocation Location => ButtonLocation.BottomRight;

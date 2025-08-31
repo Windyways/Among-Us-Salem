@@ -1,16 +1,16 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers.Game.Alliance;
+using AmongUsSalem.Modifiers.Game.Alliance;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Modifiers.Alliance;
+namespace AmongUsSalem.Options.Modifiers.Alliance;
 
 public sealed class LoversOptions : AbstractOptionGroup<LoverModifier>
 {
     public override string GroupName => TouLocale.Get(TouNames.Lovers, "Lovers");
     public override uint GroupPriority => 11;
-    public override Color GroupColor => OWColors.Lover;
+    public override Color GroupColor => AUSColors.Lover;
 
     [ModdedToggleOption("Both Lovers Die And Revive Together")]
     public bool BothLoversDie { get; set; } = true;

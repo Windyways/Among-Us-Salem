@@ -3,7 +3,7 @@ using HarmonyLib;
 using Reactor.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches.PrefabSwitching;
+namespace AmongUsSalem.Patches.PrefabSwitching;
 
 [HarmonyPatch]
 public class PrefabLoader

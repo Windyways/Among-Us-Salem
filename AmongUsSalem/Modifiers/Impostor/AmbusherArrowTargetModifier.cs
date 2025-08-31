@@ -1,7 +1,7 @@
-﻿using ObjectWorkshop.Modules.RainbowMod;
+﻿using AmongUsSalem.Modules.RainbowMod;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class AmbusherArrowTargetModifier(PlayerControl owner, Color color, float update)
     : ArrowTargetModifier(owner, color, update)

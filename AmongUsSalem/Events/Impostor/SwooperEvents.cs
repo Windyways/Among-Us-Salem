@@ -2,10 +2,10 @@
 using MiraAPI.Events.Vanilla.Meeting;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
-using ObjectWorkshop.Buttons.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
+using AmongUsSalem.Buttons.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
 
-namespace ObjectWorkshop.Events.Impostor;
+namespace AmongUsSalem.Events.Impostor;
 
 public static class SwooperEvents
 {

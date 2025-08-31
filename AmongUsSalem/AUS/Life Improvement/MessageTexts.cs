@@ -3,48 +3,42 @@ using System.Collections;
 using Il2CppSystem.Runtime.InteropServices;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement;
+namespace AmongUsSalem.LifeImprovement;
 
 public static class MessageTexts
 {
-    public static string RevealRole(PlayerControl player, bool direct = true)
+    public static string RevealRole(PlayerControl player)
     {
         var role = player.GetOWRole();
 
         string text = player.GetDefaultAppearance().PlayerName + " ";
-        string factionName = string.Empty;
+        text += role.revealText;
 
-        if (direct)
-        {
-            text += role.revealText;
-        }
-        else
-        {
-            if (player.IsFaction(Faction.Crewmate, true)) 
-            {
-                text += "attempts to rid the evil within others.";
-                factionName = "Crewmate";
-            }
-            if (player.IsFaction(Faction.Neutral, true))
-            {
-                text += "has intentions of completing their goal.";
-                factionName = "Neutral";
-            }
-            if (player.IsFaction(Faction.Infiltrator, true))
-            {
-                text += "wants to take over the ship.";
-                factionName = "Infiltrator";
-            }
-        }
-
-        var factionColor = MiscUtils.GetFactionColour(player);
         var roleColor = MiscUtils.GetRoleColour(role.RoleName);
-
-        if (player.IsFaction(Faction.Crewmate, true)) roleColor = MiscUtils.GetRoleColour("Crewmate");
-        if (player.IsFaction(Faction.Infiltrator, true)) roleColor = MiscUtils.GetRoleColour("Infiltrator");
-        if (player.IsFaction(Faction.Neutral, true)) roleColor = MiscUtils.GetRoleColour("Neutral");
-
-        if (!direct) return text + $" they must be a <color=#" + factionColor.ToHtmlStringRGBA() + $">{factionName}!</color>";
         return text + $" they must be the <color=#" + roleColor.ToHtmlStringRGBA() + $">{role.RoleName}!";
+    }
+
+    public static string UnknownObstacle(PlayerControl target)
+    {
+        return "There was an <b><color=#4a86e8>Unknown Obstacle</color></b> when visiting " + target.GetDefaultAppearance().PlayerName + "!";
+    }
+
+    public static string TooMuchDefense(PlayerControl player, PlayerControl target)
+    {
+        /* if (SurvivorFunction.Interfere(target)) SurvivorFunction.NotifySurvivor(player, target);
+         else if (ClericFunction.Interfere(target)) ClericFunction.NotifyCleric(player, target);
+         else if (BodyguardFunction.Interfere(BodyguardFunction.InterfereTypes.NotifyBodyguard, player, target, true, true, false)) BodyguardFunction.NotifyBodyguard(player, target);
+         else if (OracleFunction.Interfere(target)) OracleFunction.NotifyOracle(player, target);
+         else if (GuardianAngelFunction.Interfere(target)) GuardianAngelFunction.NotifyGuardianAngel(player, target);
+         else if (target.IsTrapped()) // Some sort of trapper 'attacked' RPC here.
+ */
+
+        if (player.AmOwner()) Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
+
+        if (player.IsRole<VigilanteRole>())
+        {
+            return target.GetDefaultAppearance().PlayerName + " was immune to your attack.";
+        }
+        return target.GetDefaultAppearance().PlayerName + "'s defense was too high to kill!";
     }
 }

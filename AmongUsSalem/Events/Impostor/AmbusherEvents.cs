@@ -3,9 +3,9 @@ using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Meeting;
 using MiraAPI.Events.Vanilla.Player;
 using MiraAPI.Roles;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 
-namespace ObjectWorkshop.Events.Impostor;
+namespace AmongUsSalem.Events.Impostor;
 
 public static class AmbusherEvents
 {

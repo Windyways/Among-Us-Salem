@@ -2,9 +2,9 @@
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Options.Roles.Crewmate;
+namespace AmongUsSalem.Options.Roles.Crewmate;
 
 public sealed class TrackerOptions : AbstractOptionGroup<TrackerTouRole>
 {

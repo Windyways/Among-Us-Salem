@@ -8,18 +8,18 @@ using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class EscapistRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public Vector2? MarkedLocation { get; set; }
@@ -50,9 +50,9 @@ public sealed class EscapistRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Escapist, "Escapist");
     public string RoleDescription => "Get Away From Kills With Ease";
     public string RoleLongDescription => "Teleport to get away from the scene of the crime";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -64,7 +64,7 @@ public sealed class EscapistRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -91,12 +91,12 @@ public sealed class EscapistRole(IntPtr cppPtr)
         EscapeMark?.gameObject.Destroy();
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.Recall, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.Recall, SendImmediately = true)]
     public static void RpcRecall(PlayerControl player)
     {
         if (player.Data.Role is not EscapistRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcRecall - Invalid escapist");
+            Logger<AUSPlugin>.Error("RpcRecall - Invalid escapist");
             return;
         }
 
@@ -104,12 +104,12 @@ public sealed class EscapistRole(IntPtr cppPtr)
         MiraEventManager.InvokeEvent(touAbilityEvent);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.MarkLocation, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.MarkLocation, SendImmediately = true)]
     public static void RpcMarkLocation(PlayerControl player, Vector2 pos)
     {
         if (player.Data.Role is not EscapistRole henry)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcRecall - Invalid escapist");
+            Logger<AUSPlugin>.Error("RpcRecall - Invalid escapist");
             return;
         }
 

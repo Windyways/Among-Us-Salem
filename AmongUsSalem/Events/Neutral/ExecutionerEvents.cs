@@ -9,15 +9,15 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class ExecutionerEvents
 {
@@ -69,7 +69,7 @@ public static class ExecutionerEvents
             if (exe.Player.AmOwner)
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>You have successfully won as the {OWColors.Executioner.ToTextColor()}Executioner</color>, as your target was exiled!</b>",
+                    $"<b>You have successfully won as the {AUSColors.Executioner.ToTextColor()}Executioner</color>, as your target was exiled!</b>",
                     Color.white, spr: TouRoleIcons.Executioner.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -97,7 +97,7 @@ public static class ExecutionerEvents
             else
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>The {OWColors.Executioner.ToTextColor()}Executioner</color>, {exe.Player.Data.PlayerName}, has successfully won, as their target was exiled!</b>",
+                    $"<b>The {AUSColors.Executioner.ToTextColor()}Executioner</color>, {exe.Player.Data.PlayerName}, has successfully won, as their target was exiled!</b>",
                     Color.white, spr: TouRoleIcons.Executioner.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);

@@ -13,21 +13,21 @@ using Reactor.Localization;
 using Reactor.Networking;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Patches.Misc;
-using static ObjectWorkshop.LifeImprovement.MCI.Reactor_Coroutines;
-using ModCompatibility = ObjectWorkshop.Modules.ModCompatibility;
+using AmongUsSalem.Patches.Misc;
+using static AmongUsSalem.LifeImprovement.MCI.Reactor_Coroutines;
+using ModCompatibility = AmongUsSalem.Modules.ModCompatibility;
 
-namespace ObjectWorkshop;
+namespace AmongUsSalem;
 
 /// <summary>
-///     Plugin class for Object Workshop.
+///     Plugin class for Among Us Salem.
 /// </summary>
-[BepInAutoPlugin("auavengers.tou.mira", "Object Workshop")]
+[BepInAutoPlugin("auavengers.tou.mira", "Among Us Salem")]
 [BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
 [BepInDependency(MiraApiPlugin.Id)]
 [ReactorModFlags(ModFlags.RequireOnAllClients)]
-public partial class ObjectWorkshopPlugin : BasePlugin, IMiraPlugin
+public partial class AUSPlugin : BasePlugin, IMiraPlugin
 {
     /// <summary>
     ///     Gets the specified Culture for string manipulations.
@@ -56,7 +56,7 @@ public partial class ObjectWorkshopPlugin : BasePlugin, IMiraPlugin
     public static bool IsDevBuild => false;
     
     /// <inheritdoc />
-    public string OptionsTitleText => "Object\nWorkshop";
+    public string OptionsTitleText => "Among Us\nSalem III";
 
     /// <inheritdoc />
     public ConfigFile GetConfigFile()
@@ -64,7 +64,7 @@ public partial class ObjectWorkshopPlugin : BasePlugin, IMiraPlugin
         return Config;
     }
 
-    public ObjectWorkshopPlugin()
+    public AUSPlugin()
     {
         TouLocale.Initialize();
     }
@@ -74,7 +74,7 @@ public partial class ObjectWorkshopPlugin : BasePlugin, IMiraPlugin
     /// </summary>
     public override void Load()
     {
-        ReactorCredits.Register("Object Workshop", Version, IsDevBuild, ReactorCredits.AlwaysShow);
+        ReactorCredits.Register("Among Us Salem III", Version, IsDevBuild, ReactorCredits.AlwaysShow);
         LocalizationManager.Register(new TaskProvider());
 
         TouAssets.Initialize();
@@ -82,7 +82,7 @@ public partial class ObjectWorkshopPlugin : BasePlugin, IMiraPlugin
         IL2CPPChainloader.Instance.Finished += ModCompatibility.Initialize; // Initialise AFTER the mods are loaded to ensure maximum parity (no need for the soft dependency either then)
         IL2CPPChainloader.Instance.Finished += ModNewsFetcher.CheckForNews; // Checks for mod announcements after everything is loaded to avoid Epic Games crashing
 
-        var path = Path.GetDirectoryName(Assembly.GetAssembly(typeof(ObjectWorkshopPlugin))!.Location) + "\\touhats.catalog";
+        var path = Path.GetDirectoryName(Assembly.GetAssembly(typeof(AUSPlugin))!.Location) + "\\touhats.catalog";
         AddressablesLoader.RegisterCatalog(path);
         AddressablesLoader.RegisterHats("touhats");
 
@@ -100,7 +100,7 @@ public partial class ObjectWorkshopPlugin : BasePlugin, IMiraPlugin
         GameSummaryMode = Config.Bind("LocalSettings", "GameSummaryMode", 1,
             "How the Game Summary appears in the Win Screen. 0 is to the left, 1 is split, and 2 is hidden.");
         OffsetButtons = Config.Bind("LocalSettings", "OffsetButtons", false,
-            "If venting is disabled (and you're not an Infiltrator), should there be a blank spot where the vent button usually is?");
+            "If venting is disabled (and you're not an Mafia), should there be a blank spot where the vent button usually is?");
         PreciseCooldowns = Config.Bind("LocalSettings", "PreciseCooldowns", false,
             "Whether Button Cooldowns Show To 1 Decimal Place When It is Less Than 10 Seconds Remaining.");
         ArrowStyle = Config.Bind("LocalSettings", "ArrowStyle", 2,
@@ -121,9 +121,9 @@ public partial class ObjectWorkshopPlugin : BasePlugin, IMiraPlugin
     public enum MsgType { Message, Warning, Error }
     public static void DebugLogMessage(string message, MsgType type = MsgType.Message)
     {
-        if (type == MsgType.Error) PluginSingleton<ObjectWorkshopPlugin>.Instance.Log.LogError(message);
-        else if (type == MsgType.Warning) PluginSingleton<ObjectWorkshopPlugin>.Instance.Log.LogWarning(message);
-        else if (type == MsgType.Message) PluginSingleton<ObjectWorkshopPlugin>.Instance.Log.LogMessage(message);
+        if (type == MsgType.Error) PluginSingleton<AUSPlugin>.Instance.Log.LogError(message);
+        else if (type == MsgType.Warning) PluginSingleton<AUSPlugin>.Instance.Log.LogWarning(message);
+        else if (type == MsgType.Message) PluginSingleton<AUSPlugin>.Instance.Log.LogMessage(message);
     }
     
 	public static bool InGame()

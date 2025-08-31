@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using MiraAPI.Modifiers;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class AmbassadorRetrainedModifier(ushort role) : BaseModifier
 {

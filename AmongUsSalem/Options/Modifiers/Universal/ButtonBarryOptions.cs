@@ -1,16 +1,16 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Modifiers.Universal;
+namespace AmongUsSalem.Options.Modifiers.Universal;
 
 public sealed class ButtonBarryOptions : AbstractOptionGroup<ButtonBarryModifier>
 {
     public override string GroupName => TouLocale.Get(TouNames.ButtonBarry, "Button Barry");
     public override uint GroupPriority => 22;
-    public override Color GroupColor => OWColors.ButtonBarry;
+    public override Color GroupColor => AUSColors.ButtonBarry;
 
     [ModdedNumberOption("Button Cooldown", 2.5f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 30f;

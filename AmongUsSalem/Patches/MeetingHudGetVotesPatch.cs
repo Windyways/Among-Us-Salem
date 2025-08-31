@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using ObjectWorkshop.LifeImprovement.MCI.SmartMCI;
+using AmongUsSalem.LifeImprovement.MCI.SmartMCI;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(MeetingHud))]
 public static class MeetingHudGetVotesPatch

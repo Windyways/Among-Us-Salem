@@ -1,7 +1,7 @@
 using HarmonyLib;
-using ObjectWorkshop.Modules;
+using AmongUsSalem.Modules;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
 public static class MeetingMenuUpdatePatch

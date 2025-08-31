@@ -1,6 +1,6 @@
 using MiraAPI.Events;
 
-namespace ObjectWorkshop.Events.TouEvents;
+namespace AmongUsSalem.Events.TouEvents;
 
 /// <summary>
 ///     Event that is invoked after a player's role is changed through Tou Mira. This event is not cancelable.

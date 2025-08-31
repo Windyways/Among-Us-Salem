@@ -2,19 +2,19 @@ using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class JailorJailButton : ObjectWorkshopRoleButton<JailorRole, PlayerControl>
+public sealed class JailorJailButton : AmongUsSalemRoleButton<JailorRole, PlayerControl>
 {
     public override string Name => "Jail";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Jailor;
+    public override Color TextOutlineColor => AUSColors.Jailor;
     public override float Cooldown => OptionGroupSingleton<JailorOptions>.Instance.JailCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.JailSprite;
 

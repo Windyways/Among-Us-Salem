@@ -3,13 +3,13 @@ using MiraAPI.Events.Vanilla.Player;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class PhantomEvents
 {
@@ -30,7 +30,7 @@ public static class PhantomEvents
             if (phantom.Player.AmOwner)
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>You have successfully won as the {OWColors.Phantom.ToTextColor()}Phantom</color>, as you finished your tasks postmortem!</b>",
+                    $"<b>You have successfully won as the {AUSColors.Phantom.ToTextColor()}Phantom</color>, as you finished your tasks postmortem!</b>",
                     Color.white, spr: TouRoleIcons.Phantom.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -51,7 +51,7 @@ public static class PhantomEvents
             else
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>The {OWColors.Phantom.ToTextColor()}Phantom</color>, {phantom.Player.Data.PlayerName}, has successfully won, as they completed their tasks postmortem!</b>",
+                    $"<b>The {AUSColors.Phantom.ToTextColor()}Phantom</color>, {phantom.Player.Data.PlayerName}, has successfully won, as they completed their tasks postmortem!</b>",
                     Color.white, spr: TouRoleIcons.Phantom.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);

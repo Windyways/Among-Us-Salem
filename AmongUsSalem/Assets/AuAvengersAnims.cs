@@ -2,7 +2,7 @@
 using Reactor.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Assets;
+namespace AmongUsSalem.Assets;
 
 public static class AuAvengersAnims
 {

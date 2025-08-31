@@ -2,14 +2,14 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class MagicMirrorModifier(PlayerControl mirrorcaster) : BaseShieldModifier
 {

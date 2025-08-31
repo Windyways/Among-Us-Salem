@@ -1,9 +1,9 @@
 ﻿using MiraAPI.GameOptions;
-using ObjectWorkshop.Modules.RainbowMod;
-using ObjectWorkshop.Options.Roles.Crewmate;
+using AmongUsSalem.Modules.RainbowMod;
+using AmongUsSalem.Options.Roles.Crewmate;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class TrackerArrowTargetModifier(PlayerControl owner, Color color, float update)
     : ArrowTargetModifier(owner, color, update)

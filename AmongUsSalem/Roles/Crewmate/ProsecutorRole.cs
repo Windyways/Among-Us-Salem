@@ -9,14 +9,14 @@ using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class ProsecutorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -69,9 +69,9 @@ public sealed class ProsecutorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCr
     public string RoleName => TouLocale.Get(TouNames.Prosecutor, "Prosecutor");
     public string RoleDescription => "Exile Players Of Your Choosing";
     public string RoleLongDescription => "Choose to exile anyone you want";
-    public Color RoleColor => OWColors.Prosecutor;
+    public Color RoleColor => AUSColors.Prosecutor;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public bool IsPowerCrew =>
         ProsecutionsCompleted <
@@ -88,7 +88,7 @@ public sealed class ProsecutorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCr
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var text = IOWRole.SetNewTabText(this);
+        var text = IAUSRole.SetNewTabText(this);
         if (PlayerControl.LocalPlayer.TryGetModifier<AllianceGameModifier>(out var allyMod) && !allyMod.GetsPunished)
         {
             text.AppendLine(CultureInfo.InvariantCulture, $"<b>You may prosecute crew.</b>");
@@ -168,7 +168,7 @@ public sealed class ProsecutorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCr
         HasProsecuted = false;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.Prosecute, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.Prosecute, SendImmediately = true)]
     public static void RpcProsecute(PlayerControl plr, byte Victim)
     {
         if (plr.Data.Role is not ProsecutorRole prosecutorRole)

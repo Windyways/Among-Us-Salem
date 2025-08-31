@@ -2,22 +2,22 @@
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class GlitchMimicButton : ObjectWorkshopRoleButton<GlitchRole>, IAftermathableButton
+public sealed class GlitchMimicButton : AmongUsSalemRoleButton<GlitchRole>, IAftermathableButton
 {
     public override string Name => "Mimic";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Glitch;
+    public override Color TextOutlineColor => AUSColors.Glitch;
     public override float Cooldown => OptionGroupSingleton<GlitchOptions>.Instance.MimicCooldown + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<GlitchOptions>.Instance.MimicDuration;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.MimicSprite;

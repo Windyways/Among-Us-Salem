@@ -1,9 +1,9 @@
 using MiraAPI.Events;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
-using ObjectWorkshop.Events.TouEvents;
+using AmongUsSalem.Events.TouEvents;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class OracleConfessModifier(PlayerControl oracle, int faction) : BaseModifier
 {

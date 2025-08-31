@@ -2,14 +2,14 @@ using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.GameOptions.OptionTypes;
 
-namespace ObjectWorkshop.Options;
+namespace AmongUsSalem.Options;
 
 public sealed class AirshipOptions : AbstractOptionGroup
 {
     public override string GroupName => "Better Airship";
     public override uint GroupPriority => 5;
     public override Func<bool> GroupVisible => () =>
-        (GameOptionsManager.Instance.currentGameOptions.MapId == 4) || (OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.RandomMaps && OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.AirshipChance > 0);
+        (GameOptionsManager.Instance.currentGameOptions.MapId == 4) || (OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.RandomMaps && OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.AirshipChance > 0);
 
     [ModdedToggleOption("Airship Doors Are Polus Doors")]
     public bool AirshipPolusDoors { get; set; } = false;

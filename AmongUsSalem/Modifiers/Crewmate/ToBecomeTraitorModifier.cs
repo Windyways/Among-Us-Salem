@@ -3,17 +3,17 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modifiers.Game.Impostor;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modifiers.Game.Impostor;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Random = System.Random;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class ToBecomeTraitorModifier : ExcludedGameModifier, IAssignableTargets
 {
@@ -73,7 +73,7 @@ public sealed class ToBecomeTraitorModifier : ExcludedGameModifier, IAssignableT
         ModifierComponent?.RemoveModifier(this);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SetTraitor, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SetTraitor, SendImmediately = true)]
     public static void RpcSetTraitor(PlayerControl player)
     {
         if (!player.HasModifier<ToBecomeTraitorModifier>())

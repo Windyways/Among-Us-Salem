@@ -1,11 +1,11 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Impostor;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Impostor;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class UnderdogEvents
 {

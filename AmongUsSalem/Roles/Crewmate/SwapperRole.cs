@@ -5,13 +5,13 @@ using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class SwapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -24,9 +24,9 @@ public sealed class SwapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewR
     public string RoleName => TouLocale.Get(TouNames.Swapper, "Swapper");
     public string RoleDescription => "Swap Votes To Save The Crew!";
     public string RoleLongDescription => "Swap votes from one player to another during a meeting";
-    public Color RoleColor => OWColors.Swapper;
+    public Color RoleColor => AUSColors.Swapper;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public bool IsPowerCrew => true; // Always disable end game checks because a swapper can still screw people over
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -39,7 +39,7 @@ public sealed class SwapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewR
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -156,7 +156,7 @@ public sealed class SwapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewR
         RpcSyncSwaps(Player, Swap1?.TargetPlayerId ?? 255, Swap2?.TargetPlayerId ?? 255);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SetSwaps, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SetSwaps, SendImmediately = true)]
     public static void RpcSyncSwaps(PlayerControl swapper, byte swap1, byte swap2)
     {
         var swapperRole = swapper.Data?.Role as SwapperRole;

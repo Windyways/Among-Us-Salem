@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Options;
+using AmongUsSalem.Options;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch(typeof(ImpostorRole), nameof(ImpostorRole.IsValidTarget))]
 public static class ImpostorValidTargetPatch

@@ -1,9 +1,9 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers;
 
-namespace ObjectWorkshop.Events;
+namespace AmongUsSalem.Events;
 
 public static class RevealEvents
 {

@@ -1,9 +1,9 @@
 using HarmonyLib;
 using InnerNet;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Impostor;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class EclipsalBlindReportPatch

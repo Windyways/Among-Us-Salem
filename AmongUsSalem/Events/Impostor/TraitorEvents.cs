@@ -4,13 +4,13 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Impostor;
+namespace AmongUsSalem.Events.Impostor;
 
 public static class TraitorEvents
 {
@@ -34,7 +34,7 @@ public static class TraitorEvents
 
             foreach (var player in alives)
             {
-                if (player.IsImpostor() || (player.Is(RoleAlignment.NeutralPredator) &&
+                if (player.IsImpostor() || (player.Is(Alignment.NeutralKilling) &&
                                             OptionGroupSingleton<TraitorOptions>.Instance.NeutralKillingStopsTraitor))
                 {
                     return;

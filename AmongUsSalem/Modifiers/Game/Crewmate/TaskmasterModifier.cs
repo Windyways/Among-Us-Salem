@@ -3,11 +3,11 @@ using Il2CppSystem.Text;
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class TaskmasterModifier : TouGameModifier
 {
@@ -72,7 +72,7 @@ public sealed class TaskmasterModifier : TouGameModifier
                 taskText = taskText.Replace(Environment.NewLine, "");
 
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>{OWColors.Taskmaster.ToTextColor()}The task '{taskText}' has been completed for you.</b></color>",
+                    $"<b>{AUSColors.Taskmaster.ToTextColor()}The task '{taskText}' has been completed for you.</b></color>",
                     Color.white, spr: TouModifierIcons.Taskmaster.LoadAsset());
                 notif1.Text.SetOutlineThickness(0.35f);
                 notif1.transform.localPosition = new Vector3(0f, 1f, -20f);

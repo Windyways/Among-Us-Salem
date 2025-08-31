@@ -2,15 +2,15 @@ using HarmonyLib;
 using InnerNet;
 using MiraAPI.GameOptions;
 using TMPro;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class LocalSettings
@@ -21,8 +21,8 @@ public static class LocalSettings
         {
             Title = "Show Other Ghosts When Dead",
             ObjName = "VisibleGhostsToggle",
-            OnClick = () => { return ObjectWorkshopPlugin.DeadSeeGhosts.Value = !ObjectWorkshopPlugin.DeadSeeGhosts.Value; },
-            DefaultValue = ObjectWorkshopPlugin.DeadSeeGhosts.Value
+            OnClick = () => { return AUSPlugin.DeadSeeGhosts.Value = !AUSPlugin.DeadSeeGhosts.Value; },
+            DefaultValue = AUSPlugin.DeadSeeGhosts.Value
         },
         new()
         {
@@ -30,9 +30,9 @@ public static class LocalSettings
             ObjName = "WelcomeMsgToggle",
             OnClick = () =>
             {
-                return ObjectWorkshopPlugin.ShowWelcomeMessage.Value = !ObjectWorkshopPlugin.ShowWelcomeMessage.Value;
+                return AUSPlugin.ShowWelcomeMessage.Value = !AUSPlugin.ShowWelcomeMessage.Value;
             },
-            DefaultValue = ObjectWorkshopPlugin.ShowWelcomeMessage.Value
+            DefaultValue = AUSPlugin.ShowWelcomeMessage.Value
         },
         new()
         {
@@ -40,9 +40,9 @@ public static class LocalSettings
             ObjName = "SummaryMsgToggle",
             OnClick = () =>
             {
-                return ObjectWorkshopPlugin.ShowSummaryMessage.Value = !ObjectWorkshopPlugin.ShowSummaryMessage.Value;
+                return AUSPlugin.ShowSummaryMessage.Value = !AUSPlugin.ShowSummaryMessage.Value;
             },
-            DefaultValue = ObjectWorkshopPlugin.ShowSummaryMessage.Value
+            DefaultValue = AUSPlugin.ShowSummaryMessage.Value
         },
         new()
         {
@@ -51,8 +51,8 @@ public static class LocalSettings
             Enabled = Palette.CrewmateBlue,
             //Disabled = new(0.4f, 0f, 0.6f, 1f),
             Hover = Palette.CrewmateRoleBlue,
-            OnClick = () => { return ObjectWorkshopPlugin.ColorPlayerName.Value = !ObjectWorkshopPlugin.ColorPlayerName.Value; },
-            DefaultValue = ObjectWorkshopPlugin.ColorPlayerName.Value
+            OnClick = () => { return AUSPlugin.ColorPlayerName.Value = !AUSPlugin.ColorPlayerName.Value; },
+            DefaultValue = AUSPlugin.ColorPlayerName.Value
         },
         new()
         {
@@ -60,33 +60,33 @@ public static class LocalSettings
             //Enabled = new(0f, 1f, 0.7f, 1f),
             //Hover = new(0f, 0.4f, 0f, 1f),
             ObjName = "ShieldsHudToggle",
-            OnClick = () => { return ObjectWorkshopPlugin.ShowShieldHud.Value = !ObjectWorkshopPlugin.ShowShieldHud.Value; },
-            DefaultValue = ObjectWorkshopPlugin.ShowShieldHud.Value
+            OnClick = () => { return AUSPlugin.ShowShieldHud.Value = !AUSPlugin.ShowShieldHud.Value; },
+            DefaultValue = AUSPlugin.ShowShieldHud.Value
         },
         new()
         {
-            Title = $"Button Scale Factor: {Math.Round(ObjectWorkshopPlugin.ButtonUIFactor.Value, 2)}x",
+            Title = $"Button Scale Factor: {Math.Round(AUSPlugin.ButtonUIFactor.Value, 2)}x",
             ObjName = "ButtonScaleFloat",
-            Enabled = OWColors.Inquisitor,
-            Disabled = OWColors.Juggernaut,
-            Hover = OWColors.Vampire,
+            Enabled = AUSColors.Inquisitor,
+            Disabled = AUSColors.Juggernaut,
+            Hover = AUSColors.Vampire,
             OnClick = () =>
             {
                 if (HudManager.InstanceExists)
                 {
-                    HudManagerPatches.ResizeUI(1f / ObjectWorkshopPlugin.ButtonUIFactor.Value);
+                    HudManagerPatches.ResizeUI(1f / AUSPlugin.ButtonUIFactor.Value);
                 }
 
-                var newVal = ObjectWorkshopPlugin.ButtonUIFactor.Value + 0.1f;
+                var newVal = AUSPlugin.ButtonUIFactor.Value + 0.1f;
                 if (newVal is <= 0.5f or >= 1.6f)
                 {
                     newVal = 0.5f;
                 }
 
-                ObjectWorkshopPlugin.ButtonUIFactor.Value = newVal;
+                AUSPlugin.ButtonUIFactor.Value = newVal;
                 if (HudManager.InstanceExists)
                 {
-                    HudManagerPatches.ResizeUI(ObjectWorkshopPlugin.ButtonUIFactor.Value);
+                    HudManagerPatches.ResizeUI(AUSPlugin.ButtonUIFactor.Value);
                 }
 
                 var optionsMenu = GameObject.Find("Menu(Clone)") ? GameObject.Find("Menu(Clone)") : GameObject.Find("OptionsMenu(Clone)");
@@ -100,23 +100,23 @@ public static class LocalSettings
                     }
                 }
 
-                return ObjectWorkshopPlugin.ButtonUIFactor.Value < 1f;
+                return AUSPlugin.ButtonUIFactor.Value < 1f;
             },
-            DefaultValue = ObjectWorkshopPlugin.ButtonUIFactor.Value < 1f
+            DefaultValue = AUSPlugin.ButtonUIFactor.Value < 1f
         },
         new()
         {
             Title = "Offset Buttons If You Can't Vent",
             ObjName = "OffsetButtons",
-            OnClick = () => { return ObjectWorkshopPlugin.OffsetButtons.Value = !ObjectWorkshopPlugin.OffsetButtons.Value; },
-            DefaultValue = ObjectWorkshopPlugin.OffsetButtons.Value
+            OnClick = () => { return AUSPlugin.OffsetButtons.Value = !AUSPlugin.OffsetButtons.Value; },
+            DefaultValue = AUSPlugin.OffsetButtons.Value
         },
         new()
         {
             Title = "Button Cooldowns are in Decimal Under 10s",
             ObjName = "PreciseCooldowns",
-            OnClick = () => { return ObjectWorkshopPlugin.PreciseCooldowns.Value = !ObjectWorkshopPlugin.PreciseCooldowns.Value; },
-            DefaultValue = ObjectWorkshopPlugin.PreciseCooldowns.Value
+            OnClick = () => { return AUSPlugin.PreciseCooldowns.Value = !AUSPlugin.PreciseCooldowns.Value; },
+            DefaultValue = AUSPlugin.PreciseCooldowns.Value
         },
         new()
         {
@@ -124,13 +124,13 @@ public static class LocalSettings
             ObjName = "ArrowStyle",
             OnClick = () =>
             {
-                var newVal = ObjectWorkshopPlugin.ArrowStyle.Value + 1;
+                var newVal = AUSPlugin.ArrowStyle.Value + 1;
                 if (newVal is < 0 or > 3)
                 {
                     newVal = 0;
                 }
 
-                ObjectWorkshopPlugin.ArrowStyle.Value = newVal;
+                AUSPlugin.ArrowStyle.Value = newVal;
 
                 var optionsMenu = GameObject.Find("Menu(Clone)") ? GameObject.Find("Menu(Clone)") : GameObject.Find("OptionsMenu(Clone)");
 
@@ -143,9 +143,9 @@ public static class LocalSettings
                     }
                 }
 
-                return ObjectWorkshopPlugin.ArrowStyle.Value <= 0;
+                return AUSPlugin.ArrowStyle.Value <= 0;
             },
-            DefaultValue = ObjectWorkshopPlugin.ArrowStyle.Value <= 0
+            DefaultValue = AUSPlugin.ArrowStyle.Value <= 0
         }
     ];
 
@@ -395,7 +395,7 @@ public static class LocalSettings
                     continue;
             }
 
-            var show = ObjectWorkshopPlugin.DeadSeeGhosts.Value;
+            var show = AUSPlugin.DeadSeeGhosts.Value;
             var bodyForms = player.gameObject.transform.GetChild(1).gameObject;
 
             foreach (var form in bodyForms.GetAllChildren())
@@ -432,7 +432,7 @@ public static class LocalSettings
         public Func<bool> OnClick;
         public string Title;
         public Color Enabled { get; set; } = Color.green;
-        public Color Disabled { get; set; } = OWColors.Infiltrator;
+        public Color Disabled { get; set; } = AUSColors.Mafia;
         public Color Hover { get; set; } = new Color32(34, 139, 34, 255);
     }
 }

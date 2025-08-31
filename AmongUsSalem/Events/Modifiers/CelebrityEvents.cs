@@ -3,10 +3,10 @@ using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Events.Vanilla.Meeting;
 using MiraAPI.Events.Vanilla.Player;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class CelebrityEvents
 {

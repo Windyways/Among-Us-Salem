@@ -16,19 +16,19 @@ using PowerTools;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Buttons.Impostor;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Impostor;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class AmbusherRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IOWRole, IDoomable
+    : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Fearmonger;
@@ -36,9 +36,9 @@ public sealed class AmbusherRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Ambusher, "Ambusher");
     public string RoleDescription => "Kidnap Crewmates Into The Shadows";
     public string RoleLongDescription => "Pursue a player, then ambush the closest player to them.\nIf the player you ambush dies, then take their body with you.";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public PlayerControl? Pursued { get; set; }
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -73,7 +73,7 @@ public sealed class AmbusherRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         if (Pursued)
         {
@@ -116,12 +116,12 @@ public sealed class AmbusherRole(IntPtr cppPtr)
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.AmbushPlayer, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.AmbushPlayer, SendImmediately = true)]
     public static void RpcAmbushPlayer(PlayerControl ambusher, PlayerControl target)
     {
         if (ambusher.Data.Role is not AmbusherRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcAmbushPlayer - Invalid ambusher");
+            Logger<AUSPlugin>.Error("RpcAmbushPlayer - Invalid ambusher");
             return;
         }
         ambusher.AddModifier<IndirectAttackerModifier>(false);

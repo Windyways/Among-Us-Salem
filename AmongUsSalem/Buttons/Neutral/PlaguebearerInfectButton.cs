@@ -2,19 +2,19 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class PlaguebearerInfectButton : ObjectWorkshopRoleButton<PlaguebearerRole, PlayerControl>
+public sealed class PlaguebearerInfectButton : AmongUsSalemRoleButton<PlaguebearerRole, PlayerControl>
 {
     public override string Name => "Infect";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Plaguebearer;
+    public override Color TextOutlineColor => AUSColors.Plaguebearer;
     public override float Cooldown => OptionGroupSingleton<PlaguebearerOptions>.Instance.InfectCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.InfectSprite;
 
@@ -28,7 +28,7 @@ public sealed class PlaguebearerInfectButton : ObjectWorkshopRoleButton<Plaguebe
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Plaguebearer Infect: Target is null");
+            Logger<AUSPlugin>.Error("Plaguebearer Infect: Target is null");
             return;
         }
 

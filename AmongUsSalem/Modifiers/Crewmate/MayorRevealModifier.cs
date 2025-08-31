@@ -1,6 +1,6 @@
-﻿using ObjectWorkshop.Roles.Crewmate;
+﻿using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class MayorRevealModifier(RoleBehaviour role)
     : RevealModifier((int)ChangeRoleResult.RemoveModifier, true, role)

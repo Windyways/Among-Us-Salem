@@ -8,15 +8,15 @@ using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
-public sealed class ArsonistRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, IDoomable
+public sealed class ArsonistRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Fearmonger;
@@ -27,9 +27,9 @@ public sealed class ArsonistRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, 
         ? "Douse players and ignite the closest one to kill all doused targets"
         : "Douse players and ignite to kill all nearby doused targets";
 
-    public Color RoleColor => OWColors.Arsonist;
+    public Color RoleColor => AUSColors.Arsonist;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -43,7 +43,7 @@ public sealed class ArsonistRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         var allDoused = PlayerControl.AllPlayerControls.ToArray().Where(x =>
             !x.HasDied() && x.GetModifier<ArsonistDousedModifier>()?.ArsonistId == Player.PlayerId);
@@ -100,7 +100,7 @@ public sealed class ArsonistRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, 
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouNeutAssets.ArsoVentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Arsonist);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Arsonist);
         }
     }
 
@@ -110,7 +110,7 @@ public sealed class ArsonistRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, 
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouAssets.VentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Infiltrator);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Mafia);
         }
     }
 

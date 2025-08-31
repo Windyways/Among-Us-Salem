@@ -3,14 +3,14 @@ using Reactor.Networking.Attributes;
 using Reactor.Networking.Extensions;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Game.Impostor;
+using AmongUsSalem.Modifiers.Game.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Networking;
+namespace AmongUsSalem.Networking;
 
-[RegisterCustomRpc((uint)ObjectWorkshopRpc.Disperse)]
-public sealed class DisperseRpc(ObjectWorkshopPlugin plugin, uint id)
-    : PlayerCustomRpc<ObjectWorkshopPlugin, Dictionary<byte, Vector2>>(plugin, id)
+[RegisterCustomRpc((uint)AUSRpc.Disperse)]
+public sealed class DisperseRpc(AUSPlugin plugin, uint id)
+    : PlayerCustomRpc<AUSPlugin, Dictionary<byte, Vector2>>(plugin, id)
 {
     public override RpcLocalHandling LocalHandling => RpcLocalHandling.Before;
 

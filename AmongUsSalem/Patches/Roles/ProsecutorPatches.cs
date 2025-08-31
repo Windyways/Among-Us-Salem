@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class ProsecutorPatches

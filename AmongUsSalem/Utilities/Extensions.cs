@@ -8,47 +8,49 @@ using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modifiers.Game.Impostor;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modifiers.Game.Impostor;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.Utilities;
+namespace AmongUsSalem.Utilities;
 
-public enum Faction { Crewmate, Neutral, Infiltrator }
 public static class Extensions
 {
-    public static bool IsFaction(this PlayerControl player, Faction faction, bool roleCheck = false)
+    public static bool Is(this PlayerControl player, Faction faction)
     {
-        var role = player.Data.Role;
-        if (role is ICustomRole customRole)
+        if (player.Data.Role is IAUSRole role && role.RoleFaction == faction)
         {
-            if (roleCheck)
-            {
-                if (role is Claylim && faction == Faction.Neutral) return true;
-                else if (role is Claylim) return false;
-            }
-            
-            if (customRole.Team == ModdedRoleTeams.Crewmate && faction == Faction.Crewmate) return true;
-            if (customRole.Team == ModdedRoleTeams.Custom && faction == Faction.Neutral) return true;
-            if (customRole.Team == ModdedRoleTeams.Impostor && faction == Faction.Infiltrator) return true;
+            return true;
         }
         
         return false;
     }
+    
+    public static bool Is(this PlayerControl player, Alignment alignment)
+    {
+        if (player.Data.Role is IAUSRole role && role.Alignment == alignment)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+
+    
 
 
 
@@ -68,9 +70,9 @@ public static class Extensions
         return data.Role is IGhostRole ghostRole ? !ghostRole.GhostActive : data.IsDead;
     }
 
-    public static IOWRole? GetOWRole(this PlayerControl player)
+    public static IAUSRole? GetOWRole(this PlayerControl player)
     {
-        var role = player.Data?.Role as IOWRole;
+        var role = player.Data?.Role as IAUSRole;
 
         return role;
     }
@@ -94,23 +96,11 @@ public static class Extensions
 
     public static bool IsImpostor(this PlayerControl player)
     {
-        if (player.HasModifier<CacheModifier>() && player != null)
-        {
-            var cacheModifier = player.GetModifier<CacheModifier>();
-            if (cacheModifier.faction == Faction.Infiltrator) return true;
-        }
-        
         return player?.Data && player?.Data?.Role && player?.Data?.Role.IsImpostor() == true;
     }
 
     public static bool IsImpostor(this RoleBehaviour role)
     {
-        if (role.Player.HasModifier<CacheModifier>())
-        {
-            var cacheModifier = role.Player.GetModifier<CacheModifier>();
-            if (cacheModifier.faction == Faction.Infiltrator) return true;
-        }
-
         return role is ICustomRole customRole
             ? customRole.Team is ModdedRoleTeams.Impostor
             : role.TeamType is RoleTeamTypes.Impostor;
@@ -149,42 +139,9 @@ public static class Extensions
         return player.Data.Role.Role == roleType;
     }
 
-    public static bool Is(this PlayerControl player, RoleAlignment roleAlignment)
-    {
-        if (player.Data.Role is IOWRole role && role.RoleAlignment == roleAlignment)
-        {
-            return true;
-        }
-
-        if (player.Data.Role.Role is RoleTypes.Crewmate or RoleTypes.Scientist or RoleTypes.Noisemaker
-                or RoleTypes.Engineer &&
-            roleAlignment == RoleAlignment.CrewmateSupport)
-        {
-            return true;
-        }
-
-        if (player.Data.Role.Role is RoleTypes.Tracker && roleAlignment == RoleAlignment.CrewmateInvestigative)
-        {
-            return true;
-        }
-
-        if (player.Data.Role.Role is RoleTypes.Impostor && roleAlignment == RoleAlignment.InfiltratorSupport)
-        {
-            return true;
-        }
-
-        if (player.Data.Role.Role is RoleTypes.Shapeshifter or RoleTypes.Phantom &&
-            roleAlignment == RoleAlignment.InfiltratorDisruption)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     public static bool Is(this PlayerControl player, ModdedRoleTeams team)
     {
-        if (player.Data.Role is IOWRole role && role.Team == team)
+        if (player.Data.Role is IAUSRole role && role.Team == team)
         {
             return true;
         }
@@ -346,23 +303,23 @@ public static class Extensions
         //var material = panel.PlayerIcon.cosmetics.currentBodySprite.BodySprite.material;
         var color = roleBehaviour is ICustomRole customRole ? customRole.RoleColor : roleBehaviour.TeamColor;
 
-        //var teamName = roleBehaviour is IOWRole touRole
+        //var teamName = roleBehaviour is IAUSRole touRole
         //    ? touRole.Alignment.ToDisplayString()
         //    : roleBehaviour.TeamType.ToDisplayString();
-        //if (roleBehaviour is ICustomRole customOther && roleBehaviour is not IOWRole) teamName = customOther.Team.ToDisplayString();
+        //if (roleBehaviour is ICustomRole customOther && roleBehaviour is not IAUSRole) teamName = customOther.Team.ToDisplayString();
 
         //if (teamName.Contains("Crewmate")) teamName = teamName.Replace("Crewmate", $"<color=#68ACF4FF>Crewmate</color>");
         //else if (teamName.Contains("Impostor")) teamName = teamName.Replace("Impostor", $"<color=#D63F42FF>Impostor</color>");
-        //else if (roleBehaviour is not IOWRole)
+        //else if (roleBehaviour is not IAUSRole)
         //{
-        //    if (roleBehaviour is IOWRole) teamName = "Neutral Benign";
-        //    else if (roleBehaviour is IOWRole) teamName = "Neutral Evil";
-        //    else if (roleBehaviour is IOWRole) teamName = "Neutral Killing";
+        //    if (roleBehaviour is IAUSRole) teamName = "Neutral Benign";
+        //    else if (roleBehaviour is IAUSRole) teamName = "Neutral Evil";
+        //    else if (roleBehaviour is IAUSRole) teamName = "Neutral Killing";
         //    teamName = teamName.Replace("Neutral", $"<color=#8A8A8AFF>Neutral</color>");
         //}
 
-        var alignment = roleBehaviour is IOWRole touRole
-            ? touRole.RoleAlignment.ToDisplayString()
+        var alignment = roleBehaviour is IAUSRole touRole
+            ? touRole.Alignment.ToDisplayString()
             : roleBehaviour.TeamType.ToDisplayString();
 
         if (alignment.Contains("Crewmate"))
@@ -526,7 +483,7 @@ public static class Extensions
         panel.NameText.transform.localPosition += Vector3.left * 0.05f;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.ChangeRole, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.ChangeRole, SendImmediately = true)]
     public static void RpcChangeRole(this PlayerControl player, ushort newRoleType, bool recordRole = true)
     {
         ChangeRole(player, newRoleType, recordRole);
@@ -588,13 +545,13 @@ public static class Extensions
         MiraEventManager.InvokeEvent(changeRoleEvent);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.PlayerExile, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.PlayerExile, SendImmediately = true)]
     public static void RpcPlayerExile(this PlayerControl player)
     {
         player.Exiled();
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SetPos, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SetPos, SendImmediately = true)]
     public static void RpcSetPos(this PlayerControl player, Vector2 pos)
     {
         player.transform.position = pos;
@@ -623,9 +580,9 @@ public static class Extensions
         color.a = 0.07f + velocity / player.MyPhysics.GhostSpeed * 0.13f;
         color.a = Mathf.Lerp(color.a, 0, distPercent);
 
-        if (player.GetAppearanceType() != ObjectWorkshopAppearances.PlayerOnly)
+        if (player.GetAppearanceType() != AmongUsSalemAppearances.PlayerOnly)
         {
-            var fade = new VisualAppearance(player.GetDefaultModifiedAppearance(), ObjectWorkshopAppearances.PlayerOnly)
+            var fade = new VisualAppearance(player.GetDefaultModifiedAppearance(), AmongUsSalemAppearances.PlayerOnly)
             {
                 HatId = string.Empty,
                 SkinId = string.Empty,
@@ -705,7 +662,7 @@ public static class Extensions
         return list;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.CatchGhost, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.CatchGhost, SendImmediately = true)]
     public static void RpcCatchGhost(this PlayerControl player)
     {
         if (player.Data.Role is IGhostRole ghost)

@@ -2,14 +2,14 @@ using System.Globalization;
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Patches.Options;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Patches.Options;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.SendChat))]
 public static class ChatPatches
@@ -171,7 +171,7 @@ public static class ChatPatches
             {
                 TeamChatPatches.RpcSendJailorChat(PlayerControl.LocalPlayer, textRegular);
                 MiscUtils.AddTeamChat(PlayerControl.LocalPlayer.Data,
-                    $"<color=#{OWColors.Jailor.ToHtmlStringRGBA()}>{PlayerControl.LocalPlayer.Data.PlayerName} (Jailor)</color>",
+                    $"<color=#{AUSColors.Jailor.ToHtmlStringRGBA()}>{PlayerControl.LocalPlayer.Data.PlayerName} (Jailor)</color>",
                     textRegular, onLeft: false);
 
                 __instance.freeChatField.Clear();
@@ -186,7 +186,7 @@ public static class ChatPatches
             {
                 TeamChatPatches.RpcSendJaileeChat(PlayerControl.LocalPlayer, textRegular);
                 MiscUtils.AddTeamChat(PlayerControl.LocalPlayer.Data,
-                    $"<color=#{OWColors.Jailor.ToHtmlStringRGBA()}>{PlayerControl.LocalPlayer.Data.PlayerName} (Jailed)</color>",
+                    $"<color=#{AUSColors.Jailor.ToHtmlStringRGBA()}>{PlayerControl.LocalPlayer.Data.PlayerName} (Jailed)</color>",
                     textRegular, onLeft: false);
 
                 __instance.freeChatField.Clear();
@@ -201,7 +201,7 @@ public static class ChatPatches
             {
                 TeamChatPatches.RpcSendVampTeamChat(PlayerControl.LocalPlayer, textRegular);
                 MiscUtils.AddTeamChat(PlayerControl.LocalPlayer.Data,
-                    $"<color=#{OWColors.Vampire.ToHtmlStringRGBA()}>{PlayerControl.LocalPlayer.Data.PlayerName} (Vampire Chat)</color>",
+                    $"<color=#{AUSColors.Vampire.ToHtmlStringRGBA()}>{PlayerControl.LocalPlayer.Data.PlayerName} (Vampire Chat)</color>",
                     textRegular, onLeft: false);
 
                 __instance.freeChatField.Clear();
@@ -217,7 +217,7 @@ public static class ChatPatches
             {
                 TeamChatPatches.RpcSendImpTeamChat(PlayerControl.LocalPlayer, textRegular);
                 MiscUtils.AddTeamChat(PlayerControl.LocalPlayer.Data,
-                    $"<color=#{OWColors.Infiltrator.ToHtmlStringRGBA()}>{PlayerControl.LocalPlayer.Data.PlayerName} (Impostor Chat)</color>",
+                    $"<color=#{AUSColors.Mafia.ToHtmlStringRGBA()}>{PlayerControl.LocalPlayer.Data.PlayerName} (Impostor Chat)</color>",
                     textRegular, onLeft: false);
 
                 __instance.freeChatField.Clear();

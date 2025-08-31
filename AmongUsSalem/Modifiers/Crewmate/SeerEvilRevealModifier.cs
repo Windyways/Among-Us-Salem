@@ -1,6 +1,6 @@
 using MiraAPI.Modifiers;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class SeerEvilRevealModifier : BaseModifier
 {

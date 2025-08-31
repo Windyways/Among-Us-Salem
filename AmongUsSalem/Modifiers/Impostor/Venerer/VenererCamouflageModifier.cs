@@ -1,11 +1,11 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Impostor.Venerer;
+namespace AmongUsSalem.Modifiers.Impostor.Venerer;
 
 public sealed class VenererCamouflageModifier : ConcealedModifier, IVenererModifier, IVisualAppearance
 {

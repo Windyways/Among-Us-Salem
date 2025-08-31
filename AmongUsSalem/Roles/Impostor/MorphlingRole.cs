@@ -7,15 +7,15 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
-using ObjectWorkshop.Buttons.Impostor;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Impostor;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
-public sealed class MorphlingRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole, IDoomable
+public sealed class MorphlingRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public PlayerControl? Sampled { get; set; }
@@ -26,9 +26,9 @@ public sealed class MorphlingRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole
     public string RoleLongDescription =>
         "Sample players and morph into them to disguise yourself.\nYour sample clears at the beginning of every round.";
 
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -45,7 +45,7 @@ public sealed class MorphlingRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         if (Player.HasModifier<MorphlingMorphModifier>())
         {

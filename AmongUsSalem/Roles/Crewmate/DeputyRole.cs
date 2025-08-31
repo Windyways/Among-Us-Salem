@@ -8,14 +8,14 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class DeputyRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -28,9 +28,9 @@ public sealed class DeputyRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
     public string RoleName => TouLocale.Get(TouNames.Deputy, "Deputy");
     public string RoleDescription => "Camp Crewmates To Catch Their Killer";
     public string RoleLongDescription => "Camp crewmates, then shoot their killer in the meeting!";
-    public Color RoleColor => OWColors.Deputy;
+    public Color RoleColor => AUSColors.Deputy;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public bool IsPowerCrew => Killer || ModifierUtils.GetActiveModifiers<DeputyCampedModifier>().Any(); // Only stop end game checks if the deputy can actually kill someone
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -42,7 +42,7 @@ public sealed class DeputyRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -149,11 +149,11 @@ public sealed class DeputyRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
         }
         else
         {
-            var title = $"<color=#{OWColors.Deputy.ToHtmlStringRGBA()}>Deputy Feedback</color>";
+            var title = $"<color=#{AUSColors.Deputy.ToHtmlStringRGBA()}>Deputy Feedback</color>";
             MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.Data, title,
                 "You missed your shot! They are either not the killer or are invincible.", false, true);
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Deputy.ToTextColor()}You missed your shot! They are either not the killer or are invincible.</b></color>",
+                $"<b>{AUSColors.Deputy.ToTextColor()}You missed your shot! They are either not the killer or are invincible.</b></color>",
                 Color.white, new Vector3(0f, 1f, -20f), spr: TouRoleIcons.Deputy.LoadAsset());
             notif1.Text.SetOutlineThickness(0.35f);
         }

@@ -1,11 +1,11 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Hud;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement.Events;
+namespace AmongUsSalem.LifeImprovement.Events;
 
 public static class WitnessKillEvent
 {
@@ -21,7 +21,7 @@ public static class WitnessKillEvent
 
         bool deadViaSabotage = source != target;
 
-        WitnessSuspiciousActivity(source, target, deadViaSabotage, true, false, true);// && !killer.Is(RoleEnum.Mime));
+        WitnessSuspiciousActivity(source, target, deadViaSabotage, true, false, true);
         RoleFunctionOnDeath(source, target);
     }
 
@@ -37,21 +37,6 @@ public static class WitnessKillEvent
             {
                 float distance = Vector2.Distance(truePosition, target.GetTruePosition());
                 float alternativeDist = Vector2.Distance(truePosition, target.GetTruePosition());
-                if (players.IsRole<Totemist>())
-                {
-                    var totemist = players.GetRole<Totemist>();
-                    foreach (var totem in totemist.TotemOrder)
-                    {
-                        if (totemist.isWatching)
-                        {
-                            alternativeDist = Vector2.Distance(totem.transform.position, target.GetTruePosition());
-                            if (alternativeDist < closestDistance && players != target && players != killer && (!players.HasDied()/* || players.Is(RoleEnum.Astral)*/))
-                            {
-                                CallFind(killer, target, totemist.Player, caught, incriminating);
-                            }
-                        }
-                    }
-                }
 
                 if ((distance < closestDistance || alternativeDist < closestDistance) && players != target && players != killer && (!players.HasDied()/* || players.Is(RoleEnum.Astral)*/))
                 {
@@ -64,29 +49,14 @@ public static class WitnessKillEvent
 
     public static void CallFind(PlayerControl killer, PlayerControl target, PlayerControl players, bool caught, bool incriminating)
     {
-        var darkCloud = DarkCloud.GetAll();
-        if (darkCloud != null)
-        {
-            if (darkCloud.IsInRange(killer) || darkCloud.IsInRange(target))
-            {
-                return;
-            }
-        }
-
-        if (!killer.IsFaction(Faction.Infiltrator) && players.IsFaction(Faction.Infiltrator))
+        if (killer.Is(Faction.Mafia) && !players.Is(Faction.Mafia))
         {
             string witnessedKiller = killer.GetDefaultAppearance().PlayerName;
             if (!caught)
             {
                 WitnessNow(killer, players, incriminating);
             }
-            ObjectWorkshopPlugin.DebugLogMessage(players.name + " has witnessed " + witnessedKiller + " killing!", ObjectWorkshopPlugin.MsgType.Message);
-
-            /*if (players.Is(RoleEnum.Avenger) && !deadViaSabotage && murder)
-            {
-                Avenger avenger = Role.GetRole<Avenger>(players);
-                avenger.WitnessedDeath();
-            }*/
+            AUSPlugin.DebugLogMessage(players.name + " has witnessed " + witnessedKiller + " killing!", AUSPlugin.MsgType.Message);
         }
     }
 

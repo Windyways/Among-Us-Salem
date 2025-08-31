@@ -1,17 +1,17 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class WerewolfRampageButton : ObjectWorkshopRoleButton<WerewolfRole>, IAftermathableButton
+public sealed class WerewolfRampageButton : AmongUsSalemRoleButton<WerewolfRole>, IAftermathableButton
 {
     public override string Name => "Rampage";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Werewolf;
+    public override Color TextOutlineColor => AUSColors.Werewolf;
     public override float Cooldown => OptionGroupSingleton<WerewolfOptions>.Instance.RampageCooldown + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<WerewolfOptions>.Instance.RampageDuration;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.RampageSprite;

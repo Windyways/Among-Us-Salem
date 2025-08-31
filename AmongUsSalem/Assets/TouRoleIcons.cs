@@ -1,12 +1,12 @@
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
-namespace ObjectWorkshop.Assets;
+namespace AmongUsSalem.Assets;
 
 public static class TouRoleIcons
 {
-    private static readonly string iconPath = "ObjectWorkshop.Resources.RoleIcons";
-    private const string DAG = $"ObjectWorkshop.Resources.Sprites.RoleCards";
+    private static readonly string iconPath = "AmongUsSalem.Resources.RoleIcons";
+    private const string DAG = $"AmongUsSalem.Resources.Sprites.RoleCards";
 
     // THIS FILE SHOULD ONLY HOLD ROLE ICONS
 

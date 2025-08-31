@@ -1,18 +1,18 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch(typeof(MeetingHud))]
 public static class MeetingHudTimerPatch

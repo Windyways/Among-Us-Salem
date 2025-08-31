@@ -6,14 +6,14 @@ using MiraAPI.Events.Vanilla.Usables;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events;
+namespace AmongUsSalem.Events;
 
 public static class GhostRoleEvents
 {

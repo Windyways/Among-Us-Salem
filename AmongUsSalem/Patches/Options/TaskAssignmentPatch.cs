@@ -1,9 +1,9 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Options;
+using AmongUsSalem.Options;
 using TaskLength = NormalPlayerTask.TaskLength;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 [HarmonyPatch]
 public static class TaskAssignmentPatch

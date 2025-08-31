@@ -1,9 +1,9 @@
 ﻿using MiraAPI.Modifiers;
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
-using ObjectWorkshop.Modifiers.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
 
-namespace ObjectWorkshop.Modifiers.Game;
+namespace AmongUsSalem.Modifiers.Game;
 
 [MiraIgnore]
 public abstract class AllianceGameModifier : GameModifier

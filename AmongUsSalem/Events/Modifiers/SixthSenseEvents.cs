@@ -6,17 +6,17 @@ using MiraAPI.Modifiers;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class SixthSenseEvents
 {
     [RegisterEvent]
     public static void MiraButtonClickEventHandler(MiraButtonClickEvent @event)
     {
-        // Logger<ObjectWorkshopPlugin>.Warning("SixthSense click event!");
+        // Logger<AUSPlugin>.Warning("SixthSense click event!");
         if (MeetingHud.Instance || ExileController.Instance)
         {
             return;
@@ -40,12 +40,12 @@ public static class SixthSenseEvents
         // I am groot (i am stupid)
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.TriggerSixthSense, SendImmediately = true, LocalHandling = RpcLocalHandling.None)]
+    [MethodRpc((uint)AUSRpc.TriggerSixthSense, SendImmediately = true, LocalHandling = RpcLocalHandling.None)]
     private static void CheckForSixthSense(PlayerControl target)
     {
         if (target.AmOwner && target.HasModifier<SixthSenseModifier>())
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.SixthSense));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.SixthSense));
         }
     }
 }

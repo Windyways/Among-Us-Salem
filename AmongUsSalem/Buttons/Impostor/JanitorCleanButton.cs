@@ -1,19 +1,19 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class JanitorCleanButton : ObjectWorkshopRoleButton<JanitorRole, DeadBody>, IAftermathableBodyButton,
+public sealed class JanitorCleanButton : AmongUsSalemRoleButton<JanitorRole, DeadBody>, IAftermathableBodyButton,
     IDiseaseableButton
 {
     public override string Name => "Clean";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<JanitorOptions>.Instance.CleanCooldown + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<JanitorOptions>.Instance.CleanDelay + 0.001f;
     public override int MaxUses => (int)OptionGroupSingleton<JanitorOptions>.Instance.MaxClean;

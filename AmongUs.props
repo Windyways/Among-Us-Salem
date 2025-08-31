@@ -14,6 +14,6 @@
     </Target>
 
     <ItemGroup>
-        <EmbeddedResource Include="ObjectWorkshop\Resources\*.bundle" Exclude="Resources\*.png"/>
+        <EmbeddedResource Include="AmongUsSalem\Resources\*.bundle" Exclude="Resources\*.png"/>
     </ItemGroup>
 </Project>

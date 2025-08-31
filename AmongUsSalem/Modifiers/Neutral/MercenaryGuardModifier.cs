@@ -1,8 +1,8 @@
 using MiraAPI.Events;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Events.TouEvents;
+using AmongUsSalem.Events.TouEvents;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class MercenaryGuardModifier(PlayerControl mercenary) : BaseModifier
 {

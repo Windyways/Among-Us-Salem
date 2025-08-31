@@ -1,10 +1,10 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers.Types;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Neutral;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Neutral;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class SurvivorVestModifier : TimedModifier
 {

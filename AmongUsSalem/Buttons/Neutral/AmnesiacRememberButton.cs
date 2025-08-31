@@ -1,16 +1,16 @@
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class AmnesiacRememberButton : ObjectWorkshopRoleButton<AmnesiacRole, DeadBody>
+public sealed class AmnesiacRememberButton : AmongUsSalemRoleButton<AmnesiacRole, DeadBody>
 {
     public override string Name => "Remember";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Amnesiac;
+    public override Color TextOutlineColor => AUSColors.Amnesiac;
     public override float Cooldown => 0.001f + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.RememberButtonSprite;
 

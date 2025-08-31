@@ -5,23 +5,23 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class VampireBiteButton : ObjectWorkshopRoleButton<VampireRole, PlayerControl>, IDiseaseableButton, IKillButton
+public sealed class VampireBiteButton : AmongUsSalemRoleButton<VampireRole, PlayerControl>, IDiseaseableButton, IKillButton
 {
     public override string Name => "Bite";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Vampire;
+    public override Color TextOutlineColor => AUSColors.Vampire;
     public override float Cooldown => OptionGroupSingleton<VampireOptions>.Instance.BiteCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.BiteSprite;
 
@@ -64,7 +64,7 @@ public sealed class VampireBiteButton : ObjectWorkshopRoleButton<VampireRole, Pl
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Bite: Target is null");
+            Logger<AUSPlugin>.Error("Bite: Target is null");
             return;
         }
 
@@ -95,7 +95,7 @@ public sealed class VampireBiteButton : ObjectWorkshopRoleButton<VampireRole, Pl
             return false;
         }
 
-        if (target.Is(RoleAlignment.NeutralPredator))
+        if (target.Is(Alignment.NeutralKilling))
         {
             return false;
         }
@@ -118,11 +118,11 @@ public sealed class VampireBiteButton : ObjectWorkshopRoleButton<VampireRole, Pl
             canConvertAlliance = options.ConvertOptions.ToDisplayString().Contains("Lovers");
         }
 
-        if (target.Is(RoleAlignment.NeutralAssociative))
+        if (target.Is(Alignment.NeutralAssociative))
         {
             canConvertRole = options.ConvertOptions.ToDisplayString().Contains("Neutral Benign");
         }
-        else if (target.Is(RoleAlignment.NeutralEvil))
+        else if (target.Is(Alignment.NeutralEvil))
         {
             canConvertRole = options.ConvertOptions.ToDisplayString().Contains("Neutral Evil");
         }

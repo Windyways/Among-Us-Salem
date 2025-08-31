@@ -1,21 +1,21 @@
 ﻿using System.Text;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
-public sealed class EclipsalRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole, IDoomable
+public sealed class EclipsalRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Perception;
     public string RoleName => TouLocale.Get(TouNames.Eclipsal, "Eclipsal");
     public string RoleDescription => "Block Out The Light";
     public string RoleLongDescription => "Make crewmates unable to see, slowly returning their vision to normal.";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -25,7 +25,7 @@ public sealed class EclipsalRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole,
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

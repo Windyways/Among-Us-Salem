@@ -3,10 +3,10 @@ using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Meeting;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
 
-namespace ObjectWorkshop.Events.Impostor;
+namespace AmongUsSalem.Events.Impostor;
 
 public static class BlackmailerEvents
 {

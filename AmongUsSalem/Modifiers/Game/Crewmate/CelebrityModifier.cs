@@ -4,16 +4,16 @@ using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class CelebrityModifier : TouGameModifier
 {
@@ -63,7 +63,7 @@ public sealed class CelebrityModifier : TouGameModifier
     {
         if (!player.HasModifier<CelebrityModifier>())
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcCelebrityKilled - Invalid Celebrity");
+            Logger<AUSPlugin>.Error("RpcCelebrityKilled - Invalid Celebrity");
             return;
         }
 
@@ -151,16 +151,16 @@ public sealed class CelebrityModifier : TouGameModifier
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.UpdateCelebrityKilled, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.UpdateCelebrityKilled, SendImmediately = true)]
     public static void RpcUpdateCelebrityKilled(PlayerControl player, float milliseconds)
     {
         if (!player.HasModifier<CelebrityModifier>())
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcUpdateCelebrityKilled - Invalid Celebrity");
+            Logger<AUSPlugin>.Error("RpcUpdateCelebrityKilled - Invalid Celebrity");
             return;
         }
 
-        Logger<ObjectWorkshopPlugin>.Error($"RpcUpdateCelebrityKilled milliseconds: {milliseconds}");
+        Logger<AUSPlugin>.Error($"RpcUpdateCelebrityKilled milliseconds: {milliseconds}");
 
         var celeb = player.GetModifier<CelebrityModifier>()!;
 

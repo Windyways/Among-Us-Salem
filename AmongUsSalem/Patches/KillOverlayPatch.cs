@@ -4,7 +4,7 @@ using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(OverlayKillAnimation), nameof(OverlayKillAnimation.CoShow), typeof(KillOverlay))]
 public static class KillOverlayPatch

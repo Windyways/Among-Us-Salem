@@ -1,9 +1,9 @@
 ﻿using HarmonyLib;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class GlitchPatches

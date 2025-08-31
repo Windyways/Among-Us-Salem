@@ -1,6 +1,6 @@
-﻿namespace ObjectWorkshop.Utilities.Appearances;
+﻿namespace AmongUsSalem.Utilities.Appearances;
 
-public enum ObjectWorkshopAppearances : uint
+public enum AmongUsSalemAppearances : uint
 {
     // Vanilla
     Default,

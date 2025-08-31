@@ -7,12 +7,12 @@ using MiraAPI.Events.Vanilla.Player;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class LookoutEvents
 {
@@ -33,7 +33,7 @@ public static class LookoutEvents
     [RegisterEvent]
     public static void MiraButtonClickEventHandler(MiraButtonClickEvent @event)
     {
-        // Logger<ObjectWorkshopPlugin>.Warning("Lookout click event!");
+        // Logger<AUSPlugin>.Warning("Lookout click event!");
         var button = @event.Button as CustomActionButton<PlayerControl>;
         var source = PlayerControl.LocalPlayer;
         var target = button?.Target;

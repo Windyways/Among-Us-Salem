@@ -3,10 +3,10 @@ using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Events.Vanilla.Meeting.Voting;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modules;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modules;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class AssassinEvents
 {

@@ -2,10 +2,10 @@
 using HarmonyLib;
 using MiraAPI.Modifiers;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(PlayerPhysics._CoClimbLadder_d__34), nameof(PlayerPhysics._CoClimbLadder_d__34.MoveNext))]
 public static class LadderFix
@@ -22,13 +22,13 @@ public static class LadderFix
 
         if (!__instance.source.IsTop && player.HasModifier<GiantModifier>())
         {
-            Logger<ObjectWorkshopPlugin>.Error("Giant player on ladder detected, snapping position.");
+            Logger<AUSPlugin>.Error("Giant player on ladder detected, snapping position.");
             player.NetTransform.SnapTo(player.transform.position + new Vector3(0, 0.25f));
         }
 
         if (__instance.source.IsTop && player.HasModifier<MiniModifier>())
         {
-            Logger<ObjectWorkshopPlugin>.Error("Mini player on ladder detected, snapping position.");
+            Logger<AUSPlugin>.Error("Mini player on ladder detected, snapping position.");
             player.NetTransform.SnapTo(player.transform.position + new Vector3(0, -0.25f));
         }
     }

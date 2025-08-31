@@ -11,18 +11,18 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Random = System.Random;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class PlaguebearerRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public void FixedUpdate()
@@ -58,9 +58,9 @@ public sealed class PlaguebearerRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Plaguebearer, "Plaguebearer");
     public string RoleDescription => "Infect Everyone To Become <color=#4D4D4DFF>Pestilence</color>";
     public string RoleLongDescription => "Infect everyone to become <color=#4D4D4DFF>Pestilence</color>";
-    public Color RoleColor => OWColors.Plaguebearer;
+    public Color RoleColor => AUSColors.Plaguebearer;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -73,7 +73,7 @@ public sealed class PlaguebearerRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         var allInfected = PlayerControl.AllPlayerControls.ToArray().Where(x =>
             !x.HasDied() && x != Player &&
@@ -84,13 +84,13 @@ public sealed class PlaguebearerRole(IntPtr cppPtr)
             stringB.Append("\n<b>Players Infected:</b>");
             foreach (var plr in allInfected)
             {
-                stringB.Append(ObjectWorkshopPlugin.Culture, $"\n{Color.white.ToTextColor()}{plr.Data.PlayerName}</color>");
+                stringB.Append(AUSPlugin.Culture, $"\n{Color.white.ToTextColor()}{plr.Data.PlayerName}</color>");
             }
         }
 
         var notInfected = PlayerControl.AllPlayerControls.ToArray().Where(x =>
             !x.HasDied() && x != Player && !x.HasModifier<PlaguebearerInfectedModifier>());
-        stringB.Append(ObjectWorkshopPlugin.Culture, $"\n\n<b>Players Left To Infect: {notInfected.Count()}</b>");
+        stringB.Append(AUSPlugin.Culture, $"\n\n<b>Players Left To Infect: {notInfected.Count()}</b>");
 
         return stringB;
     }
@@ -184,7 +184,7 @@ public sealed class PlaguebearerRole(IntPtr cppPtr)
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.CheckInfected, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.CheckInfected, SendImmediately = true)]
     public static void RpcCheckInfected(PlayerControl source, PlayerControl target)
     {
         CheckInfected(source, target);

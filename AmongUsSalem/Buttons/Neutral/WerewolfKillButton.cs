@@ -2,20 +2,20 @@
 using MiraAPI.Networking;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class WerewolfKillButton : ObjectWorkshopRoleButton<WerewolfRole, PlayerControl>, IDiseaseableButton,
+public sealed class WerewolfKillButton : AmongUsSalemRoleButton<WerewolfRole, PlayerControl>, IDiseaseableButton,
     IKillButton
 {
     public override string Name => "Kill";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Werewolf;
+    public override Color TextOutlineColor => AUSColors.Werewolf;
     public override float Cooldown => OptionGroupSingleton<WerewolfOptions>.Instance.RampageKillCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.WerewolfKillSprite;
 
@@ -33,7 +33,7 @@ public sealed class WerewolfKillButton : ObjectWorkshopRoleButton<WerewolfRole, 
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Werewolf Shoot: Target is null");
+            Logger<AUSPlugin>.Error("Werewolf Shoot: Target is null");
             return;
         }
 

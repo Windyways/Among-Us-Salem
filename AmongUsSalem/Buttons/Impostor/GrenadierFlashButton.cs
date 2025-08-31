@@ -4,18 +4,18 @@ using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class GrenadierFlashButton : ObjectWorkshopRoleButton<GrenadierRole>, IAftermathableButton
+public sealed class GrenadierFlashButton : AmongUsSalemRoleButton<GrenadierRole>, IAftermathableButton
 {
     public override string Name => "Flash";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<GrenadierOptions>.Instance.GrenadeCooldown + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<GrenadierOptions>.Instance.GrenadeDuration;
     public override int MaxUses => (int)OptionGroupSingleton<GrenadierOptions>.Instance.MaxFlashes;
@@ -34,7 +34,7 @@ public sealed class GrenadierFlashButton : ObjectWorkshopRoleButton<GrenadierRol
 
         PlayerControl.LocalPlayer.RpcAddModifier<GrenadierFlashModifier>(PlayerControl.LocalPlayer);
         var notif1 = Helpers.CreateAndShowNotification(
-            $"<b>{OWColors.Infiltrator.ToTextColor()}All players around you are now flashbanged!</color></b>", Color.white,
+            $"<b>{AUSColors.Mafia.ToTextColor()}All players around you are now flashbanged!</color></b>", Color.white,
             spr: TouRoleIcons.Grenadier.LoadAsset());
         
         notif1.Text.SetOutlineThickness(0.35f);

@@ -1,7 +1,7 @@
 using MiraAPI.Events;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.TouEvents;
+namespace AmongUsSalem.Events.TouEvents;
 
 /// <summary>
 ///     Event that is invoked after a player uses specific abilities. This event is not cancelable.

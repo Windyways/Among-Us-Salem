@@ -2,19 +2,19 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class EclipsalBlindButton : ObjectWorkshopRoleButton<EclipsalRole>, IAftermathableButton
+public sealed class EclipsalBlindButton : AmongUsSalemRoleButton<EclipsalRole>, IAftermathableButton
 {
     public override string Name => "Blind";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<EclipsalOptions>.Instance.BlindCooldown + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<EclipsalOptions>.Instance.BlindDuration;
     public override LoadableAsset<Sprite> Sprite => TouImpAssets.BlindSprite;

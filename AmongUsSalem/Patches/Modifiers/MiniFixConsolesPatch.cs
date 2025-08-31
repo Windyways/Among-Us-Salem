@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
 
-namespace ObjectWorkshop.Patches.Modifiers;
+namespace AmongUsSalem.Patches.Modifiers;
 
 [HarmonyPatch]
 public static class MiniFixConsolesPatch

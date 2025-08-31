@@ -5,23 +5,23 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
-public sealed class SurvivorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, IDoomable
+public sealed class SurvivorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Protective;
     public string RoleName => TouLocale.Get(TouNames.Survivor, "Survivor");
     public string RoleDescription => "Do Whatever It Takes To Live";
     public string RoleLongDescription => "Stay alive to win with any faction remaining";
-    public Color RoleColor => OWColors.Survivor;
+    public Color RoleColor => AUSColors.Survivor;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -33,7 +33,7 @@ public sealed class SurvivorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     [HideFromIl2Cpp]

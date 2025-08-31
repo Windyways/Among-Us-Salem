@@ -5,14 +5,14 @@ using MiraAPI.GameOptions;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class TrapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class TrapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -23,9 +23,9 @@ public sealed class TrapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
     public string RoleName => TouLocale.Get(TouNames.Trapper, "Trapper");
     public string RoleDescription => "Catch Killers In The Act";
     public string RoleLongDescription => "Place traps around the map, revealing roles within them";
-    public Color RoleColor => OWColors.Trapper;
+    public Color RoleColor => AUSColors.Trapper;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -41,7 +41,7 @@ public sealed class TrapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -75,7 +75,7 @@ public sealed class TrapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
 
     public void Report()
     {
-        // Logger<ObjectWorkshopPlugin>.Error($"TrapperRole.Report");
+        // Logger<AUSPlugin>.Error($"TrapperRole.Report");
         if (!Player.AmOwner)
         {
             return;
@@ -96,7 +96,7 @@ public sealed class TrapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
 
             foreach (var role in TrappedPlayers)
             {
-                message.Append(ObjectWorkshopPlugin.Culture, $"{role.NiceName}, ");
+                message.Append(AUSPlugin.Culture, $"{role.NiceName}, ");
             }
 
             message = message.Remove(message.Length - 2, 2);
@@ -111,7 +111,7 @@ public sealed class TrapperRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
             msg = finalMessage;
         }
 
-        var title = $"<color=#{OWColors.Trapper.ToHtmlStringRGBA()}>{RoleName} Report</color>";
+        var title = $"<color=#{AUSColors.Trapper.ToHtmlStringRGBA()}>{RoleName} Report</color>";
         MiscUtils.AddFakeChat(Player.Data, title, msg, false, true);
     }
 }

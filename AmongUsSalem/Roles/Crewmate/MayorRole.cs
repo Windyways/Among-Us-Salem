@@ -10,13 +10,13 @@ using MiraAPI.Roles;
 using PowerTools;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class MayorRole(IntPtr cppPtr)
     : CrewmateRole(cppPtr), ITouCrewRole, IDoomable, IUnguessable
@@ -30,9 +30,9 @@ public sealed class MayorRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Mayor, "Mayor");
     public string RoleDescription => "Reveal Yourself To Save The Crew";
     public string RoleLongDescription => "Lead the crew to victory!";
-    public Color RoleColor => OWColors.Mayor;
+    public Color RoleColor => AUSColors.Mayor;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -50,7 +50,7 @@ public sealed class MayorRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         if (!Revealed)
         {
             stringB.AppendLine(CultureInfo.InvariantCulture, $"<b>Reveal yourself whenever you wish.</b>");
@@ -115,7 +115,7 @@ public sealed class MayorRole(IntPtr cppPtr)
         }
 
         if (Player.AmOwner && !Revealed)
-            // Logger<ObjectWorkshopPlugin>.Message($"PoliticianRole.OnMeetingStart '{Player.Data.PlayerName}' {Player.AmOwner && !Player.HasDied() && !Player.HasModifier<JailedModifier>()}");
+            // Logger<AUSPlugin>.Message($"PoliticianRole.OnMeetingStart '{Player.Data.PlayerName}' {Player.AmOwner && !Player.HasDied() && !Player.HasModifier<JailedModifier>()}");
         {
             meetingMenu.GenButtons(MeetingHud.Instance,
                 Player.AmOwner && !Player.HasDied() && !Player.HasModifier<JailedModifier>());
@@ -154,7 +154,7 @@ public sealed class MayorRole(IntPtr cppPtr)
         RpcAnimateNewReveal(Player);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.AnimateNewReveal, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.AnimateNewReveal, SendImmediately = true)]
     public static void RpcAnimateNewReveal(PlayerControl plr)
     {
         if (plr.Data.Role is MayorRole mayor)
@@ -213,7 +213,7 @@ public sealed class MayorRole(IntPtr cppPtr)
         MayorPlayer.transform.GetChild(0).gameObject.SetActive(true);
         MayorPlayer.transform.GetChild(1).gameObject.SetActive(true);
 
-        Coroutines.Start(MiscUtils.CoFlash(OWColors.Mayor, 0.15f, 0.15f));
+        Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mayor, 0.15f, 0.15f));
 
         var bodysAnim = MayorPlayer.GetComponent<SpriteAnim>();
         var outfitAnim = MayorPlayer.transform.GetChild(0).GetComponent<SpriteAnim>();

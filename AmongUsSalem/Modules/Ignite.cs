@@ -1,10 +1,10 @@
 ﻿using MiraAPI.GameOptions;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modules;
+namespace AmongUsSalem.Modules;
 
 public sealed class Ignite
 {

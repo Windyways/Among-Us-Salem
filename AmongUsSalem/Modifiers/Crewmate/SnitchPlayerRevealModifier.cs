@@ -1,4 +1,4 @@
-﻿namespace ObjectWorkshop.Modifiers.Crewmate;
+﻿namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class SnitchPlayerRevealModifier(RoleBehaviour role)
     : RevealModifier((int)ChangeRoleResult.Nothing, true, role)

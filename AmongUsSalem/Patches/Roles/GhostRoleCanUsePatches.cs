@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using HarmonyLib;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Roles;
 using Object = Il2CppSystem.Object;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class GhostRoleCanUsePatches
@@ -29,7 +29,7 @@ public static class GhostRoleCanUsePatches
 
         if (playerControl.Data.Role is IGhostRole ghost && ghost.GhostActive && pc.IsDead)
         {
-            // Logger<ObjectWorkshopPlugin>.Message($"CanUsePrefixPatch IsDead");
+            // Logger<AUSPlugin>.Message($"CanUsePrefixPatch IsDead");
             pc.IsDead = false;
             __state = true;
         }
@@ -43,7 +43,7 @@ public static class GhostRoleCanUsePatches
         ref bool __state)
     {
         if (__state)
-            // Logger<ObjectWorkshopPlugin>.Message($"CanUsePostfixPatch IsDead");
+            // Logger<AUSPlugin>.Message($"CanUsePostfixPatch IsDead");
         {
             pc.IsDead = true;
         }

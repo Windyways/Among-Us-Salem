@@ -1,4 +1,4 @@
-namespace ObjectWorkshop.Buttons;
+namespace AmongUsSalem.Buttons;
 
 public static class Keybinds
 {

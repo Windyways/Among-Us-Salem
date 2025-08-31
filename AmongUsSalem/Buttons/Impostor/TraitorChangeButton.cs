@@ -3,21 +3,21 @@ using MiraAPI.Hud;
 using MiraAPI.Roles;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class TraitorChangeButton : ObjectWorkshopRoleButton<TraitorRole>
+public sealed class TraitorChangeButton : AmongUsSalemRoleButton<TraitorRole>
 {
     public override string Name => "Change Role";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => 1f;
     public override ButtonLocation Location => ButtonLocation.BottomLeft;
     public override LoadableAsset<Sprite> Sprite => TouImpAssets.TraitorSelect;
@@ -36,7 +36,7 @@ public sealed class TraitorChangeButton : ObjectWorkshopRoleButton<TraitorRole>
     {
         if (Role.ChosenRoles.Count == 0)
         {
-            var excluded = MiscUtils.AllRoles.Where(x => x is ISpawnChange { NoSpawn: true } || x is IOWRole { RoleAlignment: RoleAlignment.None }).Select(x => x.Role).ToList();
+            var excluded = MiscUtils.AllRoles.Where(x => x is ISpawnChange { NoSpawn: true } || x is IAUSRole { Alignment: Alignment.None }).Select(x => x.Role).ToList();
             var impRoles = MiscUtils.GetRolesToAssign(ModdedRoleTeams.Impostor, x => !excluded.Contains(x.Role)).Select(x => x.RoleType).ToList();
 
             var roleList = MiscUtils.GetPotentialRoles()

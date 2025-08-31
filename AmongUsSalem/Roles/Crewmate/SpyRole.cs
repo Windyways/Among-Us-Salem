@@ -4,23 +4,23 @@ using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class SpyRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class SpyRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Perception;
     public string RoleName => TouLocale.Get(TouNames.Spy, "Spy");
     public string RoleDescription => "Snoop Around And Find Stuff Out";
     public string RoleLongDescription => "Gain extra information on the Admin Table";
-    public Color RoleColor => OWColors.Spy;
+    public Color RoleColor => AUSColors.Spy;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -31,7 +31,7 @@ public sealed class SpyRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoo
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

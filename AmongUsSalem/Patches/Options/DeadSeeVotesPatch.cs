@@ -1,12 +1,12 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.BloopAVoteIcon))]
 public static class DeadSeeVoteColorsPatch

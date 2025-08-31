@@ -1,11 +1,11 @@
 ﻿using MiraAPI.GameEnd;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modules;
+using AmongUsSalem.Modules;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.GameOver;
+namespace AmongUsSalem.GameOver;
 
 public sealed class DrawGameOver : CustomGameOver
 {
@@ -16,12 +16,12 @@ public sealed class DrawGameOver : CustomGameOver
 
     public override void AfterEndGameSetup(EndGameManager endGameManager)
     {
-        endGameManager.BackgroundBar.material.SetColor(ShaderID.Color, OWColors.Neutral);
+        endGameManager.BackgroundBar.material.SetColor(ShaderID.Color, AUSColors.Neutral);
 
         var text = Object.Instantiate(endGameManager.WinText);
         text.text = "Nobody Wins!";
-        text.color = OWColors.Neutral;
-        GameHistory.WinningFaction = $"<color=#{OWColors.Neutral.ToHtmlStringRGBA()}>Nobody</color>";
+        text.color = AUSColors.Neutral;
+        GameHistory.WinningFaction = $"<color=#{AUSColors.Neutral.ToHtmlStringRGBA()}>Nobody</color>";
 
         var pos = endGameManager.WinText.transform.localPosition;
         pos.y = 1.5f;

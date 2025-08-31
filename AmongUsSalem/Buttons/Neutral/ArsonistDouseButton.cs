@@ -3,20 +3,20 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class ArsonistDouseButton : ObjectWorkshopRoleButton<ArsonistRole, PlayerControl>
+public sealed class ArsonistDouseButton : AmongUsSalemRoleButton<ArsonistRole, PlayerControl>
 {
     public override string Name => "Douse";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Arsonist;
+    public override Color TextOutlineColor => AUSColors.Arsonist;
     public override float Cooldown => OptionGroupSingleton<ArsonistOptions>.Instance.DouseCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.DouseButtonSprite;
 
@@ -24,7 +24,7 @@ public sealed class ArsonistDouseButton : ObjectWorkshopRoleButton<ArsonistRole,
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Arsonist Attack: Target is null");
+            Logger<AUSPlugin>.Error("Arsonist Attack: Target is null");
             return;
         }
 

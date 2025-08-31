@@ -2,10 +2,10 @@ using HarmonyLib;
 using MiraAPI.GameOptions;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 [HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.Begin))]
 
@@ -54,7 +54,7 @@ public static class AirshipSpawnPatch
         };
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.RemoveSpawns, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.RemoveSpawns, SendImmediately = true)]
 
     public static void RemoveSpawns(PlayerControl player, StringNames location, StringNames location2, StringNames location3)
     {

@@ -2,7 +2,7 @@
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
 
-namespace ObjectWorkshop.Modifiers.Game;
+namespace AmongUsSalem.Modifiers.Game;
 
 [MiraIgnore]
 public abstract class UniversalGameModifier : GameModifier

@@ -11,18 +11,18 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Random = System.Random;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
-public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, IDoomable,
+public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable,
     IAssignableTargets, ICrewVariant
 {
     public string revealText => "";
@@ -36,7 +36,7 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRol
 
     public void AssignTargets()
     {
-        // Logger<ObjectWorkshopPlugin>.Error($"SelectExeTargets");
+        // Logger<AUSPlugin>.Error($"SelectExeTargets");
         var exes = PlayerControl.AllPlayerControls.ToArray()
             .Where(x => x.IsRole<ExecutionerRole>() && !x.HasDied());
 
@@ -55,7 +55,7 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRol
 
             if (filtered.Count > 0)
             {
-                // filtered.ForEach(x => Logger<ObjectWorkshopPlugin>.Error($"EXE Possible Target: {x.Data.PlayerName}"));
+                // filtered.ForEach(x => Logger<AUSPlugin>.Error($"EXE Possible Target: {x.Data.PlayerName}"));
                 Random rndIndex = new();
                 var randomTarget = filtered[rndIndex.Next(0, filtered.Count)];
 
@@ -73,9 +73,9 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRol
     public string RoleName => TouLocale.Get(TouNames.Executioner, "Executioner");
     public string RoleDescription => TargetString();
     public string RoleLongDescription => TargetString();
-    public Color RoleColor => OWColors.Executioner;
+    public Color RoleColor => AUSColors.Executioner;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -87,7 +87,7 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRol
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public bool MetWinCon => TargetVoted;
@@ -192,7 +192,7 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRol
             return;
         }
 
-        // Logger<ObjectWorkshopPlugin>.Error($"OnPlayerDeath '{victim.Data.PlayerName}'");
+        // Logger<AUSPlugin>.Error($"OnPlayerDeath '{victim.Data.PlayerName}'");
         if (Target == null || victim == Target)
         {
             var roleType = OptionGroupSingleton<ExecutionerOptions>.Instance.OnTargetDeath switch
@@ -205,7 +205,7 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRol
                 _ => (ushort)RoleTypes.Crewmate
             };
 
-            // Logger<ObjectWorkshopPlugin>.Error($"OnPlayerDeath - ChangeRole: '{roleType}'");
+            // Logger<AUSPlugin>.Error($"OnPlayerDeath - ChangeRole: '{roleType}'");
             Player.ChangeRole(roleType);
 
             if ((roleType == RoleId.Get<JesterRole>() && OptionGroupSingleton<JesterOptions>.Instance.ScatterOn) ||
@@ -217,12 +217,12 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRol
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SetExeTarget, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SetExeTarget, SendImmediately = true)]
     public static void RpcSetExeTarget(PlayerControl player, PlayerControl target)
     {
         if (player.Data.Role is not ExecutionerRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcSetExeTarget - Invalid executioner");
+            Logger<AUSPlugin>.Error("RpcSetExeTarget - Invalid executioner");
             return;
         }
 
@@ -238,7 +238,7 @@ public sealed class ExecutionerRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRol
             return;
         }
 
-        // Logger<ObjectWorkshopPlugin>.Message($"RpcSetExeTarget - Target: '{target.Data.PlayerName}'");
+        // Logger<AUSPlugin>.Message($"RpcSetExeTarget - Target: '{target.Data.PlayerName}'");
         role.Target = target;
 
         target.AddModifier<ExecutionerTargetModifier>(player.PlayerId);

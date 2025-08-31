@@ -3,11 +3,11 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Attributes;
 using Reactor.Utilities.Attributes;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modules.Components;
+namespace AmongUsSalem.Modules.Components;
 
 [RegisterInIl2Cpp]
 public sealed class CrimeSceneComponent(nint cppPtr) : MonoBehaviour(cppPtr)

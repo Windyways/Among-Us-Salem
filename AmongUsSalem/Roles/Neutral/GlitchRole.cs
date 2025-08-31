@@ -5,15 +5,15 @@ using MiraAPI.GameOptions;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class GlitchRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<SheriffRole>());
@@ -21,9 +21,9 @@ public sealed class GlitchRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Glitch, "Glitch");
     public string RoleDescription => "Murder, Mimic, Hack... Data Lost";
     public string RoleLongDescription => "Murder everyone to win with your abilities!";
-    public Color RoleColor => OWColors.Glitch;
+    public Color RoleColor => AUSColors.Glitch;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -51,7 +51,7 @@ public sealed class GlitchRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -78,7 +78,7 @@ public sealed class GlitchRole(IntPtr cppPtr)
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouNeutAssets.GlitchVentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Glitch);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Glitch);
         }
     }
 
@@ -88,7 +88,7 @@ public sealed class GlitchRole(IntPtr cppPtr)
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouAssets.VentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Infiltrator);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Mafia);
         }
     }
 

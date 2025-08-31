@@ -4,14 +4,14 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class MediatedModifier(byte mediumId) : BaseModifier
 {
@@ -48,15 +48,15 @@ public sealed class MediatedModifier(byte mediumId) : BaseModifier
         {
             case MediumVisibility.Both:
                 var ownerTransform = Player.AmOwner ? _mediumPlayer.transform : Player.transform;
-                _arrow = MiscUtils.CreateArrow(ownerTransform, OWColors.Medium);
+                _arrow = MiscUtils.CreateArrow(ownerTransform, AUSColors.Medium);
                 break;
 
             case MediumVisibility.ShowMedium when Player.AmOwner:
-                _arrow = MiscUtils.CreateArrow(_mediumPlayer.transform, OWColors.Medium);
+                _arrow = MiscUtils.CreateArrow(_mediumPlayer.transform, AUSColors.Medium);
                 break;
 
             case MediumVisibility.ShowMediate when _mediumPlayer.AmOwner:
-                _arrow = MiscUtils.CreateArrow(Player.transform, OWColors.Medium);
+                _arrow = MiscUtils.CreateArrow(Player.transform, AUSColors.Medium);
                 break;
         }
 
@@ -65,7 +65,7 @@ public sealed class MediatedModifier(byte mediumId) : BaseModifier
             Player.SetCamouflage();
         }
 
-        Coroutines.Start(MiscUtils.CoFlash(OWColors.Medium, alpha: 0.5f));
+        Coroutines.Start(MiscUtils.CoFlash(AUSColors.Medium, alpha: 0.5f));
     }
 
     public override void OnDeactivate()

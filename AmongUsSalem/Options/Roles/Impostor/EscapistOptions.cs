@@ -1,10 +1,10 @@
 using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Roles.Impostor;
+namespace AmongUsSalem.Options.Roles.Impostor;
 
 public sealed class EscapistOptions : AbstractOptionGroup<EscapistRole>
 {

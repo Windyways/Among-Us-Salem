@@ -2,13 +2,13 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class BaitModifier : TouGameModifier
 {
@@ -65,7 +65,7 @@ public sealed class BaitModifier : TouGameModifier
             killer.CmdReportDeadBody(target.Data);
 
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Bait.ToTextColor()}{target.Data.PlayerName} was a Bait, causing you to self report.</color></b>",
+                $"<b>{AUSColors.Bait.ToTextColor()}{target.Data.PlayerName} was a Bait, causing you to self report.</color></b>",
                 Color.white, spr: TouModifierIcons.Bait.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);

@@ -1,8 +1,8 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Usables;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class WerewolfEvents
 {

@@ -1,7 +1,7 @@
 ﻿using MiraAPI.GameOptions;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Modifiers;
+namespace AmongUsSalem.Options.Modifiers;
 
 public sealed class AllianceOptions : AbstractOptionGroup
 {
@@ -37,7 +37,7 @@ public sealed class ImpostorOptions : AbstractOptionGroup
 public sealed class NeutralOptions : AbstractOptionGroup
 {
     public override string GroupName => "Neutral Modifier Configs";
-    public override Color GroupColor => OWColors.Neutral;
+    public override Color GroupColor => AUSColors.Neutral;
     public override bool ShowInModifiersMenu => true;
     public override uint GroupPriority => 50;
 }

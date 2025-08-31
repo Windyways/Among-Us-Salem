@@ -8,16 +8,16 @@ using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using Rewired;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons;
+namespace AmongUsSalem.Buttons;
 
 [MiraIgnore]
-public abstract class ObjectWorkshopButton : CustomActionButton
+public abstract class AmongUsSalemButton : CustomActionButton
 {
     public override string Name => string.Empty;
 
@@ -27,7 +27,7 @@ public abstract class ObjectWorkshopButton : CustomActionButton
     public override ButtonLocation Location => ButtonLocation.BottomRight;
 
     public override string CooldownTimerFormatString =>
-        Timer <= 10f && ObjectWorkshopPlugin.PreciseCooldowns.Value ? "0.0" : "0";
+        Timer <= 10f && AUSPlugin.PreciseCooldowns.Value ? "0.0" : "0";
 
     public virtual bool UsableInDeath => false;
     public virtual bool ShouldPauseInVent => true;
@@ -107,7 +107,7 @@ public abstract class ObjectWorkshopButton : CustomActionButton
         base.CreateButton(parent);
         if (Button == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"Button is null for {GetType().FullName}");
+            Logger<AUSPlugin>.Error($"Button is null for {GetType().FullName}");
             return;
         }
 
@@ -206,7 +206,7 @@ public abstract class ObjectWorkshopButton : CustomActionButton
 }
 
 [MiraIgnore]
-public abstract class ObjectWorkshopTargetButton<T> : CustomActionButton<T> where T : MonoBehaviour
+public abstract class AmongUsSalemTargetButton<T> : CustomActionButton<T> where T : MonoBehaviour
 {
     public override string Name => string.Empty;
 
@@ -216,7 +216,7 @@ public abstract class ObjectWorkshopTargetButton<T> : CustomActionButton<T> wher
     public override ButtonLocation Location => ButtonLocation.BottomRight;
 
     public override string CooldownTimerFormatString =>
-        Timer <= 10f && ObjectWorkshopPlugin.PreciseCooldowns.Value ? "0.0" : "0";
+        Timer <= 10f && AUSPlugin.PreciseCooldowns.Value ? "0.0" : "0";
 
     public virtual bool ShouldPauseInVent => false;
     public virtual bool UsableInDeath => false;
@@ -311,7 +311,7 @@ public abstract class ObjectWorkshopTargetButton<T> : CustomActionButton<T> wher
         base.CreateButton(parent);
         if (Button == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"Button is null for {GetType().FullName}");
+            Logger<AUSPlugin>.Error($"Button is null for {GetType().FullName}");
             return;
         }
 
@@ -331,7 +331,7 @@ public abstract class ObjectWorkshopTargetButton<T> : CustomActionButton<T> wher
                 break;
         }
 
-        OWColors.UseBasic = false;
+        AUSColors.UseBasic = false;
         if (TextOutlineColor != Color.clear)
         {
             SetTextOutline(TextOutlineColor);
@@ -353,8 +353,7 @@ public abstract class ObjectWorkshopTargetButton<T> : CustomActionButton<T> wher
 
     public override void ClickHandler()
     {
-        if (CanClick() && !PlayerControl.LocalPlayer.HasModifier<GlitchHackedModifier>() &&
-            !PlayerControl.LocalPlayer.HasModifier<DisabledModifier>())
+        if (CanClick() && !PlayerControl.LocalPlayer.HasModifier<GlitchHackedModifier>() && !PlayerControl.LocalPlayer.HasModifier<DisabledModifier>())
         {
             if (LimitedUses)
             {
@@ -402,7 +401,7 @@ public abstract class ObjectWorkshopTargetButton<T> : CustomActionButton<T> wher
 }
 
 [MiraIgnore]
-public abstract class ObjectWorkshopRoleButton<TRole> : ObjectWorkshopButton where TRole : RoleBehaviour
+public abstract class AmongUsSalemRoleButton<TRole> : AmongUsSalemButton where TRole : RoleBehaviour
 {
     public TRole Role => PlayerControl.LocalPlayer.GetRole<TRole>()!;
 
@@ -413,7 +412,7 @@ public abstract class ObjectWorkshopRoleButton<TRole> : ObjectWorkshopButton whe
 }
 
 [MiraIgnore]
-public abstract class ObjectWorkshopRoleButton<TRole, TTarget> : ObjectWorkshopTargetButton<TTarget>
+public abstract class AmongUsSalemRoleButton<TRole, TTarget> : AmongUsSalemTargetButton<TTarget>
     where TTarget : MonoBehaviour where TRole : RoleBehaviour
 {
     public TRole Role => PlayerControl.LocalPlayer.GetRole<TRole>()!;

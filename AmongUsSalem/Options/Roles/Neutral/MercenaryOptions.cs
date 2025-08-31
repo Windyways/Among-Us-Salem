@@ -1,9 +1,9 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
 
-namespace ObjectWorkshop.Options.Roles.Neutral;
+namespace AmongUsSalem.Options.Roles.Neutral;
 
 public sealed class MercenaryOptions : AbstractOptionGroup<MercenaryRole>
 {

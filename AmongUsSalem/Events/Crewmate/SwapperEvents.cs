@@ -6,12 +6,12 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using MiraAPI.Voting;
 using Reactor.Utilities;
-using ObjectWorkshop.Events.Modifiers;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.Modifiers;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class SwapperEvents
 {
@@ -19,7 +19,7 @@ public static class SwapperEvents
     [RegisterEvent(10)]
     public static void ProcessVotesEventHandler(ProcessVotesEvent @event)
     {
-        // Logger<ObjectWorkshopPlugin>.Error($"SwapperEvents.ProcessVotesEventHandler");
+        // Logger<AUSPlugin>.Error($"SwapperEvents.ProcessVotesEventHandler");
         CustomRoleUtils.GetActiveRolesOfType<SwapperRole>().Do(x => SwapVotes(@event, x));
     }
 

@@ -1,10 +1,10 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Impostor;
-using ObjectWorkshop.Options.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Game.Impostor;
+using AmongUsSalem.Options.Modifiers.Impostor;
 
-namespace ObjectWorkshop.Patches.Modifiers;
+namespace AmongUsSalem.Patches.Modifiers;
 
 [HarmonyPatch]
 public static class SaboteurPatches

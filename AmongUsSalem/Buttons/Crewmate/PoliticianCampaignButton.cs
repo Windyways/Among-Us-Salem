@@ -1,20 +1,20 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class PoliticianCampaignButton : ObjectWorkshopRoleButton<PoliticianRole, PlayerControl>
+public sealed class PoliticianCampaignButton : AmongUsSalemRoleButton<PoliticianRole, PlayerControl>
 {
     public override string Name => "Campaign";
     public override string Keybind => Keybinds.SecondaryAction;
     public override float Cooldown => OptionGroupSingleton<PoliticianOptions>.Instance.CampaignCooldown + MapCooldown;
-    public override Color TextOutlineColor => OWColors.Politician;
+    public override Color TextOutlineColor => AUSColors.Politician;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.CampaignButtonSprite;
 
     public override bool CanUse()

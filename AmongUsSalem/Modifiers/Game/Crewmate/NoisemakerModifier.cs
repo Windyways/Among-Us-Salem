@@ -2,14 +2,14 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Crewmate;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class NoisemakerModifier : TouGameModifier
 {
@@ -71,7 +71,7 @@ public sealed class NoisemakerModifier : TouGameModifier
             return;
         }
 
-        if (PlayerControl.LocalPlayer.Is(RoleAlignment.NeutralPredator) &&
+        if (PlayerControl.LocalPlayer.Is(Alignment.NeutralKilling) &&
             !OptionGroupSingleton<NoisemakerOptions>.Instance.NeutsAlerted)
         {
             return;

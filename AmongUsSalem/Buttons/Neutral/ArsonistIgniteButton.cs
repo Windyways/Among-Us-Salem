@@ -6,22 +6,22 @@ using MiraAPI.Networking;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Networking.Attributes;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class ArsonistIgniteButton : ObjectWorkshopRoleButton<ArsonistRole>
+public sealed class ArsonistIgniteButton : AmongUsSalemRoleButton<ArsonistRole>
 {
     public PlayerControl? ClosestTarget;
     public override string Name => "Ignite";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Arsonist;
+    public override Color TextOutlineColor => AUSColors.Arsonist;
     public override float Cooldown => OptionGroupSingleton<ArsonistOptions>.Instance.DouseCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.IgniteButtonSprite;
 
@@ -114,7 +114,7 @@ public sealed class ArsonistIgniteButton : ObjectWorkshopRoleButton<ArsonistRole
             predicate: x => x.HasModifier<ArsonistDousedModifier>());
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.IgniteSound, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.IgniteSound, SendImmediately = true)]
     public static void RpcIgniteSound(PlayerControl player)
     {
         if (player.AmOwner)

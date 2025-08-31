@@ -8,16 +8,16 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class EngineerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class EngineerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -25,9 +25,9 @@ public sealed class EngineerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
     public string RoleName => TouLocale.Get(TouNames.Engineer, "Engineer");
     public string RoleDescription => "Maintain Important Systems On The Ship";
     public string RoleLongDescription => "Vent around and fix sabotages remotely";
-    public Color RoleColor => OWColors.Engineer;
+    public Color RoleColor => AUSColors.Engineer;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -40,7 +40,7 @@ public sealed class EngineerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -288,12 +288,12 @@ public sealed class EngineerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
         RpcEngineerEventFix(PlayerControl.LocalPlayer);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.EngineerFix, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.EngineerFix, SendImmediately = true)]
     private static void RpcFix(PlayerControl engineer, byte type)
     {
         if (engineer.Data.Role is not EngineerTouRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Invalid engineer");
+            Logger<AUSPlugin>.Error("Invalid engineer");
             return;
         }
 
@@ -317,12 +317,12 @@ public sealed class EngineerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
         MiraEventManager.InvokeEvent(touAbilityEvent);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.EngineerEventFix, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.EngineerEventFix, SendImmediately = true)]
     public static void RpcEngineerEventFix(PlayerControl engi)
     {
         if (engi.Data.Role is not EngineerTouRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Invalid engineer");
+            Logger<AUSPlugin>.Error("Invalid engineer");
             return;
         }
 

@@ -1,8 +1,8 @@
 using MiraAPI.Events;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Events.TouEvents;
+using AmongUsSalem.Events.TouEvents;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class OracleBlessedModifier(PlayerControl oracle) : BaseModifier
 {

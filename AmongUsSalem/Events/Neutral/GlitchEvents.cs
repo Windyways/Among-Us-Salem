@@ -2,9 +2,9 @@
 using MiraAPI.Events.Mira;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class GlitchEvents
 {

@@ -1,14 +1,14 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class GrenadierFlashModifier(PlayerControl grenadier) : DisabledModifier, IDisposable
 {
@@ -41,7 +41,7 @@ public sealed class GrenadierFlashModifier(PlayerControl grenadier) : DisabledMo
         if (Player.AmOwner && !Grenadier.AmOwner)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Infiltrator.ToTextColor()}You were flashed by a Grenadier!</color></b>", Color.white,
+                $"<b>{AUSColors.Mafia.ToTextColor()}You were flashed by a Grenadier!</color></b>", Color.white,
                 spr: TouRoleIcons.Grenadier.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);

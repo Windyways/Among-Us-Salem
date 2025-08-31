@@ -4,12 +4,12 @@ using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Modifiers;
+namespace AmongUsSalem.Options.Modifiers;
 
 public sealed class NeutralModifierOptions : AbstractOptionGroup
 {
     public override string GroupName => "Neutral Modifiers";
-    public override Color GroupColor => OWColors.Neutral;
+    public override Color GroupColor => AUSColors.Neutral;
     public override bool ShowInModifiersMenu => true;
     public override uint GroupPriority => 4;
 

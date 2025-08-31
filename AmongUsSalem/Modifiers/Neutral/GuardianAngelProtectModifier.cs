@@ -2,16 +2,16 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Roles;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class GuardianAngelProtectModifier(PlayerControl guardianAngel) : BaseShieldModifier
 {
@@ -27,7 +27,7 @@ public sealed class GuardianAngelProtectModifier(PlayerControl guardianAngel) : 
         get
         {
             var showProtect = OptionGroupSingleton<GuardianAngelOptions>.Instance.ShowProtect;
-            return !ObjectWorkshopPlugin.ShowShieldHud.Value || !OptionGroupSingleton<GuardianAngelOptions>.Instance.GATargetKnows || showProtect is ProtectOptions.GA;
+            return !AUSPlugin.ShowShieldHud.Value || !OptionGroupSingleton<GuardianAngelOptions>.Instance.GATargetKnows || showProtect is ProtectOptions.GA;
         }
     }
 

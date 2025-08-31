@@ -1,4 +1,4 @@
-﻿namespace ObjectWorkshop.Modules.Anims;
+﻿namespace AmongUsSalem.Modules.Anims;
 
 public interface IAnimated
 {

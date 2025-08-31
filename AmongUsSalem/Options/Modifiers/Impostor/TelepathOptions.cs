@@ -2,10 +2,10 @@
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers.Game.Impostor;
+using AmongUsSalem.Modifiers.Game.Impostor;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Modifiers.Impostor;
+namespace AmongUsSalem.Options.Modifiers.Impostor;
 
 public sealed class TelepathOptions : AbstractOptionGroup<TelepathModifier>
 {

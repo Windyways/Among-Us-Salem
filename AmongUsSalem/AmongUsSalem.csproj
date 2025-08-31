@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <LangVersion>latest</LangVersion>
-        <Description>Object Workshop</Description>
-        <RootNamespace>ObjectWorkshop</RootNamespace>
+        <Description>Among Us Salem</Description>
+        <RootNamespace>AmongUsSalem</RootNamespace>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
 

@@ -1,17 +1,17 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class DetectiveExamineButton : ObjectWorkshopRoleButton<DetectiveRole, PlayerControl>
+public sealed class DetectiveExamineButton : AmongUsSalemRoleButton<DetectiveRole, PlayerControl>
 {
     public override string Name => "Examine";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Detective;
+    public override Color TextOutlineColor => AUSColors.Detective;
     public override float Cooldown => OptionGroupSingleton<DetectiveOptions>.Instance.ExamineCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.ExamineSprite;
 

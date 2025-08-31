@@ -2,9 +2,9 @@
 using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
+using AmongUsSalem.Modifiers.Game.Crewmate;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class TaskmasterEvents
 {

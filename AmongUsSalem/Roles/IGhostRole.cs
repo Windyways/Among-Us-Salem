@@ -1,4 +1,4 @@
-namespace ObjectWorkshop.Roles;
+namespace AmongUsSalem.Roles;
 
 public interface IGhostRole
 {

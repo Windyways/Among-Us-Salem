@@ -7,16 +7,16 @@ using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 public static class TeamChatPatches
 {
@@ -37,22 +37,22 @@ public static class TeamChatPatches
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SendJailorChat, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SendJailorChat, SendImmediately = true)]
     public static void RpcSendJailorChat(PlayerControl player, string text)
     {
         if (PlayerControl.LocalPlayer.IsJailed())
         {
             MiscUtils.AddTeamChat(PlayerControl.LocalPlayer.Data,
-                $"<color=#{OWColors.Jailor.ToHtmlStringRGBA()}>Jailor</color>", text);
+                $"<color=#{AUSColors.Jailor.ToHtmlStringRGBA()}>Jailor</color>", text);
         }
         else if (PlayerControl.LocalPlayer.HasDied() && OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow)
         {
             MiscUtils.AddTeamChat(player.Data,
-                $"<color=#{OWColors.Jailor.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Jailor)</color>", text);
+                $"<color=#{AUSColors.Jailor.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Jailor)</color>", text);
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SendJaileeChat, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SendJaileeChat, SendImmediately = true)]
     public static void RpcSendJaileeChat(PlayerControl player, string text)
     {
         if (PlayerControl.LocalPlayer.Data.Role is JailorRole || (PlayerControl.LocalPlayer.HasDied() &&
@@ -60,30 +60,30 @@ public static class TeamChatPatches
                                                                       .TheDeadKnow))
         {
             MiscUtils.AddTeamChat(player.Data,
-                $"<color=#{OWColors.Jailor.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Jailed)</color>", text);
+                $"<color=#{AUSColors.Jailor.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Jailed)</color>", text);
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SendVampTeamChat, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SendVampTeamChat, SendImmediately = true)]
     public static void RpcSendVampTeamChat(PlayerControl player, string text)
     {
         if ((PlayerControl.LocalPlayer.Data.Role is VampireRole && player != PlayerControl.LocalPlayer) ||
             (PlayerControl.LocalPlayer.HasDied() && OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow))
         {
             MiscUtils.AddTeamChat(player.Data,
-                $"<color=#{OWColors.Vampire.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Vampire Chat)</color>",
+                $"<color=#{AUSColors.Vampire.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Vampire Chat)</color>",
                 text);
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SendImpTeamChat, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SendImpTeamChat, SendImmediately = true)]
     public static void RpcSendImpTeamChat(PlayerControl player, string text)
     {
         if ((PlayerControl.LocalPlayer.IsImpostor() && player != PlayerControl.LocalPlayer) ||
             (PlayerControl.LocalPlayer.HasDied() && OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow))
         {
             MiscUtils.AddTeamChat(player.Data,
-                $"<color=#{OWColors.Infiltrator.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Impostor Chat)</color>",
+                $"<color=#{AUSColors.Mafia.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Impostor Chat)</color>",
                 text);
         }
     }
@@ -156,7 +156,7 @@ public static class TeamChatPatches
                         _teamText = Object.Instantiate(__instance.sendRateMessageText,
                             __instance.sendRateMessageText.transform.parent);
                         _teamText.text = string.Empty;
-                        _teamText.color = OWColors.Infiltrator;
+                        _teamText.color = AUSColors.Mafia;
                     }
 
                     var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
@@ -209,14 +209,14 @@ public static class TeamChatPatches
                              PlayerControl.LocalPlayer.Data.Role is JailorRole) && _teamText != null)
                         {
                             _teamText.text = "Jailor Chat is Open. Only the Jailor and Jailee can see this.";
-                            _teamText.color = OWColors.Jailor;
+                            _teamText.color = AUSColors.Jailor;
                         }
                         else if (PlayerControl.LocalPlayer.IsImpostor() &&
                                  genOpt is { FFAImpostorMode: false, ImpostorChat.Value: true } &&
                                  !PlayerControl.LocalPlayer.Data.IsDead && _teamText != null)
                         {
                             _teamText.text = "Impostor Chat is Open. Only Impostors can see this.";
-                            _teamText.color = OWColors.Infiltrator;
+                            _teamText.color = AUSColors.Mafia;
                         }
                         else if (_teamText != null)
                         {

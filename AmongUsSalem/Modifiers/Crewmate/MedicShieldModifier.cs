@@ -2,15 +2,15 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class MedicShieldModifier(PlayerControl medic) : BaseShieldModifier
 {
@@ -26,7 +26,7 @@ public sealed class MedicShieldModifier(PlayerControl medic) : BaseShieldModifie
         get
         {
             var showShielded = OptionGroupSingleton<MedicOptions>.Instance.ShowShielded;
-            return !ObjectWorkshopPlugin.ShowShieldHud.Value || (showShielded is MedicOption.Medic or MedicOption.Nobody);
+            return !AUSPlugin.ShowShieldHud.Value || (showShielded is MedicOption.Medic or MedicOption.Nobody);
         }
     }
 

@@ -4,13 +4,13 @@ using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.GameOptions;
 using MiraAPI.Roles;
 using Reactor.Utilities;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Neutral;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
-public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IOWRole
+public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
 {
     private Minigame _hauntMenu = null!;
 
@@ -28,9 +28,9 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IOWRole
     public virtual string RoleName => Player != null ? Player.GetRoleWhenAlive().NiceName : "Neutral Ghost";
     public virtual string RoleDescription => Player != null ? Player.GetRoleWhenAlive().Blurb : string.Empty;
     public virtual string RoleLongDescription => Player != null ? Player.GetRoleWhenAlive().BlurbLong : string.Empty;
-    public virtual Color RoleColor => Player != null ? Player.GetRoleWhenAlive().TeamColor : OWColors.Neutral;
+    public virtual Color RoleColor => Player != null ? Player.GetRoleWhenAlive().TeamColor : AUSColors.Neutral;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public virtual RoleAlignment RoleAlignment => RoleAlignment.None;
+    public virtual Alignment Alignment => Alignment.None;
 
     public virtual CustomRoleConfiguration Configuration => new(this)
     {
@@ -45,9 +45,9 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IOWRole
     public StringBuilder SetTabText()
     {
         var stringB = new StringBuilder();
-        if (Player.GetRoleWhenAlive() is IOWRole touRole)
+        if (Player.GetRoleWhenAlive() is IAUSRole touRole)
         {
-            stringB = IOWRole.SetDeadTabText(touRole);
+            stringB = IAUSRole.SetDeadTabText(touRole);
             if (touRole.MetWinCon)
             {
                 stringB.Append("<b>You have already won.</b>");
@@ -69,7 +69,7 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IOWRole
     {
         var role = Player.GetRoleWhenAlive();
 
-        return role is IOWRole tRole && tRole.WinConditionMet();
+        return role is IAUSRole tRole && tRole.WinConditionMet();
     }
 
     public override void AppendTaskHint(Il2CppSystem.Text.StringBuilder taskStringBuilder)
@@ -118,12 +118,12 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IOWRole
 
         var win = role.DidWin(gameOverReason);
 
-        Logger<ObjectWorkshopPlugin>.Message($"NeutralGhostRole.DidWin - role: {role.NiceName} DidWin: {win}");
+        Logger<AUSPlugin>.Message($"NeutralGhostRole.DidWin - role: {role.NiceName} DidWin: {win}");
 
         // Yes, this is bad, but we don't want to break the end game screen to allow other mods to still work with tou mira - Atony
         if (role is JesterRole && win && OptionGroupSingleton<JesterOptions>.Instance.JestWin is JestWinOptions.EndsGame)
         {
-            Logger<ObjectWorkshopPlugin>.Info($"Jester - Player: {Player.Data.PlayerName}");
+            Logger<AUSPlugin>.Info($"Jester - Player: {Player.Data.PlayerName}");
             Player.Data.IsDead = false;
         }
 

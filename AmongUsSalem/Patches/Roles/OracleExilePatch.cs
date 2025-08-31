@@ -1,11 +1,11 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Utilities.Appearances;
 using Object = Il2CppSystem.Object;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class OracleExilePatch

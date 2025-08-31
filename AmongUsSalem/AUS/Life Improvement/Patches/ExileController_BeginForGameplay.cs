@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles;
 
-namespace ObjectWorkshop.LifeImprovement.Patches;
+namespace AmongUsSalem.LifeImprovement.Patches;
 
 [HarmonyPatch]
 public static class ExileController_BeginForGameplay

@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement.MCI;
+namespace AmongUsSalem.LifeImprovement.MCI;
 
 public static class Reactor_Coroutines
 {

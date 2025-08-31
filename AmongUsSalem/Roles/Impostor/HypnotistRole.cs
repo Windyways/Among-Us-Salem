@@ -7,17 +7,17 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class HypnotistRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     private MeetingMenu meetingMenu;
@@ -44,9 +44,9 @@ public sealed class HypnotistRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Hypnotist, "Hypnotist");
     public string RoleDescription => "Hypnotize Crewmates";
     public string RoleLongDescription => "Hypnotize crewmates and drive them insane";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -57,7 +57,7 @@ public sealed class HypnotistRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -146,12 +146,12 @@ public sealed class HypnotistRole(IntPtr cppPtr)
         return voteArea?.TargetPlayerId != Player.PlayerId;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.Hysteria, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.Hysteria, SendImmediately = true)]
     public static void RpcHysteria(PlayerControl player)
     {
         if (player.Data.Role is not HypnotistRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcHysteria - Invalid hypnotist");
+            Logger<AUSPlugin>.Error("RpcHysteria - Invalid hypnotist");
             return;
         }
 

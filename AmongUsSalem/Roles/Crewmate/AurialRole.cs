@@ -6,14 +6,14 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class AurialRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class AurialRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     private readonly Dictionary<(Vector3, int), ArrowBehaviour> _senseArrows = new();
@@ -21,9 +21,9 @@ public sealed class AurialRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     public string RoleName => TouLocale.Get(TouNames.Aurial, "Aurial");
     public string RoleDescription => "Sense Disturbances In Your Aura.";
     public string RoleLongDescription => "Any player abilities used within your aura you will sense";
-    public Color RoleColor => OWColors.Aurial;
+    public Color RoleColor => AUSColors.Aurial;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -40,7 +40,7 @@ public sealed class AurialRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -134,12 +134,12 @@ public sealed class AurialRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
         _senseArrows.Remove(arrow.Key);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.AurialSense, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.AurialSense, SendImmediately = true)]
     public static void RpcSense(PlayerControl player, PlayerControl source)
     {
         if (player.Data.Role is not AurialRole aurial)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Invalid Aurial");
+            Logger<AUSPlugin>.Error("Invalid Aurial");
             return;
         }
 

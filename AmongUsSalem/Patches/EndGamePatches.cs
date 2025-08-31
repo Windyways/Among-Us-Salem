@@ -7,19 +7,19 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class EndGamePatches
@@ -54,7 +54,7 @@ public static class EndGamePatches
                     roleName = role.Player.IsImpostor() ? "Impostor" : "Crewmate";
                 }
 
-                playerRoleString.Append(ObjectWorkshopPlugin.Culture, $"{color.ToTextColor()}{roleName}</color> > ");
+                playerRoleString.Append(AUSPlugin.Culture, $"{color.ToTextColor()}{roleName}</color> > ");
             }
 
             if (playerRoleString.Length > 3)
@@ -66,7 +66,7 @@ public static class EndGamePatches
             var playerRoleType = lastRole!.Role;
             var playerTeam = ModdedRoleTeams.Crewmate;
 
-            if (lastRole is IOWRole touRole)
+            if (lastRole is IAUSRole touRole)
             {
                 playerTeam = touRole.Team;
             }
@@ -81,7 +81,7 @@ public static class EndGamePatches
             var modifierNames = modifiers.Select(modifier => modifier.ModifierName);
             if (modifierCount != 0)
             {
-                playerRoleString.Append(ObjectWorkshopPlugin.Culture, $" (");
+                playerRoleString.Append(AUSPlugin.Culture, $" (");
             }
 
             foreach (var modifierName in modifierNames)
@@ -95,75 +95,75 @@ public static class EndGamePatches
                 modifierCount--;
                 if (modifierCount == 0)
                 {
-                    playerRoleString.Append(ObjectWorkshopPlugin.Culture, $"{modColor.ToTextColor()}{modifierName}</color>)");
+                    playerRoleString.Append(AUSPlugin.Culture, $"{modColor.ToTextColor()}{modifierName}</color>)");
                 }
                 else
                 {
-                    playerRoleString.Append(ObjectWorkshopPlugin.Culture,
+                    playerRoleString.Append(AUSPlugin.Culture,
                         $"{modColor.ToTextColor()}{modifierName}</color>, ");
                 }
             }
 
             if (playerControl.IsRole<PhantomTouRole>() || playerTeam == ModdedRoleTeams.Crewmate)
             {
-                playerRoleString.Append(ObjectWorkshopPlugin.Culture,
+                playerRoleString.Append(AUSPlugin.Culture,
                     $" {playerControl.TaskInfo()}");
             }
 
             var killedPlayers = GameHistory.KilledPlayers.Count(x =>
                 x.KillerId == playerControl.PlayerId && x.VictimId != playerControl.PlayerId);
 
-            if (killedPlayers > 0 && !playerControl.IsCrewmate() && !playerControl.Is(RoleAlignment.NeutralEvil))
+            if (killedPlayers > 0 && !playerControl.IsCrewmate() && !playerControl.Is(Alignment.NeutralEvil))
             {
-                playerRoleString.Append(ObjectWorkshopPlugin.Culture,
-                    $" |{OWColors.Infiltrator.ToTextColor()} Kills: {killedPlayers}</color>");
+                playerRoleString.Append(AUSPlugin.Culture,
+                    $" |{AUSColors.Mafia.ToTextColor()} Kills: {killedPlayers}</color>");
             }
 
             if (GameHistory.PlayerStats.TryGetValue(playerControl.PlayerId, out var stats))
             {
                 if (killedPlayers > 0 && playerControl.IsCrewmate() && stats.CorrectKills <= 0 &&
-                    stats.IncorrectKills <= 0 && !playerControl.Is(RoleAlignment.NeutralEvil))
+                    stats.IncorrectKills <= 0 && !playerControl.Is(Alignment.NeutralEvil))
                 {
-                    playerRoleString.Append(ObjectWorkshopPlugin.Culture,
-                        $" |{OWColors.Infiltrator.ToTextColor()} Kills: {killedPlayers}</color>");
+                    playerRoleString.Append(AUSPlugin.Culture,
+                        $" |{AUSColors.Mafia.ToTextColor()} Kills: {killedPlayers}</color>");
                 }
 
                 if (stats.CorrectKills > 0)
                 {
-                    playerRoleString.Append(ObjectWorkshopPlugin.Culture,
+                    playerRoleString.Append(AUSPlugin.Culture,
                         $" | {Color.green.ToTextColor()}Kills: {stats.CorrectKills}</color>");
                 }
 
                 if (stats.IncorrectKills > 0)
                 {
-                    playerRoleString.Append(ObjectWorkshopPlugin.Culture,
-                        $" | {OWColors.Infiltrator.ToTextColor()}Mis-kills: {stats.IncorrectKills}</color>");
+                    playerRoleString.Append(AUSPlugin.Culture,
+                        $" | {AUSColors.Mafia.ToTextColor()}Mis-kills: {stats.IncorrectKills}</color>");
                 }
 
                 if (stats.CorrectAssassinKills > 0)
                 {
-                    playerRoleString.Append(ObjectWorkshopPlugin.Culture,
+                    playerRoleString.Append(AUSPlugin.Culture,
                         $" | {Color.green.ToTextColor()}Guesses: {stats.CorrectAssassinKills}</color>");
                 }
 
                 if (stats.IncorrectAssassinKills > 0)
                 {
-                    playerRoleString.Append(ObjectWorkshopPlugin.Culture,
-                        $" | {OWColors.Infiltrator.ToTextColor()}Misguesses: {stats.IncorrectAssassinKills}</color>");
+                    playerRoleString.Append(AUSPlugin.Culture,
+                        $" | {AUSColors.Mafia.ToTextColor()}Misguesses: {stats.IncorrectAssassinKills}</color>");
                 }
             }
             if (playerControl.TryGetModifier<DeathHandlerModifier>(out var deathHandler))
             {
-                playerRoleString.Append(ObjectWorkshopPlugin.Culture,
+                playerRoleString.Append(AUSPlugin.Culture,
                     $" | {Color.yellow.ToTextColor()}{deathHandler.CauseOfDeath}</color>");
-                if (deathHandler.KilledBy != string.Empty) playerRoleString.Append(ObjectWorkshopPlugin.Culture,
+                if (deathHandler.KilledBy != string.Empty) playerRoleString.Append(AUSPlugin.Culture,
                     $" {deathHandler.KilledBy}");
-                playerRoleString.Append(ObjectWorkshopPlugin.Culture,
+                playerRoleString.Append(AUSPlugin.Culture,
                     $" (R{deathHandler.RoundOfDeath})");
             }
             else
             {
-                playerRoleString.Append(ObjectWorkshopPlugin.Culture,
+                playerRoleString.Append(AUSPlugin.Culture,
                     $" | {Color.yellow.ToTextColor()}Alive</color>");
             }
 
@@ -172,7 +172,7 @@ public static class EndGamePatches
 
             if (EndGameResult.CachedWinners.ToArray().Any(x => x.PlayerName == playerControl.Data.PlayerName))
             {
-                playerName.Append(ObjectWorkshopPlugin.Culture, $"<color=#EFBF04>{playerControl.Data.PlayerName}</color>");
+                playerName.Append(AUSPlugin.Culture, $"<color=#EFBF04>{playerControl.Data.PlayerName}</color>");
                 playerWinner = true;
                 RoleReferences.UpdateRoleResult(playerControl.Data.Role, killedPlayers, true, false);
             }
@@ -191,7 +191,7 @@ public static class EndGamePatches
                     modColor = colorMod.ModifierColor;
                 }
 
-                playerName.Append(ObjectWorkshopPlugin.Culture,
+                playerName.Append(AUSPlugin.Culture,
                     $" <b>{modColor.ToTextColor()}<size=60%>{alliance.Symbol}</size></color></b>");
             }
 
@@ -241,16 +241,16 @@ public static class EndGamePatches
             var role = string.Join(" ", data.RoleString);
             if (count % 2 == 0)
             {
-                roleSummaryText2.AppendLine(ObjectWorkshopPlugin.Culture, $"{data.PlayerName} - {role}");
+                roleSummaryText2.AppendLine(AUSPlugin.Culture, $"{data.PlayerName} - {role}");
             }
             else
             {
-                roleSummaryText1.AppendLine(ObjectWorkshopPlugin.Culture, $"{data.PlayerName} - {role}");
+                roleSummaryText1.AppendLine(AUSPlugin.Culture, $"{data.PlayerName} - {role}");
             }
 
             count++;
-            roleSummaryBackup.AppendLine(ObjectWorkshopPlugin.Culture, $"{data.PlayerName} - {role}");
-            roleSummaryTextFull.AppendLine(ObjectWorkshopPlugin.Culture, $"{data.PlayerName} - {role}");
+            roleSummaryBackup.AppendLine(AUSPlugin.Culture, $"{data.PlayerName} - {role}");
+            roleSummaryTextFull.AppendLine(AUSPlugin.Culture, $"{data.PlayerName} - {role}");
         }
 
         var roleSummaryTextMesh = roleSummary.GetComponent<TMP_Text>();
@@ -305,14 +305,14 @@ public static class EndGamePatches
             tmp2.ResetText();
         }
 
-        switch (ObjectWorkshopPlugin.GameSummaryMode.Value)
+        switch (AUSPlugin.GameSummaryMode.Value)
         {
             default:
                 // No summary
                 roleSummary.gameObject.SetActive(false);
                 roleSummary2.gameObject.SetActive(false);
                 roleSummaryLeft.gameObject.SetActive(false);
-                ObjectWorkshopPlugin.GameSummaryMode.Value = 0;
+                AUSPlugin.GameSummaryMode.Value = 0;
                 break;
             case 1:
                 // Split summary
@@ -330,28 +330,28 @@ public static class EndGamePatches
 
         var toggleAction = new Action(() =>
         {
-            switch (ObjectWorkshopPlugin.GameSummaryMode.Value)
+            switch (AUSPlugin.GameSummaryMode.Value)
             {
                 case 0:
                     // Split summary
                     roleSummary.gameObject.SetActive(true);
                     roleSummary2.gameObject.SetActive(true);
                     roleSummaryLeft.gameObject.SetActive(false);
-                    ObjectWorkshopPlugin.GameSummaryMode.Value = 1;
+                    AUSPlugin.GameSummaryMode.Value = 1;
                     break;
                 case 1:
                     // Left side summary
                     roleSummary.gameObject.SetActive(false);
                     roleSummary2.gameObject.SetActive(false);
                     roleSummaryLeft.gameObject.SetActive(true);
-                    ObjectWorkshopPlugin.GameSummaryMode.Value = 2;
+                    AUSPlugin.GameSummaryMode.Value = 2;
                     break;
                 case 2:
                     // No summary
                     roleSummary.gameObject.SetActive(false);
                     roleSummary2.gameObject.SetActive(false);
                     roleSummaryLeft.gameObject.SetActive(false);
-                    ObjectWorkshopPlugin.GameSummaryMode.Value = 0;
+                    AUSPlugin.GameSummaryMode.Value = 0;
                     break;
             }
         });
@@ -423,17 +423,17 @@ public static class EndGamePatches
         {
             case 1:
                 text.text = "<size=4>Crewmates Win!</size>";
-                text.color = OWColors.Crewmate;
-                instance.BackgroundBar.material.SetColor(ShaderID.Color, OWColors.Crewmate);
+                text.color = AUSColors.Town;
+                instance.BackgroundBar.material.SetColor(ShaderID.Color, AUSColors.Town);
                 break;
             case 2:
-                text.text = "<size=4>Infiltrators Win!</size>";
-                text.color = OWColors.Infiltrator;
-                instance.BackgroundBar.material.SetColor(ShaderID.Color, OWColors.Infiltrator);
+                text.text = "<size=4>Mafias Win!</size>";
+                text.color = AUSColors.Mafia;
+                instance.BackgroundBar.material.SetColor(ShaderID.Color, AUSColors.Mafia);
                 break;
             default:
                 text.text = string.Empty;
-                text.color = OWColors.Neutral;
+                text.color = AUSColors.Neutral;
                 break;
         }
 

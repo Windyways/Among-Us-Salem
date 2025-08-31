@@ -1,10 +1,10 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Options;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Options;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 [HarmonyPatch(typeof(MedScanMinigame))]
 public static class MedScanMinigameFixedUpdatePatch

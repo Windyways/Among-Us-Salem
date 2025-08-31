@@ -2,9 +2,9 @@
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
 
-namespace ObjectWorkshop.Options.Roles.Impostor;
+namespace AmongUsSalem.Options.Roles.Impostor;
 
 public sealed class MinerOptions : AbstractOptionGroup<MinerRole>
 {

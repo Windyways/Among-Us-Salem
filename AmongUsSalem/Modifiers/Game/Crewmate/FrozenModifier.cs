@@ -1,9 +1,9 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Modifiers.Types;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
+using AmongUsSalem.Options.Modifiers.Crewmate;
 
-namespace ObjectWorkshop.Modifiers.Game.Crewmate;
+namespace AmongUsSalem.Modifiers.Game.Crewmate;
 
 public sealed class FrozenModifier : TimedModifier
 {

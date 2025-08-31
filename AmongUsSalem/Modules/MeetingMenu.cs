@@ -1,11 +1,11 @@
 using HarmonyLib;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modules;
+namespace AmongUsSalem.Modules;
 
 // Code Review: This works, and isn't too bad but could definitely be improved by yet again using a MonoBehaviour.
 public sealed class MeetingMenu : IDisposable
@@ -33,7 +33,7 @@ public sealed class MeetingMenu : IDisposable
         DisabledSprite = disabledSprite;
         ActiveColor = activeColor ?? Color.green;
         DisabledColor = disabledColor ?? Color.white;
-        HoverColor = hoverColor ?? OWColors.Infiltrator;
+        HoverColor = hoverColor ?? AUSColors.Mafia;
         Type = abilityType;
         Position = position ?? new Vector3(-0.95f, 0.03f, -3f);
 
@@ -121,7 +121,7 @@ public sealed class MeetingMenu : IDisposable
     {
         HideButtons();
 
-        // Logger<ObjectWorkshopPlugin>.Message($"MeetingMenu.GenButtons '{Owner.Player.Data.PlayerName}' AmOwner: {Owner.Player.AmOwner}");
+        // Logger<AUSPlugin>.Message($"MeetingMenu.GenButtons '{Owner.Player.Data.PlayerName}' AmOwner: {Owner.Player.AmOwner}");
         if (!usable || !Owner.Player.AmOwner)
         {
             return;

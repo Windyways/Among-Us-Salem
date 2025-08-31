@@ -1,9 +1,9 @@
 using HarmonyLib;
 using Rewired.Utils;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class GhostRolePatches

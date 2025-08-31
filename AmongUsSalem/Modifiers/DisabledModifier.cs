@@ -1,7 +1,7 @@
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 // This modifier is used to disable abilities on a player, and can be set up to disable on an interval.
 // The modifier will disable all buttons, and can be set up to appear dead or unusable to certain roles with CanBeInteractWith or IsConsideredAlive

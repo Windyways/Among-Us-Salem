@@ -1,7 +1,7 @@
 ﻿using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 [MiraIgnore]
 public abstract class ExcludedGameModifier : GameModifier

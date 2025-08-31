@@ -1,11 +1,11 @@
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
-namespace ObjectWorkshop.Assets;
+namespace AmongUsSalem.Assets;
 
 public static class TouImpAssets
 {
-    private const string ShortPath = "ObjectWorkshop.Resources";
+    private const string ShortPath = "AmongUsSalem.Resources";
     private const string BannerPath = $"{ShortPath}.RoleBanners";
     private const string ButtonPath = $"{ShortPath}.ImpButtons";
 

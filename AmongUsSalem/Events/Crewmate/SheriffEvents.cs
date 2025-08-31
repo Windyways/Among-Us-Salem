@@ -3,15 +3,15 @@ using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class SheriffEvents
 {
@@ -51,8 +51,8 @@ public static class SheriffEvents
             if (target.IsImpostor() ||
                 (target.IsCrewmate() && target.TryGetModifier<AllianceGameModifier>(out var allyMod) &&
                  !allyMod.GetsPunished) ||
-                (target.Is(RoleAlignment.NeutralEvil) && options.ShootNeutralEvil) ||
-                (target.Is(RoleAlignment.NeutralPredator) && options.ShootNeutralKiller))
+                (target.Is(Alignment.NeutralEvil) && options.ShootNeutralEvil) ||
+                (target.Is(Alignment.NeutralKilling) && options.ShootNeutralKiller))
             {
                 stats.CorrectKills += 1;
             }

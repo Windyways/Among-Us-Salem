@@ -1,21 +1,21 @@
 ﻿using System.Text;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class MysticRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class MysticRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public DoomableType DoomHintType => DoomableType.Perception;
     public string RoleName => TouLocale.Get(TouNames.Mystic, "Mystic");
     public string RoleDescription => "Know When and Where Kills Happen";
     public string RoleLongDescription => "Understand when and where kills happen";
-    public Color RoleColor => OWColors.Mystic;
+    public Color RoleColor => AUSColors.Mystic;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -26,7 +26,7 @@ public sealed class MysticRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

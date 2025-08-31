@@ -2,17 +2,17 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Buttons.Modifiers;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Universal;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Modifiers;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Universal;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Universal;
+namespace AmongUsSalem.Modifiers.Game.Universal;
 
 public sealed class ButtonBarryModifier : UniversalGameModifier
 {

@@ -3,13 +3,13 @@ using MiraAPI.Events;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class TraitorCacheModifier : BaseModifier, ICachedRole
 {
@@ -32,7 +32,7 @@ public sealed class TraitorCacheModifier : BaseModifier, ICachedRole
         if (Player.AmOwner)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Infiltrator.ToTextColor()}You are a new role, and you are only guessable as Traitor now!</color></b>",
+                $"<b>{AUSColors.Mafia.ToTextColor()}You are a new role, and you are only guessable as Traitor now!</color></b>",
                 Color.white, spr: TouRoleIcons.Traitor.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);
@@ -51,41 +51,5 @@ public sealed class TraitorCacheModifier : BaseModifier, ICachedRole
         }
 
         Player.RpcChangeRole(RoleId.Get<TraitorRole>(), false);
-    }
-}
-
-public sealed class CacheModifier(string roleName, RoleBehaviour cachedRole, Faction newFaction) : BaseModifier, ICachedRole
-{
-    public override string ModifierName => roleName;
-    public override bool HideOnUi => true;
-    public bool ShowCurrentRoleFirst => false;
-
-    public bool Visible => Player.AmOwner || PlayerControl.LocalPlayer.HasDied() ||
-                           (PlayerControl.LocalPlayer.IsFaction(Faction.Infiltrator) && faction == Faction.Infiltrator);
-
-    public RoleBehaviour CachedRole => cachedRole;
-    //public RoleBehaviour CachedRole => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<TraitorRole>());
-
-    public Faction faction = newFaction;
-    public override void OnDeath(DeathReason reason)
-    {
-        ModifierComponent?.RemoveModifier(this);
-    }
-
-    public override void OnActivate()
-    {
-        var touAbilityEvent = new TouAbilityEvent(AbilityType.TraitorChangeRole, Player);
-        MiraEventManager.InvokeEvent(touAbilityEvent);
-    }
-
-    public override void OnDeactivate()
-    {
-        if (Player.Data.Role == cachedRole)
-        {
-            return;
-        }
-
-        var roleType = RoleId.Get(cachedRole!.GetType());
-        Player.RpcChangeRole(roleType, false);
     }
 }

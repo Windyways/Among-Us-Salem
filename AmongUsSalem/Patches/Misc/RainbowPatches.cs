@@ -1,11 +1,11 @@
 using AmongUs.Data;
 using HarmonyLib;
-using ObjectWorkshop.Modules.RainbowMod;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules.RainbowMod;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = Il2CppSystem.Object;
 
-namespace ObjectWorkshop.RainbowMod;
+namespace AmongUsSalem.RainbowMod;
 
 [HarmonyPatch(typeof(PlayerMaterial), nameof(PlayerMaterial.SetColors), typeof(int), typeof(Renderer))]
 public static class SetPlayerMaterialPatch

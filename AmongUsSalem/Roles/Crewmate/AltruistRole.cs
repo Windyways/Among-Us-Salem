@@ -10,19 +10,19 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -30,9 +30,9 @@ public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole,
     public string RoleName => TouLocale.Get(TouNames.Altruist, "Altruist");
     public string RoleDescription => "Revive Dead Crewmates";
     public string RoleLongDescription => "Revive dead crewmates in groups";
-    public Color RoleColor => OWColors.Altruist;
+    public Color RoleColor => AUSColors.Altruist;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -43,7 +43,7 @@ public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole,
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -66,7 +66,7 @@ public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole,
     {
         RoleBehaviourStubs.OnMeetingStart(this);
 
-        Logger<ObjectWorkshopPlugin>.Error($"AltruistRole.OnMeetingStart");
+        Logger<AUSPlugin>.Error($"AltruistRole.OnMeetingStart");
 
         ClearArrows();
     }
@@ -95,11 +95,11 @@ public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole,
     [HideFromIl2Cpp]
     public static void ClearArrows()
     {
-        Logger<ObjectWorkshopPlugin>.Error($"AltruistRole.ClearArrows");
+        Logger<AUSPlugin>.Error($"AltruistRole.ClearArrows");
 
-        if (PlayerControl.LocalPlayer.IsImpostor() || PlayerControl.LocalPlayer.Is(RoleAlignment.NeutralPredator))
+        if (PlayerControl.LocalPlayer.IsImpostor() || PlayerControl.LocalPlayer.Is(Alignment.NeutralKilling))
         {
-            Logger<ObjectWorkshopPlugin>.Error($"AltruistRole.ClearArrows BadGuys Only");
+            Logger<AUSPlugin>.Error($"AltruistRole.ClearArrows BadGuys Only");
 
             foreach (var playerWithArrow in ModifierUtils.GetPlayersWithModifier<AltruistArrowModifier>())
             {
@@ -115,7 +115,7 @@ public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole,
 
         //if (roleWhenAlive == null)
         //{
-        //    Logger<ObjectWorkshopPlugin>.Error($"CoRevivePlayer - Dead player {dead.PlayerId} does not have a role when alive, cannot revive");
+        //    Logger<AUSPlugin>.Error($"CoRevivePlayer - Dead player {dead.PlayerId} does not have a role when alive, cannot revive");
         //    yield break; // cannot revive if no role when alive
         //}
 
@@ -196,7 +196,7 @@ public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole,
                 Destroy(body.gameObject);
             }
 
-            if (PlayerControl.LocalPlayer.IsImpostor() || PlayerControl.LocalPlayer.Is(RoleAlignment.NeutralPredator))
+            if (PlayerControl.LocalPlayer.IsImpostor() || PlayerControl.LocalPlayer.Is(Alignment.NeutralKilling))
             {
                 if (Player.HasModifier<AltruistArrowModifier>())
                 {
@@ -213,22 +213,22 @@ public sealed class AltruistRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole,
         Player.moveable = true;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.AltruistRevive, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.AltruistRevive, SendImmediately = true)]
     public static void RpcRevive(PlayerControl alt, PlayerControl target)
     {
         if (alt.Data.Role is not AltruistRole role)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcRevive - Invalid altruist");
+            Logger<AUSPlugin>.Error("RpcRevive - Invalid altruist");
             return;
         }
 
-        if (PlayerControl.LocalPlayer.IsImpostor() || PlayerControl.LocalPlayer.Is(RoleAlignment.NeutralPredator))
+        if (PlayerControl.LocalPlayer.IsImpostor() || PlayerControl.LocalPlayer.Is(Alignment.NeutralKilling))
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Altruist));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Altruist));
 
             if (!alt.HasModifier<AltruistArrowModifier>())
             {
-                alt.AddModifier<AltruistArrowModifier>(PlayerControl.LocalPlayer, OWColors.Infiltrator);
+                alt.AddModifier<AltruistArrowModifier>(PlayerControl.LocalPlayer, AUSColors.Mafia);
             }
         }
 

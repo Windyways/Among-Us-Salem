@@ -2,18 +2,18 @@
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class MercenaryBribeButton : ObjectWorkshopRoleButton<MercenaryRole, PlayerControl>
+public sealed class MercenaryBribeButton : AmongUsSalemRoleButton<MercenaryRole, PlayerControl>
 {
     public override string Name => "Bribe";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Mercenary;
+    public override Color TextOutlineColor => AUSColors.Mercenary;
     public override float Cooldown => 0.001f + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.BribeSprite;
 
@@ -26,7 +26,7 @@ public sealed class MercenaryBribeButton : ObjectWorkshopRoleButton<MercenaryRol
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Mercenary Bribed: Target is null");
+            Logger<AUSPlugin>.Error("Mercenary Bribed: Target is null");
             return;
         }
 

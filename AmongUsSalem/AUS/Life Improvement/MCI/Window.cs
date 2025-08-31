@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement.MCI;
+namespace AmongUsSalem.LifeImprovement.MCI;
 
 public class Window
 {

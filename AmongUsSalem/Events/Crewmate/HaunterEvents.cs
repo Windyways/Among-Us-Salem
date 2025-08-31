@@ -1,8 +1,8 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Player;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class HaunterEvents
 {

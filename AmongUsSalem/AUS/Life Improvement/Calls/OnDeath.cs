@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement;
+namespace AmongUsSalem.LifeImprovement;
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class OnDeath
@@ -13,7 +13,7 @@ public static class OnDeath
 
         foreach (var role in GameHistory.AllRoles)
         {
-            if (!role || role is not IOWRole touRole)
+            if (!role || role is not IAUSRole touRole)
             {
                 continue;
             }

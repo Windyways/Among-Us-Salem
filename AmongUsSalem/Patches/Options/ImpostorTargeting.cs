@@ -1,13 +1,13 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 // Is there a better way I can do this??
 [HarmonyPatch(typeof(ImpostorRole), nameof(ImpostorRole.IsValidTarget))]

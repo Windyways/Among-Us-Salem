@@ -2,20 +2,20 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class TrackerTrackButton : ObjectWorkshopRoleButton<TrackerTouRole, PlayerControl>
+public sealed class TrackerTrackButton : AmongUsSalemRoleButton<TrackerTouRole, PlayerControl>
 {
     public override string Name => "Track";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Tracker;
+    public override Color TextOutlineColor => AUSColors.Tracker;
     public override float Cooldown => OptionGroupSingleton<TrackerOptions>.Instance.TrackCooldown + MapCooldown;
     public override int MaxUses => (int)OptionGroupSingleton<TrackerOptions>.Instance.MaxTracks;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.TrackSprite;
@@ -35,7 +35,7 @@ public sealed class TrackerTrackButton : ObjectWorkshopRoleButton<TrackerTouRole
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Track: Target is null");
+            Logger<AUSPlugin>.Error("Track: Target is null");
             return;
         }
 

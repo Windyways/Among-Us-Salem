@@ -5,11 +5,11 @@ using MiraAPI.Events.Vanilla.Meeting;
 using MiraAPI.Hud;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class PlaguebearerEvents
 {
@@ -64,7 +64,7 @@ public static class PlaguebearerEvents
             if (pest.Player.AmOwner)
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>The crew know of the {OWColors.Pestilence.ToTextColor()}Pestilence</color>.</b>",
+                    $"<b>The crew know of the {AUSColors.Pestilence.ToTextColor()}Pestilence</color>.</b>",
                     Color.white, spr: TouRoleIcons.Pestilence.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -73,7 +73,7 @@ public static class PlaguebearerEvents
             else
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>The {OWColors.Plaguebearer.ToTextColor()}plague</color> has consumed the crew. {OWColors.Pestilence.ToTextColor()}Pestilence</color>, Horseman of the Apocalypse, has emerged!</b>",
+                    $"<b>The {AUSColors.Plaguebearer.ToTextColor()}plague</color> has consumed the crew. {AUSColors.Pestilence.ToTextColor()}Pestilence</color>, Horseman of the Apocalypse, has emerged!</b>",
                     Color.white, spr: TouRoleIcons.Pestilence.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);

@@ -1,16 +1,16 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Modifiers.Universal;
+namespace AmongUsSalem.Options.Modifiers.Universal;
 
 public sealed class ShyOptions : AbstractOptionGroup<ShyModifier>
 {
     public override string GroupName => TouLocale.Get(TouNames.Shy, "Shy");
     public override uint GroupPriority => 28;
-    public override Color GroupColor => OWColors.Shy;
+    public override Color GroupColor => AUSColors.Shy;
 
     [ModdedNumberOption("Transparency Delay", 0f, 15f, 1f, MiraNumberSuffixes.Seconds)]
     public float InvisDelay { get; set; } = 5f;

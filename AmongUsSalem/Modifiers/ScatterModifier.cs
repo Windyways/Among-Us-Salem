@@ -2,12 +2,12 @@
 using MiraAPI.Networking;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 public class ScatterModifier(float time) : TimedModifier
 {
@@ -30,7 +30,7 @@ public class ScatterModifier(float time) : TimedModifier
         {
             > 10 => Color.green,
             > 5 => Color.yellow,
-            _ => OWColors.Infiltrator
+            _ => AUSColors.Mafia
         };
 
         return $"{textColor.ToTextColor()}<size=80%>{roundedTime}s</size></color>";
@@ -40,7 +40,7 @@ public class ScatterModifier(float time) : TimedModifier
     {
         base.OnActivate();
 
-        //Logger<ObjectWorkshopPlugin>.Error($"ScatterModifier.OnActivate");
+        //Logger<AUSPlugin>.Error($"ScatterModifier.OnActivate");
 
         if (!Player.AmOwner)
         {
@@ -74,7 +74,7 @@ public class ScatterModifier(float time) : TimedModifier
     {
         base.FixedUpdate();
 
-        //Logger<ObjectWorkshopPlugin>.Error($"Scatter - !Player.AmOwner: {!Player.AmOwner} !TimerActive: {!TimerActive} Player.HasDied(): {Player.HasDied()} MeetingHud.Instance: {MeetingHud.Instance} ScatterEvents.Intro: {ScatterEvents.Intro}");
+        //Logger<AUSPlugin>.Error($"Scatter - !Player.AmOwner: {!Player.AmOwner} !TimerActive: {!TimerActive} Player.HasDied(): {Player.HasDied()} MeetingHud.Instance: {MeetingHud.Instance} ScatterEvents.Intro: {ScatterEvents.Intro}");
 
         if (!Player.AmOwner || !TimerActive || Player.HasDied() || MeetingHud.Instance)
         {
@@ -93,7 +93,7 @@ public class ScatterModifier(float time) : TimedModifier
         {
             > 10 => Color.green,
             > 5 => Color.yellow,
-            _ => OWColors.Infiltrator
+            _ => AUSColors.Mafia
         };
 
         if (scatterText != null)
@@ -169,7 +169,7 @@ public class ScatterModifier(float time) : TimedModifier
 
     public void OnRoundStart()
     {
-        //Logger<ObjectWorkshopPlugin>.Error($"Scatter - OnRoundStart");
+        //Logger<AUSPlugin>.Error($"Scatter - OnRoundStart");
 
         ResetTimer();
         ResumeTimer();

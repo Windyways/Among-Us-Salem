@@ -2,11 +2,11 @@ using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using Reactor.Networking.Attributes;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Options;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Patches.Roles;
+namespace AmongUsSalem.Patches.Roles;
 
 [HarmonyPatch]
 public static class LoverChatPatches
@@ -48,7 +48,7 @@ public static class LoverChatPatches
         return true;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SendLoveChat, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SendLoveChat, SendImmediately = true)]
     public static void RpcSendLoveChat(PlayerControl player, string text)
     {
         if ((PlayerControl.LocalPlayer.IsLover() && player != PlayerControl.LocalPlayer) ||
@@ -68,7 +68,7 @@ public static class LoverChatPatches
     {
         if (LoverMessage && !overrideMessages)
         {
-            __instance.NameText.color = OWColors.Lover;
+            __instance.NameText.color = AUSColors.Lover;
             __instance.NameText.text = playerName + " (Lover)";
             LoverMessage = false;
         }

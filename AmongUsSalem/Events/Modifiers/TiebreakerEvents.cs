@@ -3,9 +3,9 @@ using MiraAPI.Events.Vanilla.Meeting.Voting;
 using MiraAPI.Modifiers;
 using MiraAPI.Voting;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class TiebreakerEvents
 {
@@ -15,7 +15,7 @@ public static class TiebreakerEvents
     [RegisterEvent]
     public static void ProcessVotesEventHandler(ProcessVotesEvent @event)
     {
-        // Logger<ObjectWorkshopPlugin>.Error($"TiebreakerEvents.ProcessVotesEventHandler");
+        // Logger<AUSPlugin>.Error($"TiebreakerEvents.ProcessVotesEventHandler");
 
         TiebreakingVote = null;
         if (@event.ExiledPlayer != null)
@@ -48,7 +48,7 @@ public static class TiebreakerEvents
 
         votes.Add(extraVote);
 
-        // Logger<ObjectWorkshopPlugin>.Message($"ProcessVotesEventHandler - exiled: {exiled?.PlayerName}");
+        // Logger<AUSPlugin>.Message($"ProcessVotesEventHandler - exiled: {exiled?.PlayerName}");
         @event.ExiledPlayer = VotingUtils.GetExiled(votes, out _);
 
         TiebreakingVote = extraVote;

@@ -5,13 +5,13 @@ using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class TrackerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class TrackerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -19,9 +19,9 @@ public sealed class TrackerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRol
     public string RoleName => TouLocale.Get(TouNames.Tracker, "Tracker");
     public string RoleDescription => "Track Everyone's Movement";
     public string RoleLongDescription => "Track suspicious players to see where they go";
-    public Color RoleColor => OWColors.Tracker;
+    public Color RoleColor => AUSColors.Tracker;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -32,7 +32,7 @@ public sealed class TrackerTouRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRol
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         var players =
             ModifierUtils.GetPlayersWithModifier<TrackerArrowTargetModifier>([HideFromIl2Cpp](x) => x.Owner == Player);

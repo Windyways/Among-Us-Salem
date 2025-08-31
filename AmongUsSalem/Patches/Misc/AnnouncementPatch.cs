@@ -12,7 +12,7 @@ using Reactor.Utilities;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 // code credit https://github.com/Yumenopai/TownOfHost_Y
 [HarmonyPatch]
@@ -60,7 +60,7 @@ public static class ModNewsFetcher
 {
 #pragma warning disable S1075 // URIs should not be hardcoded
     private static string TouMiraModNewsURL =
-        "https://raw.githubusercontent.com/AU-Avengers/TOU-Mira/refs/heads/main/ObjectWorkshop/Resources/Announcements/modNews-";
+        "https://raw.githubusercontent.com/AU-Avengers/TOU-Mira/refs/heads/main/AmongUsSalem/Resources/Announcements/modNews-";
 #pragma warning restore S1075 // URIs should not be hardcoded
 
     private static bool downloaded;
@@ -77,9 +77,9 @@ public static class ModNewsFetcher
         }
 
         downloaded = true;
-        if (ObjectWorkshopPlugin.IsDevBuild)
+        if (AUSPlugin.IsDevBuild)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"Loading News Locally, as this is a DEVELOPER BUILD");
+            Logger<AUSPlugin>.Error($"Loading News Locally, as this is a DEVELOPER BUILD");
             LoadTouMiraModNewsFromResources();
             yield break;
         }
@@ -106,7 +106,7 @@ public static class ModNewsFetcher
         if (request.isNetworkError || request.isHttpError)
         {
             downloaded = false;
-            Logger<ObjectWorkshopPlugin>.Error($"Couldn't fetch mod news from github: {request.error}");
+            Logger<AUSPlugin>.Error($"Couldn't fetch mod news from github: {request.error}");
             LoadTouMiraModNewsFromResources();
             yield break;
         }
@@ -141,7 +141,7 @@ public static class ModNewsFetcher
         }
         catch (Exception ex)
         {
-            Logger<ObjectWorkshopPlugin>.Error(
+            Logger<AUSPlugin>.Error(
                 $"Couldn't fetch mod news from github, loading from resources instead: {ex.Message}");
             // Use local Mod news instead
             LoadTouMiraModNewsFromResources();
@@ -172,9 +172,9 @@ public static class ModNewsFetcher
 
         var assembly = Assembly.GetExecutingAssembly();
         using var resourceStream =
-            assembly.GetManifestResourceStream("ObjectWorkshop.Resources.Announcements.modNews-" + filename)
+            assembly.GetManifestResourceStream("AmongUsSalem.Resources.Announcements.modNews-" + filename)
             ?? throw new InvalidOperationException(
-                $"Resource not found: ObjectWorkshop.Resources.Announcements.modNews-{filename}");
+                $"Resource not found: AmongUsSalem.Resources.Announcements.modNews-{filename}");
         using StreamReader reader = new(resourceStream);
         using var jsonDocument = JsonDocument.Parse(reader.ReadToEnd());
         var newsArray = jsonDocument.RootElement.GetProperty("News");
@@ -214,7 +214,7 @@ public static class ModNewsFetcher
         {
             if (AllModNews.Count == 0)
             {
-                Logger<ObjectWorkshopPlugin>.Error($"No mod news were found.");
+                Logger<AUSPlugin>.Error($"No mod news were found.");
                 return;
             }
 

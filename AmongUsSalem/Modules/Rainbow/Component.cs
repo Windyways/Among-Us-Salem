@@ -1,7 +1,7 @@
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modules.RainbowMod;
+namespace AmongUsSalem.Modules.RainbowMod;
 
 [RegisterInIl2Cpp]
 public sealed class RainbowBehaviour(IntPtr cppPtr) : MonoBehaviour(cppPtr)

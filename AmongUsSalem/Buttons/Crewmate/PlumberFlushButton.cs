@@ -4,22 +4,22 @@ using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class PlumberFlushButton : ObjectWorkshopRoleButton<PlumberRole, Vent>
+public sealed class PlumberFlushButton : AmongUsSalemRoleButton<PlumberRole, Vent>
 {
     private static readonly ContactFilter2D Filter = Helpers.CreateFilter(Constants.Usables);
     public override string Name => "Flush";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Plumber;
+    public override Color TextOutlineColor => AUSColors.Plumber;
     public override float Cooldown => OptionGroupSingleton<PlumberOptions>.Instance.FlushCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.FlushSprite;
 
@@ -58,7 +58,7 @@ public sealed class PlumberFlushButton : ObjectWorkshopRoleButton<PlumberRole, V
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"{Name}: Target is null");
+            Logger<AUSPlugin>.Error($"{Name}: Target is null");
             return;
         }
 

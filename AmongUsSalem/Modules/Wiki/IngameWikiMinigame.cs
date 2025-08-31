@@ -9,12 +9,12 @@ using MiraAPI.Utilities;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
-using ObjectWorkshop;
+using AmongUsSalem;
 
 namespace TownOfUs.Modules.Wiki;
 
@@ -154,7 +154,7 @@ public sealed class IngameWikiMinigame(nint cppPtr) : Minigame(cppPtr)
 
     private void UpdatePage(WikiPage newPage)
     {
-        OWColors.UseBasic = false;
+        AUSColors.UseBasic = false;
         _currentPage = newPage;
         Homepage.Value.gameObject.SetActive(false);
         SearchScreen.Value.gameObject.SetActive(false);
@@ -203,10 +203,10 @@ public sealed class IngameWikiMinigame(nint cppPtr) : Minigame(cppPtr)
         DetailDescription.Value.text = (_selectedItem != null) ? _selectedItem.GetAdvancedDescription() : _selectedSoftItem!.GetAdvancedDescription;
         DetailDescription.Value.fontSizeMax = 2.4f;
 
-        if (_selectedItem is IOWRole touRole)
+        if (_selectedItem is IAUSRole touRole)
         {
             DetailScreenItemName.Value.text =
-                $"{touRole.RoleName}\n<size=60%>{touRole.RoleColor.ToTextColor()}{touRole.RoleAlignment.ToDisplayString()}</size></color>";
+                $"{touRole.RoleName}\n<size=60%>{touRole.RoleColor.ToTextColor()}{touRole.Alignment.ToDisplayString()}</size></color>";
             DetailScreenIcon.Value.sprite = touRole.Configuration.Icon != null
                 ? touRole.Configuration.Icon.LoadAsset()
                 : TouRoleIcons.RandomAny.LoadAsset();
@@ -416,7 +416,7 @@ public sealed class IngameWikiMinigame(nint cppPtr) : Minigame(cppPtr)
                 {
                     continue;
                 }
-                var teamName = role.GetRoleAlignment().ToDisplayString();
+                var teamName = role.GetAlignment().ToDisplayString();
 
                 var newItem = CreateNewItem(customRole.RoleName, customRole.Configuration.Icon?.LoadAsset());
                 var wikiBg = newItem.transform.FindChild("WikiBg").gameObject.GetComponent<SpriteRenderer>();

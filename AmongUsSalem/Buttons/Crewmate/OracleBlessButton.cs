@@ -3,18 +3,18 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class OracleBlessButton : ObjectWorkshopRoleButton<OracleRole, PlayerControl>
+public sealed class OracleBlessButton : AmongUsSalemRoleButton<OracleRole, PlayerControl>
 {
     public override string Name => "Bless";
-    public override Color TextOutlineColor => OWColors.Oracle;
+    public override Color TextOutlineColor => AUSColors.Oracle;
     public override string Keybind => Keybinds.SecondaryAction;
     public override float Cooldown => OptionGroupSingleton<OracleOptions>.Instance.BlessCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.BlessSprite;
@@ -29,7 +29,7 @@ public sealed class OracleBlessButton : ObjectWorkshopRoleButton<OracleRole, Pla
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"{Name}: Target is null");
+            Logger<AUSPlugin>.Error($"{Name}: Target is null");
             return;
         }
 

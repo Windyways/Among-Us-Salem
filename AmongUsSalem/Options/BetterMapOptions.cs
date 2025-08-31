@@ -1,7 +1,7 @@
 using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 
-namespace ObjectWorkshop.Options;
+namespace AmongUsSalem.Options;
 
 public sealed class BetterMapOptions : AbstractOptionGroup
 {
@@ -10,8 +10,8 @@ public sealed class BetterMapOptions : AbstractOptionGroup
 
     public override Func<bool> GroupVisible => () =>
         GameOptionsManager.Instance.currentGameOptions.MapId == (int)ShipStatus.MapType.Pb ||
-        (OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.RandomMaps &&
-         OptionGroupSingleton<ObjectWorkshopMapOptions>.Instance.PolusChance > 0);
+        (OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.RandomMaps &&
+         OptionGroupSingleton<AmongUsSalemMapOptions>.Instance.PolusChance > 0);
 
     [ModdedToggleOption("Better Polus Vent Network")]
     public bool BPVentNetwork { get; set; } = false;

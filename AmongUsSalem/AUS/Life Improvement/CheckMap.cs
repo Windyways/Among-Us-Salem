@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Roles;
 using HarmonyLib;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement;
+namespace AmongUsSalem.LifeImprovement;
 
 public static class CheckMap
 {
@@ -22,7 +22,7 @@ public static class CheckMap
             if (MapSelected != (CurrentMap)GameOptionsManager.Instance.currentNormalGameOptions.MapId)
             {
                 MapSelected = (CurrentMap)GameOptionsManager.Instance.currentNormalGameOptions.MapId;
-                ObjectWorkshopPlugin.DebugLogMessage($"Map set to {MapSelected}.", ObjectWorkshopPlugin.MsgType.Message);
+                AUSPlugin.DebugLogMessage($"Map set to {MapSelected}.", AUSPlugin.MsgType.Message);
             }
         }
     }

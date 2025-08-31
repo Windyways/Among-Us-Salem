@@ -1,9 +1,9 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class VigilanteEvents
 {

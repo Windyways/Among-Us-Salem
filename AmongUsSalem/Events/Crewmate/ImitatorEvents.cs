@@ -2,11 +2,11 @@
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Modifiers;
 using Reactor.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class ImitatorEvents
 {
@@ -46,7 +46,7 @@ public static class ImitatorEvents
 
         if (player.HasModifier<ImitatorCacheModifier>() && !@event.NewRole.IsCrewmate())
         {
-            if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error($"Removed Imitator Cache Modifier On Role Change");
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error($"Removed Imitator Cache Modifier On Role Change");
             player.RemoveModifier<ImitatorCacheModifier>();
         }
     }

@@ -3,19 +3,19 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class OracleConfessButton : ObjectWorkshopRoleButton<OracleRole, PlayerControl>
+public sealed class OracleConfessButton : AmongUsSalemRoleButton<OracleRole, PlayerControl>
 {
     public override string Name => "Confess";
-    public override Color TextOutlineColor => OWColors.Oracle;
+    public override Color TextOutlineColor => AUSColors.Oracle;
     public override string Keybind => Keybinds.PrimaryAction;
     public override float Cooldown => OptionGroupSingleton<OracleOptions>.Instance.ConfessCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.ConfessSprite;
@@ -30,7 +30,7 @@ public sealed class OracleConfessButton : ObjectWorkshopRoleButton<OracleRole, P
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error($"{Name}: Target is null");
+            Logger<AUSPlugin>.Error($"{Name}: Target is null");
             return;
         }
 

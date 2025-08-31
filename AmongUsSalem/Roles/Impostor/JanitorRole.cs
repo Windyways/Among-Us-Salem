@@ -9,17 +9,17 @@ using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class JanitorRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public void FixedUpdate()
@@ -47,9 +47,9 @@ public sealed class JanitorRole(IntPtr cppPtr)
                                              ? string.Empty
                                              : "\n<b>You must stay next to the body while cleaning.</b>");
 
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -61,7 +61,7 @@ public sealed class JanitorRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -78,12 +78,12 @@ public sealed class JanitorRole(IntPtr cppPtr)
             TouImpAssets.CleanButtonSprite)
     ];
 
-    [MethodRpc((uint)ObjectWorkshopRpc.CleanBody, LocalHandling = RpcLocalHandling.Before, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.CleanBody, LocalHandling = RpcLocalHandling.Before, SendImmediately = true)]
     public static void RpcCleanBody(PlayerControl player, byte bodyId)
     {
         if (player.Data.Role is not JanitorRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcCleanBody - Invalid Janitor");
+            Logger<AUSPlugin>.Error("RpcCleanBody - Invalid Janitor");
             return;
         }
 

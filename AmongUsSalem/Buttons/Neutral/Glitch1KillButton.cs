@@ -2,19 +2,19 @@
 using MiraAPI.Networking;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Neutral;
+namespace AmongUsSalem.Buttons.Neutral;
 
-public sealed class GlitchKillButton : ObjectWorkshopRoleButton<GlitchRole, PlayerControl>, IDiseaseableButton, IKillButton
+public sealed class GlitchKillButton : AmongUsSalemRoleButton<GlitchRole, PlayerControl>, IDiseaseableButton, IKillButton
 {
     public override string Name => "Kill";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Glitch;
+    public override Color TextOutlineColor => AUSColors.Glitch;
     public override float Cooldown => OptionGroupSingleton<GlitchOptions>.Instance.KillCooldown + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouNeutAssets.GlitchKillSprite;
     public override bool ShouldPauseInVent => false;
@@ -28,7 +28,7 @@ public sealed class GlitchKillButton : ObjectWorkshopRoleButton<GlitchRole, Play
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Glitch Shoot: Target is null");
+            Logger<AUSPlugin>.Error("Glitch Shoot: Target is null");
             return;
         }
 

@@ -5,15 +5,15 @@ using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class WardenEvents
 {
@@ -50,7 +50,7 @@ public static class WardenEvents
     [RegisterEvent(-1)]
     public static void MiraButtonClickEventHandler(MiraButtonClickEvent @event)
     {
-        // Logger<ObjectWorkshopPlugin>.Error("WardenEvents KillButtonClickHandler");
+        // Logger<AUSPlugin>.Error("WardenEvents KillButtonClickHandler");
         var button = @event.Button as CustomActionButton<PlayerControl>;
         var source = PlayerControl.LocalPlayer;
         var target = button?.Target;

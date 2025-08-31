@@ -9,15 +9,15 @@ using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class OracleRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class OracleRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -25,9 +25,9 @@ public sealed class OracleRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     public string RoleName => TouLocale.Get(TouNames.Oracle, "Oracle");
     public string RoleDescription => "Get Other Player's To Confess Their Sins";
     public string RoleLongDescription => "Get another player to confess on your passing";
-    public Color RoleColor => OWColors.Oracle;
+    public Color RoleColor => AUSColors.Oracle;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -38,7 +38,7 @@ public sealed class OracleRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -83,7 +83,7 @@ public sealed class OracleRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
 
         var report = BuildReport(confessing);
 
-        var title = $"<color=#{OWColors.Oracle.ToHtmlStringRGBA()}>Oracle Confession</color>";
+        var title = $"<color=#{AUSColors.Oracle.ToHtmlStringRGBA()}>Oracle Confession</color>";
         MiscUtils.AddFakeChat(confessing.Data, title, report, false, true);
     }
 
@@ -105,13 +105,13 @@ public sealed class OracleRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
 
         var evilPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() &&
                                                                                (x.IsImpostor() ||
-                                                                                   (x.Is(RoleAlignment
-                                                                                           .NeutralPredator) &&
+                                                                                   (x.Is(Alignment
+                                                                                           .NeutralKilling) &&
                                                                                        options
                                                                                            .ShowNeutralKillingAsEvil) ||
-                                                                                   (x.Is(RoleAlignment.NeutralEvil) &&
+                                                                                   (x.Is(Alignment.NeutralEvil) &&
                                                                                        options.ShowNeutralEvilAsEvil) ||
-                                                                                   (x.Is(RoleAlignment.None) &&
+                                                                                   (x.Is(Alignment.None) &&
                                                                                        options
                                                                                            .ShowNeutralBenignAsEvil)))
             .ToList();
@@ -143,7 +143,7 @@ public sealed class OracleRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.OracleConfess, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.OracleConfess, SendImmediately = true)]
     public static void RpcOracleConfess(PlayerControl player)
     {
         var mod = ModifierUtils.GetActiveModifiers<OracleConfessModifier>(x => x.Oracle == player).FirstOrDefault();
@@ -154,41 +154,41 @@ public sealed class OracleRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.OracleBless, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.OracleBless, SendImmediately = true)]
     public static void RpcOracleBless(PlayerControl exiled)
     {
-        // Logger<ObjectWorkshopPlugin>.Message($"RpcOracleBless exiled '{exiled.Data.PlayerName}'");
+        // Logger<AUSPlugin>.Message($"RpcOracleBless exiled '{exiled.Data.PlayerName}'");
         var mod = exiled.GetModifier<OracleBlessedModifier>();
 
         if (mod != null)
-            // Logger<ObjectWorkshopPlugin>.Message($"RpcOracleBless exiled '{exiled.Data.PlayerName}' SavedFromExile");
+            // Logger<AUSPlugin>.Message($"RpcOracleBless exiled '{exiled.Data.PlayerName}' SavedFromExile");
         {
             mod.SavedFromExile = true;
         }
     }
-    [MethodRpc((uint)ObjectWorkshopRpc.OracleBlessNotify, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.OracleBlessNotify, SendImmediately = true)]
     public static void RpcOracleBlessNotify(PlayerControl oracle, PlayerControl source, PlayerControl target)
     {
         if (oracle.Data.Role is not OracleRole || !source.AmOwner && !oracle.AmOwner)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcOracleBlessNotify - Invalid oracle");
+            Logger<AUSPlugin>.Error("RpcOracleBlessNotify - Invalid oracle");
             return;
         }
 
         if (oracle.AmOwner)
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Oracle));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Oracle));
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>Your blessing has saved {OWColors.Oracle.ToTextColor()}{target.Data.PlayerName}</color> from getting guessed!</b>",
+                $"<b>Your blessing has saved {AUSColors.Oracle.ToTextColor()}{target.Data.PlayerName}</color> from getting guessed!</b>",
                 Color.white, spr: TouRoleIcons.Oracle.LoadAsset());
             notif1.Text.SetOutlineThickness(0.35f);
             notif1.transform.localPosition = new Vector3(0f, 1f, -20f);
         }
         else if (source.AmOwner)
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Oracle));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Oracle));
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Infiltrator.ToTextColor()}{target.Data.PlayerName}</color> survived due to being blessed by an {OWColors.Oracle.ToTextColor()}Oracle</color>!</b>",
+                $"<b>{AUSColors.Mafia.ToTextColor()}{target.Data.PlayerName}</color> survived due to being blessed by an {AUSColors.Oracle.ToTextColor()}Oracle</color>!</b>",
                 Color.white, spr: TouRoleIcons.Oracle.LoadAsset());
             notif1.Text.SetOutlineThickness(0.35f);
             notif1.transform.localPosition = new Vector3(0f, 1f, -20f);

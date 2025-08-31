@@ -8,14 +8,14 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class SheriffRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -26,9 +26,9 @@ public sealed class SheriffRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewR
     public string RoleName => TouLocale.Get(TouNames.Sheriff, "Sheriff");
     public string RoleDescription => "Shoot The <color=#FF0000FF>Impostor</color>";
     public string RoleLongDescription => "Kill off the impostors but don't kill crewmates";
-    public Color RoleColor => OWColors.Sheriff;
+    public Color RoleColor => AUSColors.Sheriff;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public bool IsPowerCrew => !HasMisfired; // Always disable end game checks if the sheriff hasn't misfired
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -40,7 +40,7 @@ public sealed class SheriffRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewR
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         var missType = OptionGroupSingleton<SheriffOptions>.Instance.MisfireType;
 
         if (CustomButtonSingleton<SheriffShootButton>.Instance.FailedShot)
@@ -96,12 +96,12 @@ public sealed class SheriffRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewR
         CustomButtonSingleton<SheriffShootButton>.Instance.Usable = true;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.SheriffMisfire, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.SheriffMisfire, SendImmediately = true)]
     public static void RpcSheriffMisfire(PlayerControl sheriff)
     {
         if (sheriff.Data.Role is not SheriffRole role)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcSheriffMisfire - Invalid sheriff");
+            Logger<AUSPlugin>.Error("RpcSheriffMisfire - Invalid sheriff");
             return;
         }
 

@@ -1,6 +1,6 @@
-﻿using ObjectWorkshop.Roles.Crewmate;
+﻿using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.LifeImprovement;
+namespace AmongUsSalem.LifeImprovement;
 
 public static class Statistics
 {

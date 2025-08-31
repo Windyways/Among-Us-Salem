@@ -1,18 +1,18 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class TrapperTrapButton : ObjectWorkshopRoleButton<TrapperRole>
+public sealed class TrapperTrapButton : AmongUsSalemRoleButton<TrapperRole>
 {
     public override string Name => "Trap";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Trapper;
+    public override Color TextOutlineColor => AUSColors.Trapper;
     public override float Cooldown => OptionGroupSingleton<TrapperOptions>.Instance.TrapCooldown + MapCooldown;
     public override int MaxUses => (int)OptionGroupSingleton<TrapperOptions>.Instance.MaxTraps;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.TrapSprite;

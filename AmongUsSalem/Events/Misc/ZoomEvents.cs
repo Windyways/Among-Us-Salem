@@ -1,10 +1,10 @@
 using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Events.Vanilla.Meeting;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Roles;
 
-namespace ObjectWorkshop.Events.Misc;
+namespace AmongUsSalem.Events.Misc;
 
 public static class ZoomEvents
 {

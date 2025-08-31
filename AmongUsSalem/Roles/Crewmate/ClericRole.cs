@@ -5,13 +5,13 @@ using MiraAPI.GameOptions;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class ClericRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class ClericRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -19,9 +19,9 @@ public sealed class ClericRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     public string RoleName => TouLocale.Get(TouNames.Cleric, "Cleric");
     public string RoleDescription => "Save The Crewmates";
     public string RoleLongDescription => "Barrier and Cleanse crewmates";
-    public Color RoleColor => OWColors.Cleric;
+    public Color RoleColor => AUSColors.Cleric;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -32,7 +32,7 @@ public sealed class ClericRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -53,12 +53,12 @@ public sealed class ClericRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
             TouCrewAssets.CleanseSprite)
     ];
 
-    [MethodRpc((uint)ObjectWorkshopRpc.ClericBarrierAttacked, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.ClericBarrierAttacked, SendImmediately = true)]
     public static void RpcClericBarrierAttacked(PlayerControl cleric, PlayerControl source, PlayerControl shielded)
     {
         if (cleric.Data.Role is not ClericRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcClericBarrierAttacked - Invalid cleric");
+            Logger<AUSPlugin>.Error("RpcClericBarrierAttacked - Invalid cleric");
             return;
         }
 
@@ -66,7 +66,7 @@ public sealed class ClericRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, I
             (PlayerControl.LocalPlayer.PlayerId == cleric.PlayerId &&
              OptionGroupSingleton<ClericOptions>.Instance.AttackNotif))
         {
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Cleric));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Cleric));
         }
     }
 }

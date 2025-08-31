@@ -6,15 +6,15 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
-public sealed class BlackmailerRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRole, IDoomable
+public sealed class BlackmailerRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public void FixedUpdate()
@@ -36,9 +36,9 @@ public sealed class BlackmailerRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRo
     public string RoleName => TouLocale.Get(TouNames.Blackmailer, "Blackmailer");
     public string RoleDescription => "Silence Crewmates During Meetings";
     public string RoleLongDescription => "Silence a crewmate for the next meeting";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -49,7 +49,7 @@ public sealed class BlackmailerRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRo
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -69,7 +69,7 @@ public sealed class BlackmailerRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IOWRo
             TouImpAssets.BlackmailSprite)
     ];
 
-    [MethodRpc((uint)ObjectWorkshopRpc.Blackmail, LocalHandling = RpcLocalHandling.Before, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.Blackmail, LocalHandling = RpcLocalHandling.Before, SendImmediately = true)]
     public static void RpcBlackmail(PlayerControl source, PlayerControl target)
     {
         var existingBmed = PlayerControl.AllPlayerControls.ToArray()

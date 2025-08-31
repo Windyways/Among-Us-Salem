@@ -3,14 +3,14 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class EclipsalBlindModifier(PlayerControl player) : DisabledModifier
 {
@@ -44,7 +44,7 @@ public sealed class EclipsalBlindModifier(PlayerControl player) : DisabledModifi
         if (Player.AmOwner && !Eclipsal.AmOwner)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Infiltrator.ToTextColor()}You were blinded by an Eclipsal!</color></b>", Color.white,
+                $"<b>{AUSColors.Mafia.ToTextColor()}You were blinded by an Eclipsal!</color></b>", Color.white,
                 spr: TouRoleIcons.Eclipsal.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);

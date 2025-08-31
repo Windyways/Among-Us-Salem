@@ -2,10 +2,10 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using MiraAPI.Roles;
 using Reactor.Localization.Utilities;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
 public static class LogoPatch
@@ -37,7 +37,7 @@ public static class LogoPatch
         var sizer = GameObject.Find("Sizer");
         if (newLogo != null)
         {
-            newLogo.GetComponent<SpriteRenderer>().sprite = OWAssets.Banner.LoadAsset();
+            newLogo.GetComponent<SpriteRenderer>().sprite = AUSAssets.Banner.LoadAsset();
         }
 
         if (sizer != null)

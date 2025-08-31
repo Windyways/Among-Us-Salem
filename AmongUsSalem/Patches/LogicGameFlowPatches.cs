@@ -7,18 +7,18 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.GameOver;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events;
+using AmongUsSalem.GameOver;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class LogicGameFlowPatches
@@ -151,12 +151,12 @@ public static class LogicGameFlowPatches
         }
 
         // If any neutral win condition is met -> game over
-        // Using RoleAlignment as a quick and basic way to prioritise NeutralEvil wins over NeutralKiller wins
+        // Using Alignment as a quick and basic way to prioritise NeutralEvil wins over NeutralKiller wins
         if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
-                .OrderBy(x => (x as IOWRole)!.RoleAlignment)
-                .FirstOrDefault(x => x is IOWRole role && role.WinConditionMet()) is { } winner)
+                .OrderBy(x => (x as IAUSRole)!.Alignment)
+                .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet()) is { } winner)
         {
-            Logger<ObjectWorkshopPlugin>.Message($"Game Over");
+            Logger<AUSPlugin>.Message($"Game Over");
             CustomGameOver.Trigger<NeutralGameOver>([winner.Player.Data]);
 
             return false;

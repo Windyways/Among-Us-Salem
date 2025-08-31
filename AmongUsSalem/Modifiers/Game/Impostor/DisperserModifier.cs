@@ -5,14 +5,14 @@ using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers.Game.Impostor;
+namespace AmongUsSalem.Modifiers.Game.Impostor;
 
 public sealed class DisperserModifier : TouGameModifier
 {
@@ -67,7 +67,7 @@ public sealed class DisperserModifier : TouGameModifier
         DispersePlayersToCoordinates(coordinates);
 
         var notif1 = Helpers.CreateAndShowNotification(
-            $"<b>{OWColors.Infiltrator.ToTextColor()}Everyone has been dispersed to a vent!</color></b>", Color.white,
+            $"<b>{AUSColors.Mafia.ToTextColor()}Everyone has been dispersed to a vent!</color></b>", Color.white,
             spr: TouModifierIcons.Disperser.LoadAsset());
 
         notif1.Text.SetOutlineThickness(0.35f);

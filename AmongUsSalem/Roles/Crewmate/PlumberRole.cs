@@ -12,16 +12,16 @@ using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class PlumberRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class PlumberRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -42,9 +42,9 @@ public sealed class PlumberRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
     public string RoleLongDescription =>
         "Flush the vent system to kick venters out, and\nbarricade vents to block them the next round";
 
-    public Color RoleColor => OWColors.Plumber;
+    public Color RoleColor => AUSColors.Plumber;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -78,7 +78,7 @@ public sealed class PlumberRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         var duration = (int)OptionGroupSingleton<PlumberOptions>.Instance.BarricadeRoundDuration;
         var text = duration == 0 ? "Barricades Stay Forever." : $"Barricades Stay For {duration} Round(s)";
         stringB.Append(CultureInfo.InvariantCulture,
@@ -252,12 +252,12 @@ public sealed class PlumberRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.PlumberFlush, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.PlumberFlush, SendImmediately = true)]
     public static void RpcPlumberFlush(PlayerControl player)
     {
         if (player.Data.Role is not PlumberRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcPlumberFlush - Invalid Plumber");
+            Logger<AUSPlugin>.Error("RpcPlumberFlush - Invalid Plumber");
             return;
         }
 
@@ -269,7 +269,7 @@ public sealed class PlumberRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
             PlayerControl.LocalPlayer.MyPhysics.RpcExitVent(Vent.currentVent.Id);
             PlayerControl.LocalPlayer.MyPhysics.ExitAllVents();
 
-            Coroutines.Start(MiscUtils.CoFlash(OWColors.Plumber));
+            Coroutines.Start(MiscUtils.CoFlash(AUSColors.Plumber));
         }
 
         if (!player.AmOwner)
@@ -283,16 +283,16 @@ public sealed class PlumberRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, 
             return;
         }
 
-        Coroutines.Start(MiscUtils.CoFlash(OWColors.Plumber));
+        Coroutines.Start(MiscUtils.CoFlash(AUSColors.Plumber));
         Coroutines.Start(SeeVenter(player));
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.PlumberBlockVent, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.PlumberBlockVent, SendImmediately = true)]
     public static void RpcPlumberBlockVent(PlayerControl player, int ventId)
     {
         if (player.Data.Role is not PlumberRole plumber)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcPlumberBlockVent - Invalid Plumber");
+            Logger<AUSPlugin>.Error("RpcPlumberBlockVent - Invalid Plumber");
             return;
         }
 

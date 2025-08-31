@@ -8,19 +8,19 @@ using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class PhantomTouRole(IntPtr cppPtr)
-    : NeutralGhostRole(cppPtr), IOWRole, IGhostRole
+    : NeutralGhostRole(cppPtr), IAUSRole, IGhostRole
 {
     public bool CompletedAllTasks { get; private set; }
 
@@ -40,7 +40,7 @@ public sealed class PhantomTouRole(IntPtr cppPtr)
     {
         Setup = true;
 
-        if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error($"Setup PhantomTouRole '{Player.Data.PlayerName}'");
+        if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error($"Setup PhantomTouRole '{Player.Data.PlayerName}'");
         Player.gameObject.layer = LayerMask.NameToLayer("Players");
 
         Player.gameObject.GetComponent<PassiveButton>().OnClick = new Button.ButtonClickedEvent();
@@ -77,13 +77,13 @@ public sealed class PhantomTouRole(IntPtr cppPtr)
 
             Faded = false;
 
-            // if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Message($"PhantomTouRole.FadeUpdate UnFaded");
+            // if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Message($"PhantomTouRole.FadeUpdate UnFaded");
         }
     }
 
     public void Clicked()
     {
-        if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Message($"PhantomTouRole.Clicked");
+        if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Message($"PhantomTouRole.Clicked");
         Caught = true;
         Player.Exiled();
 
@@ -96,8 +96,8 @@ public sealed class PhantomTouRole(IntPtr cppPtr)
     public override string RoleName => TouLocale.Get(TouNames.Phantom, "Phantom");
     public override string RoleDescription => string.Empty;
     public override string RoleLongDescription => "Complete all your tasks without being caught!";
-    public override Color RoleColor => OWColors.Phantom;
-    public override RoleAlignment RoleAlignment => RoleAlignment.None;
+    public override Color RoleColor => AUSColors.Phantom;
+    public override Alignment Alignment => Alignment.None;
 
     public override CustomRoleConfiguration Configuration => new(this)
     {
@@ -117,7 +117,7 @@ public sealed class PhantomTouRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -220,7 +220,7 @@ public sealed class PhantomTouRole(IntPtr cppPtr)
             Player.AmOwner)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Phantom.ToTextColor()}You are now clickable by players!</b></color>", Color.white,
+                $"<b>{AUSColors.Phantom.ToTextColor()}You are now clickable by players!</b></color>", Color.white,
                 new Vector3(0f, 1f, -20f), spr: TouRoleIcons.Phantom.LoadAsset());
             notif1.Text.SetOutlineThickness(0.35f);
         }

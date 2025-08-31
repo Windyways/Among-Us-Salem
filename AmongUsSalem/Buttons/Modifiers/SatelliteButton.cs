@@ -4,18 +4,18 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Options.Modifiers.Universal;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Options.Modifiers.Universal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Buttons.Modifiers;
+namespace AmongUsSalem.Buttons.Modifiers;
 
-public sealed class SatelliteButton : ObjectWorkshopButton
+public sealed class SatelliteButton : AmongUsSalemButton
 {
     public override string Name => "Broadcast";
     public override string Keybind => Keybinds.ModifierAction;
-    public override Color TextOutlineColor => OWColors.Satellite;
+    public override Color TextOutlineColor => AUSColors.Satellite;
     public override float Cooldown => OptionGroupSingleton<SatelliteOptions>.Instance.Cooldown + MapCooldown;
     public override int MaxUses => (int)OptionGroupSingleton<SatelliteOptions>.Instance.MaxNumCast;
     public override ButtonLocation Location => ButtonLocation.BottomLeft;

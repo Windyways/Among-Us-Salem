@@ -1,16 +1,16 @@
 ﻿using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class WardenFortifyButton : ObjectWorkshopRoleButton<WardenRole, PlayerControl>
+public sealed class WardenFortifyButton : AmongUsSalemRoleButton<WardenRole, PlayerControl>
 {
     public override string Name => "Fortify";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Warden;
+    public override Color TextOutlineColor => AUSColors.Warden;
     public override float Cooldown => 0.001f + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.FortifySprite;
 
@@ -28,7 +28,7 @@ public sealed class WardenFortifyButton : ObjectWorkshopRoleButton<WardenRole, P
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Warden Fortify: Target is null");
+            Logger<AUSPlugin>.Error("Warden Fortify: Target is null");
             return;
         }
 

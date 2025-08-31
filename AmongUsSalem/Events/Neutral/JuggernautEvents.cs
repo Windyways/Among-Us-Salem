@@ -1,10 +1,10 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Hud;
-using ObjectWorkshop.Buttons.Neutral;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Buttons.Neutral;
+using AmongUsSalem.Roles.Neutral;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class JuggernautEvents
 {

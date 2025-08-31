@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement;
+namespace AmongUsSalem.LifeImprovement;
 
 public static class OWExtentions
 {
@@ -63,11 +63,6 @@ public static class OWExtentions
         return true;
     }
 
-    public static bool IsDueling(this PlayerControl player)
-    {
-        return Duel.PlayersInDuel.Contains(player.PlayerId);
-    }
-
     public static void Mobilize(this PlayerControl player)
     {
         player.moveable = true;
@@ -79,24 +74,57 @@ public static class OWExtentions
         player.MyPhysics.SetNormalizedVelocity(UnityEngine.Vector2.zero);
     }
 
-    public static bool IsOnFire(this PlayerControl player)
+
+    public static bool AppearsEvil(this PlayerControl player)
     {
-        foreach (var flames in Flames.AllFlames)
+        return player.IsFramed();
+    }
+
+    public static bool IsFramed(this PlayerControl player)
+    {
+        /*foreach (var framers in MiscUtils.GetPlayersWithRole<Framer>())
         {
-            if (flames.PlayerOnFire == player) return true;
+            var framer = framers.GetRole<Framer>();
+            return framer.FramedPlayers.Contains(player.PlayerId);
+        }*/
+        return false;
+    }
+
+    public static bool IsAlerted(this PlayerControl player)
+    {
+        foreach (var veterans in MiscUtils.GetPlayersWithRole<Veteran>())
+        {
+            var veteran = veterans.GetRole<Veteran>();
+            return veteran.isAlerted && veteran.Player == player;
         }
         return false;
     }
 
+    public static bool IsTownTraitor(this PlayerControl player)
+    {
+        return false;
+        //return player.Is(ModifierEnum.ApocTownTraitor) || player.Is(ModifierEnum.MafiaTownTraitor) || player.Is(ModifierEnum.CovenTownTraitor) || player.Is(ModifierEnum.PandoraTownTraitor) || player.Is(ModifierEnum.EgotistTownie);
+    }
 
-    public static bool IsPeacockAssociate(this PlayerControl player)
+    public static bool IsIllusioned(this PlayerControl player)
+    {
+        return false;
+        /*return Role.GetRoles(RoleEnum.Illusionist).Any(delegate(Role role)
+        {
+            PlayerControl illusionedTarget = ((Illusionist)role).IllusionedPlayer;
+            return illusionedTarget != null && player.PlayerId == illusionedTarget.PlayerId;
+        });*/
+    }
+
+
+    /*public static bool IsPeacockAssociate(this PlayerControl player)
     {
         return MiscUtils.GetRoles("Peacock").Any(role =>
         {
             var target = ((Peacock)role).Associate;
             return target != null && player.PlayerId == target.PlayerId;
         });
-    }
+    }*/
 
     /*public static bool IsMorphed(this PlayerControl player)
     {

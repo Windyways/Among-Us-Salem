@@ -12,17 +12,17 @@ using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using TMPro;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Events;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
 public sealed class JailorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRole, IDoomable
 {
@@ -40,9 +40,9 @@ public sealed class JailorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
     public string RoleName => TouLocale.Get(TouNames.Jailor, "Jailor");
     public string RoleDescription => "Jail And Execute The <color=#FF0000FF>Impostors</color>";
     public string RoleLongDescription => "Execute evildoers in meetings but avoid crewmates";
-    public Color RoleColor => OWColors.Jailor;
+    public Color RoleColor => AUSColors.Jailor;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public bool IsPowerCrew => Executes > 0; // Stop end game checks if the Jailor can still execute someone
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -60,7 +60,7 @@ public sealed class JailorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         if (PlayerControl.LocalPlayer.TryGetModifier<AllianceGameModifier>(out var allyMod) && !allyMod.GetsPunished)
         {
             stringB.AppendLine(CultureInfo.InvariantCulture, $"You can execute crewmates.");
@@ -119,7 +119,7 @@ public sealed class JailorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
                 return;
             }
 
-            var title = $"<color=#{OWColors.Jailor.ToHtmlStringRGBA()}>Jailor Feedback</color>";
+            var title = $"<color=#{AUSColors.Jailor.ToHtmlStringRGBA()}>Jailor Feedback</color>";
             MiscUtils.AddFakeChat(Jailed.Data, title, "Communicate with your jailee in the <b>RED</b> private chatbox next to the <b>REGULAR</b> chatbox.", false,
                 true);
         }

@@ -1,4 +1,4 @@
-﻿namespace ObjectWorkshop.Utilities.Appearances;
+﻿namespace AmongUsSalem.Utilities.Appearances;
 
 public interface IVisualAppearance
 {

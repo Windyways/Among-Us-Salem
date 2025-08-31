@@ -5,17 +5,17 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class JesterRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     public bool Voted { get; set; }
@@ -29,9 +29,9 @@ public sealed class JesterRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Jester, "Jester");
     public string RoleDescription => "Get voted out!";
     public string RoleLongDescription => "Be as suspicious as possible, and get voted out!";
-    public Color RoleColor => OWColors.Jester;
+    public Color RoleColor => AUSColors.Jester;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -48,7 +48,7 @@ public sealed class JesterRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public bool WinConditionMet()
@@ -85,7 +85,7 @@ public sealed class JesterRole(IntPtr cppPtr)
             }
 
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouNeutAssets.JesterVentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Jester);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Jester);
         }
     }
 
@@ -101,7 +101,7 @@ public sealed class JesterRole(IntPtr cppPtr)
             }
 
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouAssets.VentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Infiltrator);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Mafia);
         }
     }
 
@@ -118,7 +118,7 @@ public sealed class JesterRole(IntPtr cppPtr)
 
     public override bool DidWin(GameOverReason gameOverReason)
     {
-        //Logger<ObjectWorkshopPlugin>.Message($"JesterRole.DidWin - Voted: '{Voted}', Exists: '{GameHistory.DeathHistory.Exists(x => x.Item1 == Player.PlayerId && x.Item2 == DeathReason.Exile)}'");
+        //Logger<AUSPlugin>.Message($"JesterRole.DidWin - Voted: '{Voted}', Exists: '{GameHistory.DeathHistory.Exists(x => x.Item1 == Player.PlayerId && x.Item2 == DeathReason.Exile)}'");
 
         return Voted ||
                GameHistory.DeathHistory.Exists(x => x.Item1 == Player.PlayerId && x.Item2 == DeathReason.Exile);

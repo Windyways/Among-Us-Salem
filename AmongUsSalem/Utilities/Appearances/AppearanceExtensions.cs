@@ -1,25 +1,25 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Options;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Options;
 using UnityEngine;
 
-namespace ObjectWorkshop.Utilities.Appearances;
+namespace AmongUsSalem.Utilities.Appearances;
 
 public static class AppearanceExtensions
 {
     public static void ResetAppearance(this PlayerControl player, bool override_checks = false, bool fullReset = false)
     {
         // preventing glitch from morphing -> camo -> unmorph early sorta thing...
-        if (player.GetAppearanceType() == ObjectWorkshopAppearances.Camouflage && !override_checks)
+        if (player.GetAppearanceType() == AmongUsSalemAppearances.Camouflage && !override_checks)
         {
             return;
         }
 
         if (fullReset)
         {
-            player.RawSetAppearance(new VisualAppearance(player.GetDefaultAppearance(), ObjectWorkshopAppearances.Default)
+            player.RawSetAppearance(new VisualAppearance(player.GetDefaultAppearance(), AmongUsSalemAppearances.Default)
             {
                 Size = new Vector3(0.7f, 0.7f, 1f)
             });
@@ -45,9 +45,9 @@ public static class AppearanceExtensions
 
     public static void SetCamouflage(this PlayerControl player, bool toggle = true)
     {
-        if (toggle && player.GetAppearanceType() != ObjectWorkshopAppearances.Camouflage)
+        if (toggle && player.GetAppearanceType() != AmongUsSalemAppearances.Camouflage)
         {
-            player.RawSetAppearance(new VisualAppearance(player.GetDefaultAppearance(), ObjectWorkshopAppearances.Camouflage)
+            player.RawSetAppearance(new VisualAppearance(player.GetDefaultAppearance(), AmongUsSalemAppearances.Camouflage)
             {
                 ColorId = player.Data.DefaultOutfit.ColorId,
                 HatId = string.Empty,
@@ -148,7 +148,7 @@ public static class AppearanceExtensions
         }
         else if (player.IsImpostor())
         {
-            player.cosmetics.nameText.color = OWColors.Infiltrator;
+            player.cosmetics.nameText.color = AUSColors.Mafia;
         }
 
         player.cosmetics.ToggleNameVisible(appearance.NameVisible);
@@ -169,9 +169,9 @@ public static class AppearanceExtensions
         }
     }
 
-    public static ObjectWorkshopAppearances GetAppearanceType(this PlayerControl player)
+    public static AmongUsSalemAppearances GetAppearanceType(this PlayerControl player)
     {
-        return (ObjectWorkshopAppearances)player.CurrentOutfitType;
+        return (AmongUsSalemAppearances)player.CurrentOutfitType;
     }
 
     public static VisualAppearance GetAppearance(this PlayerControl player)
@@ -204,12 +204,12 @@ public static class AppearanceExtensions
 
     public static VisualAppearance GetDefaultAppearance(this PlayerControl playerControl)
     {
-        return new VisualAppearance(playerControl.Data.DefaultOutfit, ObjectWorkshopAppearances.Default);
+        return new VisualAppearance(playerControl.Data.DefaultOutfit, AmongUsSalemAppearances.Default);
     }
 
     public static VisualAppearance GetDefaultModifiedAppearance(this PlayerControl playerControl)
     {
-        var appearance = new VisualAppearance(playerControl.Data.DefaultOutfit, ObjectWorkshopAppearances.Default);
+        var appearance = new VisualAppearance(playerControl.Data.DefaultOutfit, AmongUsSalemAppearances.Default);
         if (playerControl.HasModifier<MiniModifier>())
         {
             appearance = playerControl.GetModifier<MiniModifier>()!.GetVisualAppearance()!;

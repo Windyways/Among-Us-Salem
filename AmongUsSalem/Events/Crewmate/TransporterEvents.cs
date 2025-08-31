@@ -3,11 +3,11 @@ using MiraAPI.Events.Vanilla.Player;
 using MiraAPI.Events.Vanilla.Usables;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Events.Crewmate;
+namespace AmongUsSalem.Events.Crewmate;
 
 public static class TransporterEvents
 {

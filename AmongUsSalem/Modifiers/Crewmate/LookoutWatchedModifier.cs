@@ -2,11 +2,11 @@
 using MiraAPI.Events;
 using MiraAPI.Modifiers;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class LookoutWatchedModifier(PlayerControl lookout) : BaseModifier
 {
@@ -30,7 +30,7 @@ public sealed class LookoutWatchedModifier(PlayerControl lookout) : BaseModifier
 
         if (Lookout.AmOwner)
         {
-            Player?.cosmetics.SetOutline(true, new Il2CppSystem.Nullable<Color>(OWColors.Lookout));
+            Player?.cosmetics.SetOutline(true, new Il2CppSystem.Nullable<Color>(AUSColors.Lookout));
         }
     }
 
@@ -41,7 +41,7 @@ public sealed class LookoutWatchedModifier(PlayerControl lookout) : BaseModifier
             return;
         }
 
-        var title = $"<color=#{OWColors.Lookout.ToHtmlStringRGBA()}>Lookout Feedback</color>";
+        var title = $"<color=#{AUSColors.Lookout.ToHtmlStringRGBA()}>Lookout Feedback</color>";
         var msg = $"No players interacted with {Player.Data.PlayerName}";
 
         if (SeenPlayers.Count != 0)
@@ -52,7 +52,7 @@ public sealed class LookoutWatchedModifier(PlayerControl lookout) : BaseModifier
 
             foreach (var role in SeenPlayers)
             {
-                message.Append(ObjectWorkshopPlugin.Culture, $"{role.NiceName}, ");
+                message.Append(AUSPlugin.Culture, $"{role.NiceName}, ");
             }
 
             message = message.Remove(message.Length - 2, 2);

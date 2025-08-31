@@ -1,9 +1,9 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Roles;
 
-namespace ObjectWorkshop.Modifiers.Game.Neutral;
+namespace AmongUsSalem.Modifiers.Game.Neutral;
 
 public sealed class NeutralKillerDoubleShotModifier : DoubleShotModifier
 {
@@ -26,7 +26,7 @@ public sealed class NeutralKillerDoubleShotModifier : DoubleShotModifier
     public override bool IsModifierValidOn(RoleBehaviour role)
     {
         if (
-            role is IOWRole { RoleAlignment: RoleAlignment.NeutralPredator }
+            role is IAUSRole { Alignment: Alignment.NeutralKilling }
             && role.Player.GetModifierComponent().HasModifier<NeutralKillerAssassinModifier>(true)
             && !role.Player.GetModifierComponent().HasModifier<TouGameModifier>(true)
         )

@@ -1,7 +1,7 @@
 using System.Globalization;
 using HarmonyLib;
 
-namespace ObjectWorkshop.Patches.Options;
+namespace AmongUsSalem.Patches.Options;
 
 [HarmonyPatch]
 public static class KillButtonCooldownPatch
@@ -20,7 +20,7 @@ public static class KillButtonCooldownPatch
             return;
         }
 
-        if (!ObjectWorkshopPlugin.PreciseCooldowns.Value)
+        if (!AUSPlugin.PreciseCooldowns.Value)
         {
             return;
         }

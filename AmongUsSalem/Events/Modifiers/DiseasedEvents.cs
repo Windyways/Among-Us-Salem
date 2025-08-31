@@ -4,13 +4,13 @@ using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Buttons;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Options.Modifiers.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class DiseasedEvents
 {
@@ -29,7 +29,7 @@ public static class DiseasedEvents
         if (source.AmOwner)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Diseased.ToTextColor()}{@event.Target.Data.PlayerName} was Diseased, causing your kill cooldown to multiply by {Math.Round(cdMultiplier, 2)}.</color></b>",
+                $"<b>{AUSColors.Diseased.ToTextColor()}{@event.Target.Data.PlayerName} was Diseased, causing your kill cooldown to multiply by {Math.Round(cdMultiplier, 2)}.</color></b>",
                 Color.white, spr: TouModifierIcons.Diseased.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);

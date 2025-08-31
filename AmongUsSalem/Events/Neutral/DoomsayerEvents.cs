@@ -3,13 +3,13 @@ using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.GameOptions;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events.Neutral;
+namespace AmongUsSalem.Events.Neutral;
 
 public static class DoomsayerEvents
 {
@@ -45,7 +45,7 @@ public static class DoomsayerEvents
             {
                 PlayerControl.LocalPlayer.RpcPlayerExile();
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>You have successfully won as the {OWColors.Doomsayer.ToTextColor()}Doomsayer</color>, as you have guessed enough players successfully!</b>",
+                    $"<b>You have successfully won as the {AUSColors.Doomsayer.ToTextColor()}Doomsayer</color>, as you have guessed enough players successfully!</b>",
                     Color.white, spr: TouRoleIcons.Doomsayer.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);
@@ -54,7 +54,7 @@ public static class DoomsayerEvents
             else
             {
                 var notif1 = Helpers.CreateAndShowNotification(
-                    $"<b>The {OWColors.Doomsayer.ToTextColor()}Doomsayer</color>, {doom.Player.Data.PlayerName}, has successfully won, as they have guessed enough players!</b>",
+                    $"<b>The {AUSColors.Doomsayer.ToTextColor()}Doomsayer</color>, {doom.Player.Data.PlayerName}, has successfully won, as they have guessed enough players!</b>",
                     Color.white, spr: TouRoleIcons.Doomsayer.LoadAsset());
 
                 notif1.Text.SetOutlineThickness(0.35f);

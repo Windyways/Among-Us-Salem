@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ObjectWorkshop.Patches;
-using ObjectWorkshop.Roles;
+using AmongUsSalem.Patches;
+using AmongUsSalem.Roles;
 using HarmonyLib;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement
+namespace AmongUsSalem.LifeImprovement
 {
     public class RoleStats
     {
@@ -48,25 +48,13 @@ namespace ObjectWorkshop.LifeImprovement
 
         public static void Initialize()
         {
-            #region Crewmate
-            roleStats.Add("Crewmate", new RoleStats("Crewmate", OWColors.Crewmate));
-            roleStats.Add("Alarum", new RoleStats("Alarum", OWColors.Crewmate));
-            roleStats.Add("Totemist", new RoleStats("Totemist", OWColors.Crewmate));
-            roleStats.Add("Duelist", new RoleStats("Duelist", OWColors.Crewmate));
-            roleStats.Add("UFO", new RoleStats("UFO", OWColors.Crewmate));
-            roleStats.Add("Gift Weaver", new RoleStats("Gift Weaver", OWColors.Crewmate));
+            #region Town
+            roleStats.Add("Pilgrim", new RoleStats("Pilgrim", AUSColors.Town));
             #endregion
             #region Neutral
-            roleStats.Add("Pyre", new RoleStats("Pyre", OWColors.Pyre));
-            roleStats.Add("Reaper", new RoleStats("Reaper", OWColors.Reaper));
-            roleStats.Add("Undead Reaper", new RoleStats("Undead Reaper", OWColors.UndeadReaper));
             #endregion
-            #region Infiltrator
-            roleStats.Add("Infiltrator", new RoleStats("Infiltrator", OWColors.Infiltrator));
-            roleStats.Add("Canopy", new RoleStats("Canopy", OWColors.Infiltrator));
-            roleStats.Add("Obstructor", new RoleStats("Obstructor", OWColors.Infiltrator));
-            roleStats.Add("Aimsman", new RoleStats("Aimsman", OWColors.Infiltrator));
-            roleStats.Add("Claylim", new RoleStats("Claylim", OWColors.Claylim));
+            #region Mafia
+            roleStats.Add("Mafioso", new RoleStats("Mafioso", AUSColors.Mafia));
             #endregion
 
             LoadRoleStats(filePath);
@@ -81,7 +69,7 @@ namespace ObjectWorkshop.LifeImprovement
             string roleName = role.RoleName;
             if (!CountRoundToLeaderboard)
             {
-                ObjectWorkshopPlugin.DebugLogMessage("CountRoundToLeaderboard is false, wins and loses do not count this game.");
+                AUSPlugin.DebugLogMessage("CountRoundToLeaderboard is false, wins and loses do not count this game.");
                 return;
             }
             
@@ -112,7 +100,7 @@ namespace ObjectWorkshop.LifeImprovement
             if (!File.Exists(filePath))
             {
                 SaveRoleStats(filePath); // Save the current roleStats (even if empty/default)
-                ObjectWorkshopPlugin.DebugLogMessage(".txt file not found, creating a new one.", ObjectWorkshopPlugin.MsgType.Error);
+                AUSPlugin.DebugLogMessage(".txt file not found, creating a new one.", AUSPlugin.MsgType.Error);
                 return;
             }
 
@@ -155,7 +143,7 @@ namespace ObjectWorkshop.LifeImprovement
             if (File.Exists(filePath))
             {
                 File.WriteAllText(filePath, string.Empty);  // This just empties the file
-                ObjectWorkshopPlugin.DebugLogMessage("Leaderboard has been reset!");
+                AUSPlugin.DebugLogMessage("Leaderboard has been reset!");
             }
 
             // Optional: Reset in-memory role stats as well (you could leave it as-is)

@@ -1,12 +1,12 @@
 ﻿using BepInEx.Logging;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modules.Localization;
+namespace AmongUsSalem.Modules.Localization;
 
 public static class TouLocale
 {
-    public static string LocaleDirectory => Path.Combine(Application.persistentDataPath, "ObjectWorkshop", "Locales");
-    public static string BepinexLocaleDirectory => Path.Combine(BepInEx.Paths.BepInExRootPath, "MiraLocales", "ObjectWorkshop");
+    public static string LocaleDirectory => Path.Combine(Application.persistentDataPath, "AmongUsSalem", "Locales");
+    public static string BepinexLocaleDirectory => Path.Combine(BepInEx.Paths.BepInExRootPath, "MiraLocales", "AmongUsSalem");
 
     public static Dictionary<SupportedLangs, Dictionary<TouNames, string>> TouLocalization { get; } = [];
 

@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement.MCI;
+namespace AmongUsSalem.LifeImprovement.MCI;
 
 [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
 public static class Keyboard_Joystick
@@ -25,7 +25,7 @@ public static class Keyboard_Joystick
         {
             Switch(false);
         }
-        else if (Input.GetKeyDown(KeyCode.F6)) ObjectWorkshopPlugin.Persistence = !ObjectWorkshopPlugin.Persistence;
+        else if (Input.GetKeyDown(KeyCode.F6)) AUSPlugin.Persistence = !AUSPlugin.Persistence;
 
         if (Input.GetKeyDown(KeyCode.F11)) InstanceControlPatches.RemoveAllPlayers();
     }

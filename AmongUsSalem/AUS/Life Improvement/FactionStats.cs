@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ObjectWorkshop.Patches;
+using AmongUsSalem.Patches;
 using HarmonyLib;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement
+namespace AmongUsSalem.LifeImprovement
 {
     public class FactionStats
     {
@@ -39,9 +39,7 @@ namespace ObjectWorkshop.LifeImprovement
 
         public static void Initialize()
         {  
-            factionStats.Add("Crewmate", new FactionStats("Crewmate", OWColors.Crewmate)); 
-            factionStats.Add("Neutral", new FactionStats("Neutral", OWColors.Neutral)); 
-            factionStats.Add("Infiltrator", new FactionStats("Infiltrator", OWColors.Infiltrator)); 
+            factionStats.Add("Town", new FactionStats("Town", AUSColors.Town)); 
 
             LoadFactionStats(filePath);
         }
@@ -50,7 +48,7 @@ namespace ObjectWorkshop.LifeImprovement
         {
             if (!RoleReferences.CountRoundToLeaderboard)
             {
-                ObjectWorkshopPlugin.DebugLogMessage("CountRoundToLeaderboard is false, wins and loses do not count this game.");
+                AUSPlugin.DebugLogMessage("CountRoundToLeaderboard is false, wins and loses do not count this game.");
                 return;
             }
 
@@ -79,7 +77,7 @@ namespace ObjectWorkshop.LifeImprovement
             if (!File.Exists(filePath))
             {
                 SaveFactionStats(filePath); // Save the current factionStats (even if empty/default)
-                ObjectWorkshopPlugin.DebugLogMessage(".txt file not found, creating a new one.", ObjectWorkshopPlugin.MsgType.Error);
+                AUSPlugin.DebugLogMessage(".txt file not found, creating a new one.", AUSPlugin.MsgType.Error);
                 return;
             }
 
@@ -117,7 +115,7 @@ namespace ObjectWorkshop.LifeImprovement
             if (File.Exists(filePath))
             {
                 File.WriteAllText(filePath, string.Empty);  // This just empties the file
-                ObjectWorkshopPlugin.DebugLogMessage("Leaderboard has been reset!");
+                AUSPlugin.DebugLogMessage("Leaderboard has been reset!");
             }
 
             // Optional: Reset in-memory faction stats as well (you could leave it as-is)

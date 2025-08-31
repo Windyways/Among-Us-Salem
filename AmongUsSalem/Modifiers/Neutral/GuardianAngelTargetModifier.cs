@@ -1,4 +1,4 @@
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class GuardianAngelTargetModifier(byte gaId) : PlayerTargetModifier(gaId)
 {

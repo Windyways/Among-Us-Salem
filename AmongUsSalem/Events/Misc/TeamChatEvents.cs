@@ -1,9 +1,9 @@
 using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Events.Vanilla.Meeting;
-using ObjectWorkshop.Patches.Options;
+using AmongUsSalem.Patches.Options;
 
-namespace ObjectWorkshop.Events.Misc;
+namespace AmongUsSalem.Events.Misc;
 
 // Never hurts to check... i think - Atony
 public static class TeamChatEvents

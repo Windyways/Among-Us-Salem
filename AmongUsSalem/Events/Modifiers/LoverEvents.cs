@@ -6,12 +6,12 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Networking;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Events.Modifiers;
+namespace AmongUsSalem.Events.Modifiers;
 
 public static class LoverEvents
 {

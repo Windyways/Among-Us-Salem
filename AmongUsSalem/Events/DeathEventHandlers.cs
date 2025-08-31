@@ -6,14 +6,14 @@ using MiraAPI.Events.Vanilla.Meeting;
 using MiraAPI.Events.Vanilla.Player;
 using MiraAPI.Modifiers;
 using Reactor.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
-namespace ObjectWorkshop.Events;
+namespace AmongUsSalem.Events;
 
 public static class DeathEventHandlers
 {
@@ -32,13 +32,13 @@ public static class DeathEventHandlers
         if (@event.TriggeredByIntro)
         {
             CurrentRound = 1;
-            Logger<ObjectWorkshopPlugin>.Warning("Game Has Started");
+            Logger<AUSPlugin>.Warning("Game Has Started");
         }
         else
         {
             ++CurrentRound;
             ModifierUtils.GetActiveModifiers<DeathHandlerModifier>().Do(x => x.DiedThisRound = false);
-            Logger<ObjectWorkshopPlugin>.Warning($"New Round Started: {CurrentRound}");
+            Logger<AUSPlugin>.Warning($"New Round Started: {CurrentRound}");
         }
     }
 
@@ -55,7 +55,7 @@ public static class DeathEventHandlers
             switch (@event.DeathReason)
             {
                 case DeathReason.Exile:
-                    cod = "Ejected";
+                    cod = "Lynched";
                     deathHandler.DiedThisRound = false;
                     break;
                 case DeathReason.Kill:
@@ -78,7 +78,7 @@ public static class DeathEventHandlers
         }
         if (!exiled.HasModifier<DeathHandlerModifier>())
         {
-            DeathHandlerModifier.UpdateDeathHandler(exiled, "Ejected", CurrentRound, DeathHandlerOverride.SetFalse);
+            DeathHandlerModifier.UpdateDeathHandler(exiled, "Lynched", CurrentRound, DeathHandlerOverride.SetFalse);
         }
     }
 
@@ -106,14 +106,11 @@ public static class DeathEventHandlers
             var cod = "Killed";
             switch (source.GetRoleWhenAlive())
             {
-                case Pyre:
-                    cod = "Incinerated";
+                case Mafioso:
+                    cod = "Killed By A Member Of The Mafia";
                     break;
-                case Duelist:
-                    cod = "Dueled";
-                    break;
-                case Aimsman:
-                    cod = "Shot";
+                case Veteran:
+                    cod = "Shot By A Veteran";
                     break;
             }
             

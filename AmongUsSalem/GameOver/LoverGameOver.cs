@@ -2,12 +2,12 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Modules;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Modules;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.GameOver;
+namespace AmongUsSalem.GameOver;
 
 public sealed class LoverGameOver : CustomGameOver
 {
@@ -39,12 +39,12 @@ public sealed class LoverGameOver : CustomGameOver
         //    array[1].cosmetics.nameText.color = new Color(1f, 0.4f, 0.8f, 1f);
         //}
 
-        endGameManager.BackgroundBar.material.SetColor(ShaderID.Color, OWColors.Lover);
+        endGameManager.BackgroundBar.material.SetColor(ShaderID.Color, AUSColors.Lover);
 
         var text = Object.Instantiate(endGameManager.WinText);
         text.text = "Lovers Win!";
-        text.color = OWColors.Lover;
-        GameHistory.WinningFaction = $"<color=#{OWColors.Lover.ToHtmlStringRGBA()}>Lovers</color>";
+        text.color = AUSColors.Lover;
+        GameHistory.WinningFaction = $"<color=#{AUSColors.Lover.ToHtmlStringRGBA()}>Lovers</color>";
 
         var pos = endGameManager.WinText.transform.localPosition;
         pos.y = 1.5f;

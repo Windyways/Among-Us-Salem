@@ -1,15 +1,15 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CalculateLightRadius))]
 public static class ShipStatus_CalculateLightRadius
@@ -33,32 +33,10 @@ public static class ShipStatus_CalculateLightRadius
             __result = __instance.MaxLightRadius * GameOptionsManager.Instance.currentNormalGameOptions.ImpostorLightMod * visionFactor;
             return;
         }
-        
-        var darkCloud = DarkCloud.GetAll();
-        if (darkCloud != null)
-        {
-            if (darkCloud.IsInRange(playerControl) && !playerControl.IsRole<Canopy>())
-            {
-                __result = __instance.MaxLightRadius * 0f;
-                return;
-            }
-        }
 
-        if (playerControl.IsDueling())
+        if (playerControl.Data.Role is IAUSRole owRole)
         {
-            __result = __instance.MaxLightRadius * 0.25f;
-            return;
-        }
-
-        if (playerControl.IsOnFire())
-        {
-            __result = __instance.MaxLightRadius * 1f;
-            return;
-        }
-
-        if (player._object.Data.Role is IOWRole owRole)
-        {
-            if (owRole.Team == ModdedRoleTeams.Custom)
+            if (!playerControl.Is(Faction.Town))
             {
                 __result = __instance.MaxLightRadius * owRole.visionValue;
                 return;

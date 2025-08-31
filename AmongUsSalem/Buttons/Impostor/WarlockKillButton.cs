@@ -1,21 +1,21 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Networking;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Impostor;
+namespace AmongUsSalem.Buttons.Impostor;
 
-public sealed class WarlockKillButton : ObjectWorkshopRoleButton<WarlockRole, PlayerControl>, IDiseaseableButton, IKillButton
+public sealed class WarlockKillButton : AmongUsSalemRoleButton<WarlockRole, PlayerControl>, IDiseaseableButton, IKillButton
 {
     public override string Name => "Kill";
     public override string Keybind => Keybinds.PrimaryAction;
-    public override Color TextOutlineColor => OWColors.Infiltrator;
+    public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => PlayerControl.LocalPlayer.GetKillCooldown() + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouAssets.KillSprite;
 

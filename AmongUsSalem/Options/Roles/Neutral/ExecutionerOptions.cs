@@ -1,8 +1,8 @@
 using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
-using ObjectWorkshop.Roles.Neutral;
+using AmongUsSalem.Roles.Neutral;
 
-namespace ObjectWorkshop.Options.Roles.Neutral;
+namespace AmongUsSalem.Options.Roles.Neutral;
 
 public sealed class ExecutionerOptions : AbstractOptionGroup<ExecutionerRole>
 {

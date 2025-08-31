@@ -2,20 +2,20 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers.Game.Alliance;
-using ObjectWorkshop.Options.Modifiers.Alliance;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Alliance;
+using AmongUsSalem.Options.Modifiers.Alliance;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class AltruistReviveButton : ObjectWorkshopRoleButton<AltruistRole>
+public sealed class AltruistReviveButton : AmongUsSalemRoleButton<AltruistRole>
 {
     public override string Name => "Revive";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Altruist;
+    public override Color TextOutlineColor => AUSColors.Altruist;
     public override float Cooldown => 0.001f + MapCooldown;
     public override float EffectDuration => OptionGroupSingleton<AltruistOptions>.Instance.ReviveDuration;
     public override int MaxUses => (int)OptionGroupSingleton<AltruistOptions>.Instance.MaxRevives;

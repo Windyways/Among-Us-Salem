@@ -1,25 +1,22 @@
 ﻿using UnityEngine;
 
-namespace ObjectWorkshop;
+namespace AmongUsSalem;
 
-public static class OWColors
+public static class AUSColors
 {
-    public static Color Crewmate => new Color32(179, 255, 255, 255);
+    public static Color Town => new Color32(6, 224, 12, 255);
     public static Color Neutral => new Color32(169, 169, 169, 255);
-    public static Color Infiltrator => new Color32(255, 80, 80, 255);
-    
-    public static Color Enticer => new Color32(78, 230, 190, 255);
-    public static Color Pyre => new Color32(255, 55, 113, 255);
-    public static Color Reaper => new Color32(90, 129, 41, 255);
-    public static Color UndeadReaper => Reaper;
-    public static Color Peacock => new Color32(216, 160, 255, 255);
+    public static Color Mafia => new Color32(221, 0, 0, 255);
+    public static Color Apocalypse => new Color32(255, 0, 78, 255);
+    public static Color Coven => new Color32(171, 66, 239, 255);
+    public static Color Traitor => new Color32(206, 54, 250, 255);
     
     public static Color Claylim => new Color32(91, 83, 83, 255);
 
     public static string GetColorKeyword(string text)
     {
         if (text == "Crewmate" || text == "Crewmates" || text == "Oasis") return "<b><color=#b3ffff>" + text + "</color></b>";
-        if (text == "Infiltrator" || text == "Infiltrators") return "<b><color=#ff5050>" + text + "</color></b>";
+        if (text == "Mafia" || text == "Mafias") return "<b><color=#ff5050>" + text + "</color></b>";
         return "<b><color=#4a86e8>" + text + "</color></b>";
     }
 

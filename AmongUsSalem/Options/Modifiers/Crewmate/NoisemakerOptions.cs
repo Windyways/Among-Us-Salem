@@ -1,16 +1,16 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
+using AmongUsSalem.Modifiers.Game.Crewmate;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Modifiers.Crewmate;
+namespace AmongUsSalem.Options.Modifiers.Crewmate;
 
 public sealed class NoisemakerOptions : AbstractOptionGroup<NoisemakerModifier>
 {
     public override string GroupName => TouLocale.Get(TouNames.Noisemaker, "Noisemaker");
     public override uint GroupPriority => 34;
-    public override Color GroupColor => OWColors.Noisemaker;
+    public override Color GroupColor => AUSColors.Noisemaker;
 
     [ModdedToggleOption("Impostors Get Alert")]
     public bool ImpostorsAlerted { get; set; } = true;

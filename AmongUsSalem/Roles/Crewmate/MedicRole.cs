@@ -10,16 +10,16 @@ using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     private MeetingMenu meetingMenu;
@@ -44,9 +44,9 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, ID
     public string RoleName => TouLocale.Get(TouNames.Medic, "Medic");
     public string RoleDescription => "Create A Shield To Protect A Crewmate";
     public string RoleLongDescription => "Protect a crewmate with a shield";
-    public Color RoleColor => OWColors.Medic;
+    public Color RoleColor => AUSColors.Medic;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -57,7 +57,7 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, ID
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
 
         if (Shielded != null)
         {
@@ -212,7 +212,7 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, ID
             return;
         }
 
-        // Logger<ObjectWorkshopPlugin>.Message($"CmdReportDeadBody");
+        // Logger<AUSPlugin>.Message($"CmdReportDeadBody");
         var br = new BodyReport
         {
             Killer = MiscUtils.PlayerById(killer.KillerId),
@@ -228,7 +228,7 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, ID
             return;
         }
 
-        var title = $"<color=#{OWColors.Medic.ToHtmlStringRGBA()}>{RoleName} Report</color>";
+        var title = $"<color=#{AUSColors.Medic.ToHtmlStringRGBA()}>{RoleName} Report</color>";
         var reported = Player;
         if (br.Body != null)
         {
@@ -315,12 +315,12 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, ID
             OptionGroupSingleton<MedicOptions>.Instance.ChangeTarget;
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.MedicShield, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.MedicShield, SendImmediately = true)]
     public static void RpcMedicShield(PlayerControl medic, PlayerControl target)
     {
         if (medic.Data.Role is not MedicRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcMedicShield - Invalid medic");
+            Logger<AUSPlugin>.Error("RpcMedicShield - Invalid medic");
             return;
         }
 
@@ -329,7 +329,7 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, ID
         role?.SetShieldedPlayer(target);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.ClearMedicShield, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.ClearMedicShield, SendImmediately = true)]
     public static void RpcClearMedicShield(PlayerControl medic)
     {
         ClearMedicShield(medic);
@@ -339,7 +339,7 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, ID
     {
         if (medic.Data.Role is not MedicRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("ClearMedicShield - Invalid medic");
+            Logger<AUSPlugin>.Error("ClearMedicShield - Invalid medic");
             return;
         }
 
@@ -348,12 +348,12 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, ID
         role?.SetShieldedPlayer(null);
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.MedicShieldAttacked, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.MedicShieldAttacked, SendImmediately = true)]
     public static void RpcMedicShieldAttacked(PlayerControl medic, PlayerControl source, PlayerControl shielded)
     {
         if (medic.Data.Role is not MedicRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcMedicShieldAttacked - Invalid medic");
+            Logger<AUSPlugin>.Error("RpcMedicShieldAttacked - Invalid medic");
             return;
         }
 

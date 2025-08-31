@@ -2,21 +2,21 @@
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class EngineerVentButton : ObjectWorkshopRoleButton<EngineerTouRole, Vent>
+public sealed class EngineerVentButton : AmongUsSalemRoleButton<EngineerTouRole, Vent>
 {
     private static readonly ContactFilter2D Filter = Helpers.CreateFilter(Constants.Usables);
     public override string Name => "Vent";
     public override string Keybind => Keybinds.VentAction;
-    public override Color TextOutlineColor => OWColors.Engineer;
+    public override Color TextOutlineColor => AUSColors.Engineer;
 
     public override float Cooldown =>
         OptionGroupSingleton<EngineerOptions>.Instance.VentCooldown + 0.001f + MapCooldown;
@@ -85,19 +85,19 @@ public sealed class EngineerVentButton : ObjectWorkshopRoleButton<EngineerTouRol
         {
             Timer = Cooldown;
             EffectActive = false;
-            // Logger<ObjectWorkshopPlugin>.Error($"Effect is No Longer Active");
-            // Logger<ObjectWorkshopPlugin>.Error($"Cooldown is active");
+            // Logger<AUSPlugin>.Error($"Effect is No Longer Active");
+            // Logger<AUSPlugin>.Error($"Cooldown is active");
         }
         else if (HasEffect)
         {
             EffectActive = true;
             Timer = EffectDuration;
-            // Logger<ObjectWorkshopPlugin>.Error($"Effect is Now Active");
+            // Logger<AUSPlugin>.Error($"Effect is Now Active");
         }
         else
         {
             Timer = !PlayerControl.LocalPlayer.inVent ? 0.001f : Cooldown;
-            // Logger<ObjectWorkshopPlugin>.Error($"Cooldown is active");
+            // Logger<AUSPlugin>.Error($"Cooldown is active");
         }
     }
 
@@ -105,17 +105,17 @@ public sealed class EngineerVentButton : ObjectWorkshopRoleButton<EngineerTouRol
     {
         if (!PlayerControl.LocalPlayer.inVent)
         {
-            // Logger<ObjectWorkshopPlugin>.Error($"Entering Vent");
+            // Logger<AUSPlugin>.Error($"Entering Vent");
             if (Target != null)
             {
                 PlayerControl.LocalPlayer.MyPhysics.RpcEnterVent(Target.Id);
                 Target.SetButtons(true);
             }
-            // else Logger<ObjectWorkshopPlugin>.Error($"Vent is null...");
+            // else Logger<AUSPlugin>.Error($"Vent is null...");
         }
         else if (Timer != 0)
         {
-            // Logger<ObjectWorkshopPlugin>.Error($"Leaving Vent");
+            // Logger<AUSPlugin>.Error($"Leaving Vent");
             OnEffectEnd();
             if (!HasEffect)
             {
@@ -129,7 +129,7 @@ public sealed class EngineerVentButton : ObjectWorkshopRoleButton<EngineerTouRol
     {
         if (PlayerControl.LocalPlayer.inVent)
         {
-            // Logger<ObjectWorkshopPlugin>.Error($"Left Vent");
+            // Logger<AUSPlugin>.Error($"Left Vent");
             Vent.currentVent.SetButtons(false);
             PlayerControl.LocalPlayer.MyPhysics.RpcExitVent(Vent.currentVent.Id);
             UsesLeft--;

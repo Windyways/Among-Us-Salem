@@ -1,7 +1,7 @@
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Impostor;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class ExecutionerTargetModifier(byte exeId) : PlayerTargetModifier(exeId)
 {

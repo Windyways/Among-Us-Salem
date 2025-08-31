@@ -4,11 +4,11 @@ using Il2CppInterop.Runtime.Attributes;
 using InnerNet;
 using MiraAPI.Hud;
 using MiraAPI.Networking;
-using ObjectWorkshop.Buttons.Modifiers;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Modifiers;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.LifeImprovement.MCI;
+namespace AmongUsSalem.LifeImprovement.MCI;
 
 public class Debugger : MonoBehaviour
 {

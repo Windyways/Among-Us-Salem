@@ -1,7 +1,7 @@
 using AmongUs.Data.Player;
 using HarmonyLib;
 
-namespace ObjectWorkshop.Patches.Misc;
+namespace AmongUsSalem.Patches.Misc;
 
 [HarmonyPatch(typeof(PlayerBanData), nameof(PlayerBanData.IsBanned), MethodType.Getter)]
 public static class BanPatch

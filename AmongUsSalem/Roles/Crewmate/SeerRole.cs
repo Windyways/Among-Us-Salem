@@ -1,12 +1,12 @@
 using System.Text;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class SeerRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class SeerRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -14,9 +14,9 @@ public sealed class SeerRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDo
     public string RoleName => TouLocale.Get(TouNames.Seer, "Seer");
     public string RoleDescription => "Reveal The Alliance Of Other Players";
     public string RoleLongDescription => "Reveal alliances of other players to find the Impostors";
-    public Color RoleColor => OWColors.Seer;
+    public Color RoleColor => AUSColors.Seer;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -27,7 +27,7 @@ public sealed class SeerRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDo
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

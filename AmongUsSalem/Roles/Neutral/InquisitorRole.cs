@@ -13,15 +13,15 @@ using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
-public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole, IDoomable,
+public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable,
     IAssignableTargets, ICrewVariant
 {
     public string revealText => "";
@@ -41,13 +41,13 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
 
         if (inquis == null)
         {
-            if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Error("Inquisitor not found.");
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Error("Inquisitor not found.");
             return;
         }
 
         var required = (int)OptionGroupSingleton<InquisitorOptions>.Instance.AmountOfHeretics;
         var players = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Data.Role is not InquisitorRole).ToList();
-        if (ObjectWorkshopPlugin.IsDevBuild) Logger<ObjectWorkshopPlugin>.Warning($"Players in heretic list possible: {players.Count}");
+        if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Players in heretic list possible: {players.Count}");
         players.Shuffle();
         players.Shuffle();
         players.Shuffle();
@@ -115,9 +115,9 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
     public string RoleLongDescription =>
         "Vanquish your Heretics or get them killed.\nYou will win after every heretic dies.\nIf they're all dead after a meeting ends,\nyou'll leave & announce your victory.";
 
-    public Color RoleColor => OWColors.Inquisitor;
+    public Color RoleColor => AUSColors.Inquisitor;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -153,7 +153,7 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         stringB.AppendLine(CultureInfo.InvariantCulture, $"<b>The roles of your Heretics:</b>");
         foreach (var role in TargetRoles)
         {
@@ -230,7 +230,7 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
 
     private void GenerateReport()
     {
-        Logger<ObjectWorkshopPlugin>.Info($"Generating Inquisitor report");
+        Logger<AUSPlugin>.Info($"Generating Inquisitor report");
 
         var reportBuilder = new StringBuilder();
 
@@ -249,7 +249,7 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
         {
             if (player.Object.HasModifier<InquisitorHereticModifier>())
             {
-                reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                reportBuilder.AppendLine(AUSPlugin.Culture,
                     $"Your inquiry reveals that {player.PlayerName} is a heretic!\n");
                 var roles = TargetRoles;
                 var lastRole = roles[roles.Count - 1];
@@ -257,19 +257,19 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
 
                 if (roles.Count != 0)
                 {
-                    reportBuilder.Append(ObjectWorkshopPlugin.Culture, $"(");
+                    reportBuilder.Append(AUSPlugin.Culture, $"(");
                     foreach (var role2 in roles)
                     {
-                        reportBuilder.Append(ObjectWorkshopPlugin.Culture, $"{role2.NiceName}, ");
+                        reportBuilder.Append(AUSPlugin.Culture, $"{role2.NiceName}, ");
                     }
 
                     reportBuilder = reportBuilder.Remove(reportBuilder.Length - 2, 2);
-                    reportBuilder.Append(ObjectWorkshopPlugin.Culture, $" or {lastRole.NiceName})");
+                    reportBuilder.Append(AUSPlugin.Culture, $" or {lastRole.NiceName})");
                 }
             }
             else
             {
-                reportBuilder.AppendLine(ObjectWorkshopPlugin.Culture,
+                reportBuilder.AppendLine(AUSPlugin.Culture,
                     $"Your inquiry reveals that {player.PlayerName} is not a heretic!");
             }
 
@@ -280,7 +280,7 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
 
         if (HudManager.Instance && report.Length > 0)
         {
-            var title = $"<color=#{OWColors.Inquisitor.ToHtmlStringRGBA()}>Inquisitor Report</color>";
+            var title = $"<color=#{AUSColors.Inquisitor.ToHtmlStringRGBA()}>Inquisitor Report</color>";
             MiscUtils.AddFakeChat(Player.Data, title, report, false, true);
         }
     }
@@ -314,18 +314,18 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
         }
 
         if (Targets.All(x => x.HasDied() || x == exiled))
-            // Logger<ObjectWorkshopPlugin>.Error($"CheckTargetEjection - exiled: {exiled.Data.PlayerName}");
+            // Logger<AUSPlugin>.Error($"CheckTargetEjection - exiled: {exiled.Data.PlayerName}");
         {
             InquisitorWin(Player);
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.AddInquisTarget, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.AddInquisTarget, SendImmediately = true)]
     public static void RpcAddInquisTarget(PlayerControl player, PlayerControl target)
     {
         if (player.Data.Role is not InquisitorRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcAddInquisTarget - Invalid Inquisitor");
+            Logger<AUSPlugin>.Error("RpcAddInquisTarget - Invalid Inquisitor");
             return;
         }
 
@@ -346,7 +346,7 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
         target.AddModifier<InquisitorHereticModifier>();
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.InquisitorWin, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.InquisitorWin, SendImmediately = true)]
     public static void RpcInquisitorWin(PlayerControl player)
     {
         InquisitorWin(player);
@@ -356,7 +356,7 @@ public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IOWRole
     {
         if (player.Data.Role is not InquisitorRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcInquisitorWin - Invalid Inquisitor");
+            Logger<AUSPlugin>.Error("RpcInquisitorWin - Invalid Inquisitor");
             return;
         }
 

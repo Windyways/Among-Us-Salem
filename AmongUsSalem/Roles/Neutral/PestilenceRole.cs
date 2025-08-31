@@ -7,16 +7,16 @@ using MiraAPI.Modifiers;
 using MiraAPI.Patches.Stubs;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Options.Roles.Neutral;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Options.Roles.Neutral;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Neutral;
+namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class PestilenceRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IOWRole, IDoomable, IUnguessable, ICrewVariant
+    : NeutralRole(cppPtr), IAUSRole, IDoomable, IUnguessable, ICrewVariant
 {
     public string revealText => "";
     public bool Announced { get; set; }
@@ -26,9 +26,9 @@ public sealed class PestilenceRole(IntPtr cppPtr)
     public string RoleDescription => "Horseman Of The Apocalypse!";
     public string RoleLongDescription => "Kill everyone in your path that interacts with you!";
     public string YouAreText => "You are";
-    public Color RoleColor => OWColors.Pestilence;
+    public Color RoleColor => AUSColors.Pestilence;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
     public bool HasImpostorVision => true;
 
     public CustomRoleConfiguration Configuration => new(this)
@@ -59,7 +59,7 @@ public sealed class PestilenceRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var alignment = RoleAlignment.ToDisplayString();
+        var alignment = Alignment.ToDisplayString();
 
         alignment = alignment.Replace("Neutral", "<color=#8A8A8AFF>Neutral");
 
@@ -91,7 +91,7 @@ public sealed class PestilenceRole(IntPtr cppPtr)
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouNeutAssets.PestVentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Pestilence);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Pestilence);
         }
 
         Announced = !OptionGroupSingleton<PlaguebearerOptions>.Instance.AnnouncePest;
@@ -105,7 +105,7 @@ public sealed class PestilenceRole(IntPtr cppPtr)
         if (Player.AmOwner)
         {
             HudManager.Instance.ImpostorVentButton.graphic.sprite = TouAssets.VentSprite.LoadAsset();
-            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(OWColors.Infiltrator);
+            HudManager.Instance.ImpostorVentButton.buttonLabelText.SetOutlineColor(AUSColors.Mafia);
         }
     }
 

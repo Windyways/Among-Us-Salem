@@ -1,8 +1,8 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
-using ObjectWorkshop.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
 
-namespace ObjectWorkshop.Options.Roles.Crewmate;
+namespace AmongUsSalem.Options.Roles.Crewmate;
 
 public sealed class SnitchOptions : AbstractOptionGroup<SnitchRole>
 {

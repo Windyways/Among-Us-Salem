@@ -1,11 +1,11 @@
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
-namespace ObjectWorkshop.Assets;
+namespace AmongUsSalem.Assets;
 
 public static class TouAudio
 {
-    private const string AudioPath = "ObjectWorkshop.Resources.Audio";
+    private const string AudioPath = "AmongUsSalem.Resources.Audio";
 
     // THIS FILE SHOULD ONLY HOLD AUDIO
     public static LoadableAsset<AudioClip> NoisemakerDeathSound { get; } =

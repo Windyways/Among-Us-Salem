@@ -3,21 +3,21 @@ using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Game.Crewmate;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Options.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Game.Crewmate;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Options.Modifiers.Crewmate;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Buttons.Modifiers;
+namespace AmongUsSalem.Buttons.Modifiers;
 
-public sealed class ScientistButton : ObjectWorkshopButton
+public sealed class ScientistButton : AmongUsSalemButton
 {
     public VitalsMinigame? vitals;
     public override string Name => "Vitals";
     public override string Keybind => Keybinds.ModifierAction;
-    public override Color TextOutlineColor => OWColors.Scientist;
+    public override Color TextOutlineColor => AUSColors.Scientist;
     public override float Cooldown => OptionGroupSingleton<ScientistOptions>.Instance.DisplayCooldown + MapCooldown;
     public float AvailableCharge { get; set; } = OptionGroupSingleton<ScientistOptions>.Instance.StartingCharge;
 

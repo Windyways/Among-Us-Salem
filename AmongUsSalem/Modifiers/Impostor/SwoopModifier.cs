@@ -2,15 +2,15 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Buttons.Impostor;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Buttons.Impostor;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class SwoopModifier : ConcealedModifier, IVisualAppearance
 {
@@ -26,7 +26,7 @@ public sealed class SwoopModifier : ConcealedModifier, IVisualAppearance
             ? new Color(0f, 0f, 0f, 0.1f)
             : Color.clear;
 
-        return new VisualAppearance(Player.GetDefaultModifiedAppearance(), ObjectWorkshopAppearances.Swooper)
+        return new VisualAppearance(Player.GetDefaultModifiedAppearance(), AmongUsSalemAppearances.Swooper)
         {
             HatId = string.Empty,
             SkinId = string.Empty,

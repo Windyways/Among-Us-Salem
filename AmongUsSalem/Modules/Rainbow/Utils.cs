@@ -1,7 +1,7 @@
 using MiraAPI.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modules.RainbowMod;
+namespace AmongUsSalem.Modules.RainbowMod;
 
 public static class RainbowUtils
 {
@@ -33,7 +33,7 @@ public static class RainbowUtils
     {
         try
         {
-            return Palette.ColorNames[id] == ObjectWorkshopPlayerColors.Rainbow.Name;
+            return Palette.ColorNames[id] == AmongUsSalemPlayerColors.Rainbow.Name;
         }
         catch
         {

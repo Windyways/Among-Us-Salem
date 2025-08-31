@@ -2,7 +2,7 @@
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Serialization;
 
-namespace ObjectWorkshop.Networking;
+namespace AmongUsSalem.Networking;
 [MessageConverter]
 public class DeadBodyMessageConverter : MessageConverter<DeadBody?>
 {

@@ -1,10 +1,10 @@
 using MiraAPI.Events;
 using MiraAPI.Modifiers;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class MercenaryBribedModifier(PlayerControl mercenary) : BaseModifier
 {
@@ -35,7 +35,7 @@ public sealed class MercenaryBribedModifier(PlayerControl mercenary) : BaseModif
             return;
         }
 
-        var title = $"<color=#{OWColors.Mercenary.ToHtmlStringRGBA()}>Mercenary Feedback</color>";
+        var title = $"<color=#{AUSColors.Mercenary.ToHtmlStringRGBA()}>Mercenary Feedback</color>";
         MiscUtils.AddFakeChat(Player.Data, title, "You have been bribed by a Mercenary!", false, true);
 
         alerted = true;

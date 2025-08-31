@@ -8,17 +8,17 @@ using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Options.Roles.Impostor;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Options.Roles.Impostor;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Impostor;
+namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class MinerRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IOWRole, IDoomable, ICrewVariant
+    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
 {
     public string revealText => "";
     [HideFromIl2Cpp] public List<Vent> Vents { get; set; } = [];
@@ -43,9 +43,9 @@ public sealed class MinerRole(IntPtr cppPtr)
     public string RoleName => TouLocale.Get(TouNames.Miner, "Miner");
     public string RoleDescription => "From The Top, Make It Drop, That's A Vent";
     public string RoleLongDescription => "Place interconnected vents around the map";
-    public Color RoleColor => OWColors.Infiltrator;
+    public Color RoleColor => AUSColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -58,7 +58,7 @@ public sealed class MinerRole(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        var stringB = IOWRole.SetNewTabText(this);
+        var stringB = IAUSRole.SetNewTabText(this);
         if (OptionGroupSingleton<MinerOptions>.Instance.MineVisibility is MineVisiblityOptions.AfterUse)
         {
             stringB.Append(CultureInfo.InvariantCulture, $"Vents will only be visible once used");
@@ -80,26 +80,26 @@ public sealed class MinerRole(IntPtr cppPtr)
         return $"The {RoleName} is an Impostor Support role that can create vents." + MiscUtils.AppendOptionsText(GetType());
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.PlaceVent, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.PlaceVent, SendImmediately = true)]
     public static void RpcPlaceVent(PlayerControl player, int ventId, Vector2 position, float zAxis, bool immediate)
     {
         if (player.Data.Role is not MinerRole miner)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcPlaceVent - Invalid miner");
+            Logger<AUSPlugin>.Error("RpcPlaceVent - Invalid miner");
             return;
         }
 
-        //Logger<ObjectWorkshopPlugin>.Error("RpcPlaceVent");
+        //Logger<AUSPlugin>.Error("RpcPlaceVent");
 
         var ventPrefab = ShipStatus.Instance.AllVents[0];
         var vent = Instantiate(ventPrefab, ventPrefab.transform.parent);
         vent.name = $"MinerVent-{player.PlayerId}-{ventId}";
 
-        Logger<ObjectWorkshopPlugin>.Error($"RpcPlaceVent - vent: {vent.name} - {immediate}");
+        Logger<AUSPlugin>.Error($"RpcPlaceVent - vent: {vent.name} - {immediate}");
 
         if (!player.AmOwner && !immediate)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcPlaceVent - Hide Vent");
+            Logger<AUSPlugin>.Error("RpcPlaceVent - Hide Vent");
             vent.myRend.enabled = false;
         }
 
@@ -181,12 +181,12 @@ public sealed class MinerRole(IntPtr cppPtr)
         }
     }
 
-    [MethodRpc((uint)ObjectWorkshopRpc.ShowVent, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.ShowVent, SendImmediately = true)]
     public static void RpcShowVent(PlayerControl player, int ventId)
     {
         if (player.Data.Role is not MinerRole miner)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcShowVent - Invalid miner");
+            Logger<AUSPlugin>.Error("RpcShowVent - Invalid miner");
             return;
         }
 

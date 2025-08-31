@@ -5,14 +5,14 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Reactor.Utilities;
-using ObjectWorkshop.Modules.Components;
-using ObjectWorkshop.Roles;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Roles;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Version = SemanticVersioning.Version;
 
-namespace ObjectWorkshop.Modules;
+namespace AmongUsSalem.Modules;
 
 public static class ModCompatibility
 {
@@ -129,7 +129,7 @@ public static class ModCompatibility
         harmony.Patch(canUse, null, null, new HarmonyMethod(typeof(ModCompatibility), nameof(SubmergedElevatorTranspilerPatch)));
 
         SubLoaded = true;
-        Logger<ObjectWorkshopPlugin>.Message("Submerged was detected");
+        Logger<AUSPlugin>.Message("Submerged was detected");
     }
 
     public static IEnumerable<CodeInstruction> SubmergedElevatorTranspilerPatch(IEnumerable<CodeInstruction> instructions)
@@ -150,7 +150,7 @@ public static class ModCompatibility
         }
         if (!found)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Failed to find the IsDead call in SubmergedElevator transpiler");
+            Logger<AUSPlugin>.Error("Failed to find the IsDead call in SubmergedElevator transpiler");
         }
     }
 
@@ -418,7 +418,7 @@ public static class ModCompatibility
             new HarmonyMethod(AccessTools.Method(compatType, nameof(TriggerPostfix))));
 
         LILoaded = true;
-        Logger<ObjectWorkshopPlugin>.Message("LevelImpostor was detected");
+        Logger<AUSPlugin>.Message("LevelImpostor was detected");
     }
 
     public static string GetLIVentType(Vent vent)

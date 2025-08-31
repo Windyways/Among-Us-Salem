@@ -1,8 +1,8 @@
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
-using ObjectWorkshop.Modules.Anims;
+using AmongUsSalem.Modules.Anims;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 [MiraIgnore]
 public abstract class BaseShieldModifier : TimedModifier, IAnimated
@@ -11,7 +11,7 @@ public abstract class BaseShieldModifier : TimedModifier, IAnimated
     public virtual string ShieldDescription => "You are protected!";
     public override float Duration => 1f;
     public override bool AutoStart => false;
-    public override bool HideOnUi => !ObjectWorkshopPlugin.ShowShieldHud.Value;
+    public override bool HideOnUi => !AUSPlugin.ShowShieldHud.Value;
     public virtual bool VisibleSymbol => false;
     public bool IsVisible { get; set; } = true;
 

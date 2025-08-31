@@ -1,8 +1,8 @@
 using HarmonyLib;
 using MiraAPI.Events;
-using ObjectWorkshop.Events.TouEvents;
+using AmongUsSalem.Events.TouEvents;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Revive))]
 public static class PlayerRevivePatch

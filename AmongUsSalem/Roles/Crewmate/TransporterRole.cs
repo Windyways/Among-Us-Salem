@@ -8,23 +8,23 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
-using ObjectWorkshop.Buttons.Crewmate;
-using ObjectWorkshop.Events.Crewmate;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modifiers;
-using ObjectWorkshop.Modifiers.Crewmate;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Modifiers.Impostor;
-using ObjectWorkshop.Modifiers.Neutral;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Roles.Impostor;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Buttons.Crewmate;
+using AmongUsSalem.Events.Crewmate;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modifiers;
+using AmongUsSalem.Modifiers.Crewmate;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Modifiers.Impostor;
+using AmongUsSalem.Modifiers.Neutral;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Roles.Impostor;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Roles.Crewmate;
+namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class TransporterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRole, IDoomable
+public sealed class TransporterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;
@@ -32,9 +32,9 @@ public sealed class TransporterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
     public string RoleName => TouLocale.Get(TouNames.Transporter, "Transporter");
     public string RoleDescription => "Choose Two Players To Swap Locations";
     public string RoleLongDescription => "Choose two players to swap locations with one another";
-    public Color RoleColor => OWColors.Transporter;
+    public Color RoleColor => AUSColors.Transporter;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
-    public RoleAlignment RoleAlignment => RoleAlignment.None;
+    public Alignment Alignment => Alignment.None;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -45,7 +45,7 @@ public sealed class TransporterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IOWRole.SetNewTabText(this);
+        return IAUSRole.SetNewTabText(this);
     }
     public string GetAdvancedDescription()
     {
@@ -64,12 +64,12 @@ public sealed class TransporterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
             TouCrewAssets.Transport)
     ];
 
-    [MethodRpc((uint)ObjectWorkshopRpc.Transport, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.Transport, SendImmediately = true)]
     public static void RpcTransport(PlayerControl transporter, byte player1, byte player2)
     {
         if (transporter.Data.Role is not TransporterRole)
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcTransport - Invalid Transporter");
+            Logger<AUSPlugin>.Error("RpcTransport - Invalid Transporter");
             return;
         }
 
@@ -81,7 +81,7 @@ public sealed class TransporterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
         {
             if (transporter.AmOwner)
             {
-                Coroutines.Start(MiscUtils.CoFlash(OWColors.Infiltrator));
+                Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
             }
 
             return;
@@ -260,7 +260,7 @@ public sealed class TransporterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
         if (play1.AmOwner && t1 is PlayerControl || play2.AmOwner && t2 is PlayerControl)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Transporter.ToTextColor()}You were transported!</color></b>", Color.white,
+                $"<b>{AUSColors.Transporter.ToTextColor()}You were transported!</color></b>", Color.white,
                 spr: TouRoleIcons.Transporter.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);
@@ -335,7 +335,7 @@ public sealed class TransporterRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IOWRo
 
             if (transportable.TryCast<DeadBody>() == null && transportable2.TryCast<DeadBody>() == null)
             {
-                Logger<ObjectWorkshopPlugin>.Error($"type: {transportable.GetIl2CppType().Name}");
+                Logger<AUSPlugin>.Error($"type: {transportable.GetIl2CppType().Name}");
                 var TP1 = transportable.TryCast<PlayerControl>()!;
                 TP1Position = TP1.GetTruePosition();
                 TP1Position = new Vector2(TP1Position.x, TP1Position.y + 0.3636f);

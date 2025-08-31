@@ -1,11 +1,11 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
-using ObjectWorkshop.Options.Modifiers;
-using ObjectWorkshop.Options.Modifiers.Universal;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Options.Modifiers;
+using AmongUsSalem.Options.Modifiers.Universal;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Game.Universal;
+namespace AmongUsSalem.Modifiers.Game.Universal;
 
 public sealed class FlashModifier : UniversalGameModifier, IVisualAppearance
 {

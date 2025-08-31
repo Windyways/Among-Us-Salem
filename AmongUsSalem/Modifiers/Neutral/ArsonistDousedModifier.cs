@@ -1,11 +1,11 @@
 using MiraAPI.Events;
 using MiraAPI.Modifiers;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Roles.Neutral;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Roles.Neutral;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Neutral;
+namespace AmongUsSalem.Modifiers.Neutral;
 
 public sealed class ArsonistDousedModifier(byte arsonistId) : BaseModifier
 {

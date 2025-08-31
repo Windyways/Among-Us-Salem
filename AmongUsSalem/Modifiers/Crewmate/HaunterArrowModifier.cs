@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class HaunterArrowModifier(PlayerControl owner, Color color) : ArrowTargetModifier(owner, color, 0)
 {

@@ -1,9 +1,9 @@
 using HarmonyLib;
 using Rewired;
 using Rewired.Data;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Utilities;
 
-namespace ObjectWorkshop.Patches;
+namespace AmongUsSalem.Patches;
 
 // original patch taken from TheOtherRolesAU/TheOtherRoles/pull/347 by dadoum
 [HarmonyPatch(typeof(InputManager_Base), nameof(InputManager_Base.Awake))]
@@ -22,7 +22,7 @@ public static class Keybinds
         }
         catch
         {
-            // Logger<ObjectWorkshopPlugin>.Error($"Error applying names for custom keybinds: {e}");
+            // Logger<AUSPlugin>.Error($"Error applying names for custom keybinds: {e}");
         }
     }
 

@@ -1,19 +1,19 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Buttons.Crewmate;
+namespace AmongUsSalem.Buttons.Crewmate;
 
-public sealed class MedicShieldButton : ObjectWorkshopRoleButton<MedicRole, PlayerControl>
+public sealed class MedicShieldButton : AmongUsSalemRoleButton<MedicRole, PlayerControl>
 {
     public bool CanChangeTarget = OptionGroupSingleton<MedicOptions>.Instance.ChangeTarget;
     public override string Name => "Shield";
     public override string Keybind => Keybinds.SecondaryAction;
-    public override Color TextOutlineColor => OWColors.Medic;
+    public override Color TextOutlineColor => AUSColors.Medic;
     public override int MaxUses => OptionGroupSingleton<MedicOptions>.Instance.ChangeTarget ? (int)OptionGroupSingleton<MedicOptions>.Instance.MedicShieldUses : 0;
     public override float Cooldown => 0.001f + MapCooldown;
     public override LoadableAsset<Sprite> Sprite => TouCrewAssets.MedicSprite;
@@ -32,7 +32,7 @@ public sealed class MedicShieldButton : ObjectWorkshopRoleButton<MedicRole, Play
     {
         if (Target == null)
         {
-            Logger<ObjectWorkshopPlugin>.Error("Medic Shield: Target is null");
+            Logger<AUSPlugin>.Error("Medic Shield: Target is null");
             return;
         }
 

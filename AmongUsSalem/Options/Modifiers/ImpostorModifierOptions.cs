@@ -4,7 +4,7 @@ using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Options.Modifiers;
+namespace AmongUsSalem.Options.Modifiers;
 
 public sealed class ImpostorModifierOptions : AbstractOptionGroup
 {

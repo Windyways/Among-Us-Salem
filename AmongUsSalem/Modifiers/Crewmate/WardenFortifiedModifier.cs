@@ -3,15 +3,15 @@ using MiraAPI.GameOptions;
 using MiraAPI.Utilities.Assets;
 using PowerTools;
 using Reactor.Utilities.Extensions;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Modules;
-using ObjectWorkshop.Modules.Anims;
-using ObjectWorkshop.Options;
-using ObjectWorkshop.Options.Roles.Crewmate;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Anims;
+using AmongUsSalem.Options;
+using AmongUsSalem.Options.Roles.Crewmate;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers.Crewmate;
+namespace AmongUsSalem.Modifiers.Crewmate;
 
 public sealed class WardenFortifiedModifier(PlayerControl warden) : BaseShieldModifier
 {
@@ -26,7 +26,7 @@ public sealed class WardenFortifiedModifier(PlayerControl warden) : BaseShieldMo
         get
         {
             var showFort = OptionGroupSingleton<WardenOptions>.Instance.ShowFortified;
-            return !ObjectWorkshopPlugin.ShowShieldHud.Value || showFort is FortifyOptions.Warden;
+            return !AUSPlugin.ShowShieldHud.Value || showFort is FortifyOptions.Warden;
         }
     }
 

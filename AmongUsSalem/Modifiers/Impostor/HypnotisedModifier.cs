@@ -1,13 +1,13 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
-using ObjectWorkshop.Events.TouEvents;
-using ObjectWorkshop.Utilities;
-using ObjectWorkshop.Utilities.Appearances;
+using AmongUsSalem.Events.TouEvents;
+using AmongUsSalem.Utilities;
+using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace ObjectWorkshop.Modifiers.Impostor;
+namespace AmongUsSalem.Modifiers.Impostor;
 
 public sealed class HypnotisedModifier(PlayerControl hypnotist) : BaseModifier
 {
@@ -56,7 +56,7 @@ public sealed class HypnotisedModifier(PlayerControl hypnotist) : BaseModifier
             return;
         }
 
-        // Logger<ObjectWorkshopPlugin>.Message($"HypnotisedModifier.Hysteria - {Player.Data.PlayerName}");
+        // Logger<AUSPlugin>.Message($"HypnotisedModifier.Hysteria - {Player.Data.PlayerName}");
         players = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != Player).ToList();
 
         foreach (var player in players)
@@ -64,7 +64,7 @@ public sealed class HypnotisedModifier(PlayerControl hypnotist) : BaseModifier
             var hidden = Random.RandomRangeInt(0, 3);
             if (hidden == 0)
             {
-                var morph = new VisualAppearance(Player.GetDefaultModifiedAppearance(), ObjectWorkshopAppearances.Morph);
+                var morph = new VisualAppearance(Player.GetDefaultModifiedAppearance(), AmongUsSalemAppearances.Morph);
 
                 player?.RawSetAppearance(morph);
             }
@@ -74,7 +74,7 @@ public sealed class HypnotisedModifier(PlayerControl hypnotist) : BaseModifier
             }
             else
             {
-                var swoop = new VisualAppearance(player.GetDefaultModifiedAppearance(), ObjectWorkshopAppearances.Swooper)
+                var swoop = new VisualAppearance(player.GetDefaultModifiedAppearance(), AmongUsSalemAppearances.Swooper)
                 {
                     HatId = string.Empty,
                     SkinId = string.Empty,
@@ -95,7 +95,7 @@ public sealed class HypnotisedModifier(PlayerControl hypnotist) : BaseModifier
         if (Player.AmOwner)
         {
             var notif1 = Helpers.CreateAndShowNotification(
-                $"<b>{OWColors.Infiltrator.ToTextColor()}You are under a Mass Hysteria!</color></b>", Color.white,
+                $"<b>{AUSColors.Mafia.ToTextColor()}You are under a Mass Hysteria!</color></b>", Color.white,
                 spr: TouRoleIcons.Hypnotist.LoadAsset());
 
             notif1.Text.SetOutlineThickness(0.35f);
@@ -117,7 +117,7 @@ public sealed class HypnotisedModifier(PlayerControl hypnotist) : BaseModifier
             return;
         }
 
-        // Logger<ObjectWorkshopPlugin>.Message($"HypnotisedModifier.UnHysteria - {Player.Data.PlayerName}");
+        // Logger<AUSPlugin>.Message($"HypnotisedModifier.UnHysteria - {Player.Data.PlayerName}");
         foreach (var player in players)
         {
             Player.ResetAppearance();

@@ -4,7 +4,7 @@ using Reactor.Networking.Attributes;
 using Reactor.Utilities;
 using UnityEngine;
 
-namespace ObjectWorkshop.Modifiers;
+namespace AmongUsSalem.Modifiers;
 
 public sealed class DeathHandlerModifier : BaseModifier
 {
@@ -22,7 +22,7 @@ public sealed class DeathHandlerModifier : BaseModifier
     // This will specify who killed the player, if any, such as; By Innersloth
     public string KilledBy { get; set; } = string.Empty;
     
-    [MethodRpc((uint)ObjectWorkshopRpc.UpdateDeathHandler, SendImmediately = true)]
+    [MethodRpc((uint)AUSRpc.UpdateDeathHandler, SendImmediately = true)]
     public static void RpcUpdateDeathHandler(PlayerControl player, string causeOfDeath = "null", int roundOfDeath = -1, DeathHandlerOverride diedThisRound = DeathHandlerOverride.Ignore, string killedBy = "null", DeathHandlerOverride lockInfo = DeathHandlerOverride.Ignore)
     {
         UpdateDeathHandler(player, causeOfDeath, roundOfDeath, diedThisRound, killedBy, lockInfo);
@@ -32,7 +32,7 @@ public sealed class DeathHandlerModifier : BaseModifier
     {
         if (!player.HasModifier<DeathHandlerModifier>())
         {
-            Logger<ObjectWorkshopPlugin>.Error("RpcUpdateDeathHandler - Player had no DeathHandlerModifier");
+            Logger<AUSPlugin>.Error("RpcUpdateDeathHandler - Player had no DeathHandlerModifier");
             player.AddModifier<DeathHandlerModifier>();
         }
 

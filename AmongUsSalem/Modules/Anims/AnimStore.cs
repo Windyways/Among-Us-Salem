@@ -1,12 +1,12 @@
 ﻿using AuAvengers.Animations;
 using MiraAPI.Modifiers;
 using PowerTools;
-using ObjectWorkshop.Modifiers.Game.Universal;
-using ObjectWorkshop.Utilities;
+using AmongUsSalem.Modifiers.Game.Universal;
+using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ObjectWorkshop.Modules.Anims;
+namespace AmongUsSalem.Modules.Anims;
 
 // CODE REVIEW 22/2/2025 AEDT (D/M/Y)
 // ---------------------------------

@@ -19,13 +19,11 @@ public static class WitnessKillEvent
             return;
         }
 
-        bool deadViaSabotage = source != target;
-
-        WitnessSuspiciousActivity(source, target, deadViaSabotage, true, false, true);
+        WitnessSuspiciousActivity(source, target, true, false, true);
         RoleFunctionOnDeath(source, target);
     }
 
-    public static void WitnessSuspiciousActivity(PlayerControl killer, PlayerControl target, bool deadViaSabotage, bool murder, bool incriminating = false, bool caught = false)
+    public static void WitnessSuspiciousActivity(PlayerControl killer, PlayerControl target, bool murder, bool incriminating = false, bool caught = false)
     {
         foreach (PlayerControl players in PlayerControl.AllPlayerControls)
         {

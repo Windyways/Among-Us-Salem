@@ -20,14 +20,10 @@ public static class PlayerRoleTextExtensions
 {
     public static Color UpdateTargetColor(this Color color, PlayerControl player, bool hidden = false)
     {
-        if (player.HasModifier<MercenaryBribedModifier>(x => x.Mercenary.AmOwner) && PlayerControl.LocalPlayer.IsRole<MercenaryRole>())
+        if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && framer.FramedPlayers.Contains(player.PlayerId))
+            || (player.IsFramed() && PlayerControl.LocalPlayer.Is(Faction.Mafia)))
         {
-            color = Color.green;
-
-            if (player.Is(Alignment.NeutralEvil) || player.IsRole<AmnesiacRole>() || player.IsRole<MercenaryRole>())
-            {
-                color = AUSColors.Mafia;
-            }
+            color = AUSColors.Mafia;
         }
 
         return color;
@@ -128,33 +124,11 @@ public static class PlayerRoleTextExtensions
     {
         var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
 
-        if ((player.HasModifier<PlaguebearerInfectedModifier>(x =>
-                 x.PlagueBearerId == PlayerControl.LocalPlayer.PlayerId) &&
-             PlayerControl.LocalPlayer.IsRole<PlaguebearerRole>())
-            || (player.HasModifier<PlaguebearerInfectedModifier>() && PlayerControl.LocalPlayer.HasDied() &&
-                genOpt.TheDeadKnow && !hidden))
+        if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && framer.FramedPlayers.Contains(player.PlayerId))
+            || (player.IsFramed() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
+            || (player.IsFramed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
-            name += "<color=#E6FFB3> ¥</color>";
-        }
-
-        if ((player.HasModifier<BlackmailedModifier>(x => x.BlackMailerId == PlayerControl.LocalPlayer.PlayerId) &&
-             PlayerControl.LocalPlayer.IsRole<BlackmailerRole>())
-            || (player.HasModifier<BlackmailedModifier>() && PlayerControl.LocalPlayer.IsImpostor() &&
-                genOpt.ImpsKnowRoles && !genOpt.FFAImpostorMode)
-            || (player.HasModifier<BlackmailedModifier>() && PlayerControl.LocalPlayer.HasDied() &&
-                genOpt.TheDeadKnow && !hidden))
-        {
-            name += "<color=#2A1119> M</color>";
-        }
-
-        if ((player.HasModifier<HypnotisedModifier>(x => x.Hypnotist.AmOwner) &&
-             PlayerControl.LocalPlayer.IsRole<HypnotistRole>())
-            || (player.HasModifier<HypnotisedModifier>() && PlayerControl.LocalPlayer.IsImpostor() &&
-                genOpt.ImpsKnowRoles && !genOpt.FFAImpostorMode)
-            || (player.HasModifier<HypnotisedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow &&
-                !hidden))
-        {
-            name += "<color=#D53F42> @</color>";
+            name += "<color=#dd0000> Ⓕ</color>";
         }
 
         return name;

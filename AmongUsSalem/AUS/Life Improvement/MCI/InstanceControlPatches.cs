@@ -208,6 +208,7 @@ public static class InstanceControlPatches
                     if (player.Is(Faction.Town)) CalculatedVoting.RandomTownVoting(player, __instance);
                     else if (player.Is(Faction.Mafia)) CalculatedVoting.RandomMafiaVoting(player, __instance);
                     else if (player.Is(Faction.Neutral)) CalculatedVoting.RandomNeutralVoting(player, __instance);
+                    else if (player.Is(Faction.Coven)) CalculatedVoting.RandomCovenVoting(player, __instance);
                 }
             }
         }

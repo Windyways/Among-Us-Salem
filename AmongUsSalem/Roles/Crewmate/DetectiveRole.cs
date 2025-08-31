@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
+public sealed class DetectiveRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITOURole, IDoomable
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

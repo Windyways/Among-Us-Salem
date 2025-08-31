@@ -206,12 +206,9 @@ public static class HudManagerPatches
 
     public static void UpdateTeamChat()
     {
-        var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
-
         var isValid = MeetingHud.Instance &&
                       (PlayerControl.LocalPlayer.IsJailed() || PlayerControl.LocalPlayer.Data.Role is JailorRole ||
-                       (PlayerControl.LocalPlayer.IsImpostor() && genOpt is
-                           { FFAImpostorMode: false, ImpostorChat.Value: true })
+                       (PlayerControl.LocalPlayer.IsImpostor())
                        /*(PlayerControl.LocalPlayer.Data.Role is VampireRole && genOpt.VampireChat)*/);
 
         if (!TeamChatButton)
@@ -255,12 +252,13 @@ public static class HudManagerPatches
                     continue;
                 }
 
+
                 var revealMods = player.GetModifiers<RevealModifier>();
 
                 var playerName = player.GetDefaultAppearance().PlayerName ?? "Unknown";
                 var playerColor = Color.white;
 
-                if (PlayerControl.LocalPlayer.IsImpostor() && player.IsImpostor() && PlayerControl.LocalPlayer != player && !genOpt.FFAImpostorMode)
+                if (PlayerControl.LocalPlayer.IsImpostor() && player.IsImpostor() && PlayerControl.LocalPlayer != player)
                 {
                     playerColor = AUSColors.Mafia;
                 }
@@ -294,35 +292,9 @@ public static class HudManagerPatches
                     VisibilityFlag(player) ||
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
-                    // This shows the role -.-
+                    // This shows the role!
                     color = role.TeamColor;
                     roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
-                    if (player.HasDied() && player.Data.Role is IAUSRole ausRole)
-                    {
-                        roleName += player.GetDeathReason(ausRole.deathReasonShow);
-                    }
-
-                    var revealedRole = revealMods.FirstOrDefault(x => x.Visible && x.RevealRole && x.ShownRole != null);
-                    if (revealedRole != null)
-                    {
-                        color = revealedRole.ShownRole!.TeamColor;
-                        roleName = $"<size=80%>{color.ToTextColor()}{revealedRole.ShownRole!.NiceName}</color></size>";
-                    }
-
-                    var cachedMod = player.GetModifiers<BaseModifier>().FirstOrDefault(x => x is ICachedRole);
-                    if (cachedMod is ICachedRole cache && cache.Visible &&
-                        player.Data.Role.GetType() != cache.CachedRole.GetType())
-                    {
-                        roleName = cache.ShowCurrentRoleFirst
-                            ? $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color> ({cache.CachedRole.TeamColor.ToTextColor()}{cache.CachedRole.NiceName}</color>)</size>"
-                            : $"<size=80%>{cache.CachedRole.TeamColor.ToTextColor()}{cache.CachedRole.NiceName}</color> ({color.ToTextColor()}{player.Data.Role.NiceName}</color>)</size>";
-                    }
-
-                    // Guardian Angel here is vanilla's GA!
-                    if (player.Data.IsDead && role is GuardianAngelRole gaRole)
-                    {
-                        roleName = $"<size=80%>{gaRole.TeamColor.ToTextColor()}{gaRole?.NiceName}</color></size>";
-                    }
 
                     if (VisibilityFlag(player) || player.Data.IsDead)
                     {
@@ -331,10 +303,16 @@ public static class HudManagerPatches
 
                         roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
                     }
+
                     if (PlayerControl.LocalPlayer.HasDied() && player.TryGetModifier<DeathHandlerModifier>(out var deathMod))
                     {
                         var deathReason = $"<size=60%>『{Color.yellow.ToTextColor()}{deathMod.CauseOfDeath}</color>』</size>\n";
                         roleName = $"{deathReason}{roleName}";
+                    }
+                    
+                    if (player.HasDied() && player.Data.Role is IAUSRole ausRole)
+                    {
+                        roleName += "\n" + player.GetDeathReason(ausRole.deathReasonShow);
                     }
                 }
 
@@ -386,12 +364,11 @@ public static class HudManagerPatches
 
                 if (player?.Data?.Disconnected == true)
                 {
-                    if (!((PlayerControl.LocalPlayer.IsImpostor() && player.IsImpostor() && genOpt is { ImpsKnowRoles.Value: true, FFAImpostorMode: false }) ||
-                          (!TutorialManager.InstanceExists &&
+                    if (!(!TutorialManager.InstanceExists &&
                           ((PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow) ||
                             GuardianAngelTouRole.GASeesRoleVisibilityFlag(player) ||
                             VisibilityFlag(player) ||
-                           revealMods.Any(x => x.Visible && x.RevealRole)))))
+                           revealMods.Any(x => x.Visible && x.RevealRole))))
                     {
                         roleName = "";
                         color = Color.white;
@@ -440,7 +417,7 @@ public static class HudManagerPatches
                 var playerName = player.GetAppearance().PlayerName ?? "Unknown";
                 var playerColor = Color.white;
 
-                if (PlayerControl.LocalPlayer.IsImpostor() && player.IsImpostor() && PlayerControl.LocalPlayer != player && !genOpt.FFAImpostorMode)
+                if (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.Is(Faction.Mafia) && PlayerControl.LocalPlayer != player)
                 {
                     playerColor = AUSColors.Mafia;
                 }
@@ -462,7 +439,7 @@ public static class HudManagerPatches
                 var roleName = "";
                 var canSeeDeathReason = false;
                 if (player.AmOwner ||
-                    (PlayerControl.LocalPlayer.IsImpostor() && player.IsImpostor() && genOpt is { ImpsKnowRoles.Value: true, FFAImpostorMode: false }) ||
+                    (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.Is(Faction.Mafia)) ||
                     (PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && isVisible) ||
                     VisibilityFlag(player) ||
                     revealMods.Any(x => x.Visible && x.RevealRole))
@@ -539,11 +516,6 @@ public static class HudManagerPatches
                 if (canSeeDeathReason)
                 {
                     playerName += $"\n<size=75%> </size>";
-                }
-
-                if (player.AmOwner)
-                {
-                    playerColor = Color.clear;
                 }
 
                 if (!string.IsNullOrEmpty(roleName))

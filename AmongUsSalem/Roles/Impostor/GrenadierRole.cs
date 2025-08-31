@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles.Impostor;
 
-public sealed class GrenadierRole(IntPtr cppPtr) : ImpostorRole(cppPtr), IAUSRole, IDoomable
+public sealed class GrenadierRole(IntPtr cppPtr) : ImpostorRole(cppPtr), ITOURole, IDoomable
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

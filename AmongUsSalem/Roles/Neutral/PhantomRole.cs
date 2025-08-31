@@ -20,7 +20,7 @@ using UnityEngine.UI;
 namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class PhantomTouRole(IntPtr cppPtr)
-    : NeutralGhostRole(cppPtr), IAUSRole, IGhostRole
+    : NeutralGhostRole(cppPtr), ITOURole, IGhostRole
 {
     public bool CompletedAllTasks { get; private set; }
 

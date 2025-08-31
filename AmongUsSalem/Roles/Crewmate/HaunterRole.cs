@@ -20,7 +20,7 @@ using UnityEngine.UI;
 
 namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), IAUSRole, IGhostRole
+public sealed class HaunterRole(IntPtr cppPtr) : CrewmateGhostRole(cppPtr), ITOURole, IGhostRole
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

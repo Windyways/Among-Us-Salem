@@ -9,7 +9,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Covenite
 #endregion
 public sealed class Covenite(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IAUSRole, IWikiDiscoverable
+    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
 {
     public string RoleName => TouLocale.Get(TouNames.Covenite, "Covenite");
     public string revealText => "placeholder.";
@@ -20,10 +20,18 @@ public sealed class Covenite(IntPtr cppPtr)
     public Faction RoleFaction => Faction.Coven;
     public Color RoleColor => AUSColors.Coven;
     public Alignment Alignment => Alignment.CovenOutlier;
-    public Attack Attack { get; set; } = Attack.Basic;
+    public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+
+    public Attack ogAttack { get; set; } = Attack.None;
+    public Defense ogDefense { get; set; } = Defense.None;
+    public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
+    
     public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
+
+    public NecronomiconPriority NecronomiconPriority => NecronomiconPriority.Covenite;
+    public bool Necronomicon { get; set; }
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -40,8 +48,14 @@ public sealed class Covenite(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            $"The {RoleName} is a {Alignment} role that can kill other players."
-            + MiscUtils.AppendOptionsText(GetType());
+            "<color=#ab42ef>Covenite</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#ab42ef>Coven</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#ab42ef>Coven</color> <color=#1e45d4>Outlier</color>" +
+            "\n<color=#fdbc00>Goal:</color> Kill all who would oppose the Coven." +
+            $"\n\nAttributes:" +
+            "\nTBD" +
+            MiscUtils.AppendOptionsText(GetType());
     }
 
     [HideFromIl2Cpp]
@@ -51,6 +65,18 @@ public sealed class Covenite(IntPtr cppPtr)
             "You can Attack a player during the round. You will kill your target.",
             AUSAssets.Mafioso_Attack)
     ];
+
+    public bool WinConditionMet()
+    {
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        var aliveCoven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
+        return alivePlayers == aliveCoven;
+    }
+
+    public override bool DidWin(GameOverReason gameOverReason)
+    {
+        return WinConditionMet();
+    }
 }
 
 #region Covenite_Attack
@@ -61,7 +87,7 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
     public override string Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
     public override float Cooldown => OptionGroupSingleton<Covenite_Options>.Instance.Cooldown;
-    public override LoadableAsset<Sprite> Sprite => AUSAssets.Mafioso_Attack;
+    public override LoadableAsset<Sprite> Sprite => AUSAssets.Necronomicon;
 
     public override void ClickHandler()
     {
@@ -81,13 +107,19 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
             return;
         }
 
-        if (Role.Player.CanKill(Target)) Role.Player.RpcCustomMurder(Target);
+        if (Role.Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Role.Player, Target, DeathReasonShow.KilledByTheCoven);
         else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Role.Player, Target), Color.white);
+        MiscUtils.PostSuccessfulVisit(Role.Player, Target, true, true);
     }
 
     public override PlayerControl? GetTarget()
     {
         return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance);
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && Role.Player.Data.Role is ICovenRole coven && coven.Necronomicon;
     }
 }
 

@@ -10,12 +10,12 @@ public sealed class NeutralKillerAssassinModifier : AssassinModifier
 
     public override int GetAmountPerGame()
     {
-        return (int)OptionGroupSingleton<AssassinOptions>.Instance.NumberOfNeutralAssassins;
+        return 0;
     }
 
     public override int GetAssignmentChance()
     {
-        return (int)OptionGroupSingleton<AssassinOptions>.Instance.NeutAssassinChance;
+        return 0;
     }
 
     public override bool IsModifierValidOn(RoleBehaviour role)

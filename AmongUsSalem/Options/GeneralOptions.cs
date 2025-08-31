@@ -13,17 +13,9 @@ public sealed class GeneralOptions : AbstractOptionGroup
     [ModdedToggleOption("Show Faction Modifier On Role Reveal")]
     public bool TeamModifierReveal { get; set; } = true;
 
-    [ModdedToggleOption("Impostors Don't Know Each Other")]
-    public bool FFAImpostorMode { get; set; } = false;
-
-    public ModdedToggleOption ImpsKnowRoles { get; set; } = new("Impostors Know Each Other's Roles", true)
+    public ModdedToggleOption ImpostorChat { get; set; } = new("Impostors Get A Private Meeting Chat", false)
     {
-        Visible = () => !OptionGroupSingleton<GeneralOptions>.Instance.FFAImpostorMode
-    };
-
-    public ModdedToggleOption ImpostorChat { get; set; } = new("Impostors Get A Private Meeting Chat", true)
-    {
-        Visible = () => !OptionGroupSingleton<GeneralOptions>.Instance.FFAImpostorMode
+        Visible = () => false
     };
 
     [ModdedToggleOption("The Dead Know Everything")]
@@ -34,17 +26,4 @@ public sealed class GeneralOptions : AbstractOptionGroup
 
     [ModdedToggleOption("Parallel Medbay Scans")]
     public bool ParallelMedbay { get; set; } = true;
-
-    [ModdedEnumOption("Disable Meeting Skip Button", typeof(SkipState))]
-    public SkipState SkipButtonDisable { get; set; } = SkipState.No;
-
-    [ModdedToggleOption("First Death Shield Next Game")]
-    public bool FirstDeathShield { get; set; } = true;
-}
-
-public enum SkipState
-{
-    No,
-    Emergency,
-    Always
 }

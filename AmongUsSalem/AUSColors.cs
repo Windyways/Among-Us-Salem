@@ -10,15 +10,6 @@ public static class AUSColors
     public static Color Apocalypse => new Color32(255, 0, 78, 255);
     public static Color Coven => new Color32(171, 66, 239, 255);
     public static Color Traitor => new Color32(206, 54, 250, 255);
-    
-    public static Color Claylim => new Color32(91, 83, 83, 255);
-
-    public static string GetColorKeyword(string text)
-    {
-        if (text == "Crewmate" || text == "Crewmates" || text == "Oasis") return "<b><color=#b3ffff>" + text + "</color></b>";
-        if (text == "Mafia" || text == "Mafias") return "<b><color=#ff5050>" + text + "</color></b>";
-        return "<b><color=#4a86e8>" + text + "</color></b>";
-    }
 
     public static bool UseBasic { get; set; }
 

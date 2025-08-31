@@ -14,21 +14,19 @@ public interface IAUSRole : ICustomRole
     string revealText => "";
     float visionValue => GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
 
-    
+
     Attack Attack { get; set; }
     Defense Defense { get; set; }
     EtherealDefense EtherealDefense { get; set; }
-    
-    Attack ogAttack => Attack.None;
-    Defense ogDefense => Defense.None;
-    EtherealDefense ogEtherealDefense => EtherealDefense.None;
+
+    Attack ogAttack { get; set; }
+    Defense ogDefense { get; set; }
+    EtherealDefense ogEtherealDefense { get; set; }
 
     DeathReasonShow deathReasonShow { get; set; }
 
 
 
-
-    bool Necronomicon => false;
 
 
 
@@ -79,7 +77,7 @@ public interface IAUSRole : ICustomRole
             if (Alignment == Alignment.TownProtective) return TouRoleGroups.TownProtective;
             if (Alignment == Alignment.TownSupport) return TouRoleGroups.TownSupport;
             if (Alignment == Alignment.TownUtility) return TouRoleGroups.TownUtility;
-            
+
             if (Alignment == Alignment.NeutralApocalypse) return TouRoleGroups.NeutralApocalypse;
             if (Alignment == Alignment.NeutralBenign) return TouRoleGroups.NeutralBenign;
             if (Alignment == Alignment.NeutralChaos) return TouRoleGroups.NeutralChaos;
@@ -87,17 +85,17 @@ public interface IAUSRole : ICustomRole
             if (Alignment == Alignment.NeutralKilling) return TouRoleGroups.NeutralKilling;
             if (Alignment == Alignment.NeutralOutlier) return TouRoleGroups.NeutralOutlier;
             if (Alignment == Alignment.NeutralPariah) return TouRoleGroups.NeutralPariah;
-            
+
             if (Alignment == Alignment.MafiaDeception) return TouRoleGroups.MafiaDeception;
             if (Alignment == Alignment.MafiaKilling) return TouRoleGroups.MafiaKilling;
             if (Alignment == Alignment.MafiaSupport) return TouRoleGroups.MafiaSupport;
-            
+
             if (Alignment == Alignment.CovenDeception) return TouRoleGroups.CovenDeception;
             if (Alignment == Alignment.CovenKilling) return TouRoleGroups.CovenKilling;
             if (Alignment == Alignment.CovenOutlier) return TouRoleGroups.CovenOutlier;
             if (Alignment == Alignment.CovenPower) return TouRoleGroups.CovenPower;
             if (Alignment == Alignment.CovenUtility) return TouRoleGroups.CovenUtility;
-            
+
             if (Alignment == Alignment.TraitorDeceptive) return TouRoleGroups.TraitorDeceptive;
             if (Alignment == Alignment.TraitorPower) return TouRoleGroups.TraitorPower;
             if (Alignment == Alignment.TraitorUtility) return TouRoleGroups.TraitorUtility;
@@ -170,9 +168,9 @@ public interface IAUSRole : ICustomRole
 
         if (role is IAUSRole ausRole)
         {
-            stringB.AppendLine(CultureInfo.InvariantCulture, $"Attack: {ausRole.Attack}");
-            stringB.AppendLine(CultureInfo.InvariantCulture, $"Defense: {ausRole.Defense}");
-            stringB.AppendLine(CultureInfo.InvariantCulture, $"Ethereal Defense: {ausRole.Defense}");
+            stringB.AppendLine(CultureInfo.InvariantCulture, $"<color=#e70052>Attack: {ausRole.Attack}</color>");
+            stringB.AppendLine(CultureInfo.InvariantCulture, $"<color=#0000ff>Defense: {ausRole.Defense}</color>");
+            if (ausRole.ogEtherealDefense > EtherealDefense.None) stringB.AppendLine(CultureInfo.InvariantCulture, $"<color=#a1a1ff>Ethereal Defense: {ausRole.EtherealDefense}</color>");
         }
 
         return stringB;
@@ -236,45 +234,4 @@ public interface IAUSRole : ICustomRole
     {
         return SetNewTabText(this);
     }
-}
-
-public enum Alignment
-{
-    None,
-
-    NeutralAssociative,
-
-    MafiaDisruption,
-    MafiaGunsman,
-    MafiaEvacuative,
-
-    TownInvestigative,
-    TownKilling,
-    TownProtective,
-    TownPower,
-    TownOutlier,
-    TownSupport,
-    TownUtility,
-
-    NeutralApocalypse,
-    NeutralBenign,
-    NeutralChaos,
-    NeutralEvil,
-    NeutralKilling,
-    NeutralOutlier,
-    NeutralPariah,
-
-    MafiaDeception,
-    MafiaKilling,
-    MafiaSupport,
-
-    CovenDeception,
-    CovenKilling,
-    CovenOutlier,
-    CovenPower,
-    CovenUtility,
-
-    TraitorDeceptive,
-    TraitorPower,
-    TraitorUtility
 }

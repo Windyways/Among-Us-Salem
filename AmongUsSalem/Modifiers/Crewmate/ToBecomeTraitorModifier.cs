@@ -84,11 +84,6 @@ public sealed class ToBecomeTraitorModifier : ExcludedGameModifier, IAssignableT
         player.ChangeRole(RoleId.Get<TraitorRole>());
         player.RemoveModifier<ToBecomeTraitorModifier>();
 
-        if (OptionGroupSingleton<AssassinOptions>.Instance.TraitorCanAssassin)
-        {
-            player.AddModifier<ImpostorAssassinModifier>();
-        }
-
         CustomRoleUtils.GetActiveRolesOfType<SnitchRole>().ToList()
             .ForEach(snitch => snitch.AddSnitchTraitorArrows());
     }

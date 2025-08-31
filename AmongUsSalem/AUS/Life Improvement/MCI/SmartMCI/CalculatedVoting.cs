@@ -9,15 +9,59 @@ namespace AmongUsSalem.LifeImprovement.MCI.SmartMCI;
 
 public static class CalculatedVoting
 {
-    public static PlayerControl PairMafiaVotingTarget;
-    public static bool mafiasAreSkipping;
-
     public static PlayerControl KillerContagious;
     public static PlayerControl EvidenceAgainst;
     public static float VoteChance = 30f;
 
+    #region Coven
+    #endregion
+    public static PlayerControl PairCovenVotingTarget;
+    public static bool covensAreSkipping;
+    public static void RandomCovenVoting(PlayerControl player, MeetingHud __instance)
+    {
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Faction.Coven)).ToList();
+        if (alivePlayers.Count > 0)
+        {
+            int num = Random.Range(0, 100);
+
+            PlayerControl? playerToVote = null;
+            if ((PairCovenVotingTarget != null && num <= 25) || (PairCovenVotingTarget != null && alivePlayers.Count <= 6) || (covensAreSkipping && num <= 25) && PairCovenVotingTarget != null)
+            {
+                playerToVote = PairCovenVotingTarget;
+            }
+            else
+            {
+
+                if (num <= VoteChance && KillerContagious != null && !KillerContagious.Is(Faction.Coven) && !KillerContagious.HasDied() && KillerContagious != null)
+                {
+                    playerToVote = KillerContagious;
+                }
+                else
+                {
+                    if (Random.Range(0, 100) <= 5)
+                    {
+                        covensAreSkipping = true;
+                        __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
+                    }
+                    else
+                    {
+                        PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
+                        alivePlayers.Remove(newTarget);
+                        playerToVote = newTarget;
+                        PairCovenVotingTarget = newTarget;
+                    }
+                }
+            }
+
+            if (playerToVote == null) __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
+            else __instance.CmdCastVote(player.PlayerId, playerToVote.PlayerId);
+        }
+    }
+
     #region Mafia
     #endregion
+    public static PlayerControl PairMafiaVotingTarget;
+    public static bool mafiasAreSkipping;
     public static void RandomMafiaVoting(PlayerControl player, MeetingHud __instance)
     {
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Faction.Mafia)).ToList();

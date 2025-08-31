@@ -212,8 +212,7 @@ public static class ChatPatches
                 return false;
             }*/
 
-            if (PlayerControl.LocalPlayer.IsImpostor() &&
-                genOpt is { FFAImpostorMode: false, ImpostorChat.Value: true })
+            if (PlayerControl.LocalPlayer.IsImpostor() && genOpt is { ImpostorChat.Value: true })
             {
                 TeamChatPatches.RpcSendImpTeamChat(PlayerControl.LocalPlayer, textRegular);
                 MiscUtils.AddTeamChat(PlayerControl.LocalPlayer.Data,

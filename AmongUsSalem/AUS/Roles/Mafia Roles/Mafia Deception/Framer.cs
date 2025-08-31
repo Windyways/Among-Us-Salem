@@ -9,7 +9,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Framer
 #endregion
 public sealed class Framer(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IAUSRole, IWikiDiscoverable
+    : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
     public string RoleName => TouLocale.Get(TouNames.Framer, "Framer");
     public string revealText => "has a desire or deceive.";
@@ -24,9 +24,10 @@ public sealed class Framer(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public Attack ogAttack => Attack;
-    public Defense ogDefense => Defense;
-    public EtherealDefense ogEtherealDefense => EtherealDefense;
+
+    public Attack ogAttack { get; set; } = Attack.None;
+    public Defense ogDefense { get; set; } = Defense.None;
+    public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
 
     public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
@@ -46,11 +47,12 @@ public sealed class Framer(IntPtr cppPtr)
     {
         return
             "<color=#dd0000>Framer</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#dd0000>Mafia</color>" +
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#dd0000>Mafia</color> <color=#1e45d4>Deception</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
             $"\n\nAttributes:" +
-            "\nNone." +
+            "\nTBD." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -67,12 +69,24 @@ public sealed class Framer(IntPtr cppPtr)
     {
         if (player.Data.Role is not Framer)
         {
-            Logger<AUSPlugin>.Error("RpcFramer_Frame - Invalid Veteran");
+            Logger<AUSPlugin>.Error("RpcFramer_Frame - Invalid Framer");
             return;
         }
 
         var framer = player.GetRole<Framer>();
         framer.FramedPlayers.Add(target.PlayerId);
+    }
+
+    [MethodRpc((uint)AUSRpc.Framer_RemoveFrame, SendImmediately = true)]
+    public static bool RpcFramer_RemoveFrame(PlayerControl target)
+    {
+        foreach (var framers in MiscUtils.GetPlayersWithRole<Framer>())
+        {
+            var framer = framers.GetRole<Framer>();
+            framer.FramedPlayers.Remove(target.PlayerId);
+        }
+
+        return true;
     }
 
     public List<byte> FramedPlayers = new List<byte>();
@@ -107,6 +121,7 @@ public sealed class Framer_Frame : AmongUsSalemRoleButton<Framer, PlayerControl>
         }
 
         Framer.RpcFramer_Frame(Role.Player, Target);
+        MiscUtils.PostSuccessfulVisit(Role.Player, Target, false, true);
     }
 
     public override PlayerControl? GetTarget()

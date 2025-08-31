@@ -21,7 +21,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles.Neutral;
 
-public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable,
+public sealed class InquisitorRole(IntPtr cppPtr) : NeutralRole(cppPtr), ITOURole, IDoomable,
     IAssignableTargets, ICrewVariant
 {
     public Attack Attack { get; set; } = Attack.None;

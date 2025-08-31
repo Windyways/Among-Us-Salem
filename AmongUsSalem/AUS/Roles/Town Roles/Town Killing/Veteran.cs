@@ -9,7 +9,7 @@ namespace AmongUsSalem.Roles;
 #region Veteran
 #endregion
 public sealed class Veteran(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable
+    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
     public string RoleName => TouLocale.Get(TouNames.Veteran, "Veteran");
     public string revealText => "is a paranoid war hero.";
@@ -21,12 +21,13 @@ public sealed class Veteran(IntPtr cppPtr)
     public Color RoleColor => AUSColors.Town;
     public Alignment Alignment => Alignment.TownKilling;
 
-    public Attack Attack { get; set; } = Attack.Powerful;
+    public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public Attack ogAttack => Attack;
-    public Defense ogDefense => Defense;
-    public EtherealDefense ogEtherealDefense => EtherealDefense;
+
+    public Attack ogAttack { get; set; } = Attack.None;
+    public Defense ogDefense { get; set; } = Defense.None;
+    public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
 
     public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
@@ -45,6 +46,7 @@ public sealed class Veteran(IntPtr cppPtr)
     {
         return
             "<color=#06e00c>Veteran</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
@@ -89,6 +91,8 @@ public sealed class Veteran(IntPtr cppPtr)
 
         var veteran = player.GetRole<Veteran>();
         veteran.isAlerted = true;
+
+        veteran.Attack = Attack.Powerful;
         veteran.Defense = Defense.Basic;
     }
 
@@ -100,12 +104,12 @@ public sealed class Veteran(IntPtr cppPtr)
             if (target.CanKill(visitor)) target.RpcCustomMurder(visitor);
 
             MiscUtils.ShowNotification(ShotInfo(), Color.white, AUSAssets.VeteranRoleCard.LoadAsset());
-            MiscUtils.AddFakeChat(target.CachedPlayerData, "Veteran Info", ShotInfo());
+            MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Veteran Info"), ShotInfo());
 
             if (attacking)
             {
                 MiscUtils.ShowNotification(AttackedInfo(), Color.white, AUSAssets.VeteranRoleCard.LoadAsset());
-                MiscUtils.AddFakeChat(target.CachedPlayerData, "Veteran Info", AttackedInfo());
+                MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Veteran Info"), AttackedInfo());
             }
         }
 
@@ -149,6 +153,7 @@ public sealed class Veteran_Alert : AmongUsSalemRoleButton<Veteran>
     protected override void OnClick()
     {
         Veteran.RpcVeteran_Alert(Role.Player);
+        MiscUtils.PostSuccessfulVisit(Role.Player, Role.Player, false, false);
     }
 }
 

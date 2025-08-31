@@ -112,6 +112,9 @@ public static class DeathEventHandlers
                 case Veteran:
                     cod = "Shot By A Veteran";
                     break;
+                case Covenite:
+                    cod = "Killed By The Coven";
+                    break;
             }
             
             deathHandler2.CauseOfDeath = cod;

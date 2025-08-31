@@ -9,7 +9,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Mafioso
 #endregion
 public sealed class Mafioso(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IAUSRole, IWikiDiscoverable
+    : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
     public string RoleName => TouLocale.Get(TouNames.Mafioso, "Mafioso");
     public string revealText => "does the Godfather's dirty work.";
@@ -24,9 +24,10 @@ public sealed class Mafioso(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.Basic;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public Attack ogAttack => Attack;
-    public Defense ogDefense => Defense;
-    public EtherealDefense ogEtherealDefense => EtherealDefense;
+
+    public Attack ogAttack { get; set; } = Attack.Basic;
+    public Defense ogDefense { get; set; } = Defense.None;
+    public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
 
     public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
@@ -45,8 +46,14 @@ public sealed class Mafioso(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            $"The {RoleName} is a {Alignment} role that can kill other players."
-            + MiscUtils.AppendOptionsText(GetType());
+            "<color=#dd0000>Mafioso</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#dd0000>Mafia</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#dd0000>Mafia</color> <color=#1e45d4>Killing</color>" +
+            "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
+            $"\n\nAttributes:" +
+            "\nTBD." +
+            MiscUtils.AppendOptionsText(GetType());
     }
 
     [HideFromIl2Cpp]
@@ -56,6 +63,11 @@ public sealed class Mafioso(IntPtr cppPtr)
             "You can Attack a player during the round. You will kill your target.",
             AUSAssets.Mafioso_Attack)
     ];
+
+    public static string Info()
+    {
+        return "You were promoted to a <b><color=#dd0000>Mafioso</color></b>!";
+    }
 }
 
 #region Mafioso_Attack
@@ -86,8 +98,9 @@ public sealed class Mafioso_Attack : AmongUsSalemRoleButton<Mafioso, PlayerContr
             return;
         }
 
-        if (Role.Player.CanKill(Target)) Role.Player.RpcCustomMurder(Target);
+        if (Role.Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Role.Player, Target, DeathReasonShow.KilledByAMemberOfTheMafia);
         else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Role.Player, Target), Color.white);
+        MiscUtils.PostSuccessfulVisit(Role.Player, Target, true, true);
     }
 
     public override PlayerControl? GetTarget()

@@ -9,7 +9,7 @@ namespace AmongUsSalem.Roles;
 #region Sheriff
 #endregion
 public sealed class Sheriff(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable
+    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
     public string RoleName => TouLocale.Get(TouNames.Sheriff, "Sheriff");
     public string revealText => "is a protector of the town.";
@@ -24,9 +24,10 @@ public sealed class Sheriff(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public Attack ogAttack => Attack;
-    public Defense ogDefense => Defense;
-    public EtherealDefense ogEtherealDefense => EtherealDefense;
+
+    public Attack ogAttack { get; set; } = Attack.None;
+    public Defense ogDefense { get; set; } = Defense.None;
+    public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     
     public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
@@ -45,6 +46,7 @@ public sealed class Sheriff(IntPtr cppPtr)
     {
         return
             "<color=#06e00c>Sheriff</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Investigative</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
@@ -60,10 +62,10 @@ public sealed class Sheriff(IntPtr cppPtr)
     [
         new("Search",
             "Search one person each night for suspicious activity." +
-            "\nYou will find Coven members without the Necronomicon, Executioners, Pirates, and Doomsayers as suspicious." +
-            "\nThe Necronomicon protects its holder from Search, making them appear not suspicious." +
-            "\nSerial Killers, Arsonists, Werewolves, Shrouds and Jesters will not appear suspicious." +
-            "\nPlaguebearer, Baker, and Soul Collector will appear suspicious if the Four Horsemen modifier is enabled, otherwise they will not appear suspicious.",
+            "\n\nYou will find Coven members without the Necronomicon, Executioners, Pirates, and Doomsayers as suspicious." +
+            "\n\nThe Necronomicon protects its holder from Search, making them appear not suspicious." +
+            "\n\nSerial Killers, Arsonists, Werewolves, Shrouds and Jesters will not appear suspicious." +
+            "\n\nPlaguebearer, Baker, and Soul Collector will appear suspicious if the Four Horsemen modifier is enabled, otherwise they will not appear suspicious.",
             AUSAssets.Sheriff_Search)
     ];
 
@@ -74,17 +76,15 @@ public sealed class Sheriff(IntPtr cppPtr)
 
     public static bool IsSuspicious(PlayerControl target)
     {
-        if (target.Data.Role is IAUSRole role)
-        {
-            if (target.AppearsEvil()) return true;
-            else if (target.IsIllusioned() || role.Necronomicon || target.IsTownTraitor()/* || target.IsRole<Godfather>()*/) return false;
-            else if (target.Is(Faction.Coven) || target.Is(Faction.Mafia) || target.Is(Alignment.NeutralEvil) || target.Is(Alignment.NeutralPariah)) return true;
+        if (target.AppearsEvil()) return true;
+        else if (target.IsIllusioned() || (target.Data.Role is ICovenRole coven && coven.Necronomicon) || target.IsTownTraitor()/* || target.IsRole<Godfather>()*/) return false;
+        else if (target.Is(Faction.Coven) || target.Is(Faction.Mafia) || target.Is(Alignment.NeutralEvil) || target.Is(Alignment.NeutralPariah)) return true;
             /*
             else if (target.Is(RoleEnum.BTOS2Vampire) && !Role.GetRole<BTOS2Vampire>(target).Solo) return true;
             else if (target.Is(RoleEnum.SerialKiller) && SerialKiller.Version == SerialKiller.V.TownOfSalem) return true;
             else if (target.Is(RoleEnum.Werewolf) && DayNightMechanic.FullMoon()) return true;
             */
-        }
+        
         return false;
     }
 
@@ -152,8 +152,9 @@ public sealed class Sheriff_Search : AmongUsSalemRoleButton<Sheriff, PlayerContr
             }
 
             MiscUtils.ShowNotification(Sheriff.Info(Target), Color.white, AUSAssets.SheriffRoleCard.LoadAsset());
-            MiscUtils.AddFakeChat(Role.Player.CachedPlayerData, "Sheriff Info", Sheriff.Info(Target));
+            MiscUtils.AddFakeChat(Role.Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Sheriff Info"), Sheriff.Info(Target));
         }
+        MiscUtils.PostSuccessfulVisit(Role.Player, Target, false, true);
     }
 
     public override PlayerControl? GetTarget()

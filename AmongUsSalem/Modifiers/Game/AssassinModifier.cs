@@ -211,8 +211,7 @@ public abstract class AssassinModifier : ExcludedGameModifier
         return voteArea?.TargetPlayerId == Player.PlayerId ||
                Player.Data.IsDead ||
                voteArea!.AmDead ||
-               (Player.IsImpostor() && votePlayer?.IsImpostor() == true &&
-                !OptionGroupSingleton<GeneralOptions>.Instance.FFAImpostorMode) ||
+               (Player.IsImpostor() && votePlayer?.IsImpostor() == true) ||
                (Player.Data.Role is VampireRole && votePlayer?.Data.Role is VampireRole) ||
                (votePlayer?.Data.Role is MayorRole mayor && mayor.Revealed) ||
                (votePlayer?.GetModifiers<RevealModifier>().Any(x => x.Visible && x.RevealRole) == true) ||
@@ -227,9 +226,7 @@ public abstract class AssassinModifier : ExcludedGameModifier
             return false;
         }
 
-        var options = OptionGroupSingleton<AssassinOptions>.Instance;
         var touRole = role as IAUSRole;
-        var assassinRole = Player.Data.Role as IAUSRole;
         var unguessableRole = role as IUnguessable;
 
         if (touRole is IGhostRole)
@@ -244,38 +241,12 @@ public abstract class AssassinModifier : ExcludedGameModifier
 
         if (touRole?.Alignment == Alignment.TownInvestigative)
         {
-            return options.AssassinGuessInvest;
+            return false;
         }
 
         if (role.IsCrewmate() && role is ICustomRole)
         {
             return true;
-        }
-
-        if (role.IsCrewmate() && OptionGroupSingleton<AssassinOptions>.Instance.AssassinCrewmateGuess)
-        {
-            return true;
-        }
-
-        if (role.IsImpostor() && OptionGroupSingleton<AssassinOptions>.Instance.AssassinGuessImpostors &&
-            assassinRole?.Alignment is Alignment.NeutralKilling or Alignment.NeutralEvil)
-        {
-            return true;
-        }
-
-        if (touRole?.Alignment == Alignment.NeutralAssociative)
-        {
-            return options.AssassinGuessNeutralBenign;
-        }
-
-        if (touRole?.Alignment == Alignment.NeutralEvil)
-        {
-            return options.AssassinGuessNeutralEvil;
-        }
-
-        if (touRole?.Alignment == Alignment.NeutralKilling)
-        {
-            return options.AssassinGuessNeutralKilling;
         }
 
         return false;
@@ -293,23 +264,6 @@ public abstract class AssassinModifier : ExcludedGameModifier
         }
 
         if (!isValid)
-        {
-            return false;
-        }
-
-        if (OptionGroupSingleton<AssassinOptions>.Instance.AssassinGuessAlliances &&
-            modifier is AllianceGameModifier)
-        {
-            return true;
-        }
-
-        if (!OptionGroupSingleton<AssassinOptions>.Instance.AssassinGuessCrewModifiers)
-        {
-            return false;
-        }
-
-        if (!OptionGroupSingleton<AssassinOptions>.Instance.AssassinGuessUtilityModifiers &&
-            modifier is TouGameModifier touMod2 && touMod2.FactionType == ModifierFaction.CrewmateUtility)
         {
             return false;
         }

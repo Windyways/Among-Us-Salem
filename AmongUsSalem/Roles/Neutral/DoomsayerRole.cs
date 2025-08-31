@@ -23,7 +23,7 @@ using UnityEngine;
 namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class DoomsayerRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), ITOURole, IDoomable, ICrewVariant
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

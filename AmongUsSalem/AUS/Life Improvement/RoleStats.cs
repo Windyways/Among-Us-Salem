@@ -50,11 +50,18 @@ namespace AmongUsSalem.LifeImprovement
         {
             #region Town
             roleStats.Add("Pilgrim", new RoleStats("Pilgrim", AUSColors.Town));
+            roleStats.Add("Sheriff", new RoleStats("Sheriff", AUSColors.Town));
+            roleStats.Add("Veteran", new RoleStats("Veteran", AUSColors.Town));
             #endregion
             #region Neutral
             #endregion
             #region Mafia
             roleStats.Add("Mafioso", new RoleStats("Mafioso", AUSColors.Mafia));
+            roleStats.Add("Framer", new RoleStats("Framer", AUSColors.Mafia));
+            #endregion
+            #region Coven
+            roleStats.Add("Covenite", new RoleStats("Covenite", AUSColors.Coven));
+            roleStats.Add("Conjurer", new RoleStats("Conjurer", AUSColors.Coven));
             #endregion
 
             LoadRoleStats(filePath);

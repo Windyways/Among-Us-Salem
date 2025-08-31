@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class SeerRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
+public sealed class SeerRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITOURole, IDoomable
 {
     public string revealText => "";
     public override bool IsAffectedByComms => false;

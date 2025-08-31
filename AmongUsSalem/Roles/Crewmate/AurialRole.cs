@@ -13,7 +13,7 @@ using Color = UnityEngine.Color;
 
 namespace AmongUsSalem.Roles.Crewmate;
 
-public sealed class AurialRole(IntPtr cppPtr) : CrewmateRole(cppPtr), IAUSRole, IDoomable
+public sealed class AurialRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITOURole, IDoomable
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

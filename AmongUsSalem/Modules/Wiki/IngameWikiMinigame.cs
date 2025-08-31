@@ -280,9 +280,9 @@ public sealed class IngameWikiMinigame(nint cppPtr) : Minigame(cppPtr)
     {
         SearchScreen.Value.gameObject.SetActive(true);
         SearchPageText.Value.text = _modifiersSelected ? "Modifiers" : "Roles";
-        SearchPageIcon.Value.sprite = _modifiersSelected
-            ? TouModifierIcons.Bait.LoadAsset()
-            : TouRoleIcons.Warlock.LoadAsset();
+        SearchPageIcon.Value.sprite = _modifiersSelected ? TouModifierIcons.Bait.LoadAsset() : AUSAssets.Attributes.LoadAsset();
+        if (!_modifiersSelected && PlayerControl.LocalPlayer.Is(Faction.Coven)) SearchPageIcon.Value.sprite = AUSAssets.CovenAttributes.LoadAsset();
+        
         if (!SearchIcon)
         {
             SearchIcon = Instantiate(SearchPageIcon.Value.gameObject, Instance.gameObject.transform);

@@ -118,12 +118,7 @@ public static class TeamChatPatches
             .FirstOrDefault(x => x.Data.PlayerName == playerName);
         if (player == null) return;
         var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
-        if (genOpt.FFAImpostorMode && PlayerControl.LocalPlayer.IsImpostor() && !PlayerControl.LocalPlayer.HasDied() &&
-            !player.AmOwner && player.IsImpostor() && MeetingHud.Instance)
-        {
-            __instance.NameText.color = Color.white;
-        }
-        else if (color == Color.white &&
+        if (color == Color.white &&
                  (player.AmOwner || player.Data.Role is MayorRole mayor && mayor.Revealed ||
                   PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow) && PlayerControl.AllPlayerControls
                      .ToArray()
@@ -162,8 +157,7 @@ public static class TeamChatPatches
                     var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
                     _teamText.text = string.Empty;
                     if (PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow &&
-                        (genOpt is { FFAImpostorMode: false, ImpostorChat.Value: true } ||
-                         Helpers.GetAlivePlayers().Any(x => x.Data.Role is JailorRole)))
+                        Helpers.GetAlivePlayers().Any(x => x.Data.Role is JailorRole))
                     {
                         _teamText.text = "Jailor, Impostor, and Vampire Chat can be seen here.";
                         _teamText.color = Color.white;
@@ -212,7 +206,7 @@ public static class TeamChatPatches
                             _teamText.color = AUSColors.Jailor;
                         }
                         else if (PlayerControl.LocalPlayer.IsImpostor() &&
-                                 genOpt is { FFAImpostorMode: false, ImpostorChat.Value: true } &&
+                                 genOpt is { ImpostorChat.Value: true } &&
                                  !PlayerControl.LocalPlayer.Data.IsDead && _teamText != null)
                         {
                             _teamText.text = "Impostor Chat is Open. Only Impostors can see this.";

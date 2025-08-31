@@ -16,7 +16,7 @@ using UnityEngine;
 namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class PestilenceRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IAUSRole, IDoomable, IUnguessable, ICrewVariant
+    : NeutralRole(cppPtr), ITOURole, IDoomable, IUnguessable, ICrewVariant
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

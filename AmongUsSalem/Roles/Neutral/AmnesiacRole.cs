@@ -23,7 +23,7 @@ using UnityEngine;
 namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class AmnesiacRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), ITOURole, IDoomable, ICrewVariant
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
@@ -203,16 +203,6 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
                 target.ChangeRole(RoleId.Get<MercenaryRole>());
                 player.AddModifier<MercenaryBribedModifier>(target)!.alerted = true;
             }
-        }
-
-        if (player.IsImpostor() && OptionGroupSingleton<AssassinOptions>.Instance.AmneTurnImpAssassin)
-        {
-            player.AddModifier<ImpostorAssassinModifier>();
-        }
-        else if (player.IsNeutral() &&
-                 OptionGroupSingleton<AssassinOptions>.Instance.AmneTurnNeutAssassin)
-        {
-            player.AddModifier<NeutralKillerAssassinModifier>();
         }
         
         var touAbilityEvent2 = new TouAbilityEvent(AbilityType.AmnesiacPostRemember, player, target);

@@ -125,9 +125,7 @@ public sealed class WarlockKillButton : AmongUsSalemRoleButton<WarlockRole, Play
 
     public override PlayerControl? GetTarget()
     {
-        var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
-
-        var includePostors = genOpt.FFAImpostorMode ||
+        var includePostors = 
                              (PlayerControl.LocalPlayer.IsLover() &&
                               OptionGroupSingleton<LoversOptions>.Instance.LoverKillTeammates);
         if (!OptionGroupSingleton<LoversOptions>.Instance.LoversKillEachOther && PlayerControl.LocalPlayer.IsLover())

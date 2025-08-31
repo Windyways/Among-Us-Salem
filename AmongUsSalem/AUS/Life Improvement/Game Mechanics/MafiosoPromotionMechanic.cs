@@ -14,14 +14,15 @@ public static class MafiosoPromotionMechanic
 
         foreach (var player in PlayerControl.AllPlayerControls)
         {
+            // later update this so no one can be promoted with an active Godfather.
             var aliveMafiosos = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Mafioso>());
             if (aliveMafiosos == 0 && player.Is(Faction.Mafia) && !player.IsRole<Mafioso>())
             {
                 player.RpcChangeRole(RoleId.Get<Mafioso>());
                 if (player.AmOwner())
                 {
-                    MiscUtils.ShowNotification("You were promoted to a <b><color=#dd0000>Mafioso</color></b>!", Color.white, AUSAssets.MafiosoRoleCard.LoadAsset());
-                    MiscUtils.AddFakeChat(player.CachedPlayerData, "Mafioso Info", "You were promoted to a <b><color=#dd0000>Mafioso</color></b>!");
+                    MiscUtils.ShowNotification(Mafioso.Info(), Color.white, AUSAssets.MafiosoRoleCard.LoadAsset());
+                    MiscUtils.AddFakeChat(player.CachedPlayerData, "Mafioso Info", Mafioso.Info());
                 }
             }
         }

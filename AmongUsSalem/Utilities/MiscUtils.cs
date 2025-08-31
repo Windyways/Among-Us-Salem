@@ -85,9 +85,24 @@ public static class MiscUtils
         return player.AmOwner || Debugger.IsDebuggerActive;
     }
 
+
+    [MethodRpc((uint)AUSRpc.ApplyDeathReason, SendImmediately = true)]
+    public static void RpcApplyDeathReason(PlayerControl player, PlayerControl target, DeathReasonShow deathReasonShow, bool createDeadBody = true, bool teleportMurderer = true)
+    {
+        if (target.Data.Role is IAUSRole ausRole) ausRole.deathReasonShow = deathReasonShow;
+        if (player.AmOwner) player.RpcCustomMurder(target, true, true, createDeadBody, teleportMurderer, true, true);
+    }
+
     public static bool SuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
     {
-        if (target.IsAlerted()) return Veteran.RpcVeteran_Notify(player, target, isAttacking);
+        // Doesn't stop visit.
+        if (target.IsAlerted()) Veteran.RpcVeteran_Notify(player, target, isAttacking);
+        return true;
+    }
+
+    public static bool PostSuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
+    {
+        if (player.Is(Alignment.TownInvestigative) && target.IsFramed()) return Framer.RpcFramer_RemoveFrame(target);
         return true;
     }
 
@@ -413,8 +428,7 @@ public static class MiscUtils
         return roleList;
     }
 
-    public static void AddFakeChat(NetworkedPlayerInfo basePlayer, string nameText, string message,
-        bool showHeadsup = false, bool altColors = false, bool onLeft = true)
+    public static void AddFakeChat(NetworkedPlayerInfo basePlayer, string nameText, string message, bool showHeadsup = false, bool altColors = false, bool onLeft = true)
     {
         var chat = HudManager.Instance.Chat;
 

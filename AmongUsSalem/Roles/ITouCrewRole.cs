@@ -1,6 +1,6 @@
 namespace AmongUsSalem.Roles;
 
-public interface ITouCrewRole : IAUSRole
+public interface ITouCrewRole : ITOURole
 {
     bool IsPowerCrew { get; }
 }

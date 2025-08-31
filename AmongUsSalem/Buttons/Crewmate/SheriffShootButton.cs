@@ -91,11 +91,6 @@ public sealed class SheriffShootButton : AmongUsSalemRoleButton<SheriffRole, Pla
             return;
         }
 
-        if (Target.HasModifier<FirstDeadShield>())
-        {
-            return;
-        }
-
         if (Target.HasModifier<BaseShieldModifier>())
         {
             return;

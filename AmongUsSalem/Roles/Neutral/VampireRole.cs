@@ -19,7 +19,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles.Neutral;
 
-public sealed class VampireRole(IntPtr cppPtr) : NeutralRole(cppPtr), IAUSRole, IDoomable
+public sealed class VampireRole(IntPtr cppPtr) : NeutralRole(cppPtr), ITOURole, IDoomable
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class TraitorRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ISpawnChange
+    : ImpostorRole(cppPtr), ITOURole, IDoomable, ISpawnChange
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

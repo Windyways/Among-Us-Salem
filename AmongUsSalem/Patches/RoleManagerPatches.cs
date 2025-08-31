@@ -453,6 +453,28 @@ public static class TouRoleManagerPatches
 
         var excluded = MiscUtils.AllRoles.Where(x => x is ISpawnChange { NoSpawn: true }).Select(x => x.Role).ToList();
 
+        // coven buckets
+        var covenDeceptionRoles = MiscUtils.GetRolesToAssign(Alignment.CovenDeception, roleFilter);
+        var covenKillingRoles = MiscUtils.GetRolesToAssign(Alignment.CovenKilling, roleFilter);
+        var covenOutlierRoles = MiscUtils.GetRolesToAssign(Alignment.CovenOutlier, roleFilter);
+        var covenPowerRoles = MiscUtils.GetRolesToAssign(Alignment.CovenPower, roleFilter);
+        var covenUtilityRoles = MiscUtils.GetRolesToAssign(Alignment.CovenUtility, roleFilter);
+
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenDeceptionRoles, RoleListOption.CovenDeception, RoleListOption.CommonCoven));
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenKillingRoles, RoleListOption.CovenKilling, RoleListOption.CommonCoven));
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenUtilityRoles, RoleListOption.CovenUtility, RoleListOption.CommonCoven));
+        var commonCovenRoles = covenDeceptionRoles;
+        commonCovenRoles.AddRange(covenKillingRoles);
+        commonCovenRoles.AddRange(covenUtilityRoles);
+        
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenPowerRoles, RoleListOption.CovenPower, RoleListOption.RandomCoven));
+        var randomCovenRoles = commonCovenRoles;
+        randomCovenRoles.AddRange(covenPowerRoles);
+
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenOutlierRoles, RoleListOption.CovenOutlier, RoleListOption.CovenOutlier));
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonCovenRoles, RoleListOption.CommonCoven, RoleListOption.RandomCoven));
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomCovenRoles, RoleListOption.RandomCoven, RoleListOption.RandomCoven));
+
         // neutral buckets
         var neutralApocalypse = MiscUtils.GetRolesToAssign(Alignment.NeutralApocalypse, x => !excluded.Contains(x.Role));
         var neutralBenign = MiscUtils.GetRolesToAssign(Alignment.NeutralBenign, roleFilter);
@@ -499,6 +521,7 @@ public static class TouRoleManagerPatches
         var randomTownRoles = commonTownRoles;
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townPowerRoles, RoleListOption.TownPower, RoleListOption.RandomTown));
 
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townOutlierRoles, RoleListOption.TownOutlier, RoleListOption.TownOutlier));
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonTownRoles, RoleListOption.CommonTown, RoleListOption.RandomTown));
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomTownRoles, RoleListOption.RandomTown, RoleListOption.RandomTown));
 

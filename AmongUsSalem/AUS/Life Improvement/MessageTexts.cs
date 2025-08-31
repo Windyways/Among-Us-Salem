@@ -46,6 +46,7 @@ public static class MessageTexts
     {
         if (reason == DeathReasonShow.ShotByAVeteran) return $"<color=#06e00c>Shot By A Veteran</color>";
         if (reason == DeathReasonShow.KilledByAMemberOfTheMafia) return $"<color=#dd0000>Killed By A Member Of The Mafia</color>";
+        if (reason == DeathReasonShow.KilledByTheCoven) return $"<color=#06e00c>Killed By The Coven</color>";
         return "";
     }
 }

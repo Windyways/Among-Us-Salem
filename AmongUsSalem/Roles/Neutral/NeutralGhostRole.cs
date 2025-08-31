@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles.Neutral;
 
-public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
+public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), ITOURole
 {
     private Minigame _hauntMenu = null!;
 

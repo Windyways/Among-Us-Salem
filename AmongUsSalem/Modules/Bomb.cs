@@ -66,11 +66,6 @@ public sealed class Bomb : IDisposable
                 continue;
             }
 
-            if (player.HasModifier<FirstDeadShield>() && _bomber == player)
-            {
-                continue;
-            }
-
             _bomber?.RpcCustomMurder(player, teleportMurderer: false);
         }
 

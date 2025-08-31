@@ -22,7 +22,7 @@ using Random = System.Random;
 namespace AmongUsSalem.Roles.Neutral;
 
 public sealed class PlaguebearerRole(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
+    : NeutralRole(cppPtr), ITOURole, IDoomable, ICrewVariant
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;

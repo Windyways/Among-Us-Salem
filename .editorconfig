@@ -149,3 +149,6 @@ dotnet_diagnostic.S3218.severity = none
 
 # S2344: Enumeration type names should not have "Flags" or "Enum" suffixes
 dotnet_diagnostic.S2344.severity = none
+
+# CS8604: Possible null reference argument.
+dotnet_diagnostic.CS8604.severity = none

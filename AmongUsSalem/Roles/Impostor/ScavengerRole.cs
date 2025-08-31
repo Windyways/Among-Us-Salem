@@ -20,7 +20,7 @@ using UnityEngine;
 namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class ScavengerRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
+    : ImpostorRole(cppPtr), ITOURole, IDoomable, ICrewVariant
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
@@ -68,14 +68,8 @@ public sealed class ScavengerRole(IntPtr cppPtr)
             Scavenging = true;
             TimeRemaining = OptionGroupSingleton<ScavengerOptions>.Instance.ScavengeDuration;
 
-            Target = Player.GetClosestLivingPlayer(false, float.MaxValue, true,
-                x => !x.HasModifier<FirstDeadShield>())!;
+            Target = Player.GetClosestLivingPlayer(false, float.MaxValue, true)!;
 
-            if (Player.HasModifier<LoverModifier>())
-            {
-                Target = Player.GetClosestLivingPlayer(false, float.MaxValue, true,
-                    x => !x.HasModifier<FirstDeadShield>() && !x.HasModifier<LoverModifier>())!;
-            }
 
             Target.AddModifier<ScavengerArrowModifier>(Player, AUSColors.Mafia);
         }
@@ -165,13 +159,8 @@ public sealed class ScavengerRole(IntPtr cppPtr)
             scav.TimeRemaining = OptionGroupSingleton<ScavengerOptions>.Instance.ScavengeDuration;
 
             scav.Target =
-                player.GetClosestLivingPlayer(false, float.MaxValue, true, x => !x.HasModifier<FirstDeadShield>())!;
+                player.GetClosestLivingPlayer(false, float.MaxValue, true)!;
             
-            if (player.HasModifier<LoverModifier>())
-            {
-                scav.Target = player.GetClosestLivingPlayer(false, float.MaxValue, true,
-                    x => !x.HasModifier<FirstDeadShield>() && !x.HasModifier<LoverModifier>())!;
-            }
 
             scav.Target.AddModifier<ScavengerArrowModifier>(player, AUSColors.Mafia);
         }
@@ -215,11 +204,6 @@ public sealed class ScavengerRole(IntPtr cppPtr)
             // get new target
             Target = Player.GetClosestLivingPlayer(false, float.MaxValue, true)!;
             
-            if (Player.HasModifier<LoverModifier>())
-            {
-                Target = Player.GetClosestLivingPlayer(false, float.MaxValue, true,
-                    x => !x.HasModifier<FirstDeadShield>() && !x.HasModifier<LoverModifier>())!;
-            }
 
             // update arrow to point to new target
             Target.AddModifier<ScavengerArrowModifier>(Player, AUSColors.Mafia);

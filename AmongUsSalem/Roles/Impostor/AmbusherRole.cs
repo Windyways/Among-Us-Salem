@@ -28,7 +28,7 @@ using UnityEngine;
 namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class AmbusherRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IAUSRole, IDoomable
+    : ImpostorRole(cppPtr), ITOURole, IDoomable
 {
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
@@ -188,11 +188,6 @@ public sealed class AmbusherRole(IntPtr cppPtr)
                 shield.SetVisible();
             }
 
-            if (ambusher.HasModifier<FirstDeadShield>())
-            {
-                ambusher.GetModifier<FirstDeadShield>()!.IsVisible = false;
-                ambusher.GetModifier<FirstDeadShield>()!.SetVisible();
-            }
             var bodySprite = body.transform.GetChild(1).gameObject;
             var ambushAnim = AnimStore.SpawnFliplessAnimBody(ambusher, TouAssets.AmbushPrefab.LoadAsset());
             ambushAnim.SetActive(false);
@@ -242,12 +237,6 @@ public sealed class AmbusherRole(IntPtr cppPtr)
             {
                 shield.IsVisible = true;
                 shield.SetVisible();
-            }
-
-            if (ambusher.HasModifier<FirstDeadShield>())
-            {
-                ambusher.GetModifier<FirstDeadShield>()!.IsVisible = true;
-                ambusher.GetModifier<FirstDeadShield>()!.SetVisible();
             }
 
             if (!ambusher.AmOwner) 

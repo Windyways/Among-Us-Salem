@@ -25,7 +25,8 @@ public static class IntroScenePatches
     [HarmonyPrefix]
     public static bool ImpostorBeginPatch(IntroCutscene __instance)
     {
-        if ( /* OptionGroupSingleton<GeneralOptions>.Instance.ImpsKnowRoles &&  */
+        /*
+        if (  OptionGroupSingleton<GeneralOptions>.Instance.ImpsKnowRoles &&  
             !OptionGroupSingleton<GeneralOptions>.Instance.FFAImpostorMode)
         {
             return true;
@@ -38,6 +39,7 @@ public static class IntroScenePatches
         var player = __instance.CreatePlayer(0, 1, PlayerControl.LocalPlayer.Data, true);
         __instance.ourCrewmate = player;
 
+        */
         return false;
     }
 
@@ -273,13 +275,17 @@ public static class ModifierIntroPatch
 
     public static void SetHiddenImpostors(IntroCutscene __instance)
     {
-        var amount = Helpers.GetAlivePlayers().Count(x => x.IsImpostor());
-        if (amount == 1) __instance.ImpostorText.text = $"There is {amount} Mafia among us.";
-        else if (amount > 0) __instance.ImpostorText.text = $"There are {amount} Mafias among us.";
+        var mafiaAmount = Helpers.GetAlivePlayers().Count(x => x.IsImpostor());
+        if (mafiaAmount == 1) __instance.ImpostorText.text = $"There is {mafiaAmount} <color=#dd0000>Mafia</color> among us.";
+        else if (mafiaAmount > 0) __instance.ImpostorText.text = $"There are {mafiaAmount} <color=#dd0000>Mafias</color> among us.";
 
-        /*__instance.ImpostorText.text = DestroyableSingleton<TranslationController>.Instance.GetString(amount == 1 ? StringNames.NumImpostorsS : StringNames.NumImpostorsP, amount);
-        __instance.ImpostorText.text = __instance.ImpostorText.text.Replace("[FF1919FF]", "<color=#FF1919FF>");
-        __instance.ImpostorText.text = __instance.ImpostorText.text.Replace("[]", "</color>");*/
+        var covenAmount = Helpers.GetAlivePlayers().Count(x => x.Is(Faction.Coven));
+        if (covenAmount == 1) __instance.ImpostorText.text += $"\nThere is {covenAmount} <color=#ab42ef>Coven</color> among us.";
+        else if (covenAmount > 0) __instance.ImpostorText.text += $"\nThere are {covenAmount} <color=#ab42ef>Covens</color> among us.";
+
+        var traitorAmount = Helpers.GetAlivePlayers().Count(x => x.Is(Faction.Traitor));
+        if (traitorAmount == 1) __instance.ImpostorText.text += $"\nThere is {traitorAmount} <color=#ce36fa>Traitor</color> among us.";
+        else if (traitorAmount > 0) __instance.ImpostorText.text += $"\nThere are {traitorAmount} <color=#ce36fa>Traitors</color> among us.";
         
         if (!OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled) return;
 

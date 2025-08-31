@@ -25,6 +25,9 @@ public static class ShowHostMeetingPatch
             PlayerMaterial.SetColors(host.DefaultOutfit.ColorId, __instance.HostIcon);
             HostName!.text = $"Host: {host.PlayerName}";
         }
+
+        PlayerVoteArea skip = __instance.SkipVoteButton;
+		skip.GetComponentsInChildren<TextMeshPro>()[0].text = "Abstain";
     }
 
     [HarmonyPatch(nameof(MeetingHud.Start))]

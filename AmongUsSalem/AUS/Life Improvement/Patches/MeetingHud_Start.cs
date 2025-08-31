@@ -12,6 +12,11 @@ public static class MeetingHud_Start
     public static void StartPostfix()
     {
         Keyboard_Joystick.RefreshSwapTargets();
+
         CalculatedVoting.mafiasAreSkipping = false;
+        CalculatedVoting.PairMafiaVotingTarget = null;
+
+        CalculatedVoting.covensAreSkipping = false;
+        CalculatedVoting.PairCovenVotingTarget = null;
     }
 }

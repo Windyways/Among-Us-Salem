@@ -9,7 +9,7 @@ using UnityEngine;
 namespace AmongUsSalem.Roles.Impostor;
 
 public sealed class WarlockRole(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IAUSRole, IDoomable, ICrewVariant
+    : ImpostorRole(cppPtr), ITOURole, IDoomable, ICrewVariant
 {
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<VeteranRole>());
     public DoomableType DoomHintType => DoomableType.Relentless;

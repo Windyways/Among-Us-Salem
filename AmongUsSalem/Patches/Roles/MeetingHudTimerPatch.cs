@@ -62,15 +62,6 @@ public static class MeetingHudTimerPatch
                 }
                 break;
         }
-        
-        if (PlayerControl.LocalPlayer.TryGetModifier<AssassinModifier>(out var assassinMod))
-        {
-            newText += $"\n{assassinMod.maxKills} / {(int)OptionGroupSingleton<AssassinOptions>.Instance.AssassinKills} Guesses Remaining";
-            if ((PlayerControl.LocalPlayer.TryGetModifier<DoubleShotModifier>(out var doubleShotMod)))
-            {
-                newText += (doubleShotMod.Used) ? " | Double Shot Used" : " | Double Shot Available";
-            }
-        }
 
         if (newText != string.Empty) __instance.TimerText.text += $"<color=#FFFFFF>{newText}</color>";
     }

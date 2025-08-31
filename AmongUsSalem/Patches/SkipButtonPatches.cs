@@ -7,7 +7,7 @@ namespace AmongUsSalem.Patches;
 [HarmonyPatch]
 public static class SkipButtonPatches
 {
-    private static NetworkedPlayerInfo? meetingTarget;
+    /*private static NetworkedPlayerInfo? meetingTarget;
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
     public static void Prefix(NetworkedPlayerInfo target)
@@ -25,5 +25,5 @@ public static class SkipButtonPatches
         {
             __instance.SkipVoteButton.gameObject.SetActive(false);
         }
-    }
+    }*/
 }

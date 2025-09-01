@@ -25,6 +25,22 @@ public static class PlayerRoleTextExtensions
         {
             color = AUSColors.Mafia;
         }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Illusionist illusionist && illusionist.IllusionedPlayer == player)
+            || (player.IsIllusioned() && PlayerControl.LocalPlayer.Is(Faction.Coven)))
+        {
+            color = AUSColors.Coven;
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Bodyguard bodyguard && bodyguard.GuardedPlayer == player))
+        {
+            color = AUSColors.Town;
+        }
+        
+        if (PlayerControl.LocalPlayer.Data.Role is Sheriff sheriff && sheriff.SuspiciousPlayers.Contains(player.PlayerId))
+        {
+            color = AUSColors.Town;
+        }
 
         return color;
     }
@@ -129,6 +145,28 @@ public static class PlayerRoleTextExtensions
             || (player.IsFramed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#dd0000> Ⓕ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Bodyguard bodyguard && bodyguard.GuardedPlayer == player)
+            || (player.IsGuarded() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06e00c> Ⓖ</color>";
+        }
+
+        if (PlayerControl.LocalPlayer.Data.Role is Sheriff sheriff && sheriff.SuspiciousPlayers.Contains(player.PlayerId))
+        {
+            name += "<color=#dd0000> Ⓢ</color>";
+        }
+        else if (PlayerControl.LocalPlayer.Data.Role is Sheriff sheriff2 && sheriff2.SearchedPlayers.Contains(player.PlayerId))
+        {
+            name += "<color=#06e00c> Ⓢ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Illusionist illusionist && illusionist.IllusionedPlayer == player)
+            || (player.IsIllusioned() && PlayerControl.LocalPlayer.Is(Faction.Coven))
+            || (player.IsIllusioned() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#ab42ef> Ⓘ</color>";
         }
 
         return name;

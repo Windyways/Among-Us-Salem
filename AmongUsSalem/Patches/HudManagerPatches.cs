@@ -42,6 +42,7 @@ public static class HudManagerPatches
             (PlayerControl.LocalPlayer.Is(Faction.Traitor) && player.Is(Faction.Traitor)) ||
             (PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse) && player.Is(Alignment.NeutralApocalypse)) ||
             (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasDied()) ||
+            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.Data.Role is Mayor mayor && mayor.isRevealed) ||
             (PlayerControl.LocalPlayer == player)
             ;
     }
@@ -286,9 +287,7 @@ public static class HudManagerPatches
                 var roleName = "";
 
                 if (player.AmOwner ||
-                    (PlayerControl.LocalPlayer.GetRoleWhenAlive() is VampireRole && role is VampireRole) ||
                     (PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow) ||
-                    GuardianAngelTouRole.GASeesRoleVisibilityFlag(player) ||
                     VisibilityFlag(player) ||
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
@@ -296,7 +295,7 @@ public static class HudManagerPatches
                     color = role.TeamColor;
                     roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
 
-                    if (VisibilityFlag(player) || player.Data.IsDead)
+                    if (VisibilityFlag(player))
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
                         color = roleWhenAlive.TeamColor;
@@ -312,7 +311,7 @@ public static class HudManagerPatches
                     
                     if (player.HasDied() && player.Data.Role is IAUSRole ausRole)
                     {
-                        roleName += "\n" + player.GetDeathReason(ausRole.deathReasonShow);
+                        roleName = $"{roleName}\n{player.GetDeathReason(ausRole.deathReasonShow)}";
                     }
                 }
 

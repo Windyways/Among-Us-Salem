@@ -17,8 +17,8 @@ public sealed class Mafioso(IntPtr cppPtr)
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
-    public Faction RoleFaction => Faction.Mafia;
-    public Color RoleColor => AUSColors.Mafia;
+    public Faction RoleFaction { get; set; } = Faction.Mafia;
+    public Color RoleColor { get; set; } = AUSColors.Mafia;
     public Alignment Alignment => Alignment.MafiaKilling;
 
     public Attack Attack { get; set; } = Attack.Basic;
@@ -47,7 +47,8 @@ public sealed class Mafioso(IntPtr cppPtr)
     {
         return
             "<color=#dd0000>Mafioso</color>" +
-            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color>" +
+            $"\n<color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#dd0000>Mafia</color>" +
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#dd0000>Mafia</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +

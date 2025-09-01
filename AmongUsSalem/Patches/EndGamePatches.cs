@@ -422,7 +422,7 @@ public static class EndGamePatches
         switch (EndGameEvents.winType)
         {
             case 1:
-                text.text = "<size=4>Crewmates Win!</size>";
+                text.text = "<size=4>Town Win!</size>";
                 text.color = AUSColors.Town;
                 instance.BackgroundBar.material.SetColor(ShaderID.Color, AUSColors.Town);
                 break;

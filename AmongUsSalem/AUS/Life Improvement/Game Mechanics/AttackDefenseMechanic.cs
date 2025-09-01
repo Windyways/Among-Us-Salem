@@ -19,7 +19,7 @@ public static class AttackDefenseMechanic
                 return false;
             }
 
-            if (!player.Is(Faction.Town) && target.Is(Alignment.NeutralPariah))
+            if (player.Is(Faction.Town) && target.Is(Alignment.NeutralPariah))
             {
                 if ((int)role.Attack > (int)targetRole.EtherealDefense) return true;
                 return false;

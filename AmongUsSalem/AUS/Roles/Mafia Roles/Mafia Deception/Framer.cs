@@ -17,8 +17,8 @@ public sealed class Framer(IntPtr cppPtr)
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
-    public Faction RoleFaction => Faction.Mafia;
-    public Color RoleColor => AUSColors.Mafia;
+    public Faction RoleFaction { get; set; } = Faction.Mafia;
+    public Color RoleColor { get; set; } = AUSColors.Mafia;
     public Alignment Alignment => Alignment.MafiaDeception;
 
     public Attack Attack { get; set; } = Attack.None;
@@ -47,7 +47,8 @@ public sealed class Framer(IntPtr cppPtr)
     {
         return
             "<color=#dd0000>Framer</color>" +
-            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color>" +
+            $"\n<color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#dd0000>Mafia</color>" +
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#dd0000>Mafia</color> <color=#1e45d4>Deception</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
@@ -78,15 +79,13 @@ public sealed class Framer(IntPtr cppPtr)
     }
 
     [MethodRpc((uint)AUSRpc.Framer_RemoveFrame, SendImmediately = true)]
-    public static bool RpcFramer_RemoveFrame(PlayerControl target)
+    public static void RpcFramer_RemoveFrame(PlayerControl target)
     {
         foreach (var framers in MiscUtils.GetPlayersWithRole<Framer>())
         {
             var framer = framers.GetRole<Framer>();
             framer.FramedPlayers.Remove(target.PlayerId);
         }
-
-        return true;
     }
 
     public List<byte> FramedPlayers = new List<byte>();
@@ -127,6 +126,13 @@ public sealed class Framer_Frame : AmongUsSalemRoleButton<Framer, PlayerControl>
     public override PlayerControl? GetTarget()
     {
         return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance);
+    }
+
+    public override bool IsTargetValid(PlayerControl? target)
+    {
+        if (target == null) return base.IsTargetValid(target);
+        return base.IsTargetValid(target) &&
+            !Role.FramedPlayers.Contains(target.PlayerId);
     }
 }
 

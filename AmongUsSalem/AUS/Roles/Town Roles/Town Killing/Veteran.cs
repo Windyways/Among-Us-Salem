@@ -9,16 +9,17 @@ namespace AmongUsSalem.Roles;
 #region Veteran
 #endregion
 public sealed class Veteran(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole, IContinueGame
 {
+    public bool continueGame => Charges > 0 && !isAlerted;
     public string RoleName => TouLocale.Get(TouNames.Veteran, "Veteran");
     public string revealText => "is a paranoid war hero.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction => Faction.Town;
-    public Color RoleColor => AUSColors.Town;
+    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownKilling;
 
     public Attack Attack { get; set; } = Attack.None;
@@ -46,7 +47,8 @@ public sealed class Veteran(IntPtr cppPtr)
     {
         return
             "<color=#06e00c>Veteran</color>" +
-            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color>" +
+            $"\n<color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
@@ -65,7 +67,8 @@ public sealed class Veteran(IntPtr cppPtr)
             AUSAssets.Veteran_Alert)
     ];
 
-    public override void OnMeetingStart()
+
+    public void OnMeetingStart(MeetingHud __instance)
     {
         isAlerted = false;
     }
@@ -91,13 +94,14 @@ public sealed class Veteran(IntPtr cppPtr)
 
         var veteran = player.GetRole<Veteran>();
         veteran.isAlerted = true;
+        veteran.Charges--;
 
         veteran.Attack = Attack.Powerful;
         veteran.Defense = Defense.Basic;
     }
-
+    
     [MethodRpc((uint)AUSRpc.Veteran_Notify, SendImmediately = true)]
-    public static bool RpcVeteran_Notify(PlayerControl visitor, PlayerControl target, bool attacking)
+    public static void RpcVeteran_Notify(PlayerControl visitor, PlayerControl target, bool attacking)
     {
         if (target.AmOwner())
         {
@@ -112,11 +116,10 @@ public sealed class Veteran(IntPtr cppPtr)
                 MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Veteran Info"), AttackedInfo());
             }
         }
-
-        return false;
     }
 
     public bool isAlerted;
+    public int Charges = (int)OptionGroupSingleton<Veteran_Options>.Instance.Charges;
 
     public enum Version
     {

@@ -29,6 +29,9 @@ public abstract class TouGameModifier : GameModifier
 
 public enum ModifierFaction
 {
+    Town,
+    Coven,
+    Apocalypse,
     Mafia,
 
 
@@ -38,8 +41,6 @@ public enum ModifierFaction
     
     Alliance,
     Universal,
-    Crewmate,
-    Neutral,
     Impostor,
     CrewmateAlliance,
     CrewmateUtility,

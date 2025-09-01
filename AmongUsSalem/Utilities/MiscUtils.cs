@@ -97,13 +97,17 @@ public static class MiscUtils
     {
         // Doesn't stop visit.
         if (target.IsAlerted()) Veteran.RpcVeteran_Notify(player, target, isAttacking);
+
+        // Stops visits.
+        if (target.IsGuarded() && isAttacking && isVisiting && !player.IsIllusioned()) return Bodyguard.RpcBodyguard_Notify(player, target);
+        if (target.IsSelfProtected(player.CanKill(target)) && isAttacking && isVisiting) return Bodyguard.RpcBodyguard_Notify(player, target);
+
         return true;
     }
 
-    public static bool PostSuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
+    public static void PostSuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
     {
-        if (player.Is(Alignment.TownInvestigative) && target.IsFramed()) return Framer.RpcFramer_RemoveFrame(target);
-        return true;
+        if (player.Is(Alignment.TownInvestigative) && target.IsFramed()) Framer.RpcFramer_RemoveFrame(target);
     }
 
 
@@ -118,9 +122,12 @@ public static class MiscUtils
     public static int KillersAliveCount()
     {
         return
-            Helpers.GetAlivePlayers().Count(x => x.IsImpostor() || x.Is(Alignment.NeutralKilling) ||
-            (x.Data.Role is InquisitorRole inquis && OptionGroupSingleton<InquisitorOptions>.Instance.StallGame && inquis is { CanVanquish: true, TargetsDead: false } && Helpers.GetAlivePlayers().Count <= 3) ||
-            (x.Data.Role is ITouCrewRole { IsPowerCrew: true } && !(x.TryGetModifier<AllianceGameModifier>(out var allyMod) && !allyMod.CrewContinuesGame)) ||
+            Helpers.GetAlivePlayers().Count(x =>
+            x.Is(Faction.Mafia) ||
+            x.Is(Alignment.NeutralApocalypse) ||
+            x.Is(Alignment.NeutralKilling) ||
+            x.Is(Faction.Coven) ||
+            x.Is(Faction.Traitor) ||
             (x.Data.Role is IContinueGame { continueGame: true }));
     }
 
@@ -131,11 +138,11 @@ public static class MiscUtils
                                                                      { CanVanquish: true, TargetsDead: false }
                                                                  && Helpers.GetAlivePlayers().Count <= 3));
 
-    public static int NKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.Is(Alignment.NeutralKilling) || (x.Data.Role is InquisitorRole inquis &&
-                                               OptionGroupSingleton<InquisitorOptions>.Instance.StallGame &&
-                                               inquis is { CanVanquish: true, TargetsDead: false }
-                                               && Helpers.GetAlivePlayers().Count <= 3));
+    public static int intKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
+        x.Is(Alignment.NeutralKilling) ||
+        x.Is(Alignment.NeutralApocalypse) ||
+        x.Is(Faction.Coven) ||
+        x.Is(Faction.Traitor));
 
     public static int NonImpKillersAliveCount()
     {

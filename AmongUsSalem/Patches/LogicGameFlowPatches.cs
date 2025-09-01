@@ -150,6 +150,18 @@ public static class LogicGameFlowPatches
             return false;
         }
 
+        // If any coven win condition is met -> game over
+        // Using Alignment as a quick and basic way to prioritise NeutralEvil wins over NeutralKiller wins
+        if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
+                .OrderBy(x => (x as IAUSRole)!.RoleFaction == Faction.Coven)
+                .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet()) is { } winner2)
+        {
+            Logger<AUSPlugin>.Message($"Game Over");
+            CustomGameOver.Trigger<CovenGameOver>([winner2.Player.Data]);
+
+            return false;
+        }
+
         // If any neutral win condition is met -> game over
         // Using Alignment as a quick and basic way to prioritise NeutralEvil wins over NeutralKiller wins
         if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
@@ -163,17 +175,8 @@ public static class LogicGameFlowPatches
         }
 
         // Prevents game end when all impostors are dead but there are neutral killers left alive
-        if (MiscUtils.NKillersAliveCount > 0 ||
+        if (MiscUtils.intKillersAliveCount > 0 ||
             (MiscUtils.ImpAliveCount > 0 && MiscUtils.CrewKillersAliveCount() > 0))
-        {
-            return false;
-        }
-
-        // Prevents game end when all impostors are dead but there is a possibility for a traitor to spawn given the conditions
-        var possibleTraitor = ModifierUtils.GetActiveModifiers<ToBecomeTraitorModifier>()
-            .FirstOrDefault(x => !x.Player.HasDied() && x.Player.IsCrewmate());
-        if (Helpers.GetAlivePlayers().Count > (int)OptionGroupSingleton<TraitorOptions>.Instance.LatestSpawn - 1 &&
-            possibleTraitor != null)
         {
             return false;
         }

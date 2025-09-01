@@ -17,8 +17,8 @@ public sealed class Conjurer(IntPtr cppPtr)
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction => Faction.Coven;
-    public Color RoleColor => AUSColors.Coven;
+    public Faction RoleFaction { get; set; } = Faction.Coven;
+    public Color RoleColor { get; set; } = AUSColors.Coven;
     public Alignment Alignment => Alignment.CovenKilling;
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
@@ -35,7 +35,6 @@ public sealed class Conjurer(IntPtr cppPtr)
 
     public CustomRoleConfiguration Configuration => new(this)
     {
-        UseVanillaKillButton = false,
         Icon = AUSAssets.ConjurerRoleCard,
     };
 
@@ -49,7 +48,8 @@ public sealed class Conjurer(IntPtr cppPtr)
     {
         return
             "<color=#ab42ef>Conjurer</color>" +
-            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color>" +
+            $"\n<color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#ab42ef>Coven</color>" +
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#ab42ef>Coven</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill all who would oppose the Coven." +
@@ -71,9 +71,11 @@ public sealed class Conjurer(IntPtr cppPtr)
 
     public bool WinConditionMet()
     {
-        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
         var aliveCoven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
-        return alivePlayers == aliveCoven;
+        if (aliveCoven == 0) return false;
+
+        var result = Helpers.GetAlivePlayers().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
+        return result;
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -99,6 +101,16 @@ public sealed class Conjurer(IntPtr cppPtr)
         {
             MiscUtils.ShowNotification(TMDInfo(target), Color.white, AUSAssets.ConjurerRoleCard.LoadAsset());
             MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Coven, "Conjurer Info"), TMDInfo(target));
+        }
+
+        var meetingHud = MeetingHud.Instance;
+        foreach (PlayerVoteArea playerVoteArea in meetingHud.playerStates)
+        {
+            if (OptionGroupSingleton<Conjurer_Options>.Instance.ClearVotes)
+            {
+                playerVoteArea.UnsetVote();
+                meetingHud.ClearVote();
+            }
         }
     }
 
@@ -131,10 +143,8 @@ public sealed class Conjurer(IntPtr cppPtr)
         }
     }
 
-    public override void OnMeetingStart()
+    public void OnMeetingStart(MeetingHud __instance)
     {
-        RoleBehaviourStubs.OnMeetingStart(this);
-
         if (Player.AmOwner)
         {
             meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && Charges > 0 && DayNightMechanic.DayCount >= 2);
@@ -171,6 +181,8 @@ public sealed class Conjurer(IntPtr cppPtr)
             MiscUtils.RpcApplyDeathReason(Player, target, DeathReasonShow.KilledByAConjurer, false, false);
             RpcConjurer_Conjure(Player, target);
             Charges--;
+
+            // indocrinatedPlayer = target; // Create an RPC for this.
         }
 
         if (Player.AmOwner)
@@ -187,6 +199,8 @@ public sealed class Conjurer(IntPtr cppPtr)
 
     private MeetingMenu meetingMenu;
     public int Charges = (int)OptionGroupSingleton<Conjurer_Options>.Instance.Charges;
+
+    public PlayerControl indocrinatedPlayer;
 }
 
 #region Conjurer_Attack
@@ -197,7 +211,7 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
     public override string Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
     public override float Cooldown => OptionGroupSingleton<Conjurer_Options>.Instance.Cooldown;
-    public override LoadableAsset<Sprite> Sprite => AUSAssets.Necronomicon;
+    public override LoadableAsset<Sprite> Sprite => AUSAssets.NecronomiconButton;
 
     public override void ClickHandler()
     {
@@ -224,7 +238,14 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance);
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
+    }
+
+    public override bool IsTargetValid(PlayerControl? target)
+    {
+        if (target == null) return base.IsTargetValid(target);
+        return base.IsTargetValid(target) &&
+            !(target.Data.Role is IAUSRole ausrole && ausrole.RoleFaction == Role.RoleFaction);
     }
 
     public override bool CanUse()
@@ -244,4 +265,7 @@ public sealed class Conjurer_Options : AbstractOptionGroup<Conjurer>
 
     [ModdedNumberOption("<color=#ab42ef>Conjurer</color> Max <color=#ab42ef>Conjures</color>", 1f, 15f, 1f)]
     public float Charges { get; set; } = 1f;
+
+    [ModdedToggleOption("<color=#ab42ef>Conjurer</color> Clears Votes After <color=#ab42ef>Conjure</color>")]
+    public bool ClearVotes { get; set; } = true;
 }

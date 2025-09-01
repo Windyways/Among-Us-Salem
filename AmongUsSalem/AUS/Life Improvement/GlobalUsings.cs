@@ -13,6 +13,7 @@ global using MiraAPI.Networking;
 global using MiraAPI.Events.Mira;
 global using MiraAPI.GameOptions.OptionTypes;
 global using MiraAPI.Modifiers;
+global using MiraAPI.PluginLoading;
 
 global using Reactor.Utilities.Extensions;
 global using Reactor.Utilities.Attributes;

@@ -85,6 +85,7 @@ public enum NecronomiconPriority
     Jinx,
     Cultist,
     Covenite,
+    Indocrinated,
 
     None
 }

@@ -40,6 +40,10 @@ namespace AmongUsSalem.LifeImprovement
         public static void Initialize()
         {  
             factionStats.Add("Town", new FactionStats("Town", AUSColors.Town)); 
+            factionStats.Add("Coven", new FactionStats("Coven", AUSColors.Coven)); 
+            factionStats.Add("Mafia", new FactionStats("Mafia", AUSColors.Mafia)); 
+            factionStats.Add("Traitor", new FactionStats("Traitor", AUSColors.Traitor)); 
+            factionStats.Add("Neutral", new FactionStats("Neutral", AUSColors.Neutral)); 
 
             LoadFactionStats(filePath);
         }

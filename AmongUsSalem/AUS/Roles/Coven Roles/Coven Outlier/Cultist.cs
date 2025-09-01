@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿/*
+using System.Text;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
 using AmongUsSalem.Utilities;
@@ -124,12 +125,44 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
     }
 }
 
-#region Covenite_Options
-#endregion
-public sealed class Covenite_Options : AbstractOptionGroup<Covenite>
-{
-    public override string GroupName => TouLocale.Get(TouNames.Covenite, "Covenite");
 
-    [ModdedNumberOption("<color=#ab42ef>Covenite</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
-    public float Cooldown { get; set; } = 25f;
+#region Cultist_Events
+#endregion
+public static class Cultist_Events
+{
+    [RegisterEvent]
+    public static void GameStartHandler(RoundStartEvent @event)
+    {
+        if (@event.TriggeredByIntro)
+        {
+            return; // Only run when round starts.
+        }
+
+        foreach (var cultists in MiscUtils.GetPlayersWithRole<Conjurer>())
+        {
+            var cultist = cultists.GetRole<Conjurer>();
+            if (cultist.indocrinatedPlayer != null)
+            {
+                cultist.indocrinatedPlayer.RpcAddModifier<IndocrinateModifier>();
+                cultist.indocrinatedPlayer = null;
+            }
+        }
+    }
 }
+
+#region Cultist_Options
+#endregion
+public sealed class Cultist_Options : AbstractOptionGroup<Conjurer>
+{
+    public override string GroupName => TouLocale.Get(TouNames.Cultist, "Cultist");
+
+    [ModdedNumberOption("<color=#ab42ef>Cultist</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    public float Cooldown { get; set; } = 25f;
+
+    [ModdedNumberOption("<color=#ab42ef>Cultist</color> <color=#4a86e8>Indocrinate</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    public float IndocrinateCooldown { get; set; } = 25f;
+
+    [ModdedNumberOption("<color=#ab42ef>Cultist</color> Max <color=#4a86e8>Indocrinates</color>", 1f, 3f, 1f)]
+    public float Charges { get; set; } = 1f;
+}
+*/

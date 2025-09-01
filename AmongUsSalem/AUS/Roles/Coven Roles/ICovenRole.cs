@@ -7,9 +7,9 @@ using AmongUsSalem.Utilities;
 
 namespace AmongUsSalem.Roles;
 
-public interface ICovenRole : ICustomRole
+public interface ICovenRole
 {
-    NecronomiconPriority NecronomiconPriority => NecronomiconPriority.None;
+    NecronomiconPriority NecronomiconPriority { get; }
     bool Necronomicon { get; set; }
     PlayerControl Player { get; }
 

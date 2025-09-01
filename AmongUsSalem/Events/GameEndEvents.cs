@@ -23,29 +23,18 @@ public static class EndGameEvents
 
         if (neutralWinner)
         {
-            FactionReferences.UpdateFactionResult("Crewmate", false);
-            FactionReferences.UpdateFactionResult("Neutral", true);
-            FactionReferences.UpdateFactionResult("Mafia", false);
             return;
         }
 
-        if (reason is GameOverReason.CrewmatesByVote or GameOverReason.CrewmatesByTask
-            or GameOverReason.ImpostorDisconnect)
+        if (reason is GameOverReason.CrewmatesByVote or GameOverReason.CrewmatesByTask  or GameOverReason.ImpostorDisconnect)
         {
             winType = 1;
-            GameHistory.WinningFaction = $"<color=#{AUSColors.Town.ToHtmlStringRGBA()}>Crewmates</color>";
-            FactionReferences.UpdateFactionResult("Crewmate", true);
-            FactionReferences.UpdateFactionResult("Neutral", false);
-            FactionReferences.UpdateFactionResult("Mafia", false);
+            GameHistory.WinningFaction = $"<color=#{AUSColors.Town.ToHtmlStringRGBA()}>Town</color>";
         }
-        else if (reason is GameOverReason.ImpostorsByKill or GameOverReason.ImpostorsBySabotage
-                 or GameOverReason.ImpostorsByVote or GameOverReason.CrewmateDisconnect)
+        else if (reason is GameOverReason.ImpostorsByKill or GameOverReason.ImpostorsBySabotage or GameOverReason.ImpostorsByVote or GameOverReason.CrewmateDisconnect)
         {
             winType = 2;
             GameHistory.WinningFaction = $"<color=#{AUSColors.Mafia.ToHtmlStringRGBA()}>Mafias</color>";
-            FactionReferences.UpdateFactionResult("Crewmate", false);
-            FactionReferences.UpdateFactionResult("Neutral", false);
-            FactionReferences.UpdateFactionResult("Mafia", true);
         }
 
         if (reason == CustomGameOver.GameOverReason<DrawGameOver>())

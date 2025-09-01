@@ -9,9 +9,9 @@ namespace AmongUsSalem.LifeImprovement.MCI.SmartMCI;
 
 public static class CalculatedVoting
 {
-    public static PlayerControl KillerContagious;
-    public static PlayerControl EvidenceAgainst;
-    public static float VoteChance = 30f;
+    public static List<PlayerControl>  KillerContagious;
+    public static List<PlayerControl> EvidenceAgainst;
+    public static float VoteChance = 75f;
 
     #region Coven
     #endregion
@@ -19,6 +19,9 @@ public static class CalculatedVoting
     public static bool covensAreSkipping;
     public static void RandomCovenVoting(PlayerControl player, MeetingHud __instance)
     {
+        KillerContagious.Shuffle();
+        var killerContagiousToVote = KillerContagious[0];
+        
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Faction.Coven)).ToList();
         if (alivePlayers.Count > 0)
         {
@@ -32,9 +35,9 @@ public static class CalculatedVoting
             else
             {
 
-                if (num <= VoteChance && KillerContagious != null && !KillerContagious.Is(Faction.Coven) && !KillerContagious.HasDied() && KillerContagious != null)
+                if (num <= VoteChance && killerContagiousToVote != null && !killerContagiousToVote.Is(Faction.Coven) && !killerContagiousToVote.HasDied())
                 {
-                    playerToVote = KillerContagious;
+                    playerToVote = killerContagiousToVote;
                 }
                 else
                 {
@@ -64,6 +67,9 @@ public static class CalculatedVoting
     public static bool mafiasAreSkipping;
     public static void RandomMafiaVoting(PlayerControl player, MeetingHud __instance)
     {
+        KillerContagious.Shuffle();
+        var killerContagiousToVote = KillerContagious[0];
+        
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Faction.Mafia)).ToList();
         if (alivePlayers.Count > 0)
         {
@@ -77,9 +83,9 @@ public static class CalculatedVoting
             else
             {
 
-                if (num <= VoteChance && KillerContagious != null && !KillerContagious.Is(Faction.Mafia) && !KillerContagious.HasDied() && KillerContagious != null)
+                if (num <= VoteChance && killerContagiousToVote != null && !killerContagiousToVote.Is(Faction.Mafia) && !killerContagiousToVote.HasDied())
                 {
-                    playerToVote = KillerContagious;
+                    playerToVote = killerContagiousToVote;
                 }
                 else
                 {
@@ -107,6 +113,12 @@ public static class CalculatedVoting
     #endregion
     public static void RandomTownVoting(PlayerControl player, MeetingHud __instance)
     {
+        KillerContagious.Shuffle();
+        var killerContagiousToVote = KillerContagious[0];
+        
+        EvidenceAgainst.Shuffle();
+        var evidenceAgainstToVote = EvidenceAgainst[0];
+        
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != player && !x.ReceivedInformation()).ToList();
 
         if (player.GetRevealedPlayers().Count > 0)
@@ -121,18 +133,17 @@ public static class CalculatedVoting
         if (alivePlayers.Count > 0)
         {
             int num = Random.Range(0, 100);
-            //if (player.Is(RoleEnum.Mimic)) num = 0;
 
             PlayerControl? playerToVote = null;
-            if (num <= 80 && EvidenceAgainst != null && EvidenceAgainst != player && !EvidenceAgainst.HasDied())
+            if (num <= 80 && evidenceAgainstToVote != null && evidenceAgainstToVote != player && !evidenceAgainstToVote.HasDied())
             {
-                playerToVote = EvidenceAgainst;
+                playerToVote = evidenceAgainstToVote;
             }
             else
             {
-                if (num <= VoteChance && KillerContagious != null && KillerContagious != player && !KillerContagious.HasDied() && KillerContagious != null)
+                if (num <= VoteChance && killerContagiousToVote != null && killerContagiousToVote != player && !killerContagiousToVote.HasDied())
                 {
-                    playerToVote = KillerContagious;
+                    playerToVote = killerContagiousToVote;
                 }
                 else
                 {
@@ -184,54 +195,38 @@ public static class CalculatedVoting
         var stats = player.GetPlayerStats();
         if (stats != null)
         {
-        if (stats.WitnessedKills.Count > 0)// && !player.IsSilenced())
-        {
-            KillerContagious = stats.WitnessedKills[0];
-            if (KillerContagious.HasDied())
+            if (stats.WitnessedKills.Count > 0)
             {
-                stats.WitnessedKills.Remove(KillerContagious);
-                KillerContagious = null;
-                SetKillerContagious(player);
-            }
-        }
-        }
-
-        int setEvidenceAgainst = 0;
-        foreach (PlayerControl players in PlayerControl.AllPlayerControls)
-        {
-            var stats2 = players.GetPlayerStats();
-            if (stats2 != null && KillerContagious != null)
-            {
-                if (stats2.WitnessedKills.Contains(KillerContagious))
+                foreach (var witnessed in stats.WitnessedKills)
                 {
-                    setEvidenceAgainst++;
+                    if (!KillerContagious.Contains(witnessed)) KillerContagious.Add(witnessed);
+                    if (witnessed.HasDied())
+                    {
+                        stats.WitnessedKills.Remove(witnessed);
+                        KillerContagious.Remove(witnessed);
+                    }
                 }
             }
         }
-
-        if (setEvidenceAgainst >= 2) VoteChance = 50f;
-        if (setEvidenceAgainst >= 3) VoteChance = 75f;
-        if (setEvidenceAgainst >= 4) VoteChance = 90f;
     }
 
     #region EvidenceAgainst
     #endregion
     public static void SetEvidenceAgainst(PlayerControl player)
     {
-        if (GameHistory.PlayerStats.TryGetValue(player.PlayerId, out var stats))
+        var stats = player.GetPlayerStats();
+        if (stats != null)
         {
-            if (stats == null)
-                return;
-
-            if (stats.EvidenceAgainst.Count > 0)// && !player.IsSilenced())
+            if (stats.EvidenceAgainst.Count > 0)
             {
-                EvidenceAgainst = stats.EvidenceAgainst[0];
-
-                if (EvidenceAgainst.HasDied())
+                foreach (var witnessed in stats.EvidenceAgainst)
                 {
-                    stats.EvidenceAgainst.Remove(EvidenceAgainst);
-                    EvidenceAgainst = null;
-                    SetEvidenceAgainst(player);
+                    if (!EvidenceAgainst.Contains(witnessed)) EvidenceAgainst.Add(witnessed);
+                    if (witnessed.HasDied())
+                    {
+                        stats.EvidenceAgainst.Remove(witnessed);
+                        EvidenceAgainst.Remove(witnessed);
+                    }
                 }
             }
         }

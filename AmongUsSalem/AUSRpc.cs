@@ -4,12 +4,23 @@ public enum AUSRpc : uint
 {
     Veteran_Alert,
     Veteran_Notify,
+
     Framer_Frame,
     Framer_RemoveFrame,
+
     Conjurer_Conjure,
+
+    Bodyguard_Notify,
+    Bodyguard_Guard,
+    Bodyguard_SelfProtect,
+
+    Mayor_Reveal,
+
+    Illusionist_Illusion,
 
     AssignNecronomicon,
     ApplyDeathReason,
+    StartDayOne,
 
 
 

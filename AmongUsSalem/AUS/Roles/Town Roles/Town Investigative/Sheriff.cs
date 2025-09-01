@@ -17,8 +17,8 @@ public sealed class Sheriff(IntPtr cppPtr)
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction => Faction.Town;
-    public Color RoleColor => AUSColors.Town;
+    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownInvestigative;
 
     public Attack Attack { get; set; } = Attack.None;
@@ -46,7 +46,8 @@ public sealed class Sheriff(IntPtr cppPtr)
     {
         return
             "<color=#06e00c>Sheriff</color>" +
-            $"\n<color=#e70052>Attack: {Attack}</color> <color=#0000ff>Defense: {Defense}</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color>" +
+            $"\n<color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Investigative</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
@@ -69,7 +70,7 @@ public sealed class Sheriff(IntPtr cppPtr)
             AUSAssets.Sheriff_Search)
     ];
 
-    public override void OnMeetingStart()
+    public void OnMeetingStart(MeetingHud __instance)
     {
         SearchedPlayers.Clear();
     }

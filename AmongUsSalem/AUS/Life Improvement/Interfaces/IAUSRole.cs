@@ -1,15 +1,15 @@
 ﻿using System.Globalization;
 using System.Text;
 using Il2CppInterop.Runtime.Attributes;
-using MiraAPI.Roles;
-using MiraAPI.Utilities;
-using AmongUsSalem.Utilities;
+using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
 public interface IAUSRole : ICustomRole
 {
-    Faction RoleFaction => Faction.None;
+    Color RoleColor { get; set; }
+
+    Faction RoleFaction { get; set; }
     Alignment Alignment { get; }
     string revealText => "";
     float visionValue => GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
@@ -25,6 +25,12 @@ public interface IAUSRole : ICustomRole
 
     DeathReasonShow deathReasonShow { get; set; }
 
+    void ApplyDefense(Defense defense, bool perma = false)
+    {
+        if (Defense < defense) Defense = defense;
+        if (perma && ogDefense < defense) ogDefense = defense;
+    }
+
 
 
 
@@ -32,6 +38,10 @@ public interface IAUSRole : ICustomRole
 
 
     void OnDeath(DeathReason? reason)
+    {
+    }
+
+    void OnMeetingStart(MeetingHud __instance)
     {
     }
 

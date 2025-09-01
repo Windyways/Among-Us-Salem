@@ -100,6 +100,26 @@ public static class OWExtentions
         return false;
     }
 
+    public static bool IsSelfProtected(this PlayerControl player, bool canKill)
+    {
+        foreach (var bodyguards in MiscUtils.GetPlayersWithRole<Bodyguard>())
+        {
+            var bodyguard = bodyguards.GetRole<Bodyguard>();
+            return bodyguard.isSelfProtected && bodyguard.Player == player && !canKill;
+        }
+        return false;
+    }
+
+    public static bool IsGuarded(this PlayerControl player)
+    {
+        foreach (var bodyguards in MiscUtils.GetPlayersWithRole<Bodyguard>())
+        {
+            var bodyguard = bodyguards.GetRole<Bodyguard>();
+            return bodyguard.GuardedPlayer == player;
+        }
+        return false;
+    }
+
     public static bool IsTownTraitor(this PlayerControl player)
     {
         return false;
@@ -108,41 +128,11 @@ public static class OWExtentions
 
     public static bool IsIllusioned(this PlayerControl player)
     {
+        foreach (var illusionists in MiscUtils.GetPlayersWithRole<Illusionist>())
+        {
+            var illusionist = illusionists.GetRole<Illusionist>();
+            return illusionist.IllusionedPlayer == player;
+        }
         return false;
-        /*return Role.GetRoles(RoleEnum.Illusionist).Any(delegate(Role role)
-        {
-            PlayerControl illusionedTarget = ((Illusionist)role).IllusionedPlayer;
-            return illusionedTarget != null && player.PlayerId == illusionedTarget.PlayerId;
-        });*/
     }
-
-
-    /*public static bool IsPeacockAssociate(this PlayerControl player)
-    {
-        return MiscUtils.GetRoles("Peacock").Any(role =>
-        {
-            var target = ((Peacock)role).Associate;
-            return target != null && player.PlayerId == target.PlayerId;
-        });
-    }*/
-
-    /*public static bool IsMorphed(this PlayerControl player)
-    {
-        return MiscUtils.GetRoles("Identity Thief").Any(role =>
-        {
-            var identityThief = (IdentityThief)role;
-            return identityThief != null && player.PlayerId == identityThief.Player.PlayerId && identityThief.ImpersonatingPlayer != null;
-        });
-    }
-    
-    public static bool IsPure(this PlayerControl player)
-    {
-        return MiscUtils.GetRoles("Inquisitor").Any(role =>
-        {
-            var targets = ((Inquisitor)role).InvestigatedPlayers;
-            var inList = ((Inquisitor)role).InvestigatedPlayers.ContainsKey(player);
-            var isPure = ((Inquisitor)role).InvestigatedPlayers.TryGetValue(player, out var pure) && pure;
-            return targets != null && inList && isPure;
-        });
-    }*/
 }

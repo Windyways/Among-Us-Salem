@@ -72,7 +72,7 @@ public static class HauntMenuMinigamePatch
         }
 
         var role = target.Data.Role;
-        if (target.Data.IsDead && role is not PhantomTouRole or GuardianAngelRole or HaunterRole)
+        if (target.Data.IsDead && role is not GuardianAngelRole or HaunterRole)
         {
             role = target.GetRoleWhenAlive();
         }

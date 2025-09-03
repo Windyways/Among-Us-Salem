@@ -23,7 +23,6 @@ public sealed class MinerRole(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     [HideFromIl2Cpp] public List<Vent> Vents { get; set; } = [];
 
     public void FixedUpdate()

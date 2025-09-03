@@ -20,10 +20,79 @@ public static class PlayerRoleTextExtensions
 {
     public static Color UpdateTargetColor(this Color color, PlayerControl player, bool hidden = false)
     {
+        // Town
+        if (PlayerControl.LocalPlayer.Data.Role is Bodyguard bodyguard && bodyguard.GuardedPlayer == player)
+        {
+            color = AUSColors.Town;
+        }
+        
+        if (PlayerControl.LocalPlayer.Data.Role is Sheriff sheriff && sheriff.SuspiciousPlayers.Contains(player.PlayerId))
+        {
+            color = AUSColors.Mafia;
+        }
+        else if (PlayerControl.LocalPlayer.Data.Role is Sheriff sheriff2 && sheriff2.SearchedPlayers.Contains(player.PlayerId))
+        {
+            color = AUSColors.Town;
+        }
+
+        if (PlayerControl.LocalPlayer.Data.Role is Investigator investigator && investigator.MurderPlayers.Contains(player.PlayerId))
+        {
+            color = AUSColors.Mafia;
+        }
+        if (PlayerControl.LocalPlayer.Data.Role is Investigator investigator2 && investigator2.TrespassingPlayers.Contains(player.PlayerId))
+        {
+            color = AUSColors.OrangeShade;
+        }
+        if (PlayerControl.LocalPlayer.Data.Role is Investigator investigator3 && !investigator3.TrespassingPlayers.Contains(player.PlayerId) && !investigator3.MurderPlayers.Contains(player.PlayerId) && investigator3.InvestigatedPlayers.Contains(player.PlayerId))
+        {
+            color = AUSColors.Town;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Crusader crusader && crusader.FortifiedPlayer == player))
+        {
+            color = AUSColors.Town;
+        }
+        // Neutral
+        if (PlayerControl.LocalPlayer.Data.Role is Arsonist arsonist && arsonist.DousedPlayers.Contains(player.PlayerId))
+        {
+            color = AUSColors.Arsonist;
+        }
+        
+        if (PlayerControl.LocalPlayer.Data.Role is Shroud shroud && shroud.ShroudedPlayer == player)
+        {
+            color = AUSColors.Shroud;
+        }
+        
+        if (PlayerControl.LocalPlayer.Data.Role is Jackal && player.HasModifier<JackalRecruit>() ||
+            PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() && player.HasModifier<JackalRecruit>())
+        {
+            color = AUSColors.Neutral;
+        }
+        
+        // Mafia
         if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && framer.FramedPlayers.Contains(player.PlayerId))
             || (player.IsFramed() && PlayerControl.LocalPlayer.Is(Faction.Mafia)))
         {
             color = AUSColors.Mafia;
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Blackmailer blackmailer && blackmailer.BlackmailedPlayer == player)
+            || (player.IsBlackmailed() && PlayerControl.LocalPlayer.Is(Faction.Mafia)))
+        {
+            color = AUSColors.Mafia;
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Ambusher ambusher && ambusher.AmbushedPlayer == player)
+            || (player.IsAmbushed() && PlayerControl.LocalPlayer.Is(Faction.Mafia)))
+        {
+            color = AUSColors.Mafia;
+        }
+
+        // Coven
+        if ((PlayerControl.LocalPlayer.Data.Role is HexMaster hexMaster && hexMaster.HexedPlayers.Contains(player.PlayerId))
+            || (player.IsHexed() && PlayerControl.LocalPlayer.Is(Faction.Coven)))
+        {
+            color = AUSColors.Coven;
         }
         
         if ((PlayerControl.LocalPlayer.Data.Role is Illusionist illusionist && illusionist.IllusionedPlayer == player)
@@ -32,14 +101,10 @@ public static class PlayerRoleTextExtensions
             color = AUSColors.Coven;
         }
         
-        if ((PlayerControl.LocalPlayer.Data.Role is Bodyguard bodyguard && bodyguard.GuardedPlayer == player))
+        if ((PlayerControl.LocalPlayer.Data.Role is VoodooMaster voodooMaster && voodooMaster.SilencedPlayer == player)
+            || (player.IsSilenced() && PlayerControl.LocalPlayer.Is(Faction.Coven)))
         {
-            color = AUSColors.Town;
-        }
-        
-        if (PlayerControl.LocalPlayer.Data.Role is Sheriff sheriff && sheriff.SuspiciousPlayers.Contains(player.PlayerId))
-        {
-            color = AUSColors.Town;
+            color = AUSColors.Coven;
         }
 
         return color;
@@ -53,62 +118,6 @@ public static class PlayerRoleTextExtensions
         {
             name += "<color=#d8a0ff> ↭</color>";
         }*/
-
-        return name;
-    }
-
-    public static string UpdateProtectionSymbols(this string name, PlayerControl player, bool hidden = false)
-    {
-        var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
-        if ((player.HasModifier<GuardianAngelTargetModifier>(x => x.OwnerId == PlayerControl.LocalPlayer.PlayerId) &&
-             PlayerControl.LocalPlayer.IsRole<GuardianAngelTouRole>())
-            || (player.HasModifier<GuardianAngelTargetModifier>() &&
-                ((PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden)
-                 || (player.AmOwner &&
-                     OptionGroupSingleton<GuardianAngelOptions>.Instance.GATargetKnows))))
-        {
-            name += (player.HasModifier<GuardianAngelProtectModifier>() && OptionGroupSingleton<GuardianAngelOptions>.Instance.ShowProtect is not ProtectOptions.GA)
-                ? "<color=#FFD900> ★</color>"
-                : "<color=#B3FFFF> ★</color>";
-        }
-
-        if ((player.HasModifier<MedicShieldModifier>(x => x.Medic.AmOwner) &&
-             PlayerControl.LocalPlayer.IsRole<MedicRole>())
-            || (player.HasModifier<MedicShieldModifier>() &&
-                ((PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden)
-                 || (player.AmOwner && player.TryGetModifier<MedicShieldModifier>(out var med) && med.VisibleSymbol))))
-        {
-            name += "<color=#006600> +</color>";
-        }
-        
-        if ((player.HasModifier<MagicMirrorModifier>(x => x.Mirrorcaster.AmOwner) &&
-             PlayerControl.LocalPlayer.IsRole<MirrorcasterRole>())
-            || (player.HasModifier<MagicMirrorModifier>() &&
-                ((PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden)
-                 || (player.AmOwner && player.TryGetModifier<MagicMirrorModifier>(out var mm) && mm.VisibleSymbol))))
-        {
-            name += "<color=#90A2C3>〚〛</color>";
-        }
-
-        if ((player.HasModifier<ClericBarrierModifier>(x => x.Cleric.AmOwner) &&
-             PlayerControl.LocalPlayer.IsRole<ClericRole>())
-            || (player.HasModifier<ClericBarrierModifier>() &&
-                ((PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden)
-                 || (player.AmOwner && player.TryGetModifier<ClericBarrierModifier>(out var cleric) &&
-                     cleric.VisibleSymbol))))
-        {
-            name += "<color=#00FFB3> Ω</color>";
-        }
-
-        if ((player.HasModifier<WardenFortifiedModifier>(x => x.Warden.AmOwner) &&
-             PlayerControl.LocalPlayer.IsRole<WardenRole>())
-            || (player.HasModifier<WardenFortifiedModifier>() &&
-                ((PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden)
-                 || (player.AmOwner && player.TryGetModifier<WardenFortifiedModifier>(out var warden) &&
-                     warden.VisibleSymbol))))
-        {
-            name += "<color=#9900FF> π</color>";
-        }
 
         return name;
     }
@@ -140,33 +149,109 @@ public static class PlayerRoleTextExtensions
     {
         var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
 
-        if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && framer.FramedPlayers.Contains(player.PlayerId))
-            || (player.IsFramed() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
-            || (player.IsFramed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
-        {
-            name += "<color=#dd0000> Ⓕ</color>";
-        }
-        
+        // Town
         if ((PlayerControl.LocalPlayer.Data.Role is Bodyguard bodyguard && bodyguard.GuardedPlayer == player)
             || (player.IsGuarded() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
-            name += "<color=#06e00c> Ⓖ</color>";
+            name += "<color=#06E00C> Ⓖ</color>";
         }
 
         if (PlayerControl.LocalPlayer.Data.Role is Sheriff sheriff && sheriff.SuspiciousPlayers.Contains(player.PlayerId))
         {
-            name += "<color=#dd0000> Ⓢ</color>";
+            name += "<color=#DD0000> Ⓢ</color>";
         }
         else if (PlayerControl.LocalPlayer.Data.Role is Sheriff sheriff2 && sheriff2.SearchedPlayers.Contains(player.PlayerId))
         {
-            name += "<color=#06e00c> Ⓢ</color>";
+            name += "<color=#06E00C> Ⓢ</color>";
+        }
+
+        if (PlayerControl.LocalPlayer.Data.Role is Investigator investigator2 && investigator2.TrespassingPlayers.Contains(player.PlayerId))
+        {
+            name += "<color=#ff9900> Ⓣ</color>"; // Orange
+        }
+        if (PlayerControl.LocalPlayer.Data.Role is Investigator investigator && investigator.MurderPlayers.Contains(player.PlayerId))
+        {
+            name += "<color=#DD0000> Ⓜ</color>";
+        }
+        if (PlayerControl.LocalPlayer.Data.Role is Investigator investigator3 && !investigator3.TrespassingPlayers.Contains(player.PlayerId) && !investigator3.MurderPlayers.Contains(player.PlayerId) && investigator3.InvestigatedPlayers.Contains(player.PlayerId))
+        {
+            name += "<color=#06E00C> ⓃⒸ</color>";
         }
         
+        if ((PlayerControl.LocalPlayer.Data.Role is Crusader crusader && crusader.FortifiedPlayer == player)
+            || (player.IsFortified() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06E00C> Ⓕ</color>";
+        }
+
+        // Neutral
+        if ((PlayerControl.LocalPlayer.Data.Role is Arsonist arsonist && arsonist.DousedPlayers.Contains(player.PlayerId))
+            || (player.IsDoused() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#ee7600> Ⓓ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Shroud shroud && shroud.ShroudedPlayer == player)
+            || (player.IsShrouded() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#6699ff> Ⓢ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Jackal && player.HasModifier<JackalRecruit>()) ||
+            (PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() && player.HasModifier<JackalRecruit>())
+            || (player.HasModifier<JackalRecruit>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#404040> ☯</color>";
+        }
+
+        // Mafia
+        if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && framer.FramedPlayers.Contains(player.PlayerId))
+            || (player.IsFramed() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
+            || (player.IsFramed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#DD0000> Ⓕ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Blackmailer blackmailer && blackmailer.BlackmailedPlayer == player)
+            || (player.IsBlackmailed() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
+            || (player.IsBlackmailed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#DD0000> Ⓑ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Ambusher ambusher && ambusher.AmbushedPlayer == player)
+            || (player.IsAmbushed() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
+            || (player.IsAmbushed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#DD0000> Ⓐ</color>";
+        }
+        
+        // Coven
         if ((PlayerControl.LocalPlayer.Data.Role is Illusionist illusionist && illusionist.IllusionedPlayer == player)
             || (player.IsIllusioned() && PlayerControl.LocalPlayer.Is(Faction.Coven))
             || (player.IsIllusioned() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
-            name += "<color=#ab42ef> Ⓘ</color>";
+            name += "<color=#B545FF> Ⓘ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is HexMaster hexMaster && hexMaster.HexedPlayers.Contains(player.PlayerId))
+            || (player.IsHexed() && PlayerControl.LocalPlayer.Is(Faction.Coven))
+            || (player.IsHexed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#B545FF> Ⓗ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is VoodooMaster voodooMaster && voodooMaster.SilencedPlayer == player)
+            || (player.IsSilenced() && PlayerControl.LocalPlayer.Is(Faction.Coven))
+            || (player.IsSilenced() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#B545FF> Ⓢ</color>";
+        }
+        
+        if ((player.Data.Role is ICovenRole coven && coven.Necronomicon && PlayerControl.LocalPlayer.Is(Faction.Coven))
+            || (player.Data.Role is ICovenRole coven2 && coven2.Necronomicon && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#B545FF> [BOOK]</color>";
         }
 
         return name;

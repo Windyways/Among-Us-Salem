@@ -24,7 +24,6 @@ public sealed class MedicRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITOURole, I
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public string revealText => "";
     private MeetingMenu meetingMenu;
     public override bool IsAffectedByComms => false;

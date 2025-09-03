@@ -26,7 +26,7 @@ public sealed class CovenGameOver : CustomGameOver
 
         Logger<AUSPlugin>.Error($"VerifyCondition - mainRole: '{mainRole.NiceName}', IsDead: '{role.IsDead}'");
 
-        if (role.IsDead && role is not PhantomTouRole or HaunterRole)
+        if (role.IsDead && role is not HaunterRole)
         {
             mainRole = role.Player.GetRoleWhenAlive();
 
@@ -54,5 +54,7 @@ public sealed class CovenGameOver : CustomGameOver
 
         text.transform.position = pos;
         text.text = $"<size=4>{text.text}</size>";
+        
+        AUSAssets.PlaySound(AUSAssets.CovenWin_SFX);
     }
 }

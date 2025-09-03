@@ -18,7 +18,7 @@ public class Debugger : MonoBehaviour
     public bool WindowEnabled { get; set; } = true;
     public Debugger(IntPtr ptrs) : base(ptrs)
     {
-        Window = new(new(20, 20, 0, 0), "TownOfSushi Debugger", () =>
+        Window = new(new(20, 20, 0, 0), "AUS Debugger", () =>
         {
             GUILayout.Label($"Name: {DataManager.Player.customization.Name} - PRESS F3 TO HIDE WINDOW");
 
@@ -56,7 +56,7 @@ public class Debugger : MonoBehaviour
             if (GUILayout.Button("Remove All Bots")) InstanceControlPatches.RemoveAllPlayers();
             if (GUILayout.Button("Next Player")) Keyboard_Joystick.Switch(true);
             if (GUILayout.Button("Previous Player")) Keyboard_Joystick.Switch(false);
-            if (GUILayout.Button("End Game")) MiscUtils.EndGame();
+            if (GUILayout.Button("End Game") && !RoleReferences.CountRoundToLeaderboard) MiscUtils.EndGame();
 
             if (GUILayout.Button("Complete Tasks"))
             {
@@ -112,6 +112,7 @@ public class Debugger : MonoBehaviour
             }
 
             isRandomClientSwapping = GUILayout.Toggle(isRandomClientSwapping, "Enable Random Swapping");
+            SmartBotsEnabled = GUILayout.Toggle(SmartBotsEnabled, "Enable Smart Bots");
             RoleReferences.CountRoundToLeaderboard = GUILayout.Toggle(RoleReferences.CountRoundToLeaderboard, "Round Counts To Leaderboard");
         });
     }
@@ -137,4 +138,5 @@ public class Debugger : MonoBehaviour
     }
 
     public static bool isRandomClientSwapping;
+    public static bool SmartBotsEnabled;
 }

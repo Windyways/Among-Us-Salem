@@ -47,17 +47,6 @@ public static class MinigameCanMovePatch
             return false;
         }
 
-        if (PlayerControl.LocalPlayer.Data.Role is TransporterRole && ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard && OptionGroupSingleton<TransporterOptions>.Instance.MoveWithMenu && Minigame.Instance is CustomPlayerMenu)
-        {
-            __result = __instance.moveable;
-            return false;
-        }
-        if (PlayerControl.LocalPlayer.Data.Role is GlitchRole && ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard && OptionGroupSingleton<GlitchOptions>.Instance.MoveWithMenu && Minigame.Instance is CustomPlayerMenu)
-        {
-            __result = __instance.moveable;
-            return false;
-        }
-
         return true;
     }
 }

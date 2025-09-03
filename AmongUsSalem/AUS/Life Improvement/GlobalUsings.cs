@@ -45,6 +45,8 @@ global using InnerNet;
 global using Il2CppInterop.Runtime.Attributes;
 
 global using TownOfUs.Modules.Wiki;
-global using AmongUs.Data;
 
 global using HarmonyLib;
+
+global using AmongUs.Data;
+global using AmongUs.GameOptions;

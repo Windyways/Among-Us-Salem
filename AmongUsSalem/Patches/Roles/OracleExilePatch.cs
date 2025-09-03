@@ -10,8 +10,7 @@ namespace AmongUsSalem.Patches.Roles;
 [HarmonyPatch]
 public static class OracleExilePatch
 {
-    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames),
-        typeof(Il2CppReferenceArray<Object>))]
+    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames), typeof(Il2CppReferenceArray<Object>))]
     [HarmonyPostfix]
     public static void TranslationControllerGetStringPostfix(ref string __result, [HarmonyArgument(0)] StringNames name)
     {

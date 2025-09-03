@@ -404,6 +404,7 @@ public abstract class AmongUsSalemTargetButton<T> : CustomActionButton<T> where 
 public abstract class AmongUsSalemRoleButton<TRole> : AmongUsSalemButton where TRole : RoleBehaviour
 {
     public TRole Role => PlayerControl.LocalPlayer.GetRole<TRole>()!;
+    public PlayerControl Player => Role.Player;
 
     public override bool Enabled(RoleBehaviour? role)
     {
@@ -416,6 +417,7 @@ public abstract class AmongUsSalemRoleButton<TRole, TTarget> : AmongUsSalemTarge
     where TTarget : MonoBehaviour where TRole : RoleBehaviour
 {
     public TRole Role => PlayerControl.LocalPlayer.GetRole<TRole>()!;
+    public PlayerControl Player => Role.Player;
 
     public override bool Enabled(RoleBehaviour? role)
     {

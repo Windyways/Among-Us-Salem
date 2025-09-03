@@ -89,18 +89,27 @@ public static class MiscUtils
     [MethodRpc((uint)AUSRpc.ApplyDeathReason, SendImmediately = true)]
     public static void RpcApplyDeathReason(PlayerControl player, PlayerControl target, DeathReasonShow deathReasonShow, bool createDeadBody = true, bool teleportMurderer = true)
     {
-        if (target.Data.Role is IAUSRole ausRole) ausRole.deathReasonShow = deathReasonShow;
-        if (player.AmOwner) player.RpcCustomMurder(target, true, true, createDeadBody, teleportMurderer, true, true);
+        if (player.AmOwner()) player.RpcCustomMurder(target, true, true, createDeadBody, teleportMurderer, true, true);
+        DeathHandlerModifier.UpdateDeathHandler(target, deathReasonShow, DeathHandlerOverride.SetFalse);
     }
 
     public static bool SuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
     {
+        if (isAttacking && isVisiting) Statistics.HasMurder.Add(player);
+        if (!player.IsSameFaction(target)) Statistics.IsTrespassing.Add(player);
+
         // Doesn't stop visit.
+        if (player.IsShrouded())
+        {
+            Shroud.RpcShroud_Notify(player, target);
+            isAttacking = true; // For BG/Trapper, etc.
+        }
         if (target.IsAlerted()) Veteran.RpcVeteran_Notify(player, target, isAttacking);
 
         // Stops visits.
         if (target.IsGuarded() && isAttacking && isVisiting && !player.IsIllusioned()) return Bodyguard.RpcBodyguard_Notify(player, target);
-        if (target.IsSelfProtected(player.CanKill(target)) && isAttacking && isVisiting) return Bodyguard.RpcBodyguard_Notify(player, target);
+        if (target.IsFortified() && isVisiting) return Crusader.RpcCrusader_Notify(player, target, isAttacking);
+        if (target.IsAmbushed() && isVisiting && !player.Is(Faction.Mafia)) return Ambusher.RpcAmbusher_Notify(player, target);
 
         return true;
     }
@@ -108,6 +117,8 @@ public static class MiscUtils
     public static void PostSuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
     {
         if (player.Is(Alignment.TownInvestigative) && target.IsFramed()) Framer.RpcFramer_RemoveFrame(target);
+        if (target.IsSelfProtected(player.CanKill(target)) && isAttacking && isVisiting) Bodyguard.RpcBodyguard_Notify(player, target);
+        if (target.IsRole<Arsonist>() && isVisiting) Arsonist.RpcArsonist_Douse(target, player, true);
     }
 
 
@@ -128,7 +139,12 @@ public static class MiscUtils
             x.Is(Alignment.NeutralKilling) ||
             x.Is(Faction.Coven) ||
             x.Is(Faction.Traitor) ||
-            (x.Data.Role is IContinueGame { continueGame: true }));
+            x.IsRole<Jackal>() ||
+            x.IsRole<Vampire>() ||
+            x.HasModifier<VampireRecruit>() ||
+            x.HasModifier<JackalRecruit>() ||
+            (x.Data.Role is IContinueGame { continueGame: true }))
+            ;
     }
 
     public static int RealKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
@@ -141,8 +157,12 @@ public static class MiscUtils
     public static int intKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
         x.Is(Alignment.NeutralKilling) ||
         x.Is(Alignment.NeutralApocalypse) ||
+        x.IsRole<Vampire>() ||
+        x.IsRole<Jackal>() ||
         x.Is(Faction.Coven) ||
-        x.Is(Faction.Traitor));
+        x.Is(Faction.Traitor) ||
+        x.HasModifier<VampireRecruit>() ||
+        x.HasModifier<JackalRecruit>());
 
     public static int NonImpKillersAliveCount()
     {

@@ -28,7 +28,6 @@ public sealed class AmnesiacRole(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public RoleBehaviour CrewVariant => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<MysticRole>());
     public DoomableType DoomHintType => DoomableType.Death;
     public string RoleName => TouLocale.Get(TouNames.Amnesiac, "Amnesiac");

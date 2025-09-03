@@ -25,26 +25,6 @@ public sealed class ImitatorCacheModifier : BaseModifier, ICachedRole
 
     public RoleBehaviour CachedRole => RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<ImitatorRole>());
 
-    public override void OnActivate()
-    {
-        base.OnActivate();
-
-        if (Player.AmOwner)
-        {
-            _meetingMenu = new MeetingMenu(
-                Player.Data.Role,
-                Click,
-                MeetingAbilityType.Toggle,
-                TouAssets.ImitateSelectSprite,
-                TouAssets.ImitateDeselectSprite,
-                IsExempt,
-                Color.white)
-            {
-                Position = new Vector3(-0.40f, 0f, -3f)
-            };
-        }
-    }
-
     public override void OnMeetingStart()
     {
         if (!Player.IsCrewmate())

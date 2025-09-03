@@ -29,7 +29,6 @@ public sealed class GuardianAngelTouRole(IntPtr cppPtr) : NeutralRole(cppPtr), I
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public PlayerControl? Target { get; set; }
     public int Priority { get; set; } = 1;
 

@@ -37,6 +37,8 @@ public sealed class Covenite(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.CoveniteRoleCard,
+        CanUseSabotage = true,
+        GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
     [HideFromIl2Cpp]
@@ -48,11 +50,11 @@ public sealed class Covenite(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#ab42ef>Covenite</color>" +
+            "<color=#B545FF>Covenite</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#ab42ef>Coven</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#ab42ef>Coven</color> <color=#1e45d4>Outlier</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#B545FF>Coven</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#B545FF>Coven</color> <color=#1e45d4>Outlier</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill all who would oppose the Coven." +
             $"\n\nAttributes:" +
             "\nTBD" +
@@ -88,7 +90,7 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
     {
         if (Target != null)
         {
-            if (MiscUtils.SuccessfulVisit(Role.Player, Target, true, true))
+            if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
                 base.ClickHandler();
             }
@@ -102,9 +104,9 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
             return;
         }
 
-        if (Role.Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Role.Player, Target, DeathReasonShow.KilledByTheCoven);
-        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Role.Player, Target), Color.white);
-        MiscUtils.PostSuccessfulVisit(Role.Player, Target, true, true);
+        if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByTheCoven);
+        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+        MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
     }
 
     public override PlayerControl? GetTarget()
@@ -121,7 +123,7 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
 
     public override bool CanUse()
     {
-        return base.CanUse() && Role.Player.Data.Role is ICovenRole coven && coven.Necronomicon;
+        return base.CanUse() && Player.Data.Role is ICovenRole coven && coven.Necronomicon;
     }
 }
 
@@ -156,13 +158,13 @@ public sealed class Cultist_Options : AbstractOptionGroup<Conjurer>
 {
     public override string GroupName => TouLocale.Get(TouNames.Cultist, "Cultist");
 
-    [ModdedNumberOption("<color=#ab42ef>Cultist</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#B545FF>Cultist</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 
-    [ModdedNumberOption("<color=#ab42ef>Cultist</color> <color=#4a86e8>Indocrinate</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#B545FF>Cultist</color> <color=#4a86e8>Indocrinate</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float IndocrinateCooldown { get; set; } = 25f;
 
-    [ModdedNumberOption("<color=#ab42ef>Cultist</color> Max <color=#4a86e8>Indocrinates</color>", 1f, 3f, 1f)]
+    [ModdedNumberOption("<color=#B545FF>Cultist</color> Max <color=#4a86e8>Indocrinates</color>", 1f, 3f, 1f)]
     public float Charges { get; set; } = 1f;
 }
 */

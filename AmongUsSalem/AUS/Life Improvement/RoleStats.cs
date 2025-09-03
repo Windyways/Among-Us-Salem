@@ -52,16 +52,29 @@ namespace AmongUsSalem.LifeImprovement
             roleStats.Add("Pilgrim", new RoleStats("Pilgrim", AUSColors.Town));
             roleStats.Add("Sheriff", new RoleStats("Sheriff", AUSColors.Town));
             roleStats.Add("Veteran", new RoleStats("Veteran", AUSColors.Town));
+            roleStats.Add("Bodyguard", new RoleStats("Bodyguard", AUSColors.Town));
+            roleStats.Add("Mayor", new RoleStats("Mayor", AUSColors.Town));
+            roleStats.Add("Amnesiac", new RoleStats("Amnesiac", AUSColors.Town));
+            roleStats.Add("Investigator", new RoleStats("Investigator", AUSColors.Town));
+            roleStats.Add("Deputy", new RoleStats("Deputy", AUSColors.Town));
+            roleStats.Add("Crusader", new RoleStats("Crusader", AUSColors.Town));
             #endregion
             #region Neutral
             #endregion
+            roleStats.Add("Arsonist", new RoleStats("Arsonist", AUSColors.Arsonist));
+            roleStats.Add("Shroud", new RoleStats("Shroud", AUSColors.Shroud));
             #region Mafia
             roleStats.Add("Mafioso", new RoleStats("Mafioso", AUSColors.Mafia));
             roleStats.Add("Framer", new RoleStats("Framer", AUSColors.Mafia));
+            roleStats.Add("Blackmailer", new RoleStats("Blackmailer", AUSColors.Mafia));
+            roleStats.Add("Ambusher", new RoleStats("Ambusher", AUSColors.Mafia));
             #endregion
             #region Coven
             roleStats.Add("Covenite", new RoleStats("Covenite", AUSColors.Coven));
             roleStats.Add("Conjurer", new RoleStats("Conjurer", AUSColors.Coven));
+            roleStats.Add("Illusionist", new RoleStats("Illusionist", AUSColors.Coven));
+            roleStats.Add("Hex Master", new RoleStats("Hex Master", AUSColors.Coven));
+            roleStats.Add("Voodoo Master", new RoleStats("Voodoo Master", AUSColors.Coven));
             #endregion
 
             LoadRoleStats(filePath);

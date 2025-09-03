@@ -21,7 +21,7 @@ public static class VersionCheckPatch
             {
                 var action = AUversion > RequiredVersions.Keys.Max() ? "downgrade" : "update";
                 var info =
-                    $"ALERT\nAmong Us Salem {AUSPlugin.Version} requires {RequiredVersions.Values.Last()}\nyou have {Application.version}\nPlease {action} your among us version"
+                    $"ALERT\nAmong Us Salem III {AUSPlugin.Version} requires {RequiredVersions.Values.Last()}\nyou have {Application.version}\nPlease {action} your among us version"
                     + "\nvisit Github or Discord for any help";
                 var man = TwitchManager.Instance;
                 ModUpdater.InfoPopup = Object.Instantiate(man.TwitchPopup);
@@ -34,7 +34,7 @@ public static class VersionCheckPatch
             }
         }
     }
-
+    // Modify this before releasing to prevent issues and to actually make this work!
     private static List<ModUpdater.UpdateData>? GetVersioning()
     {
 #pragma warning disable S1075 // URIs should not be hardcoded

@@ -1,5 +1,7 @@
 using HarmonyLib;
 using AmongUsSalem.Modules;
+using AmongUs.GameOptions;
+using UnityEngine;
 
 namespace AmongUsSalem.Patches;
 

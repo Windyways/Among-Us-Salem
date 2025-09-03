@@ -27,7 +27,7 @@ public sealed class NeutralGameOver : CustomGameOver
 
         Logger<AUSPlugin>.Error($"VerifyCondition - mainRole: '{mainRole.NiceName}', IsDead: '{role.IsDead}'");
 
-        if (role.IsDead && role is not PhantomTouRole or HaunterRole)
+        if (role.IsDead && role is not HaunterRole)
         {
             mainRole = role.Player.GetRoleWhenAlive();
 
@@ -45,9 +45,13 @@ public sealed class NeutralGameOver : CustomGameOver
         endGameManager.BackgroundBar.material.SetColor(ShaderID.Color, _roleColor);
 
         var text = Object.Instantiate(endGameManager.WinText);
+        
         text.text = $"{_roleName} Wins!";
+        if (_roleName == "Jackal") text.text = AUSColors.GradientColorText("404040", "b8b8b8", "Jackal") + " Wins!";
+
         text.color = _roleColor;
         GameHistory.WinningFaction = $"<color=#{_roleColor.ToHtmlStringRGBA()}>{_roleName}</color>";
+        if (_roleName == "Jackal") GameHistory.WinningFaction = AUSColors.GradientColorText("404040", "b8b8b8", "Jackal");
 
         var pos = endGameManager.WinText.transform.localPosition;
         pos.y = 1.5f;
@@ -56,5 +60,8 @@ public sealed class NeutralGameOver : CustomGameOver
 
         text.transform.position = pos;
         text.text = $"<size=4>{text.text}</size>";
+        
+        if (_roleName == "Arsonist") AUSAssets.PlaySound(AUSAssets.ArsonistWin_SFX);
+        if (_roleName == "Shroud") AUSAssets.PlaySound(AUSAssets.ShroudWin_SFX);
     }
 }

@@ -39,10 +39,15 @@ public static class ChatControllerPatches
             return;
         }
 
-        if (PlayerControl.LocalPlayer.HasModifier<BlackmailedModifier>() &&
-            !PlayerControl.LocalPlayer.Data.IsDead)
+        if (PlayerControl.LocalPlayer.IsBlackmailed() && !PlayerControl.LocalPlayer.Data.IsDead)
         {
-            _noticeText.text = "You have been blackmailed.";
+            _noticeText.text = "You are Blackmailed.";
+            __instance.freeChatField.SetVisible(false);
+            __instance.quickChatField.SetVisible(false);
+        }
+        else if (PlayerControl.LocalPlayer.IsSilenced() && !PlayerControl.LocalPlayer.Data.IsDead)
+        {
+            _noticeText.text = "You are Silenced.";
             __instance.freeChatField.SetVisible(false);
             __instance.quickChatField.SetVisible(false);
         }
@@ -52,8 +57,7 @@ public static class ChatControllerPatches
             __instance.freeChatField.SetVisible(true);
             __instance.quickChatField.SetVisible(false);
         }
-        else if (PlayerControl.LocalPlayer.HasModifier<JailedModifier>() &&
-                 !PlayerControl.LocalPlayer.Data.IsDead && !TeamChatPatches.TeamChatActive)
+        else if (PlayerControl.LocalPlayer.HasModifier<JailedModifier>() && !PlayerControl.LocalPlayer.Data.IsDead && !TeamChatPatches.TeamChatActive)
         {
             var canChat = OptionGroupSingleton<JailorOptions>.Instance.JaileePublicChat;
             if (canChat)

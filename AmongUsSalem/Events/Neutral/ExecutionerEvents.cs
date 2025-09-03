@@ -81,17 +81,12 @@ public static class ExecutionerEvents
                 {
                     PlayerControl.LocalPlayer.RpcAddModifier<IndirectAttackerModifier>(true);
                     CustomButtonSingleton<ExeTormentButton>.Instance.SetActive(true, exe);
-                    DeathHandlerModifier.RpcUpdateDeathHandler(PlayerControl.LocalPlayer, "Victorious", DeathEventHandlers.CurrentRound, DeathHandlerOverride.SetTrue, lockInfo: DeathHandlerOverride.SetTrue);
-                    var notif2 = Helpers.CreateAndShowNotification(
+                   var notif2 = Helpers.CreateAndShowNotification(
                         $"<b>You have one round to torment a player of your choice to death, choose wisely.</b>",
                         Color.white);
 
                     notif2.Text.SetOutlineThickness(0.35f);
                     notif2.transform.localPosition = new Vector3(0f, 0.85f, -20f);
-                }
-                else
-                {
-                    DeathHandlerModifier.RpcUpdateDeathHandler(PlayerControl.LocalPlayer, "Victorious", DeathEventHandlers.CurrentRound, DeathHandlerOverride.SetFalse, lockInfo: DeathHandlerOverride.SetTrue);
                 }
             }
             else

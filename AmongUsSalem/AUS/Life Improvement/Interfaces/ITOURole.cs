@@ -15,8 +15,6 @@ public interface ITOURole : ICustomRole
     float visionValue => GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
 
 
-    DeathReasonShow deathReasonShow { get; set; }
-
 
 
 
@@ -116,11 +114,11 @@ public interface ITOURole : ICustomRole
 
         if (alignment.Contains("Town"))
         {
-            alignment = alignment.Replace("Town", "<color=#06e00c>Town");
+            alignment = alignment.Replace("Town", "<color=#06E00C>Town");
         }
         else if (alignment.Contains("Mafia"))
         {
-            alignment = alignment.Replace("Mafia", "<color=#dd0000>Mafia");
+            alignment = alignment.Replace("Mafia", "<color=#DD0000>Mafia");
         }
         else if (alignment.Contains("Neutral"))
         {
@@ -176,11 +174,11 @@ public interface ITOURole : ICustomRole
 
         if (alignment.Contains("Town"))
         {
-            alignment = alignment.Replace("Town", "<color=#06e00c>Town");
+            alignment = alignment.Replace("Town", "<color=#06E00C>Town");
         }
         else if (alignment.Contains("Mafia"))
         {
-            alignment = alignment.Replace("Mafia", "<color=#dd0000>Mafia");
+            alignment = alignment.Replace("Mafia", "<color=#DD0000>Mafia");
         }
         else if (alignment.Contains("Neutral"))
         {

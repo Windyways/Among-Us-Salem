@@ -71,33 +71,6 @@ public static class GhostRoleEvents
                     }
                 }
             }
-
-            var phantomData = MiscUtils.GetAssignData((RoleTypes)RoleId.Get<PhantomTouRole>());
-
-            if (phantomData != null &&
-                CustomRoleUtils.GetActiveRoles().OfType<PhantomTouRole>().Count() < phantomData.Count)
-            {
-                var isSkipped = phantomData.Chance < 100 && HashRandom.Next(101) > phantomData.Chance;
-
-                if (!isSkipped)
-                {
-                    var deadNeutral = PlayerControl.AllPlayerControls.ToArray().Where(x =>
-                        x.Data.IsDead && x.IsNeutral() && !x.Data.Role.DidWin(GameOverReason.CrewmatesByVote) &&
-                        !x.HasModifier<AllianceGameModifier>()).ToList();
-
-                    if (deadNeutral.Count > 0)
-                    {
-                        deadNeutral.Shuffle();
-
-                        var player = deadNeutral.TakeFirst();
-
-                        if (player != null)
-                        {
-                            player.RpcChangeRole(RoleId.Get<PhantomTouRole>());
-                        }
-                    }
-                }
-            }
         }
 
         Coroutines.Start(SpawnCoroutine());

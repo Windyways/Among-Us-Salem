@@ -25,21 +25,28 @@ public static class IntroScenePatches
     [HarmonyPrefix]
     public static bool ImpostorBeginPatch(IntroCutscene __instance)
     {
-        /*
-        if (  OptionGroupSingleton<GeneralOptions>.Instance.ImpsKnowRoles &&  
-            !OptionGroupSingleton<GeneralOptions>.Instance.FFAImpostorMode)
-        {
-            return true;
-        }
-
-        __instance.TeamTitle.text =
-            DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.Impostor, Array.Empty<Object>());
+        __instance.TeamTitle.text = "Mafia";
         __instance.TeamTitle.color = AUSColors.Mafia;
 
         var player = __instance.CreatePlayer(0, 1, PlayerControl.LocalPlayer.Data, true);
         __instance.ourCrewmate = player;
 
-        */
+        return false;
+    }
+    
+    [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
+    [HarmonyPrefix]
+    public static bool BeginCrewmatePatch(IntroCutscene __instance)
+    {
+        if (PlayerControl.LocalPlayer.Is(Faction.Town))
+        {
+            __instance.TeamTitle.text = "Town";
+            __instance.TeamTitle.color = AUSColors.Town;
+        }
+
+        var player = __instance.CreatePlayer(0, 1, PlayerControl.LocalPlayer.Data, false);
+        __instance.ourCrewmate = player;
+
         return false;
     }
 
@@ -116,35 +123,6 @@ public static class ModifierIntroPatch
     public static void RunModChecks()
     {
         ModifierText.text = string.Empty;
-
-        /*var option = OptionGroupSingleton<GeneralOptions>.Instance.ModifierReveal;
-        var modifier = PlayerControl.LocalPlayer.GetModifiers<AllianceGameModifier>().FirstOrDefault();
-        var uniModifier = PlayerControl.LocalPlayer.GetModifiers<UniversalGameModifier>().FirstOrDefault();
-
-        if (modifier != null && option is ModReveal.Alliance)
-        {
-            ModifierText.text = $"<size={modifier.IntroSize}>{modifier.IntroInfo}</size>";
-
-            ModifierText.color = MiscUtils.GetRoleColour(modifier.ModifierName.Replace(" ", string.Empty));
-            if (modifier is IColoredModifier colorMod)
-            {
-                ModifierText.color = colorMod.ModifierColor;
-            }
-        }
-        else if (uniModifier != null && option is ModReveal.Universal)
-        {
-            ModifierText.text = $"<size=4><color=#FFFFFF>Modifier: </color>{uniModifier.ModifierName}</size>";
-
-            ModifierText.color = MiscUtils.GetRoleColour(uniModifier.ModifierName.Replace(" ", string.Empty));
-            if (uniModifier is IColoredModifier colorMod)
-            {
-                ModifierText.color = colorMod.ModifierColor;
-            }
-        }
-        else
-        {
-            ModifierText.text = string.Empty;
-        }*/
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
@@ -276,12 +254,12 @@ public static class ModifierIntroPatch
     public static void SetHiddenImpostors(IntroCutscene __instance)
     {
         var mafiaAmount = Helpers.GetAlivePlayers().Count(x => x.IsImpostor());
-        if (mafiaAmount == 1) __instance.ImpostorText.text = $"There is {mafiaAmount} <color=#dd0000>Mafia</color> among us.";
-        else if (mafiaAmount > 0) __instance.ImpostorText.text = $"There are {mafiaAmount} <color=#dd0000>Mafias</color> among us.";
+        if (mafiaAmount == 1) __instance.ImpostorText.text = $"There is {mafiaAmount} <color=#DD0000>Mafia</color> among us.";
+        else if (mafiaAmount > 0) __instance.ImpostorText.text = $"There are {mafiaAmount} <color=#DD0000>Mafias</color> among us.";
 
         var covenAmount = Helpers.GetAlivePlayers().Count(x => x.Is(Faction.Coven));
-        if (covenAmount == 1) __instance.ImpostorText.text += $"\nThere is {covenAmount} <color=#ab42ef>Coven</color> among us.";
-        else if (covenAmount > 0) __instance.ImpostorText.text += $"\nThere are {covenAmount} <color=#ab42ef>Covens</color> among us.";
+        if (covenAmount == 1) __instance.ImpostorText.text += $"\nThere is {covenAmount} <color=#B545FF>Coven</color> among us.";
+        else if (covenAmount > 0) __instance.ImpostorText.text += $"\nThere are {covenAmount} <color=#B545FF>Covens</color> among us.";
 
         var traitorAmount = Helpers.GetAlivePlayers().Count(x => x.Is(Faction.Traitor));
         if (traitorAmount == 1) __instance.ImpostorText.text += $"\nThere is {traitorAmount} <color=#ce36fa>Traitor</color> among us.";

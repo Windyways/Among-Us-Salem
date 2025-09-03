@@ -64,52 +64,18 @@ public static class TeamChatPatches
         }
     }
 
-    [MethodRpc((uint)AUSRpc.SendVampTeamChat, SendImmediately = true)]
-    public static void RpcSendVampTeamChat(PlayerControl player, string text)
-    {
-        if ((PlayerControl.LocalPlayer.Data.Role is VampireRole && player != PlayerControl.LocalPlayer) ||
-            (PlayerControl.LocalPlayer.HasDied() && OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow))
-        {
-            MiscUtils.AddTeamChat(player.Data,
-                $"<color=#{AUSColors.Vampire.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Vampire Chat)</color>",
-                text);
-        }
-    }
-
     [MethodRpc((uint)AUSRpc.SendImpTeamChat, SendImmediately = true)]
     public static void RpcSendImpTeamChat(PlayerControl player, string text)
     {
-        if ((PlayerControl.LocalPlayer.IsImpostor() && player != PlayerControl.LocalPlayer) ||
+        if ((PlayerControl.LocalPlayer.Is(Faction.Mafia) && player != PlayerControl.LocalPlayer) ||
             (PlayerControl.LocalPlayer.HasDied() && OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow))
         {
             MiscUtils.AddTeamChat(player.Data,
-                $"<color=#{AUSColors.Mafia.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Impostor Chat)</color>",
+                $"<color=#{AUSColors.Mafia.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Mafia Chat)</color>",
                 text);
         }
     }
 
-    /* [HarmonyPatch(typeof(ChatController), nameof(ChatController.LateUpdate))]
-    public static class LateUpdatePatch
-    {
-        public static void Postfix(ChatController __instance)
-        {
-            if (TeamChatActive)
-            {
-                var FreeChat = GameObject.Find("FreeChatInputField");
-                var typeBg = FreeChat.transform.FindChild("Background");
-                var typeText = FreeChat.transform.FindChild("Text");
-
-                typeBg.GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.1f, 0.1f, 0.6f);
-                typeBg.GetComponent<ButtonRolloverHandler>().ChangeOutColor(new Color(0.2f, 0.1f, 0.1f, 0.6f));
-                typeBg.GetComponent<ButtonRolloverHandler>().OverColor = new Color(0.6f, 0.1f, 0.1f, 1f);
-                if (typeText.TryGetComponent<TextMeshPro>(out var txt))
-                {
-                    txt.color = Color.white;
-                    txt.SetFaceColor(Color.white);
-                }
-            }
-        }
-    } */
     [HarmonyPostfix]
     [HarmonyPatch(typeof(ChatBubble), nameof(ChatBubble.SetName))]
     public static void SetNamePostfix(ChatBubble __instance, [HarmonyArgument(0)] string playerName, [HarmonyArgument(3)] Color color)
@@ -232,30 +198,9 @@ public static class TeamChatPatches
                     }
                     else
                     {
-                        /* foreach (var bubble in bubbleItems.GetAllChilds())
-                        {
-                            bubble.gameObject.SetActive(true);
-                            var bg = bubble.transform.Find("Background").gameObject;
-                            if (bg != null)
-                            {
-                                var sprite = bg.GetComponent<SpriteRenderer>();
-                                var color = sprite.color.SetAlpha(1f);
-                                if (color != Color.white && color != Color.black) bubble.gameObject.SetActive(false);
-                            }
-                        } */
                         Background.GetComponent<SpriteRenderer>().color = Color.white;
-                        /* typeBg.GetComponent<SpriteRenderer>().color = Color.white;
-                        typeBg.GetComponent<ButtonRolloverHandler>().ChangeOutColor(Color.white);
-                        typeBg.GetComponent<ButtonRolloverHandler>().OverColor = new Color(0f, 1f, 0f, 1f);
-                        if (typeText.TryGetComponent<TextMeshPro>(out var txt))
-                        {
-                            txt.color = new Color(0.6706f, 0.8902f, 0.8667f, 1f);
-                            txt.SetFaceColor(new Color(0.6706f, 0.8902f, 0.8667f, 1f));
-                        }
-                        typeText.GetComponent<TextMeshPro>().color = new Color(0.6706f, 0.8902f, 0.8667f, 1f); */
                         ChatScreenContainer.transform.localPosition =
-                            HudManager.Instance.Chat.chatButton.transform.localPosition -
-                            new Vector3(3.5133f + 3.49f * (Camera.main.orthographicSize / 3f), 4.576f);
+                            HudManager.Instance.Chat.chatButton.transform.localPosition - new Vector3(3.5133f + 3.49f * (Camera.main.orthographicSize / 3f), 4.576f);
                     }
                 }
                 else if (TeamChatActive)
@@ -270,83 +215,6 @@ public static class TeamChatPatches
         }
     }
 
-    /* [HarmonyPatch(typeof(ChatController), nameof(ChatController.AlignAllBubbles))]
-    public static class AlignBubblesPatch
-    {
-        public static void Postfix(ChatController __instance)
-        {
-            var bubbleItems = GameObject.Find("Items");
-            //float num = 0f;
-            Il2CppSystem.Collections.Generic.List<PoolableBehavior> activeChildren = __instance.chatBubblePool.activeChildren;
-            if (bubbleItems == null || bubbleItems.transform.GetChildCount() == 0 || activeChildren == null) return;
-            if (TeamChatActive)
-            {
-                foreach (var bubble in bubbleItems.GetAllChilds())
-                {
-                    bubble.gameObject.SetActive(true);
-                    var bg = bubble.transform.Find("Background").gameObject;
-                    if (bg != null)
-                    {
-                        var sprite = bg.GetComponent<SpriteRenderer>();
-                        var color = sprite.color.SetAlpha(1f);
-                        if (color == Color.white || color == Color.black) bubble.gameObject.SetActive(false);
-                    }
-                }
-                //var topPos = bubbleItems.transform.GetChild(0).transform.localPosition;
-                for (int i = activeChildren.Count - 1; i >= 0; i--)
-                {
-                    var chatBubbleObj = activeChildren[i] as ChatBubble;
-                    if (chatBubbleObj == null) continue;
-                    ChatBubble chatBubble = chatBubbleObj!;
-                    var bg = chatBubble.transform.Find("Background").gameObject;
-                    if (bg != null)
-                    {
-                        var sprite = bg.GetComponent<SpriteRenderer>();
-                        var color = sprite.color.SetAlpha(1f);
-                        if (color == Color.white || color == Color.black)
-                        {
-                            chatBubble.gameObject.SetActive(false);
-                            continue;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                foreach (var bubble in bubbleItems.GetAllChilds())
-                {
-                    bubble.gameObject.SetActive(true);
-                    var bg = bubble.transform.Find("Background").gameObject;
-                    if (bg != null)
-                    {
-                        var sprite = bg.GetComponent<SpriteRenderer>();
-                        var color = sprite.color.SetAlpha(1f);
-                        if (color != Color.white && color != Color.black) bubble.gameObject.SetActive(false);
-                    }
-                }
-                //var topPos = bubbleItems.transform.GetChild(0).transform.localPosition;
-                for (int i = activeChildren.Count - 1; i >= 0; i--)
-                {
-                    var chatBubbleObj = activeChildren[i] as ChatBubble;
-                    if (chatBubbleObj == null) continue;
-                    ChatBubble chatBubble = chatBubbleObj!;
-                    var bg = chatBubble.transform.Find("Background").gameObject;
-                    if (bg != null)
-                    {
-                        var sprite = bg.GetComponent<SpriteRenderer>();
-                        var color = sprite.color.SetAlpha(1f);
-                        if (color != Color.white && color != Color.black)
-                        {
-                            chatBubble.gameObject.SetActive(false);
-                            continue;
-                        }
-                    }
-                }
-            }
-            //float num2 = -0.3f;
-            //__instance.scroller.SetYBoundsMin(Mathf.Min(0f, -num + __instance.scroller.Hitbox.bounds.size.y + num2));
-        }
-    } */
     [HarmonyPatch(typeof(ChatController), nameof(ChatController.Close))]
     public static class ClosePatch
     {

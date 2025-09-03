@@ -11,7 +11,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Mafioso(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName => TouLocale.Get(TouNames.Mafioso, "Mafioso");
+    public string RoleName { get; set; } = TouLocale.Get(TouNames.Mafioso, "Mafioso");
     public string revealText => "does the Godfather's dirty work.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
@@ -29,8 +29,6 @@ public sealed class Mafioso(IntPtr cppPtr)
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
 
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
-
     public CustomRoleConfiguration Configuration => new(this)
     {
         UseVanillaKillButton = false,
@@ -46,11 +44,11 @@ public sealed class Mafioso(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#dd0000>Mafioso</color>" +
+            "<color=#DD0000>Mafioso</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#dd0000>Mafia</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#dd0000>Mafia</color> <color=#1e45d4>Killing</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#DD0000>Mafia</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#DD0000>Mafia</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
             $"\n\nAttributes:" +
             "\nTBD." +
@@ -67,7 +65,7 @@ public sealed class Mafioso(IntPtr cppPtr)
 
     public static string Info()
     {
-        return "You were promoted to a <b><color=#dd0000>Mafioso</color></b>!";
+        return "You were promoted to a <b><color=#DD0000>Mafioso</color></b>!";
     }
 }
 
@@ -85,7 +83,7 @@ public sealed class Mafioso_Attack : AmongUsSalemRoleButton<Mafioso, PlayerContr
     {
         if (Target != null)
         {
-            if (MiscUtils.SuccessfulVisit(Role.Player, Target, true, true))
+            if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
                 base.ClickHandler();
             }
@@ -99,9 +97,9 @@ public sealed class Mafioso_Attack : AmongUsSalemRoleButton<Mafioso, PlayerContr
             return;
         }
 
-        if (Role.Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Role.Player, Target, DeathReasonShow.KilledByAMemberOfTheMafia);
-        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Role.Player, Target), Color.white);
-        MiscUtils.PostSuccessfulVisit(Role.Player, Target, true, true);
+        if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByAMemberOfTheMafia);
+        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+        MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
     }
 
     public override PlayerControl? GetTarget()
@@ -116,6 +114,6 @@ public sealed class Mafioso_Options : AbstractOptionGroup<Mafioso>
 {
     public override string GroupName => TouLocale.Get(TouNames.Mafioso, "Mafioso");
 
-    [ModdedNumberOption("<color=#dd0000>Mafioso</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#DD0000>Mafioso</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 }

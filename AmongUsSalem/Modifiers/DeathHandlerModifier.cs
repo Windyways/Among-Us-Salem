@@ -15,20 +15,20 @@ public sealed class DeathHandlerModifier : BaseModifier
     public bool LockInfo { get; set; }
     // This will determine if symbols or anything are shown
     public bool DiedThisRound { get; set; } = true;
-    // This will specify how the player died such as; Suicide, Prosecuted, Ejected, Rampaged, Reaped, etc.
-    public string CauseOfDeath { get; set; } = "Suicide";
-    // This is set up by the game itself and will display in the lobby
-    public int RoundOfDeath { get; set; } = -1;
+    // This will specify how the player died.
+    public DeathReasonShow CauseOfDeath { get; set; } = DeathReasonShow.Alive;
     // This will specify who killed the player, if any, such as; By Innersloth
     public string KilledBy { get; set; } = string.Empty;
+
+    public Color DeathColor { get; set; } = AUSColors.Town;
     
     [MethodRpc((uint)AUSRpc.UpdateDeathHandler, SendImmediately = true)]
-    public static void RpcUpdateDeathHandler(PlayerControl player, string causeOfDeath = "null", int roundOfDeath = -1, DeathHandlerOverride diedThisRound = DeathHandlerOverride.Ignore, string killedBy = "null", DeathHandlerOverride lockInfo = DeathHandlerOverride.Ignore)
+    public static void RpcUpdateDeathHandler(PlayerControl player, DeathReasonShow causeOfDeath = DeathReasonShow.None, DeathHandlerOverride diedThisRound = DeathHandlerOverride.Ignore, string killedBy = "null", DeathHandlerOverride lockInfo = DeathHandlerOverride.Ignore)
     {
-        UpdateDeathHandler(player, causeOfDeath, roundOfDeath, diedThisRound, killedBy, lockInfo);
+        UpdateDeathHandler(player, causeOfDeath, diedThisRound, killedBy, lockInfo);
     }
-    
-    public static void UpdateDeathHandler(PlayerControl player, string causeOfDeath = "null", int roundOfDeath = -1, DeathHandlerOverride diedThisRound = DeathHandlerOverride.Ignore, string killedBy = "null", DeathHandlerOverride lockInfo = DeathHandlerOverride.Ignore)
+
+    public static void UpdateDeathHandler(PlayerControl player, DeathReasonShow causeOfDeath = DeathReasonShow.None, DeathHandlerOverride diedThisRound = DeathHandlerOverride.Ignore, string killedBy = "null", DeathHandlerOverride lockInfo = DeathHandlerOverride.Ignore)
     {
         if (!player.HasModifier<DeathHandlerModifier>())
         {
@@ -36,21 +36,35 @@ public sealed class DeathHandlerModifier : BaseModifier
             player.AddModifier<DeathHandlerModifier>();
         }
 
-        Coroutines.Start(CoWriteDeathHandler(player, causeOfDeath, roundOfDeath, diedThisRound, killedBy, lockInfo));
+        
+        Coroutines.Start(CoWriteDeathHandler(player, causeOfDeath, diedThisRound, killedBy, lockInfo, GetColor(causeOfDeath)));
     }
 
+    public static Color GetColor(DeathReasonShow causeOfDeath)
+    {
+        if (causeOfDeath == DeathReasonShow.KilledByAMemberOfTheMafia || causeOfDeath == DeathReasonShow.KilledByAnAmbusher) return AUSColors.Mafia;
+        if (causeOfDeath == DeathReasonShow.IncineratedByAnArsonist) return AUSColors.Arsonist;
+        if (causeOfDeath == DeathReasonShow.KilledByAShroud) return AUSColors.Shroud;
+        if (causeOfDeath == DeathReasonShow.BittenByAVampire) return AUSColors.Vampire;
+        if (causeOfDeath == DeathReasonShow.AssassinatedByAJackal || causeOfDeath == DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate) return AUSColors.Neutral;
+        if (causeOfDeath == DeathReasonShow.KilledByABodyguard || causeOfDeath == DeathReasonShow.ShotByAVigilante || causeOfDeath == DeathReasonShow.ShotByADeputy || causeOfDeath == DeathReasonShow.ShotByAVeteran || causeOfDeath == DeathReasonShow.KilledByACrusader || causeOfDeath == DeathReasonShow.KilledByATrapper || causeOfDeath == DeathReasonShow.KilledByATrickster || causeOfDeath == DeathReasonShow.KilledByTheTownVIP || causeOfDeath == DeathReasonShow.KilledByThePerfectTown || causeOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget) return AUSColors.Town;
+        if (causeOfDeath == DeathReasonShow.KilledByTheCoven || causeOfDeath == DeathReasonShow.KilledByTheCovenVIP || causeOfDeath == DeathReasonShow.BombedByAHexMaster || causeOfDeath == DeathReasonShow.KilledByAConjurer || causeOfDeath == DeathReasonShow.KilledByAJinx || causeOfDeath == DeathReasonShow.KilledByAPoisoner || causeOfDeath == DeathReasonShow.KilledByARitualist) return AUSColors.Coven;
+        return AUSColors.Apocalypse;
+    } 
+
     public static bool IsCoroutineRunning { get; set; }
-    public static IEnumerator CoWriteDeathHandler(PlayerControl player, string causeOfDeath, int roundOfDeath,
-        DeathHandlerOverride diedThisRound, string killedBy, DeathHandlerOverride lockInfo)
+    public static IEnumerator CoWriteDeathHandler(PlayerControl player, DeathReasonShow causeOfDeath,
+        DeathHandlerOverride diedThisRound, string killedBy, DeathHandlerOverride lockInfo, Color col)
     {
         IsCoroutineRunning = true;
         yield return new WaitForSeconds(0.1f);
         var deathHandler = player.GetModifier<DeathHandlerModifier>()!;
-        if (causeOfDeath != "null") deathHandler.CauseOfDeath = causeOfDeath;
-        if (roundOfDeath != -1) deathHandler.RoundOfDeath = roundOfDeath;
+        if (causeOfDeath != DeathReasonShow.None) deathHandler.CauseOfDeath = causeOfDeath;
         if (diedThisRound != DeathHandlerOverride.Ignore) deathHandler.DiedThisRound = diedThisRound is DeathHandlerOverride.SetTrue;
         if (killedBy != "null") deathHandler.KilledBy = killedBy;
         if (lockInfo != DeathHandlerOverride.Ignore) deathHandler.LockInfo = lockInfo is DeathHandlerOverride.SetTrue;
+        deathHandler.DeathColor = col;
+        
         IsCoroutineRunning = false;
     }
 }

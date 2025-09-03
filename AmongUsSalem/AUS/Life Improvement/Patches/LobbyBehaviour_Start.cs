@@ -11,9 +11,20 @@ public static class LobbyBehaviour_Start
     [HarmonyPostfix]
     public static void LobbyStartPatch(LobbyBehaviour __instance)
     {
-        Statistics.Round = 1;
         OnGameStart.SequenceCheck = 0;
 
+        CalculatedVoting.EvidenceAgainst.Clear();
+        CalculatedVoting.KillerContagious.Clear();
+        CalculatedVoting.RecievedInformation.Clear();
+        CalculatedVoting.QueueEvidenceAgainst.Clear();
+        CalculatedVoting.QueueKillerContagious.Clear();
+        CalculatedVoting.QueueRecievedInformation.Clear();
+
+        // Mechanics
         DayNightMechanic.OnLobbyStart();
+        MafiosoPromotionMechanic.GodfatherDiedWithMafiosoAlive = false;
+
+        Statistics.IsTrespassing.Clear();
+        Statistics.HasMurder.Clear();
     }
 }

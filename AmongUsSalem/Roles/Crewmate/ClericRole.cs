@@ -16,7 +16,6 @@ public sealed class ClericRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITOURole, 
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public string revealText => "";
     public override bool IsAffectedByComms => false;
     public DoomableType DoomHintType => DoomableType.Protective;

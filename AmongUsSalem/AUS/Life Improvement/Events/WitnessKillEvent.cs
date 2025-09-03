@@ -20,7 +20,11 @@ public static class WitnessKillEvent
         }
 
         WitnessSuspiciousActivity(source, target, true, false, true);
-        RoleFunctionOnDeath(source, target);
+
+        CalculatedVoting.EvidenceAgainst.Remove(target);
+        CalculatedVoting.KillerContagious.Remove(target);
+        CalculatedVoting.QueueEvidenceAgainst.Remove(target);
+        CalculatedVoting.QueueKillerContagious.Remove(target);
     }
 
     public static void WitnessSuspiciousActivity(PlayerControl killer, PlayerControl target, bool murder, bool incriminating = false, bool caught = false)
@@ -44,11 +48,17 @@ public static class WitnessKillEvent
         }
     }
 
-
     public static void CallFind(PlayerControl killer, PlayerControl target, PlayerControl players, bool caught, bool incriminating)
     {
-        if (killer.Is(Faction.Mafia) && !players.Is(Faction.Mafia))
-        {
+        if (
+            !(killer.Is(Faction.Mafia) && !players.Is(Faction.Mafia)) && 
+            !(killer.Is(Faction.Coven) && !players.Is(Faction.Coven)) && 
+            !(killer.Is(Faction.Traitor) && !players.Is(Faction.Traitor)) && 
+            !(killer.IsRole<Jackal>() && !players.HasModifier<JackalRecruit>()) && 
+            !(killer.HasModifier<JackalRecruit>() && !players.IsRole<Jackal>()) && 
+            !(killer.IsRole<Vampire>() && !players.HasModifier<VampireRecruit>()) && 
+            !(killer.HasModifier<VampireRecruit>() && !players.IsRole<Vampire>())
+            ) {
             string witnessedKiller = killer.GetDefaultAppearance().PlayerName;
             if (!caught)
             {
@@ -62,27 +72,32 @@ public static class WitnessKillEvent
     {
         if (incriminating)
         {
-            target.ApplyEvidenceAgainst(killer);
+            CalculatedVoting.QueueEvidenceAgainst.Add(target, killer);
         }
         else
         {
-            target.ApplyWitnessedKills(killer);
+            CalculatedVoting.QueueKillerContagious.Add(target, killer);
         }
     }
 
-    public static void RoleFunctionOnDeath(PlayerControl killer, PlayerControl target)
+    public static void ResetButtonTimer(PlayerControl source, CustomActionButton? button = null, float cooldown = 0f)
     {
-        foreach (PlayerControl players in PlayerControl.AllPlayerControls)
-        {
-            if (players.GetEvidenceAgainst().Contains(target))
-            {
-                players.RemoveEvidenceAgainst(target);
-            }
+        button?.SetTimer(cooldown);
 
-            if (players.GetWitnessedKills().Contains(target))
-            {
-                players.RemoveWitnessedKills(target);
-            }
+        if (!source.AmOwner() || !source.IsImpostor())
+        {
+            return;
+        }
+
+        source.SetKillTimer(cooldown);
+    }
+
+    public static void ResetCooldown()
+    {
+        PlayerControl.LocalPlayer.SetKillTimer(0f);
+        foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(PlayerControl.LocalPlayer.Data.Role)))
+        {
+            button.SetTimer(button.InitialCooldown);
         }
     }
 }

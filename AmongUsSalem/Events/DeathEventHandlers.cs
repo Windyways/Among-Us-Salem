@@ -50,20 +50,9 @@ public static class DeathEventHandlers
         {
             var deathHandler = new DeathHandlerModifier();
             victim.AddModifier(deathHandler);
-            var cod = "Disconnected";
+            
             deathHandler.DiedThisRound = !MeetingHud.Instance && !ExileController.Instance;
-            switch (@event.DeathReason)
-            {
-                case DeathReason.Exile:
-                    cod = "Lynched";
-                    deathHandler.DiedThisRound = false;
-                    break;
-                case DeathReason.Kill:
-                    cod = "Killed";
-                    break;
-            }
-            deathHandler.CauseOfDeath = cod;
-            deathHandler.RoundOfDeath = CurrentRound;
+            
             Coroutines.Start(CoWaitDeathHandler());
         }
     }
@@ -78,7 +67,7 @@ public static class DeathEventHandlers
         }
         if (!exiled.HasModifier<DeathHandlerModifier>())
         {
-            DeathHandlerModifier.UpdateDeathHandler(exiled, "Lynched", CurrentRound, DeathHandlerOverride.SetFalse);
+            DeathHandlerModifier.UpdateDeathHandler(exiled, DeathReasonShow.Lynched, DeathHandlerOverride.SetFalse);
         }
     }
 
@@ -94,33 +83,10 @@ public static class DeathEventHandlers
         var source = murderEvent.Source;
         var target = murderEvent.Target;
         
-        if (target == source && target.TryGetModifier<DeathHandlerModifier>(out var deathHandler) && !deathHandler.LockInfo)
+        if (target.TryGetModifier<DeathHandlerModifier>(out var deathHandler2) && !deathHandler2.LockInfo)
         {
-            deathHandler.CauseOfDeath = "Suicide";
-            deathHandler.DiedThisRound = !MeetingHud.Instance && !ExileController.Instance;
-            deathHandler.RoundOfDeath = CurrentRound;
-            deathHandler.LockInfo = true;
-        }
-        else if (target.TryGetModifier<DeathHandlerModifier>(out var deathHandler2) && !deathHandler2.LockInfo)
-        {
-            var cod = "Killed";
-            switch (source.GetRoleWhenAlive())
-            {
-                case Mafioso:
-                    cod = "Killed By A Member Of The Mafia";
-                    break;
-                case Veteran:
-                    cod = "Shot By A Veteran";
-                    break;
-                case Covenite:
-                    cod = "Killed By The Coven";
-                    break;
-            }
-            
-            deathHandler2.CauseOfDeath = cod;
             deathHandler2.KilledBy = $"By {source.Data.PlayerName}";
             deathHandler2.DiedThisRound = !MeetingHud.Instance && !ExileController.Instance;
-            deathHandler2.RoundOfDeath = CurrentRound;
         }
     }
 

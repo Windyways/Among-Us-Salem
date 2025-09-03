@@ -40,9 +40,14 @@ public static class HudManagerPatches
             (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.Is(Faction.Mafia)) ||
             (PlayerControl.LocalPlayer.Is(Faction.Coven) && player.Is(Faction.Coven)) ||
             (PlayerControl.LocalPlayer.Is(Faction.Traitor) && player.Is(Faction.Traitor)) ||
+
+            (PlayerControl.LocalPlayer.IsRole<Vampire>() && player.HasModifier<VampireRecruit>()) ||
+            (PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.HasModifier<VampireRecruit>()) ||
+            (PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.IsRole<Vampire>()) ||
+
             (PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse) && player.Is(Alignment.NeutralApocalypse)) ||
             (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasDied()) ||
-            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.Data.Role is Mayor mayor && mayor.isRevealed) ||
+            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.Data.Role is IRevealable revealable && revealable.IsRevealed) ||
             (PlayerControl.LocalPlayer == player)
             ;
     }
@@ -266,7 +271,6 @@ public static class HudManagerPatches
 
                 playerColor = playerColor.UpdateTargetColor(player);
                 playerName = playerName.UpdateTargetSymbols(player);
-                playerName = playerName.UpdateProtectionSymbols(player);
                 playerName = playerName.UpdateAllianceSymbols(player);
                 playerName = playerName.UpdateStatusSymbols(player);
 
@@ -292,8 +296,15 @@ public static class HudManagerPatches
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
                     // This shows the role!
+
                     color = role.TeamColor;
-                    roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
+                    if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
+
+                    if (player.HasModifier<JackalRecruit>() && (player.AmOwner || PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() || PlayerControl.LocalPlayer.IsRole<Jackal>()))
+                    {
+                        roleName = $"<size=80%>{AUSColors.GradientColorText("404040", "b8b8b8", player.Data.Role.NiceName)}</size>";
+                    }
+                    else roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
 
                     if (VisibilityFlag(player))
                     {
@@ -303,15 +314,10 @@ public static class HudManagerPatches
                         roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
                     }
 
-                    if (PlayerControl.LocalPlayer.HasDied() && player.TryGetModifier<DeathHandlerModifier>(out var deathMod))
+                    if (player.TryGetModifier<DeathHandlerModifier>(out var deathMod))
                     {
-                        var deathReason = $"<size=60%>『{Color.yellow.ToTextColor()}{deathMod.CauseOfDeath}</color>』</size>\n";
+                        var deathReason = $"<size=50%>({deathMod.DeathColor.ToTextColor()}{deathMod.CauseOfDeath.ToSpacedString()}</color>)</size>\n";
                         roleName = $"{deathReason}{roleName}";
-                    }
-                    
-                    if (player.HasDied() && player.Data.Role is IAUSRole ausRole)
-                    {
-                        roleName = $"{roleName}\n{player.GetDeathReason(ausRole.deathReasonShow)}";
                     }
                 }
 
@@ -423,7 +429,6 @@ public static class HudManagerPatches
 
                 playerColor = playerColor.UpdateTargetColor(player, !isVisible);
                 playerName = playerName.UpdateTargetSymbols(player, !isVisible);
-                playerName = playerName.UpdateProtectionSymbols(player, !isVisible);
                 playerName = playerName.UpdateAllianceSymbols(player, !isVisible);
                 playerName = playerName.UpdateStatusSymbols(player, !isVisible);
 
@@ -539,16 +544,6 @@ public static class HudManagerPatches
 
     public static void UpdateGhostRoles(HudManager instance)
     {
-        foreach (var phantom in CustomRoleUtils.GetActiveRolesOfType<PhantomTouRole>())
-        {
-            if (phantom.Player.Data != null && phantom.Player.Data.Disconnected)
-            {
-                continue;
-            }
-
-            phantom.FadeUpdate(instance);
-        }
-
         foreach (var haunter in CustomRoleUtils.GetActiveRolesOfType<HaunterRole>())
         {
             if (haunter.Player.Data != null && haunter.Player.Data.Disconnected)

@@ -11,7 +11,7 @@ namespace AmongUsSalem.Roles;
 public sealed class Bodyguard(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName => TouLocale.Get(TouNames.Bodyguard, "Bodyguard");
+    public string RoleName { get; set; } = TouLocale.Get(TouNames.Bodyguard, "Bodyguard");
     public string revealText => "is a trained protector.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
@@ -29,7 +29,6 @@ public sealed class Bodyguard(IntPtr cppPtr)
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
 
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -45,11 +44,11 @@ public sealed class Bodyguard(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#06e00c>Bodyguard</color>" +
+            "<color=#06E00C>Bodyguard</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Investigative</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#06E00C>Town</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Protective</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
             "\nYou cannot counterattack passive attacks." +
@@ -69,7 +68,7 @@ public sealed class Bodyguard(IntPtr cppPtr)
             AUSAssets.Bodyguard_SelfProtect)
     ];
 
-    public void OnMeetingStart(MeetingHud __instance)
+    public override void OnMeetingStart()
     {
         GuardedPlayer = null;
         isSelfProtected = false;
@@ -78,7 +77,7 @@ public sealed class Bodyguard(IntPtr cppPtr)
     public enum Type { AttackedButProtected, AttackedButSelfProtected }
     public static string Info(Type type)
     {
-        if (type is Type.AttackedButProtected) return "Someone attacked you, but a <b><color=#06e00c>Bodyguard</color></b> protected you!";
+        if (type is Type.AttackedButProtected) return "Someone attacked you, but a <b><color=#06E00C>Bodyguard</color></b> protected you!";
         return "Someone attacked you, but your armor protected you!";
     }
 
@@ -118,29 +117,18 @@ public sealed class Bodyguard(IntPtr cppPtr)
             var bodyguard = bodyguards.GetRole<Bodyguard>();
             if (bodyguard.Player == target && bodyguard.Player.AmOwner())
             {
-                MiscUtils.ShowNotification(Info(Type.AttackedButSelfProtected), Color.white, AUSAssets.BodyguardRoleCard.LoadAsset());
                 MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Bodyguard Info"), Info(Type.AttackedButSelfProtected));
             }
-            else if (bodyguard.GuardedPlayer == target)
-            {
-                if (Debugger.IsDebuggerActive)
-                {
-                    if (bodyguard.Player.CanKill(bodyguard.Player)) MiscUtils.RpcApplyDeathReason(bodyguard.Player, bodyguard.Player, DeathReasonShow.DiedWhileDefendingTheirTarget);
-                    if (bodyguard.Player.CanKill(visitor)) MiscUtils.RpcApplyDeathReason(bodyguard.Player, visitor, DeathReasonShow.KilledByABodyguard);
-                }
 
-                if (visitor.AmOwner())
+            if (bodyguard.GuardedPlayer == target)
+            {
+                if (target.AmOwner()) // Always put AmOwner inside of Rpcs that have RpcCustomMurder, or for client side notifications!
                 {
-                    if (bodyguard.Player.CanKill(bodyguard.Player)) MiscUtils.RpcApplyDeathReason(bodyguard.Player, bodyguard.Player, DeathReasonShow.DiedWhileDefendingTheirTarget);
-                }
-                if (target.AmOwner())
-                {
-                    MiscUtils.ShowNotification(Info(Type.AttackedButProtected), Color.white, AUSAssets.BodyguardRoleCard.LoadAsset());
-                    MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Bodyguard Info"), Info(Type.AttackedButProtected));
-                }
-                if (bodyguard.Player.AmOwner())
-                {
+                    // Might have to test these with other ppl since this doesnt appear to kill using MCI but shows the info.
                     if (bodyguard.Player.CanKill(visitor)) MiscUtils.RpcApplyDeathReason(bodyguard.Player, visitor, DeathReasonShow.KilledByABodyguard);
+                    if (bodyguard.Player.CanKill(bodyguard.Player)) MiscUtils.RpcApplyDeathReason(bodyguard.Player, bodyguard.Player, DeathReasonShow.DiedWhileDefendingTheirTarget);
+
+                    MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Bodyguard Info"), Info(Type.AttackedButProtected));
                 }
             }
         }
@@ -166,7 +154,7 @@ public sealed class Bodyguard_Guard : AmongUsSalemRoleButton<Bodyguard, PlayerCo
     {
         if (Target != null)
         {
-            if (MiscUtils.SuccessfulVisit(Role.Player, Target, false, true))
+            if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
                 base.ClickHandler();
             }
@@ -180,8 +168,14 @@ public sealed class Bodyguard_Guard : AmongUsSalemRoleButton<Bodyguard, PlayerCo
             return;
         }
 
-        Bodyguard.RpcBodyguard_Guard(Role.Player, Target);
-        MiscUtils.PostSuccessfulVisit(Role.Player, Target, false, true);
+        if (Player.AmOwner)
+        {
+            var button = CustomButtonSingleton<Bodyguard_SelfProtect>.Instance;
+            WitnessKillEvent.ResetButtonTimer(Player, button, button.InitialCooldown);
+        }
+
+        Bodyguard.RpcBodyguard_Guard(Player, Target);
+        MiscUtils.PostSuccessfulVisit(Player, Target, false, true);
     }
 
     public override PlayerControl? GetTarget()
@@ -209,7 +203,7 @@ public sealed class Bodyguard_SelfProtect : AmongUsSalemRoleButton<Bodyguard>
 
     public override void ClickHandler()
     {
-        if (MiscUtils.SuccessfulVisit(Role.Player, Role.Player, false, false))
+        if (MiscUtils.SuccessfulVisit(Player, Player, false, false))
         {
             base.ClickHandler();
         }
@@ -217,8 +211,14 @@ public sealed class Bodyguard_SelfProtect : AmongUsSalemRoleButton<Bodyguard>
 
     protected override void OnClick()
     {
-        Bodyguard.RpcBodyguard_SelfProtect(Role.Player);
-        MiscUtils.PostSuccessfulVisit(Role.Player, Role.Player, false, false);
+        if (Player.AmOwner)
+        {
+            var button = CustomButtonSingleton<Bodyguard_Guard>.Instance;
+            WitnessKillEvent.ResetButtonTimer(Player, button, button.InitialCooldown);
+        }
+
+        Bodyguard.RpcBodyguard_SelfProtect(Player);
+        MiscUtils.PostSuccessfulVisit(Player, Player, false, false);
     }
 }
 
@@ -228,9 +228,9 @@ public sealed class Bodyguard_Options : AbstractOptionGroup<Bodyguard>
 {
     public override string GroupName => TouLocale.Get(TouNames.Bodyguard, "Bodyguard");
 
-    [ModdedNumberOption("<color=#06e00c>Bodyguard</color> <color=#4a86e8>Guard</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#06E00C>Bodyguard</color> <color=#4a86e8>Guard</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 
-    [ModdedNumberOption("<color=#06e00c>Bodyguard</color> Max <color=#4a86e8>Self Protects</color>", 1f, 30f, 1f)]
-    public float Charges { get; set; } = 1;
+    [ModdedNumberOption("<color=#06E00C>Bodyguard</color> Max <color=#4a86e8>Self Protects</color>", 1f, 30f, 1f)]
+    public float Charges { get; set; } = 2;
 }

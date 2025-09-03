@@ -2,22 +2,49 @@
 
 public enum AUSRpc : uint
 {
+    // Veteran
     Veteran_Alert,
     Veteran_Notify,
-
+    // Framer
     Framer_Frame,
     Framer_RemoveFrame,
-
+    // Conjurer
     Conjurer_Conjure,
-
+    // Bodyguard
     Bodyguard_Notify,
     Bodyguard_Guard,
     Bodyguard_SelfProtect,
-
+    // Mayor
     Mayor_Reveal,
-
-    Illusionist_Illusion,
-
+    // Illusionist
+    Illusionist_Cast,
+    // Hex Master
+    HexMaster_Hex,
+    // Blackmailer
+    Blackmailer_Blackmail,
+    // Godfather
+    Godfather_Order,
+    // Voodoo Master
+    VoodooMaster_Voodoo,
+    // Arsonist
+    Arsonist_Douse,
+    // Necro Passing
+    NecroPassing_PassNecronomicon,
+    NecroPassing_AssignNecronomicon,
+    // Shroud
+    Shroud_Notify,
+    Shroud_Shroud,
+    // Vampire
+    Vampire_Convert,
+    // Deputy
+    Deputy_Shoot,
+    // Crusader
+    Crusader_Fortify,
+    Crusader_Notify,
+    // Ambusher
+    Ambusher_Ambush,
+    Ambusher_Notify,
+    // Other
     AssignNecronomicon,
     ApplyDeathReason,
     StartDayOne,

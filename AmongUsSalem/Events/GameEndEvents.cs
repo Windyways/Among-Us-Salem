@@ -34,7 +34,7 @@ public static class EndGameEvents
         else if (reason is GameOverReason.ImpostorsByKill or GameOverReason.ImpostorsBySabotage or GameOverReason.ImpostorsByVote or GameOverReason.CrewmateDisconnect)
         {
             winType = 2;
-            GameHistory.WinningFaction = $"<color=#{AUSColors.Mafia.ToHtmlStringRGBA()}>Mafias</color>";
+            GameHistory.WinningFaction = $"<color=#{AUSColors.Mafia.ToHtmlStringRGBA()}>Mafia</color>";
         }
 
         if (reason == CustomGameOver.GameOverReason<DrawGameOver>())

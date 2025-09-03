@@ -11,7 +11,7 @@ namespace AmongUsSalem.Roles;
 public sealed class Sheriff(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName => TouLocale.Get(TouNames.Sheriff, "Sheriff");
+    public string RoleName { get; set; } = TouLocale.Get(TouNames.Sheriff, "Sheriff");
     public string revealText => "is a protector of the town.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
@@ -45,16 +45,16 @@ public sealed class Sheriff(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#06e00c>Sheriff</color>" +
+            "<color=#06E00C>Sheriff</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Investigative</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#06E00C>Town</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Investigative</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
-            "\n<color=#ab42ef>Enchanters</color> can make their targets look suspicious." +
-            "\n<color=#dd0000>Framers</color> can make their targets look suspicious." +
-            "\n<color=#ab42ef>Illusionists</color> can make their targets look not suspicious." +
+            "\n<color=#B545FF>Enchanters</color> can make their targets look suspicious." +
+            "\n<color=#DD0000>Framers</color> can make their targets look suspicious." +
+            "\n<color=#B545FF>Illusionists</color> can make their targets look not suspicious." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -70,23 +70,20 @@ public sealed class Sheriff(IntPtr cppPtr)
             AUSAssets.Sheriff_Search)
     ];
 
-    public void OnMeetingStart(MeetingHud __instance)
-    {
-        SearchedPlayers.Clear();
-    }
-
     public static bool IsSuspicious(PlayerControl target)
     {
+        var vampires = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasModifier<VampireRecruit>() && !x.HasDied());
         if (target.AppearsEvil()) return true;
         else if (target.IsIllusioned() || (target.Data.Role is ICovenRole coven && coven.Necronomicon) || target.IsTownTraitor()/* || target.IsRole<Godfather>()*/) return false;
         else if (target.Is(Faction.Coven) || target.Is(Faction.Mafia) || target.Is(Alignment.NeutralEvil) || target.Is(Alignment.NeutralPariah)) return true;
-            /*
-            else if (target.Is(RoleEnum.BTOS2Vampire) && !Role.GetRole<BTOS2Vampire>(target).Solo) return true;
-            else if (target.Is(RoleEnum.SerialKiller) && SerialKiller.Version == SerialKiller.V.TownOfSalem) return true;
-            else if (target.Is(RoleEnum.Werewolf) && DayNightMechanic.FullMoon()) return true;
-            */
+        else if (target.IsRole<Vampire>() && vampires > 0) return true;
         
-        return false;
+            /*
+        else if (target.Is(RoleEnum.SerialKiller) && SerialKiller.Version == SerialKiller.V.TownOfSalem) return true;
+        else if (target.Is(RoleEnum.Werewolf) && DayNightMechanic.FullMoon()) return true;
+        */
+
+            return false;
     }
 
     public static string Info(PlayerControl target)
@@ -101,7 +98,6 @@ public sealed class Sheriff(IntPtr cppPtr)
     
 	public List<byte> SuspiciousPlayers = new List<byte>();
 	public List<byte> SearchedPlayers = new List<byte>();
-	public List<byte> PastSearchedPlayers = new List<byte>();
 
     public enum Version
     {
@@ -124,7 +120,7 @@ public sealed class Sheriff_Search : AmongUsSalemRoleButton<Sheriff, PlayerContr
     {
         if (Target != null)
         {
-            if (MiscUtils.SuccessfulVisit(Role.Player, Target, false, true))
+            if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
                 base.ClickHandler();
             }
@@ -138,24 +134,17 @@ public sealed class Sheriff_Search : AmongUsSalemRoleButton<Sheriff, PlayerContr
             return;
         }
 
-        var stats = Role.Player.GetPlayerStats();
-        if (stats != null)
+        Role.SearchedPlayers.Add(Target.PlayerId);
+        if (Sheriff.IsSuspicious(Target))
         {
-            stats.ReceivedInformation = true;
-
-            Role.SearchedPlayers.Add(Target.PlayerId);
-            Role.PastSearchedPlayers.Add(Target.PlayerId);
-
-            if (Sheriff.IsSuspicious(Target))
-            {
-                Role.SuspiciousPlayers.Add(Target.PlayerId);
-                stats.EvidenceAgainst.Add(Target);
-            }
-
-            MiscUtils.ShowNotification(Sheriff.Info(Target), Color.white, AUSAssets.SheriffRoleCard.LoadAsset());
-            MiscUtils.AddFakeChat(Role.Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Sheriff Info"), Sheriff.Info(Target));
+            Role.SuspiciousPlayers.Add(Target.PlayerId);
+            if (Debugger.IsDebuggerActive) if (!CalculatedVoting.QueueEvidenceAgainst.ContainsValue(Target)) CalculatedVoting.QueueEvidenceAgainst.Add(Player, Target);
         }
-        MiscUtils.PostSuccessfulVisit(Role.Player, Target, false, true);
+
+        MiscUtils.ShowNotification(Sheriff.Info(Target), Color.white, AUSAssets.SheriffRoleCard.LoadAsset());
+        MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Sheriff Info"), Sheriff.Info(Target));
+        
+        MiscUtils.PostSuccessfulVisit(Player, Target, false, true);
     }
 
     public override PlayerControl? GetTarget()
@@ -170,6 +159,6 @@ public sealed class Sheriff_Options : AbstractOptionGroup<Sheriff>
 {
     public override string GroupName => TouLocale.Get(TouNames.Sheriff, "Sheriff");
 
-    [ModdedNumberOption("<color=#06e00c>Sheriff</color> <color=#4a86e8>Search</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#06E00C>Sheriff</color> <color=#4a86e8>Search</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 }

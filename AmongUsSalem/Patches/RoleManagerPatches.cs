@@ -95,7 +95,6 @@ public static class TouRoleManagerPatches
         }
 
         CrewmateGhostRolePool.RemoveAll(x => x == (RoleTypes)RoleId.Get<HaunterRole>());
-        CustomGhostRolePool.RemoveAll(x => x == (RoleTypes)RoleId.Get<PhantomTouRole>());
     }
 
     private static void AssignRoles(List<NetworkedPlayerInfo> infected)
@@ -453,6 +452,24 @@ public static class TouRoleManagerPatches
 
         var excluded = MiscUtils.AllRoles.Where(x => x is ISpawnChange { NoSpawn: true }).Select(x => x.Role).ToList();
 
+        // traitor buckets
+        var traitorDeceptiveRoles = MiscUtils.GetRolesToAssign(Alignment.TraitorDeceptive, roleFilter);
+        var traitorPowerRoles = MiscUtils.GetRolesToAssign(Alignment.TraitorPower, roleFilter);
+        var traitorUtilityRoles = MiscUtils.GetRolesToAssign(Alignment.TraitorUtility, roleFilter);
+
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorDeceptiveRoles, RoleListOption.TraitorDeceptive, RoleListOption.CommonTraitor));
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorUtilityRoles, RoleListOption.TraitorUtility, RoleListOption.CommonTraitor));
+        var commonTraitorRoles = traitorDeceptiveRoles;
+        commonTraitorRoles.AddRange(traitorUtilityRoles);
+        
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorPowerRoles, RoleListOption.TraitorPower, RoleListOption.RandomTraitor));
+        var randomTraitorRoles = commonTraitorRoles;
+        randomTraitorRoles.AddRange(traitorPowerRoles);
+
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonTraitorRoles, RoleListOption.CommonTraitor, RoleListOption.RandomTraitor));
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomTraitorRoles, RoleListOption.RandomTraitor, RoleListOption.RandomTraitor));
+
+
         // coven buckets
         var covenDeceptionRoles = MiscUtils.GetRolesToAssign(Alignment.CovenDeception, roleFilter);
         var covenKillingRoles = MiscUtils.GetRolesToAssign(Alignment.CovenKilling, roleFilter);
@@ -496,6 +513,7 @@ public static class TouRoleManagerPatches
         randomNeutralRoles.AddRange(neutralEvil);
         randomNeutralRoles.AddRange(neutralKilling);
         randomNeutralRoles.AddRange(neutralPariah);
+        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralOutlier, RoleListOption.NeutralOutlier, RoleListOption.NeutralOutlier));
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomNeutralRoles, RoleListOption.RandomNeutral, RoleListOption.RandomNeutral));
 
         // town buckets

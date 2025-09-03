@@ -9,15 +9,15 @@ public sealed class RoleOptions : AbstractOptionGroup
 {
     public static readonly string[] OptionStrings =
     [
-        "<color=#06e00c>Town</color> <color=#4a86e8>Investigative</color>",
-        "<color=#06e00c>Town</color> <color=#4a86e8>Killing</color>",
-        "<color=#06e00c>Town</color> <color=#4a86e8>Protective</color>",
-        "<color=#06e00c>Town</color> <color=#4a86e8>Outlier</color>",
-        "<color=#06e00c>Town</color> <color=#4a86e8>Power</color>",
-        "<color=#06e00c>Town</color> <color=#4a86e8>Support</color>",
-        "<color=#06e00c>Town</color> <color=#4a86e8>Utility</color>",
-        "<color=#4a86e8>Random</color> <color=#06e00c>Town</color>",
-        "<color=#4a86e8>Common</color> <color=#06e00c>Town</color>",
+        "<color=#06E00C>Town</color> <color=#4a86e8>Investigative</color>",
+        "<color=#06E00C>Town</color> <color=#4a86e8>Killing</color>",
+        "<color=#06E00C>Town</color> <color=#4a86e8>Protective</color>",
+        "<color=#06E00C>Town</color> <color=#4a86e8>Outlier</color>",
+        "<color=#06E00C>Town</color> <color=#4a86e8>Power</color>",
+        "<color=#06E00C>Town</color> <color=#4a86e8>Support</color>",
+        "<color=#06E00C>Town</color> <color=#4a86e8>Utility</color>",
+        "<color=#4a86e8>Random</color> <color=#06E00C>Town</color>",
+        "<color=#4a86e8>Common</color> <color=#06E00C>Town</color>",
 
         "<color=#a9a9a9>Neutral</color> <color=#ff004e>Apocalypse</color>",
         "<color=#a9a9a9>Neutral</color> <color=#4a86e8>Benign</color>",
@@ -28,18 +28,18 @@ public sealed class RoleOptions : AbstractOptionGroup
         "<color=#a9a9a9>Neutral</color> <color=#4a86e8>Pariah</color>",
         "<color=#4a86e8>Random</color> <color=#a9a9a9>Neutral</color>",
         
-        "<color=#dd0000>Mafia</color> <color=#4a86e8>Deception</color>",
-        "<color=#dd0000>Mafia</color> <color=#4a86e8>Killing</color>",
-        "<color=#dd0000>Mafia</color> <color=#4a86e8>Support</color>",
-        "<color=#4a86e8>Random</color> <color=#dd0000>Mafia</color>",
-        "<color=#4a86e8>Common</color> <color=#dd0000>Mafia</color>",
+        "<color=#DD0000>Mafia</color> <color=#4a86e8>Deception</color>",
+        "<color=#DD0000>Mafia</color> <color=#4a86e8>Killing</color>",
+        "<color=#DD0000>Mafia</color> <color=#4a86e8>Support</color>",
+        "<color=#4a86e8>Random</color> <color=#DD0000>Mafia</color>",
+        "<color=#4a86e8>Common</color> <color=#DD0000>Mafia</color>",
         
-        "<color=#ab42ef>Coven</color> <color=#4a86e8>Deception</color>",
-        "<color=#ab42ef>Coven</color> <color=#4a86e8>Killing</color>",
-        "<color=#ab42ef>Coven</color> <color=#4a86e8>Outlier</color>",
-        "<color=#ab42ef>Coven</color> <color=#4a86e8>Power</color>",
-        "<color=#ab42ef>Coven</color> <color=#4a86e8>Utility</color>",
-        "<color=#4a86e8>Random</color> <color=#ab42ef>Coven</color>",
+        "<color=#B545FF>Coven</color> <color=#4a86e8>Deception</color>",
+        "<color=#B545FF>Coven</color> <color=#4a86e8>Killing</color>",
+        "<color=#B545FF>Coven</color> <color=#4a86e8>Outlier</color>",
+        "<color=#B545FF>Coven</color> <color=#4a86e8>Power</color>",
+        "<color=#B545FF>Coven</color> <color=#4a86e8>Utility</color>",
+        "<color=#4a86e8>Random</color> <color=#B545FF>Coven</color>",
         "<color=#4a86e8>Common</color> <color=#ab42ef>Coven</color>",
         
         "<color=#ce36fa>Traitor</color> <color=#4a86e8>Deceptive</color>",
@@ -49,7 +49,7 @@ public sealed class RoleOptions : AbstractOptionGroup
         "<color=#4a86e8>Common</color> <color=#ce36fa>Traitor</color>",
 
         "Any",
-        "Not <color=#dd0000>Mafia</color>"
+        "Not <color=#DD0000>Mafia</color>"
     ];
 
     public override string GroupName => "Role";

@@ -11,8 +11,8 @@ namespace AmongUsSalem.Roles;
 public sealed class Veteran(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole, IContinueGame
 {
-    public bool continueGame => Charges > 0 && !isAlerted;
-    public string RoleName => TouLocale.Get(TouNames.Veteran, "Veteran");
+    public bool continueGame => Charges > 0 || isAlerted;
+    public string RoleName { get; set; } = TouLocale.Get(TouNames.Veteran, "Veteran");
     public string revealText => "is a paranoid war hero.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
@@ -46,11 +46,11 @@ public sealed class Veteran(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#06e00c>Veteran</color>" +
+            "<color=#06E00C>Veteran</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Killing</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#06E00C>Town</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
             "\nYou will know if you shoot any visitors to anyone who visits you." +
@@ -68,7 +68,7 @@ public sealed class Veteran(IntPtr cppPtr)
     ];
 
 
-    public void OnMeetingStart(MeetingHud __instance)
+    public override void OnMeetingStart()
     {
         isAlerted = false;
     }
@@ -105,9 +105,12 @@ public sealed class Veteran(IntPtr cppPtr)
     {
         if (target.AmOwner())
         {
-            if (target.CanKill(visitor)) target.RpcCustomMurder(visitor);
+            if (target.CanKill(visitor))
+            {
+                MiscUtils.ShowNotification(ShotInfo(), Color.white, AUSAssets.VeteranRoleCard.LoadAsset());
+                MiscUtils.RpcApplyDeathReason(target, visitor, DeathReasonShow.ShotByAVeteran);
+            }
 
-            MiscUtils.ShowNotification(ShotInfo(), Color.white, AUSAssets.VeteranRoleCard.LoadAsset());
             MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Veteran Info"), ShotInfo());
 
             if (attacking)
@@ -141,7 +144,7 @@ public sealed class Veteran_Alert : AmongUsSalemRoleButton<Veteran>
 
     public override void ClickHandler()
     {
-        if (MiscUtils.SuccessfulVisit(Role.Player, Role.Player, false, false))
+        if (MiscUtils.SuccessfulVisit(Player, Player, false, false))
         {
             base.ClickHandler();
         }
@@ -155,8 +158,8 @@ public sealed class Veteran_Alert : AmongUsSalemRoleButton<Veteran>
 
     protected override void OnClick()
     {
-        Veteran.RpcVeteran_Alert(Role.Player);
-        MiscUtils.PostSuccessfulVisit(Role.Player, Role.Player, false, false);
+        Veteran.RpcVeteran_Alert(Player);
+        MiscUtils.PostSuccessfulVisit(Player, Player, false, false);
     }
 }
 
@@ -166,9 +169,9 @@ public sealed class Veteran_Options : AbstractOptionGroup<Veteran>
 {
     public override string GroupName => TouLocale.Get(TouNames.Veteran, "Veteran");
 
-    [ModdedNumberOption("<color=#06e00c>Veteran</color> <color=#4a86e8>Alert</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#06E00C>Veteran</color> <color=#4a86e8>Alert</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 
-    [ModdedNumberOption("<color=#06e00c>Veteran</color> Max <color=#4a86e8>Alerts</color>", 1f, 30f, 1f)]
+    [ModdedNumberOption("<color=#06E00C>Veteran</color> Max <color=#4a86e8>Alerts</color>", 1f, 30f, 1f)]
     public float Charges { get; set; } = 3;
 }

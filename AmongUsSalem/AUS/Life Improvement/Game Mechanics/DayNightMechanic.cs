@@ -7,6 +7,7 @@ namespace AmongUsSalem.LifeImprovement.GameMechanics;
 
 public static class DayNightMechanic
 {
+    public static float PostMeetingIntroTime = 7f;
     public static int DayCount;
     public static int NightCount;
     public static float NightTimer;
@@ -25,23 +26,6 @@ public static class DayNightMechanic
     {
         DayCount = 0;
         NightCount = 0;
-    }
-
-
-    public static IEnumerator DelayMeetingStart(MeetingHud instance)
-    {
-        yield return new WaitForSeconds(0.1f);
-
-        foreach (var role in GameHistory.AllRoles)
-        {
-            if (!role || role is not IAUSRole ausRole)
-            {
-                continue;
-            }
-
-            AUSPlugin.DebugLogMessage("On Meeting Start has been called.");
-            ausRole.OnMeetingStart(instance);
-        }
     }
 
     #region RPCs
@@ -65,8 +49,7 @@ public static class DayNightMechanic
 
     #region Events
     #endregion
-
-    [RegisterEvent]
+    [RegisterEvent(-1)]
     public static void StartMeetingEventHandler(StartMeetingEvent @event)
     {
         DayCount++;
@@ -82,11 +65,11 @@ public static class DayNightMechanic
             ausRole.Defense = ausRole.ogDefense;
             ausRole.EtherealDefense = ausRole.ogEtherealDefense;
         }
-
-        Coroutines.Start(DelayMeetingStart(@event.MeetingHud));
+        
+        Statistics.HasMurder.Clear();
     }
 
-    [RegisterEvent]
+    [RegisterEvent(-1)]
     public static void RoundStartHandler(RoundStartEvent @event)
     {
         if (@event.TriggeredByIntro)
@@ -105,6 +88,8 @@ public static class DayNightMechanic
             return; // Only run when game starts.
         }
 
+        //if (TutorialManager.InstanceExists) PathfindingExperiment.BuildRoomGraphOnce();
+        //else 
         StartDayOne(PlayerControl.LocalPlayer);
     }
 }

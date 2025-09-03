@@ -10,7 +10,7 @@ namespace AmongUsSalem.Roles;
 public sealed class Pilgrim(IntPtr cppPtr) 
     : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable
 {
-    public string RoleName => TouLocale.Get(TouNames.Pilgrim, "Pilgrim");
+    public string RoleName { get; set; } = TouLocale.Get(TouNames.Pilgrim, "Pilgrim");
     public string revealText => "placeholder.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
@@ -44,11 +44,11 @@ public sealed class Pilgrim(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#06e00c>Pilgrim</color>" +
+            "<color=#06E00C>Pilgrim</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Outlier</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#06E00C>Town</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Outlier</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
             "\nNone." +

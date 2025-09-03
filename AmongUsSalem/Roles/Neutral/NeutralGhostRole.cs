@@ -10,14 +10,13 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles.Neutral;
 
-public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), ITOURole
+public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
 {
     private Minigame _hauntMenu = null!;
 
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public override bool IsDead => true;
     public override bool IsAffectedByComms => false;
 
@@ -43,6 +42,13 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), ITOURole
             ? custom.Configuration.RoleHintType
             : RoleHintType.None
     };
+
+    public Attack ogAttack { get; set; } = Attack.None;
+    public Defense ogDefense { get; set; } = Defense.None;
+    public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
+    Color IAUSRole.RoleColor { get; set; } = AUSColors.Town;
+    public Faction RoleFaction { get; set; } = Faction.Neutral;
+    string IAUSRole.RoleName { get; set; } = "Neutral Ghost";
 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()

@@ -33,7 +33,6 @@ public sealed class AmbusherRole(IntPtr cppPtr)
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public DoomableType DoomHintType => DoomableType.Fearmonger;
 
     public string RoleName => TouLocale.Get(TouNames.Ambusher, "Ambusher");
@@ -166,9 +165,6 @@ public sealed class AmbusherRole(IntPtr cppPtr)
 
         if (body != null)
         {
-            DeathHandlerModifier.UpdateDeathHandler(target, "Ambushed", DeathEventHandlers.CurrentRound,
-                DeathHandlerOverride.SetTrue, $"By {ambusher.Data.PlayerName}", lockInfo: DeathHandlerOverride.SetTrue);
-            
             var bodyPos = body.transform.position;
             if (MeetingHud.Instance == null && ambusher.AmOwner)
             {

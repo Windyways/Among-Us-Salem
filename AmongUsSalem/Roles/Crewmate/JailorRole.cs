@@ -29,7 +29,6 @@ public sealed class JailorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
     public string revealText => "";
     private GameObject? executeButton;
     private TMP_Text? usesText;
@@ -242,7 +241,6 @@ public sealed class JailorRole(IntPtr cppPtr) : CrewmateRole(cppPtr), ITouCrewRo
                 }
 
                 Player.RpcCustomMurder(Jailed, createDeadBody: false, teleportMurderer: false);
-                DeathHandlerModifier.RpcUpdateDeathHandler(Jailed, "Executed", DeathEventHandlers.CurrentRound, DeathHandlerOverride.SetFalse, $"By {Player.Data.PlayerName}", lockInfo: DeathHandlerOverride.SetTrue);
             }
 
             var notif1 = Helpers.CreateAndShowNotification(

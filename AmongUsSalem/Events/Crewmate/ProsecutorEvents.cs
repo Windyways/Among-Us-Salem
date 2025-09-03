@@ -68,11 +68,6 @@ public static class ProsecutorEvents
             
             if (hasProsecuted)
             {
-
-                DeathHandlerModifier.UpdateDeathHandler(player, "Prosecuted", DeathEventHandlers.CurrentRound,
-                    DeathHandlerOverride.SetFalse, $"By {pros.Player.Data.PlayerName}",
-                    lockInfo: DeathHandlerOverride.SetTrue);
-
                 if (pros.Player.TryGetModifier<AllianceGameModifier>(out var allyMod) && !allyMod.GetsPunished)
                 {
                     return;
@@ -88,9 +83,6 @@ public static class ProsecutorEvents
                     if (OptionGroupSingleton<ProsecutorOptions>.Instance.ExileOnCrewmate)
                     {
                         pros.Player.Exiled();
-                        DeathHandlerModifier.UpdateDeathHandler(pros.Player, "Punished",
-                            DeathEventHandlers.CurrentRound, DeathHandlerOverride.SetFalse,
-                            lockInfo: DeathHandlerOverride.SetTrue);
                     }
                     else
                     {

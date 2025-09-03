@@ -9,10 +9,11 @@ namespace AmongUsSalem.Roles;
 #region Mayor
 #endregion
 public sealed class Mayor(IntPtr cppPtr) 
-    : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable
+    : CrewmateRole(cppPtr), IAUSRole, IRevealable, IWikiDiscoverable, IContinueGame
 {
-    public string RoleName => TouLocale.Get(TouNames.Mayor, "Mayor");
-    public string revealText => "placeholder.";
+    public bool continueGame => true;
+    public string RoleName { get; set; } = TouLocale.Get(TouNames.Mayor, "Mayor");
+    public string revealText => "is the leader of the town.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -30,6 +31,7 @@ public sealed class Mayor(IntPtr cppPtr)
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     
     public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
+    public bool IsRevealed { get; set; }
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -45,14 +47,15 @@ public sealed class Mayor(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#06e00c>Mayor</color>" +
+            "<color=#06E00C>Mayor</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#06e00c>Town</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06e00c>Town</color> <color=#1e45d4>Power</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#06E00C>Town</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Power</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
-            "\nNone." +
+            "\nYou cannot reveal on day one." +
+            "\nYou will stop gaining additional votes during a TT Hunt." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -60,9 +63,10 @@ public sealed class Mayor(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Reveal",
-            "If you go on Alert at night you will deal a Powerful Attack to." +
-            "\nYou gain Basic Defense while on Alert.",
-            AUSAssets.Veteran_Alert)
+            "Once you have revealed youtself as Mayor, you will gain an extra vote." +
+            "\nEach day after you reveal, you will permanently gain an extra vote." +
+            "\nYou cannot reveal if you are on trial.",
+            AUSAssets.Mayor_Reveal)
     ];
 
     [MethodRpc((uint)AUSRpc.Mayor_Reveal, SendImmediately = true)]
@@ -75,8 +79,10 @@ public sealed class Mayor(IntPtr cppPtr)
         }
 
         var mayor = player.GetRole<Mayor>();
-        mayor.isRevealed = true;
+        mayor.IsRevealed = true;
         mayor.Votes++;
+        
+        AUSAssets.PlaySound(AUSAssets.Mayor_Reveal_SFX, 2);
         
         MiscUtils.ShowNotification(Info(player), Color.white, AUSAssets.MayorRoleCard.LoadAsset());
         MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Mayor Info"), Info(player));
@@ -84,7 +90,7 @@ public sealed class Mayor(IntPtr cppPtr)
 
     public static string Info(PlayerControl player)
     {
-        return player.GetDefaultAppearance().PlayerName + " has Revealed themself as The <b><color=#06e00c>Mayor</color></b>!";
+        return player.GetDefaultAppearance().PlayerName + " has Revealed themself as The <b><color=#06E00C>Mayor</color></b>!";
     }
 
     public override void Initialize(PlayerControl player)
@@ -97,7 +103,7 @@ public sealed class Mayor(IntPtr cppPtr)
                 this,
                 ClickGuess,
                 MeetingAbilityType.Click,
-                AUSAssets.Conjurer_Conjure,
+                AUSAssets.Mayor_Reveal,
                 null!,
                 IsExempt)
             {
@@ -106,14 +112,16 @@ public sealed class Mayor(IntPtr cppPtr)
         }
     }
 
-    public void OnMeetingStart(MeetingHud __instance)
+    public override void OnMeetingStart()
     {
+        AUSPlugin.DebugLogMessage("Mayor OnMeetingStart called!");
+        SmartMayor.Start();
+
+        if (IsRevealed) Votes++;
         if (Player.AmOwner)
         {
-            meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && !isRevealed && DayNightMechanic.DayCount >= 2);
+            Coroutines.Start(meetingMenu.GenButtonsDelay(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && !IsRevealed && DayNightMechanic.DayCount >= 2));
         }
-
-        if (isRevealed) Votes++;
     }
 
     public override void OnVotingComplete()
@@ -149,12 +157,10 @@ public sealed class Mayor(IntPtr cppPtr)
 
     public bool IsExempt(PlayerVoteArea voteArea)
     {
-        return voteArea?.TargetPlayerId == Player.PlayerId || Player.Data.IsDead || voteArea!.AmDead ||
-               voteArea.GetPlayer() != Player;
+        return voteArea?.TargetPlayerId != Player.PlayerId || Player.Data.IsDead || voteArea!.AmDead;
     }
 
-    private MeetingMenu meetingMenu;
-    public bool isRevealed;
+    public MeetingMenu meetingMenu;
     public int Votes = 1;
 }
 
@@ -163,7 +169,7 @@ public static class Mayor_Events
     [RegisterEvent]
     public static void HandleVoteEvent(HandleVoteEvent @event)
     {
-        if (@event.VoteData.Owner.Data.Role is not Mayor mayor || !mayor.isRevealed)
+        if (@event.VoteData.Owner.Data.Role is not Mayor mayor || !mayor.IsRevealed)
         {
             return;
         }

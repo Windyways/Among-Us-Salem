@@ -142,22 +142,30 @@ public static class LogicGameFlowPatches
             return false;
         }
 
-        // End game if there are 3 players alive and 2 are lovers.
-        var activeLovers = ModifierUtils.GetActiveModifiers<LoverModifier>().ToArray();
-        if (!ExileController.Instance && LoverModifier.WinConditionMet(activeLovers))
+        if (IsInStalemate())
         {
-            CustomGameOver.Trigger<LoverGameOver>(activeLovers.Select(x => x.Player.Data).ToArray());
+            var randomPlayer = PlayerControl.AllPlayerControls.ToArray().Where(x =>
+                !x.Data.Role.DidWin(CustomGameOver.GameOverReason<DrawGameOver>()) && !x.GetModifiers<GameModifier>()
+                    .Any(x => x.DidWin(CustomGameOver.GameOverReason<DrawGameOver>()) == true)).Random();
+            CustomGameOver.Trigger<DrawGameOver>([randomPlayer != null ? randomPlayer.Data : PlayerControl.LocalPlayer.Data]);
+        }
+
+        // If any traitor win condition is met -> game over
+        if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
+            .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet() && role.RoleFaction == Faction.Traitor) is { } winner2)
+        {
+            Logger<AUSPlugin>.Message($"Game Over");
+            CustomGameOver.Trigger<TraitorGameOver>([winner2.Player.Data]);
+
             return false;
         }
 
         // If any coven win condition is met -> game over
-        // Using Alignment as a quick and basic way to prioritise NeutralEvil wins over NeutralKiller wins
         if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
-                .OrderBy(x => (x as IAUSRole)!.RoleFaction == Faction.Coven)
-                .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet()) is { } winner2)
+            .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet() && role.RoleFaction == Faction.Coven) is { } winner4)
         {
             Logger<AUSPlugin>.Message($"Game Over");
-            CustomGameOver.Trigger<CovenGameOver>([winner2.Player.Data]);
+            CustomGameOver.Trigger<CovenGameOver>([winner4.Player.Data]);
 
             return false;
         }
@@ -187,12 +195,19 @@ public static class LogicGameFlowPatches
             var randomPlayer = PlayerControl.AllPlayerControls.ToArray().Where(x =>
                 !x.Data.Role.DidWin(CustomGameOver.GameOverReason<DrawGameOver>()) && !x.GetModifiers<GameModifier>()
                     .Any(x => x.DidWin(CustomGameOver.GameOverReason<DrawGameOver>()) == true)).Random();
-            CustomGameOver.Trigger<DrawGameOver>([
-                randomPlayer != null ? randomPlayer.Data : PlayerControl.LocalPlayer.Data
-            ]);
+            CustomGameOver.Trigger<DrawGameOver>([randomPlayer != null ? randomPlayer.Data : PlayerControl.LocalPlayer.Data]);
         }
 
         return true;
+    }
+
+    public static bool IsInStalemate()
+    {
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        var shrouds = PlayerControl.AllPlayerControls.ToArray().Count(x => x.IsRole<Shroud>() && !x.HasDied());
+        var vampires = PlayerControl.AllPlayerControls.ToArray().Count(x => x.IsRole<Vampire>() && !x.HasDied());
+        if (alivePlayers == 2 && shrouds == 1 && vampires == 1) return true;
+        return false;
     }
 
     [HarmonyPostfix]

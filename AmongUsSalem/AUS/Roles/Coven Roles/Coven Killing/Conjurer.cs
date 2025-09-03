@@ -11,7 +11,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Conjurer(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
 {
-    public string RoleName => TouLocale.Get(TouNames.Conjurer, "Conjurer");
+    public string RoleName { get; set; } = TouLocale.Get(TouNames.Conjurer, "Conjurer");
     public string revealText => "is able to pull items out of thin air.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
@@ -36,6 +36,8 @@ public sealed class Conjurer(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.ConjurerRoleCard,
+        CanUseSabotage = true,
+        GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
     [HideFromIl2Cpp]
@@ -47,15 +49,17 @@ public sealed class Conjurer(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#ab42ef>Conjurer</color>" +
+            "<color=#B545FF>Conjurer</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#ab42ef>Coven</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#ab42ef>Coven</color> <color=#1e45d4>Killing</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#B545FF>Coven</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#B545FF>Coven</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill all who would oppose the Coven." +
             $"\n\nAttributes:" +
-            "\nYou can not conjure a meteor Day One." +
-            "\nWith the Necronomicon you may Basic Attack someone at Night." +
+            "\nYou cannot Conjure Day 1." +
+            "\nYou have access to Coven chat." +
+            "\nWith the Necronomicon, you will also deal a Basic Attack to your target." +
+            "\nYou will obtain the Necronomicon 2nd, after the <color=#B545FF>Coven Leader</color>." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -63,9 +67,8 @@ public sealed class Conjurer(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Conjure",
-            "Conjure a meteor to attack a player during the day." +
-            "\n\nThe meteor will deal a Powerful Attack to your target." +
-            "\n\nYour identity will not be revealed when you attack.",
+            "You can Conjure a meteor upon a player during the Day." +
+            "\n\nYou will deal a Powerful Attack to your target.",
             AUSAssets.Conjurer_Conjure)
     ];
 
@@ -143,11 +146,14 @@ public sealed class Conjurer(IntPtr cppPtr)
         }
     }
 
-    public void OnMeetingStart(MeetingHud __instance)
+    public override void OnMeetingStart()
     {
+        AUSPlugin.DebugLogMessage("Conjurer OnMeetingStart called!");
+        SmartConjurer.Start();
+
         if (Player.AmOwner)
         {
-            meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && Charges > 0 && DayNightMechanic.DayCount >= 2);
+            Coroutines.Start(meetingMenu.GenButtonsDelay(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && Charges > 0 && DayNightMechanic.DayCount >= 2));
         }
     }
 
@@ -181,8 +187,6 @@ public sealed class Conjurer(IntPtr cppPtr)
             MiscUtils.RpcApplyDeathReason(Player, target, DeathReasonShow.KilledByAConjurer, false, false);
             RpcConjurer_Conjure(Player, target);
             Charges--;
-
-            // indocrinatedPlayer = target; // Create an RPC for this.
         }
 
         if (Player.AmOwner)
@@ -217,7 +221,7 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
     {
         if (Target != null)
         {
-            if (MiscUtils.SuccessfulVisit(Role.Player, Target, true, true))
+            if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
                 base.ClickHandler();
             }
@@ -231,9 +235,9 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
             return;
         }
 
-        if (Role.Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Role.Player, Target, DeathReasonShow.KilledByTheCoven);
-        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Role.Player, Target), Color.white);
-        MiscUtils.PostSuccessfulVisit(Role.Player, Target, true, true);
+        if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByTheCoven);
+        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+        MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
     }
 
     public override PlayerControl? GetTarget()
@@ -250,7 +254,7 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
 
     public override bool CanUse()
     {
-        return base.CanUse() && Role.Player.Data.Role is ICovenRole coven && coven.Necronomicon;
+        return base.CanUse() && Player.Data.Role is ICovenRole coven && coven.Necronomicon;
     }
 }
 
@@ -260,12 +264,12 @@ public sealed class Conjurer_Options : AbstractOptionGroup<Conjurer>
 {
     public override string GroupName => TouLocale.Get(TouNames.Conjurer, "Conjurer");
 
-    [ModdedNumberOption("<color=#ab42ef>Conjurer</color> <color=#ab42ef>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#B545FF>Conjurer</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 
-    [ModdedNumberOption("<color=#ab42ef>Conjurer</color> Max <color=#ab42ef>Conjures</color>", 1f, 15f, 1f)]
+    [ModdedNumberOption("<color=#B545FF>Conjurer</color> Max <color=#4a86e8>Conjures</color>", 1f, 15f, 1f)]
     public float Charges { get; set; } = 1f;
 
-    [ModdedToggleOption("<color=#ab42ef>Conjurer</color> Clears Votes After <color=#ab42ef>Conjure</color>")]
+    [ModdedToggleOption("<color=#B545FF>Conjurer</color> Clears Votes After <color=#4a86e8>Conjure</color>")]
     public bool ClearVotes { get; set; } = true;
 }

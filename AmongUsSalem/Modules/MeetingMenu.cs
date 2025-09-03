@@ -4,6 +4,7 @@ using Reactor.Utilities.Extensions;
 using AmongUsSalem.Utilities;
 using UnityEngine;
 using UObject = UnityEngine.Object;
+using System.Collections;
 
 namespace AmongUsSalem.Modules;
 
@@ -33,7 +34,7 @@ public sealed class MeetingMenu : IDisposable
         DisabledSprite = disabledSprite;
         ActiveColor = activeColor ?? Color.green;
         DisabledColor = disabledColor ?? Color.white;
-        HoverColor = hoverColor ?? AUSColors.Mafia;
+        HoverColor = hoverColor ?? AUSColors.Town;
         Type = abilityType;
         Position = position ?? new Vector3(-0.95f, 0.03f, -3f);
 
@@ -115,6 +116,24 @@ public sealed class MeetingMenu : IDisposable
         targetBox.transform.GetChild(0).gameObject.Destroy();
         Buttons.Add(voteArea.TargetPlayerId, targetBox);
         ButtonSprites.Add(voteArea.TargetPlayerId, renderer);
+    }
+
+    public IEnumerator GenButtonsDelay(MeetingHud meeting, bool usable)
+    {
+        yield return new WaitForSeconds(3f);
+
+        HideButtons();
+
+        Logger<AUSPlugin>.Message($"MeetingMenu.GenButtons '{Owner.Player.Data.PlayerName}' AmOwner: {Owner.Player.AmOwner}");
+        if (!usable || !Owner.Player.AmOwner)
+        {
+            yield break;
+        }
+
+        Actives.Clear();
+        Buttons.Clear();
+        ButtonSprites.Clear();
+        meeting.playerStates.ToList().ForEach(x => GenButton(x, meeting));
     }
 
     public void GenButtons(MeetingHud meeting, bool usable)

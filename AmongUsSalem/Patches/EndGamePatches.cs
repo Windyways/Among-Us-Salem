@@ -104,7 +104,7 @@ public static class EndGamePatches
                 }
             }
 
-            if (playerControl.IsRole<PhantomTouRole>() || playerTeam == ModdedRoleTeams.Crewmate)
+            if (playerTeam == ModdedRoleTeams.Crewmate)
             {
                 playerRoleString.Append(AUSPlugin.Culture,
                     $" {playerControl.TaskInfo()}");
@@ -115,56 +115,16 @@ public static class EndGamePatches
 
             if (killedPlayers > 0 && !playerControl.IsCrewmate() && !playerControl.Is(Alignment.NeutralEvil))
             {
-                playerRoleString.Append(AUSPlugin.Culture,
-                    $" |{AUSColors.Mafia.ToTextColor()} Kills: {killedPlayers}</color>");
+                playerRoleString.Append(AUSPlugin.Culture, $" |{AUSColors.Mafia.ToTextColor()} Kills: {killedPlayers}</color>");
             }
 
-            if (GameHistory.PlayerStats.TryGetValue(playerControl.PlayerId, out var stats))
-            {
-                if (killedPlayers > 0 && playerControl.IsCrewmate() && stats.CorrectKills <= 0 &&
-                    stats.IncorrectKills <= 0 && !playerControl.Is(Alignment.NeutralEvil))
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" |{AUSColors.Mafia.ToTextColor()} Kills: {killedPlayers}</color>");
-                }
-
-                if (stats.CorrectKills > 0)
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" | {Color.green.ToTextColor()}Kills: {stats.CorrectKills}</color>");
-                }
-
-                if (stats.IncorrectKills > 0)
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" | {AUSColors.Mafia.ToTextColor()}Mis-kills: {stats.IncorrectKills}</color>");
-                }
-
-                if (stats.CorrectAssassinKills > 0)
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" | {Color.green.ToTextColor()}Guesses: {stats.CorrectAssassinKills}</color>");
-                }
-
-                if (stats.IncorrectAssassinKills > 0)
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" | {AUSColors.Mafia.ToTextColor()}Misguesses: {stats.IncorrectAssassinKills}</color>");
-                }
-            }
             if (playerControl.TryGetModifier<DeathHandlerModifier>(out var deathHandler))
             {
-                playerRoleString.Append(AUSPlugin.Culture,
-                    $" | {Color.yellow.ToTextColor()}{deathHandler.CauseOfDeath}</color>");
-                if (deathHandler.KilledBy != string.Empty) playerRoleString.Append(AUSPlugin.Culture,
-                    $" {deathHandler.KilledBy}");
-                playerRoleString.Append(AUSPlugin.Culture,
-                    $" (R{deathHandler.RoundOfDeath})");
+                playerRoleString.Append(AUSPlugin.Culture, $" | {deathHandler.DeathColor.ToTextColor()}{deathHandler.CauseOfDeath.ToSpacedString()}</color>");
             }
             else
             {
-                playerRoleString.Append(AUSPlugin.Culture,
-                    $" | {Color.yellow.ToTextColor()}Alive</color>");
+                playerRoleString.Append(AUSPlugin.Culture, $" | {AUSColors.Town.ToTextColor()}Alive</color>");
             }
 
             var playerName = new StringBuilder();
@@ -180,19 +140,6 @@ public static class EndGamePatches
             {
                 playerName.Append(playerControl.Data.PlayerName);
                 RoleReferences.UpdateRoleResult(playerControl.Data.Role, killedPlayers, false, false);
-            }
-
-            var alliance = playerControl.GetModifiers<AllianceGameModifier>().FirstOrDefault();
-            if (alliance != null)
-            {
-                var modColor = MiscUtils.GetRoleColour(alliance.ModifierName.Replace(" ", string.Empty));
-                if (alliance is IColoredModifier colorMod)
-                {
-                    modColor = colorMod.ModifierColor;
-                }
-
-                playerName.Append(AUSPlugin.Culture,
-                    $" <b>{modColor.ToTextColor()}<size=60%>{alliance.Symbol}</size></color></b>");
             }
 
             EndGameData.PlayerRecords.Add(new EndGameData.PlayerRecord
@@ -407,13 +354,6 @@ public static class EndGamePatches
                 winnerArray.ToList().Remove(realPlayer);
             }
         }
-        //{
-        //    array[0].SetFlipX(true);
-
-        //    array[0].gameObject.transform.position -= new Vector3(1.5f, 0f, 0f);
-        //    array[0].cosmetics.skin.transform.localScale = new Vector3(-1, 1, 1);
-        //    array[0].cosmetics.nameText.color = new Color(1f, 0.4f, 0.8f, 1f);
-        //}
     }
 
     public static void AfterEndGameSetup(EndGameManager instance)
@@ -425,6 +365,7 @@ public static class EndGamePatches
                 text.text = "<size=4>Town Win!</size>";
                 text.color = AUSColors.Town;
                 instance.BackgroundBar.material.SetColor(ShaderID.Color, AUSColors.Town);
+                AUSAssets.PlaySound(AUSAssets.TownWin_SFX);
                 break;
             case 2:
                 text.text = "<size=4>Mafias Win!</size>";

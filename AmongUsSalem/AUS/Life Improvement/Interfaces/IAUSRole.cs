@@ -6,7 +6,8 @@ using UnityEngine;
 namespace AmongUsSalem.Roles;
 
 public interface IAUSRole : ICustomRole
-{
+{ 
+    string RoleName { get; set; }
     Color RoleColor { get; set; }
 
     Faction RoleFaction { get; set; }
@@ -23,8 +24,6 @@ public interface IAUSRole : ICustomRole
     Defense ogDefense { get; set; }
     EtherealDefense ogEtherealDefense { get; set; }
 
-    DeathReasonShow deathReasonShow { get; set; }
-
     void ApplyDefense(Defense defense, bool perma = false)
     {
         if (Defense < defense) Defense = defense;
@@ -38,10 +37,6 @@ public interface IAUSRole : ICustomRole
 
 
     void OnDeath(DeathReason? reason)
-    {
-    }
-
-    void OnMeetingStart(MeetingHud __instance)
     {
     }
 
@@ -134,11 +129,11 @@ public interface IAUSRole : ICustomRole
 
         if (alignment.Contains("Town"))
         {
-            alignment = alignment.Replace("Town", "<color=#06e00c>Town");
+            alignment = alignment.Replace("Town", "<color=#06E00C>Town");
         }
         else if (alignment.Contains("Mafia"))
         {
-            alignment = alignment.Replace("Mafia", "<color=#dd0000>Mafia");
+            alignment = alignment.Replace("Mafia", "<color=#DD0000>Mafia");
         }
         else if (alignment.Contains("Neutral"))
         {
@@ -146,7 +141,7 @@ public interface IAUSRole : ICustomRole
         }
         else if (alignment.Contains("Coven"))
         {
-            alignment = alignment.Replace("Coven", "<color=#ab42ef>Coven");
+            alignment = alignment.Replace("Coven", "<color=#B545FF>Coven");
         }
         else if (alignment.Contains("Traitor"))
         {
@@ -194,11 +189,11 @@ public interface IAUSRole : ICustomRole
 
         if (alignment.Contains("Town"))
         {
-            alignment = alignment.Replace("Town", "<color=#06e00c>Town");
+            alignment = alignment.Replace("Town", "<color=#06E00C>Town");
         }
         else if (alignment.Contains("Mafia"))
         {
-            alignment = alignment.Replace("Mafia", "<color=#dd0000>Mafia");
+            alignment = alignment.Replace("Mafia", "<color=#DD0000>Mafia");
         }
         else if (alignment.Contains("Neutral"))
         {
@@ -206,7 +201,7 @@ public interface IAUSRole : ICustomRole
         }
         else if (alignment.Contains("Coven"))
         {
-            alignment = alignment.Replace("Coven", "<color=#ab42ef>Coven");
+            alignment = alignment.Replace("Coven", "<color=#B545FF>Coven");
         }
         else if (alignment.Contains("Traitor"))
         {

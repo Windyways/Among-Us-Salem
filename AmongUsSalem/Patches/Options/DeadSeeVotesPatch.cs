@@ -16,17 +16,15 @@ public static class DeadSeeVoteColorsPatch
     {
         var spriteRenderer = Object.Instantiate(__instance.PlayerVotePrefab);
         var player = MiscUtils.PlayerById(voterPlayer.PlayerId);
-        if (PlayerControl.LocalPlayer.Data.Role is ProsecutorRole)
+        if (Debugger.IsDebuggerActive && player != null)
         {
-            PlayerMaterial.SetColors(voterPlayer.DefaultOutfit.ColorId, spriteRenderer);
+            if (player.Is(Faction.Town)) PlayerMaterial.SetColors(AUSColors.Town, spriteRenderer);
+            if (player.Is(Faction.Neutral)) PlayerMaterial.SetColors(AUSColors.Neutral, spriteRenderer);
+            if (player.Is(Faction.Mafia)) PlayerMaterial.SetColors(AUSColors.Mafia, spriteRenderer);
+            if (player.Is(Faction.Coven)) PlayerMaterial.SetColors(AUSColors.Coven, spriteRenderer);
+            if (player.Is(Faction.Traitor)) PlayerMaterial.SetColors(AUSColors.Traitor, spriteRenderer);
         }
-        else if (player != null && player.Data.Role is ProsecutorRole pros && pros.HasProsecuted &&
-                 !PlayerControl.LocalPlayer.Data.IsDead)
-        {
-            PlayerMaterial.SetColors(Palette.DisabledGrey, spriteRenderer);
-        }
-        else if (GameOptionsManager.Instance.currentNormalGameOptions.AnonymousVotes &&
-                 (!OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow || !PlayerControl.LocalPlayer.Data.IsDead))
+        else if (GameOptionsManager.Instance.currentNormalGameOptions.AnonymousVotes && (!OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow || !PlayerControl.LocalPlayer.Data.IsDead))
         {
             PlayerMaterial.SetColors(Palette.DisabledGrey, spriteRenderer);
         }

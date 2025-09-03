@@ -9,55 +9,145 @@ namespace AmongUsSalem.LifeImprovement.MCI.SmartMCI;
 
 public static class CalculatedVoting
 {
-    public static List<PlayerControl>  KillerContagious;
-    public static List<PlayerControl> EvidenceAgainst;
-    public static float VoteChance = 75f;
+    public static List<PlayerControl> KillerContagious = new List<PlayerControl>();
+    public static List<PlayerControl> EvidenceAgainst = new List<PlayerControl>();
+    public static List<PlayerControl> RecievedInformation = new List<PlayerControl>();
+    
+    public static Dictionary<PlayerControl, PlayerControl> QueueKillerContagious = new Dictionary<PlayerControl, PlayerControl>();
+    public static Dictionary<PlayerControl, PlayerControl> QueueEvidenceAgainst = new Dictionary<PlayerControl, PlayerControl>();
+    public static List<PlayerControl> QueueRecievedInformation = new List<PlayerControl>();
 
+    #region Vampire
+    #endregion
+    public static PlayerControl PairVampireVotingTarget;
+    public static bool vampiresAreSkipping;
+    public static void RandomVampireVoting(PlayerControl player, MeetingHud __instance)
+    {
+        var alive = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        var vampire = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Vampire>() && x.HasModifier<VampireRecruit>());
+
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.IsRole<Vampire>() && !x.HasModifier<VampireRecruit>()).ToList();
+        if (alivePlayers.Count > 0)
+        {
+            var skipNum = Random.Range(0, 100);
+            var pairNum = Random.Range(0, 100);
+            if (skipNum <= 75 && vampiresAreSkipping)
+            {
+                SkipVote(player, __instance);
+                vampiresAreSkipping = true;
+            }
+            else if (pairNum <= 75 && PairVampireVotingTarget != null && alive <= vampire)
+            {
+                __instance.CmdCastVote(player.PlayerId, PairVampireVotingTarget.PlayerId);
+            }
+            else
+            {
+                PairVampireVotingTarget = RandomVote(player, __instance, alivePlayers);
+            }
+        }
+        else
+        {
+            SkipVote(player, __instance);
+            vampiresAreSkipping = true;
+        }
+    }
+    #region Recruit
+    #endregion
+    public static PlayerControl PairJackalRecruitVotingTarget;
+    public static bool jackalRecruitsAreSkipping;
+    public static void RandomJackalRecruitVoting(PlayerControl player, MeetingHud __instance)
+    {
+        var alive = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        var recsJackal = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Jackal>() && x.HasModifier<JackalRecruit>());
+
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.HasModifier<JackalRecruit>()).ToList();
+        if (alivePlayers.Count > 0)
+        {
+            var skipNum = Random.Range(0, 100);
+            var pairNum = Random.Range(0, 100);
+            if (skipNum <= 75 && jackalRecruitsAreSkipping)
+            {
+                SkipVote(player, __instance);
+                jackalRecruitsAreSkipping = true;
+            }
+            else if (pairNum <= 75 && PairJackalRecruitVotingTarget != null && alive <= recsJackal)
+            {
+                __instance.CmdCastVote(player.PlayerId, PairJackalRecruitVotingTarget.PlayerId);
+            }
+            else
+            {
+                PairJackalRecruitVotingTarget = RandomVote(player, __instance, alivePlayers);
+            }
+        }
+        else
+        {
+            SkipVote(player, __instance);
+            jackalRecruitsAreSkipping = true;
+        }
+    }
+    
+    public static void RandomJackalVoting(PlayerControl player, MeetingHud __instance)
+    {
+        var alive = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        var recsJackal = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Jackal>() && x.HasModifier<JackalRecruit>());
+
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.IsRole<Jackal>() && !x.HasModifier<JackalRecruit>()).ToList();
+        if (alivePlayers.Count > 0)
+        {
+            var skipNum = Random.Range(0, 100);
+            var pairNum = Random.Range(0, 100);
+            if (skipNum <= 75 && jackalRecruitsAreSkipping)
+            {
+                SkipVote(player, __instance);
+                jackalRecruitsAreSkipping = true;
+            }
+            else if (pairNum <= 75 && PairJackalRecruitVotingTarget != null && alive <= recsJackal)
+            {
+                __instance.CmdCastVote(player.PlayerId, PairJackalRecruitVotingTarget.PlayerId);
+            }
+            else
+            {
+                PairJackalRecruitVotingTarget = RandomVote(player, __instance, alivePlayers);
+            }
+        }
+        else
+        {
+            SkipVote(player, __instance);
+            jackalRecruitsAreSkipping = true;
+        }
+    }
     #region Coven
     #endregion
     public static PlayerControl PairCovenVotingTarget;
     public static bool covensAreSkipping;
     public static void RandomCovenVoting(PlayerControl player, MeetingHud __instance)
     {
-        KillerContagious.Shuffle();
-        var killerContagiousToVote = KillerContagious[0];
-        
+        var alive = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        var coven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
+
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Faction.Coven)).ToList();
         if (alivePlayers.Count > 0)
         {
-            int num = Random.Range(0, 100);
-
-            PlayerControl? playerToVote = null;
-            if ((PairCovenVotingTarget != null && num <= 25) || (PairCovenVotingTarget != null && alivePlayers.Count <= 6) || (covensAreSkipping && num <= 25) && PairCovenVotingTarget != null)
+            var skipNum = Random.Range(0, 100);
+            var pairNum = Random.Range(0, 100);
+            if (skipNum <= 75 && covensAreSkipping)
             {
-                playerToVote = PairCovenVotingTarget;
+                SkipVote(player, __instance);
+                covensAreSkipping = true;
+            }
+            else if (pairNum <= 75 && PairCovenVotingTarget != null && alive <= coven)
+            {
+                __instance.CmdCastVote(player.PlayerId, PairCovenVotingTarget.PlayerId);
             }
             else
             {
-
-                if (num <= VoteChance && killerContagiousToVote != null && !killerContagiousToVote.Is(Faction.Coven) && !killerContagiousToVote.HasDied())
-                {
-                    playerToVote = killerContagiousToVote;
-                }
-                else
-                {
-                    if (Random.Range(0, 100) <= 5)
-                    {
-                        covensAreSkipping = true;
-                        __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-                    }
-                    else
-                    {
-                        PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
-                        alivePlayers.Remove(newTarget);
-                        playerToVote = newTarget;
-                        PairCovenVotingTarget = newTarget;
-                    }
-                }
+                PairCovenVotingTarget = RandomVote(player, __instance, alivePlayers);
             }
-
-            if (playerToVote == null) __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-            else __instance.CmdCastVote(player.PlayerId, playerToVote.PlayerId);
+        }
+        else
+        {
+            SkipVote(player, __instance);
+            covensAreSkipping = true;
         }
     }
 
@@ -67,103 +157,64 @@ public static class CalculatedVoting
     public static bool mafiasAreSkipping;
     public static void RandomMafiaVoting(PlayerControl player, MeetingHud __instance)
     {
-        KillerContagious.Shuffle();
-        var killerContagiousToVote = KillerContagious[0];
-        
+        var alive = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        var mafia = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Mafia));
+
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Faction.Mafia)).ToList();
         if (alivePlayers.Count > 0)
         {
-            int num = Random.Range(0, 100);
-
-            PlayerControl? playerToVote = null;
-            if ((PairMafiaVotingTarget != null && num <= 25) || (PairMafiaVotingTarget != null && alivePlayers.Count <= 6) || (mafiasAreSkipping && num <= 25) && PairMafiaVotingTarget != null)
+            var skipNum = Random.Range(0, 100);
+            var pairNum = Random.Range(0, 100);
+            if (skipNum <= 75 && mafiasAreSkipping)
             {
-                playerToVote = PairMafiaVotingTarget;
+                SkipVote(player, __instance);
+                mafiasAreSkipping = true;
+            }
+            else if (pairNum <= 75 && PairMafiaVotingTarget != null && alive <= mafia)
+            {
+                __instance.CmdCastVote(player.PlayerId, PairMafiaVotingTarget.PlayerId);
             }
             else
             {
-
-                if (num <= VoteChance && killerContagiousToVote != null && !killerContagiousToVote.Is(Faction.Mafia) && !killerContagiousToVote.HasDied())
-                {
-                    playerToVote = killerContagiousToVote;
-                }
-                else
-                {
-                    if (Random.Range(0, 100) <= 5)
-                    {
-                        mafiasAreSkipping = true;
-                        __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-                    }
-                    else
-                    {
-                        PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
-                        alivePlayers.Remove(newTarget);
-                        playerToVote = newTarget;
-                        PairMafiaVotingTarget = newTarget;
-                    }
-                }
+                PairMafiaVotingTarget = RandomVote(player, __instance, alivePlayers);
             }
-
-            if (playerToVote == null) __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-            else __instance.CmdCastVote(player.PlayerId, playerToVote.PlayerId);
         }
+        else
+        {
+            SkipVote(player, __instance);
+            mafiasAreSkipping = true;
+        }
+    }
+
+    public static void SkipVote(PlayerControl player, MeetingHud __instance)
+    {
+        __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
+    }
+
+    public static PlayerControl RandomVote(PlayerControl player, MeetingHud __instance, List<PlayerControl> validTargets)
+    {
+        PlayerControl newTarget = validTargets[Random.RandomRangeInt(0, validTargets.Count)];
+        validTargets.Remove(newTarget);
+        __instance.CmdCastVote(player.PlayerId, newTarget.PlayerId);
+        return newTarget;
     }
 
     #region Town
     #endregion
     public static void RandomTownVoting(PlayerControl player, MeetingHud __instance)
     {
-        KillerContagious.Shuffle();
-        var killerContagiousToVote = KillerContagious[0];
-        
-        EvidenceAgainst.Shuffle();
-        var evidenceAgainstToVote = EvidenceAgainst[0];
-        
-        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != player && !x.ReceivedInformation()).ToList();
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != player && !RecievedInformation.Contains(x) && 
+            !(x.Data.Role is IRevealable revealable && revealable.IsRevealed && x.Is(Faction.Town))).ToList();
 
-        if (player.GetRevealedPlayers().Count > 0)
-        {
-            foreach (var revealed in player.GetRevealedPlayers())
-            {
-                var revealedPlayer = MiscUtils.PlayerById(revealed);
-                if (revealedPlayer != null && revealedPlayer.Is(Faction.Town)) alivePlayers.Remove(revealedPlayer);
-            }
-        }
-        
         if (alivePlayers.Count > 0)
         {
-            int num = Random.Range(0, 100);
-
-            PlayerControl? playerToVote = null;
-            if (num <= 80 && evidenceAgainstToVote != null && evidenceAgainstToVote != player && !evidenceAgainstToVote.HasDied())
-            {
-                playerToVote = evidenceAgainstToVote;
-            }
-            else
-            {
-                if (num <= VoteChance && killerContagiousToVote != null && killerContagiousToVote != player && !killerContagiousToVote.HasDied())
-                {
-                    playerToVote = killerContagiousToVote;
-                }
-                else
-                {
-                    int num4 = Random.Range(0, 100);
-                    if (num4 <= 5 && alivePlayers.Count > 5)
-                    {
-                        __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-                    }
-                    else
-                    {
-                        PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
-                        alivePlayers.Remove(newTarget);
-                        playerToVote = newTarget;
-                    }
-                }
-            }
-
-            if (playerToVote == null) __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-            else __instance.CmdCastVote(player.PlayerId, playerToVote.PlayerId);
+            var eaNum = Random.Range(0, 100);
+            var kcNum = Random.Range(0, 100);
+            if (EvidenceAgainst.Count > 0 && eaNum <= 80) __instance.CmdCastVote(player.PlayerId, EvidenceAgainst.Random().PlayerId);
+            else if (KillerContagious.Count > 0 && kcNum <= 50) __instance.CmdCastVote(player.PlayerId, KillerContagious.Random().PlayerId);
+            else RandomVote(player, __instance, alivePlayers);
         }
+        else SkipVote(player, __instance);
     }
 
     #region Neutral
@@ -173,76 +224,24 @@ public static class CalculatedVoting
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != player).ToList();
         if (alivePlayers.Count > 0)
         {
-            PlayerControl? playerToVote = null;
-
-            PlayerControl newTarget = alivePlayers[Random.RandomRangeInt(0, alivePlayers.Count)];
-            alivePlayers.Remove(newTarget);
-            playerToVote = newTarget;
-
-            if (playerToVote == null) __instance.CmdCastVote(player.PlayerId, __instance.SkipVoteButton.TargetPlayerId);
-            else __instance.CmdCastVote(player.PlayerId, playerToVote.PlayerId);
+            RandomVote(player, __instance, alivePlayers);
         }
+        else SkipVote(player, __instance);
     }
 
-    #region KillerContagious
+    #region Arsonist
     #endregion
-    public static void SetKillerContagious(PlayerControl player)
+    public static void RandomArsonistVoting(PlayerControl player, MeetingHud __instance)
     {
-        var role = player.GetOWRole();
-        if (role != null)
-            return;
+        var arsonist = player.GetRole<Arsonist>();
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != player && !arsonist.DousedPlayers.Contains(x.PlayerId)).ToList();
 
-        var stats = player.GetPlayerStats();
-        if (stats != null)
+        if (alivePlayers.Count > 0)
         {
-            if (stats.WitnessedKills.Count > 0)
-            {
-                foreach (var witnessed in stats.WitnessedKills)
-                {
-                    if (!KillerContagious.Contains(witnessed)) KillerContagious.Add(witnessed);
-                    if (witnessed.HasDied())
-                    {
-                        stats.WitnessedKills.Remove(witnessed);
-                        KillerContagious.Remove(witnessed);
-                    }
-                }
-            }
+            var eaNum = Random.Range(0, 100);
+            if (EvidenceAgainst.Count > 0 && eaNum <= 100) __instance.CmdCastVote(player.PlayerId, EvidenceAgainst.Random().PlayerId);
+            else RandomVote(player, __instance, alivePlayers);
         }
-    }
-
-    #region EvidenceAgainst
-    #endregion
-    public static void SetEvidenceAgainst(PlayerControl player)
-    {
-        var stats = player.GetPlayerStats();
-        if (stats != null)
-        {
-            if (stats.EvidenceAgainst.Count > 0)
-            {
-                foreach (var witnessed in stats.EvidenceAgainst)
-                {
-                    if (!EvidenceAgainst.Contains(witnessed)) EvidenceAgainst.Add(witnessed);
-                    if (witnessed.HasDied())
-                    {
-                        stats.EvidenceAgainst.Remove(witnessed);
-                        EvidenceAgainst.Remove(witnessed);
-                    }
-                }
-            }
-        }
-    }
-
-    #region ReceivedInformation
-    #endregion
-    public static bool ReceivedInformation(this PlayerControl player)
-    {
-        if (GameHistory.PlayerStats.TryGetValue(player.PlayerId, out var stats))
-        {
-            if (stats == null)
-                return false;
-
-            if (stats.ReceivedInformation) return true;
-        }
-        return false;
+        else SkipVote(player, __instance);
     }
 }

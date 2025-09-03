@@ -11,7 +11,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Framer(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName => TouLocale.Get(TouNames.Framer, "Framer");
+    public string RoleName { get; set; } = TouLocale.Get(TouNames.Framer, "Framer");
     public string revealText => "has a desire or deceive.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
@@ -46,11 +46,11 @@ public sealed class Framer(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#dd0000>Framer</color>" +
+            "<color=#DD0000>Framer</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
-            "\n<color=#fdbc00>Faction:</color> <color=#dd0000>Mafia</color>" +
-            "\n<color=#fdbc00>Sub-alignment:</color> <color=#dd0000>Mafia</color> <color=#1e45d4>Deception</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#DD0000>Mafia</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#DD0000>Mafia</color> <color=#1e45d4>Deception</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
             $"\n\nAttributes:" +
             "\nTBD." +
@@ -105,7 +105,7 @@ public sealed class Framer_Frame : AmongUsSalemRoleButton<Framer, PlayerControl>
     {
         if (Target != null)
         {
-            if (MiscUtils.SuccessfulVisit(Role.Player, Target, false, true))
+            if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
                 base.ClickHandler();
             }
@@ -119,8 +119,8 @@ public sealed class Framer_Frame : AmongUsSalemRoleButton<Framer, PlayerControl>
             return;
         }
 
-        Framer.RpcFramer_Frame(Role.Player, Target);
-        MiscUtils.PostSuccessfulVisit(Role.Player, Target, false, true);
+        Framer.RpcFramer_Frame(Player, Target);
+        MiscUtils.PostSuccessfulVisit(Player, Target, false, true);
     }
 
     public override PlayerControl? GetTarget()
@@ -142,6 +142,6 @@ public sealed class Framer_Options : AbstractOptionGroup<Framer>
 {
     public override string GroupName => TouLocale.Get(TouNames.Framer, "Framer");
 
-    [ModdedNumberOption("<color=#dd0000>Framer</color> <color=#4a86e8>Frame</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#DD0000>Framer</color> <color=#4a86e8>Frame</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 }

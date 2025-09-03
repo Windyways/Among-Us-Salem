@@ -42,11 +42,16 @@ public static class MessageTexts
         return target.GetDefaultAppearance().PlayerName + "'s defense was too high to kill!";
     }
 
-    public static string GetDeathReason(this PlayerControl player, DeathReasonShow reason)
+    public static string ToSpacedString(this Enum value)
     {
-        if (reason == DeathReasonShow.ShotByAVeteran) return $"<color=#06e00c>Shot By A Veteran</color>";
-        if (reason == DeathReasonShow.KilledByAMemberOfTheMafia) return $"<color=#dd0000>Killed By A Member Of The Mafia</color>";
-        if (reason == DeathReasonShow.KilledByTheCoven) return $"<color=#06e00c>Killed By The Coven</color>";
-        return "";
+        var name = value.ToString();
+
+        // Insert space before capital letters that follow a lowercase
+        name = System.Text.RegularExpressions.Regex.Replace(name, "([a-z])([A-Z])", "$1 $2");
+
+        // Insert space when a capital is followed by another capital + lowercase (e.g., "AShroud")
+        name = System.Text.RegularExpressions.Regex.Replace(name, "([A-Z])([A-Z][a-z])", "$1 $2");
+
+        return name;
     }
 }

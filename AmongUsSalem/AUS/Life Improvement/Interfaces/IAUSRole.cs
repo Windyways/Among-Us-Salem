@@ -10,8 +10,9 @@ public interface IAUSRole : ICustomRole
     string RoleName { get; set; }
     Color RoleColor { get; set; }
 
-    Faction RoleFaction { get; set; }
+    Faction Faction { get; set; }
     Alignment Alignment { get; }
+
     string revealText => "";
     float visionValue => GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
 
@@ -24,10 +25,18 @@ public interface IAUSRole : ICustomRole
     Defense ogDefense { get; set; }
     EtherealDefense ogEtherealDefense { get; set; }
 
-    void ApplyDefense(Defense defense, bool perma = false)
+    void ApplyDefense(Defense defense, bool perma = false, bool overrideValue = false)
     {
-        if (Defense < defense) Defense = defense;
-        if (perma && ogDefense < defense) ogDefense = defense;
+        if (overrideValue)
+        {
+            Defense = defense;
+            if (perma) ogDefense = defense;
+        }
+        else
+        {
+            if (Defense < defense) Defense = defense;
+            if (perma && ogDefense < defense) ogDefense = defense;
+        }
     }
 
 
@@ -44,7 +53,6 @@ public interface IAUSRole : ICustomRole
     {
     }
 
-    bool HasImpostorVision => false;
     public virtual bool MetWinCon => false;
 
     public virtual string YouAreText

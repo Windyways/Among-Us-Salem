@@ -5,6 +5,26 @@ namespace AmongUsSalem.LifeImprovement;
 
 public static class AUSExtentions
 {
+    public static string Name(this PlayerControl player)
+    {
+        return player.GetDefaultAppearance().PlayerName;
+    }
+
+    public static string Role(this PlayerControl player)
+    {
+        if (player.Data.Role is IAUSRole ausRole)
+        {
+            var roleColor = ausRole.Faction != Faction.Neutral ? MiscUtils.GetFactionColour(player) : MiscUtils.GetRoleColour(ausRole.RoleName);
+            return $"<b><color=#" + roleColor.ToHtmlStringRGBA() + $">{ausRole.RoleName}</color></b>";
+        }
+        return "";
+    }
+    
+    public static string Role(this RoleBehaviour role)
+    {
+        return $"<b><color=#" + role.TeamColor.ToHtmlStringRGBA() + $">{role.NiceName}</color></b>";
+    }
+
     public static void SetTransparency(this PlayerControl player, float transparency, bool hideName = false)
     {
         var colour = player.cosmetics.currentBodySprite.BodySprite.color;
@@ -76,9 +96,9 @@ public static class AUSExtentions
 
     public static bool IsSameFaction(this PlayerControl player, PlayerControl target)
     {
-        if (player.Data.Role is IAUSRole ausRole && target.Data.Role is IAUSRole targetAusRole && ausRole.RoleFaction == targetAusRole.RoleFaction) return true;
+        if (player.Data.Role is IAUSRole ausRole && target.Data.Role is IAUSRole targetAusRole && ausRole.Faction == targetAusRole.Faction) return true;
         if (player.Is(Faction.Town) && target.HasModifier<VampireRecruit>()) return true;
-        if (target.Is(Faction.Town) && player.HasModifier<VampireRecruit>()) return true;
+        if (player.HasModifier<VampireRecruit>() && target.Is(Faction.Town)) return true;
         return false;
     }
 
@@ -86,6 +106,11 @@ public static class AUSExtentions
     public static bool AppearsEvil(this PlayerControl player)
     {
         return player.IsFramed();
+    }
+
+    public static bool IsImpureToTown(this PlayerControl player)
+    {
+        return player.IsTownTraitor() || player.HasModifier<VampireRecruit>() || player.HasModifier<JackalRecruit>();
     }
 
     public static bool IsHexed(this PlayerControl player)
@@ -163,6 +188,26 @@ public static class AUSExtentions
         return false;
     }
 
+    /*public static bool IsConsortDistracted(this PlayerControl player)
+    {
+        foreach (var consorts in MiscUtils.GetPlayersWithRole<Consort>())
+        {
+            var consort = consorts.GetRole<Consort>();
+            return consort.DistractedPlayer == player && !player.HasModifier<RBimmune>();
+        }
+        return false;
+    }*/
+
+    public static bool IsDistracted(this PlayerControl player)
+    {
+        foreach (var escorts in MiscUtils.GetPlayersWithRole<Escort>())
+        {
+            var escort = escorts.GetRole<Escort>();
+            return escort.DistractedPlayer == player && !player.HasModifier<RBimmune>();
+        }
+        return false;
+    }
+
     public static bool IsFortified(this PlayerControl player)
     {
         foreach (var crusaders in MiscUtils.GetPlayersWithRole<Crusader>())
@@ -189,6 +234,16 @@ public static class AUSExtentions
         {
             var bodyguard = bodyguards.GetRole<Bodyguard>();
             return bodyguard.GuardedPlayer == player;
+        }
+        return false;
+    }
+
+    public static bool IsBarriered(this PlayerControl player)
+    {
+        foreach (var clerics in MiscUtils.GetPlayersWithRole<Cleric>())
+        {
+            var cleric = clerics.GetRole<Cleric>();
+            return cleric.BarrieredPlayers.Contains(player.PlayerId);
         }
         return false;
     }
@@ -229,12 +284,42 @@ public static class AUSExtentions
         return false;
     }
 
+    public static bool IsJinxed(this PlayerControl player)
+    {
+        foreach (var jinxes in MiscUtils.GetPlayersWithRole<Jinx>())
+        {
+            var jinx = jinxes.GetRole<Jinx>();
+            return jinx.JinxedPlayer == player;
+        }
+        return false;
+    }
+
+    public static bool IsCleanTarget(this PlayerControl player)
+    {
+        foreach (var janitors in MiscUtils.GetPlayersWithRole<Janitor>())
+        {
+            var janitor = janitors.GetRole<Janitor>();
+            return janitor.CleanedPlayer == player;
+        }
+        return false;
+    }
+
     public static bool IsAmbushed(this PlayerControl player)
     {
         foreach (var ambushers in MiscUtils.GetPlayersWithRole<Ambusher>())
         {
             var ambusher = ambushers.GetRole<Ambusher>();
             return ambusher.AmbushedPlayer == player;
+        }
+        return false;
+    }
+
+    public static bool IsVesting(this PlayerControl player, bool canKill)
+    {
+        foreach (var survivors in MiscUtils.GetPlayersWithRole<Survivor>())
+        {
+            var survivor = survivors.GetRole<Survivor>();
+            return survivor.isVesting && survivor.Player == player && !canKill;
         }
         return false;
     }

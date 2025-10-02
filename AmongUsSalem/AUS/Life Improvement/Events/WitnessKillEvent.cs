@@ -1,7 +1,6 @@
 ﻿using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Hud;
-using AmongUsSalem.Buttons.Neutral;
 using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
@@ -38,9 +37,8 @@ public static class WitnessKillEvent
             if (Vector2.Distance(truePosition, target.GetTruePosition()) <= maxDistance)
             {
                 float distance = Vector2.Distance(truePosition, target.GetTruePosition());
-                float alternativeDist = Vector2.Distance(truePosition, target.GetTruePosition());
 
-                if ((distance < closestDistance || alternativeDist < closestDistance) && players != target && players != killer && (!players.HasDied()/* || players.Is(RoleEnum.Astral)*/))
+                if (distance < closestDistance && players != target && players != killer && !players.HasDied())
                 {
                     CallFind(killer, target, players, caught, incriminating);
                 }

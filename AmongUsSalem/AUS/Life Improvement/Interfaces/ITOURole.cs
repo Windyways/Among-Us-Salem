@@ -9,7 +9,7 @@ namespace AmongUsSalem.Roles;
 
 public interface ITOURole : ICustomRole
 {
-    Faction RoleFaction => Faction.None;
+    Faction Faction => Faction.None;
     Alignment Alignment { get; }
     string revealText => "";
     float visionValue => GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;

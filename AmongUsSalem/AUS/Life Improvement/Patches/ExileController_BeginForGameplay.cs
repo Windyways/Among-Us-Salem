@@ -34,7 +34,7 @@ public static class ExileController_BeginForGameplay
                         __instance.completeString = player.GetDefaultOutfit().PlayerName + "'s Role Was " + Colors.GetColorRole(role, true) + "!";
                     }*/
 
-                    var roleColor = ausRole.RoleFaction != Faction.Neutral ? MiscUtils.GetFactionColour(player) : MiscUtils.GetRoleColour(ausRole.RoleName);
+                    var roleColor = ausRole.Faction != Faction.Neutral ? MiscUtils.GetFactionColour(player) : MiscUtils.GetRoleColour(ausRole.RoleName);
                     __instance.completeString = player.GetDefaultAppearance().PlayerName + "'s Role Was <b><color=#" + roleColor.ToHtmlStringRGBA() + $">{ausRole.RoleName}</color></b>!";
                 }
                 else

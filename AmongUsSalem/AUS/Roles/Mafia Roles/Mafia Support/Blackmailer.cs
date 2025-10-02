@@ -11,13 +11,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Blackmailer(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Blackmailer, "Blackmailer");
+    public string RoleName { get; set; } = "Blackmailer";
     public string revealText => "has a desire or deceive.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
-    public Faction RoleFaction { get; set; } = Faction.Mafia;
+    public Faction Faction { get; set; } = Faction.Mafia;
     public Color RoleColor { get; set; } = AUSColors.Mafia;
     public Alignment Alignment => Alignment.MafiaSupport;
 
@@ -86,14 +86,14 @@ public sealed class Blackmailer(IntPtr cppPtr)
 public sealed class Blackmailer_Blackmail : AmongUsSalemRoleButton<Blackmailer, PlayerControl>
 {
     public override string Name => "Blackmail";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<Blackmailer_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Blackmailer_Blackmail;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -150,7 +150,7 @@ public static class Blackmailer_Events
 #endregion
 public sealed class Blackmailer_Options : AbstractOptionGroup<Blackmailer>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Blackmailer, "Blackmailer");
+    public override string GroupName => "Blackmailer";
 
     [ModdedNumberOption("<color=#DD0000>Blackmailer</color> <color=#4a86e8>Blackmail</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

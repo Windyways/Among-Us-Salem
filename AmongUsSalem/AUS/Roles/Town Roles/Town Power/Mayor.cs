@@ -3,6 +3,7 @@ using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
 using Color = UnityEngine.Color;
 using UnityEngine;
+using System.Collections;
 
 namespace AmongUsSalem.Roles;
 
@@ -12,13 +13,13 @@ public sealed class Mayor(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IAUSRole, IRevealable, IWikiDiscoverable, IContinueGame
 {
     public bool continueGame => true;
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Mayor, "Mayor");
+    public string RoleName { get; set; } = "Mayor";
     public string revealText => "is the leader of the town.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownPower;
 
@@ -82,7 +83,7 @@ public sealed class Mayor(IntPtr cppPtr)
         mayor.IsRevealed = true;
         mayor.Votes++;
         
-        AUSAssets.PlaySound(AUSAssets.Mayor_Reveal_SFX, 2);
+        AUSAssets.PlaySound(AUSAssets.Mayor_Reveal_SFX);
         
         MiscUtils.ShowNotification(Info(player), Color.white, AUSAssets.MayorRoleCard.LoadAsset());
         MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Mayor Info"), Info(player));
@@ -120,8 +121,14 @@ public sealed class Mayor(IntPtr cppPtr)
         if (IsRevealed) Votes++;
         if (Player.AmOwner)
         {
-            Coroutines.Start(meetingMenu.GenButtonsDelay(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && !IsRevealed && DayNightMechanic.DayCount >= 2));
+            Coroutines.Start(GenButtons());
         }
+    }
+
+    public IEnumerator GenButtons()
+    {
+        yield return new WaitForSeconds(3f);
+        meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && !IsRevealed && DayNightMechanic.DayCount >= 2);
     }
 
     public override void OnVotingComplete()
@@ -166,10 +173,10 @@ public sealed class Mayor(IntPtr cppPtr)
 
 public static class Mayor_Events
 {
-    [RegisterEvent]
+    [RegisterEvent()]
     public static void HandleVoteEvent(HandleVoteEvent @event)
     {
-        if (@event.VoteData.Owner.Data.Role is not Mayor mayor || !mayor.IsRevealed)
+        if (@event.VoteData.Owner.Data.Role is not Mayor mayor || !mayor.IsRevealed || mayor.Player.IsSilenced())
         {
             return;
         }

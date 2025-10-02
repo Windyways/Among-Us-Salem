@@ -9,7 +9,6 @@ using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using Rewired;
 using AmongUsSalem.Modifiers;
-using AmongUsSalem.Modifiers.Neutral;
 using AmongUsSalem.Options;
 using AmongUsSalem.Utilities;
 using UnityEngine;
@@ -26,31 +25,33 @@ public abstract class AmongUsSalemButton : CustomActionButton
     public override float InitialCooldown => 10;
     public override ButtonLocation Location => ButtonLocation.BottomRight;
 
-    public override string CooldownTimerFormatString =>
-        Timer <= 10f && AUSPlugin.PreciseCooldowns.Value ? "0.0" : "0";
+    public override string CooldownTimerFormatString => "0";
 
     public virtual bool UsableInDeath => false;
     public virtual bool ShouldPauseInVent => true;
-
-    /// <summary>
-    ///     Gets the keybind used for the button.<br />
-    ///     Use ActionQuaternary for primary abilities, ActionSecondary for secondary abilities or kill buttons,
-    ///     tou.ActionCustom for tertiary abilities, and tou.ActionCustom2 for modifier buttons.
-    /// </summary>
-    public virtual string Keybind => string.Empty;
 
     private PassiveButton PassiveComp { get; set; }
 
     public virtual int ConsoleBind()
     {
-        return Keybind switch
+        var bind = -1;
+        if (Keybind == Keybinds.PrimaryAction)
         {
-            Keybinds.PrimaryAction => Keybinds.PrimaryConsole,
-            Keybinds.SecondaryAction => Keybinds.SecondaryConsole,
-            Keybinds.ModifierAction => Keybinds.ModifierConsole,
-            Keybinds.VentAction => Keybinds.VentConsole,
-            _ => -1
-        };
+            bind = Keybinds.PrimaryConsole;
+        }
+        else if (Keybind == Keybinds.SecondaryAction)
+        {
+            bind = Keybinds.SecondaryConsole;
+        }
+        else if (Keybind == Keybinds.ModifierAction)
+        {
+            bind = Keybinds.ModifierConsole;
+        }
+        else if (Keybind == Keybinds.VentAction)
+        {
+            bind = Keybinds.VentConsole;
+        }
+        return bind;
     }
 
     public override void FixedUpdateHandler(PlayerControl playerControl)
@@ -161,17 +162,11 @@ public abstract class AmongUsSalemButton : CustomActionButton
 
         Button?.gameObject.SetActive(HudManager.Instance.UseButton.isActiveAndEnabled ||
                                      HudManager.Instance.PetButton.isActiveAndEnabled);
-
-        if (CanUse() && Keybind != string.Empty && (ReInput.players.GetPlayer(0).GetButtonDown(Keybind) ||
-                                                    ConsoleJoystick.player.GetButtonDown(ConsoleBind())))
-        {
-            PassiveComp.OnClick.Invoke();
-        }
     }
 
     public override void ClickHandler()
     {
-        if (!CanClick() || PlayerControl.LocalPlayer.HasModifier<GlitchHackedModifier>() ||
+        if (!CanClick() ||
             PlayerControl.LocalPlayer.GetModifiers<DisabledModifier>().Any(x => !x.CanUseAbilities))
         {
             return;
@@ -215,31 +210,33 @@ public abstract class AmongUsSalemTargetButton<T> : CustomActionButton<T> where 
     public override float InitialCooldown => 10;
     public override ButtonLocation Location => ButtonLocation.BottomRight;
 
-    public override string CooldownTimerFormatString =>
-        Timer <= 10f && AUSPlugin.PreciseCooldowns.Value ? "0.0" : "0";
+    public override string CooldownTimerFormatString => "0";
 
     public virtual bool ShouldPauseInVent => false;
     public virtual bool UsableInDeath => false;
-
-    /// <summary>
-    ///     Gets the keybind used for the button.
-    ///     Use ActionQuaternary for primary abilities, ActionSecondary for secondary abilities or kill buttons,
-    ///     tou.ActionCustom for tertiary abilities, and tou.ActionCustom2 for modifier buttons.
-    /// </summary>
-    public virtual string Keybind => string.Empty;
 
     private PassiveButton PassiveComp { get; set; }
 
     public virtual int ConsoleBind()
     {
-        return Keybind switch
+        var bind = -1;
+        if (Keybind == Keybinds.PrimaryAction)
         {
-            Keybinds.PrimaryAction => Keybinds.PrimaryConsole,
-            Keybinds.SecondaryAction => Keybinds.SecondaryConsole,
-            Keybinds.ModifierAction => Keybinds.ModifierConsole,
-            Keybinds.VentAction => Keybinds.VentConsole,
-            _ => -1
-        };
+            bind = Keybinds.PrimaryConsole;
+        }
+        else if (Keybind == Keybinds.SecondaryAction)
+        {
+            bind = Keybinds.SecondaryConsole;
+        }
+        else if (Keybind == Keybinds.ModifierAction)
+        {
+            bind = Keybinds.ModifierConsole;
+        }
+        else if (Keybind == Keybinds.VentAction)
+        {
+            bind = Keybinds.VentConsole;
+        }
+        return bind;
     }
 
     public override void FixedUpdateHandler(PlayerControl playerControl)
@@ -353,7 +350,7 @@ public abstract class AmongUsSalemTargetButton<T> : CustomActionButton<T> where 
 
     public override void ClickHandler()
     {
-        if (CanClick() && !PlayerControl.LocalPlayer.HasModifier<GlitchHackedModifier>() && !PlayerControl.LocalPlayer.HasModifier<DisabledModifier>())
+        if (CanClick() && !PlayerControl.LocalPlayer.HasModifier<DisabledModifier>())
         {
             if (LimitedUses)
             {
@@ -391,12 +388,6 @@ public abstract class AmongUsSalemTargetButton<T> : CustomActionButton<T> where 
 
         Button?.gameObject.SetActive(HudManager.Instance.UseButton.isActiveAndEnabled ||
                                      HudManager.Instance.PetButton.isActiveAndEnabled);
-
-        if (CanUse() && Keybind != string.Empty && (ReInput.players.GetPlayer(0).GetButtonDown(Keybind) ||
-                                                    ConsoleJoystick.player.GetButtonDown(ConsoleBind())))
-        {
-            PassiveComp.OnClick.Invoke();
-        }
     }
 }
 

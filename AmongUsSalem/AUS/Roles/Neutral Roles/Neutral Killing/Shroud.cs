@@ -12,13 +12,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Shroud(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Shroud, "Shroud");
-    public string revealText => "likes to watch things burn.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleName { get; set; } = "Shroud";
+    public string revealText => "is like a ghost.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Neutral;
     public Color RoleColor { get; set; } = AUSColors.Shroud;
     public Alignment Alignment => Alignment.NeutralKilling;
     public Attack Attack { get; set; } = Attack.Basic;
@@ -73,7 +73,7 @@ public sealed class Shroud(IntPtr cppPtr)
         var aliveShrouds = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Shroud>());
         if (aliveShrouds == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= aliveShrouds && MiscUtils.KillersAliveCount() == aliveShrouds;
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveShrouds && MiscUtils.KillersAliveCount() == aliveShrouds;
         return result;
     }
 
@@ -84,7 +84,7 @@ public sealed class Shroud(IntPtr cppPtr)
 
     public override void OnMeetingStart()
     {
-        if (ShroudedPlayer != null && !ShroudedPlayer.HasDied() && !targetVisited && OptionGroupSingleton<Shroud_Options>.Instance.AttacksShroudedIfTheyDontVisit)
+        if (ShroudedPlayer != null && !ShroudedPlayer.HasDied() && !targetVisited && OptionGroupSingleton<Shroud_Options>.Instance.AttacksShroudedIfTheyDontVisit && Player.CanKill(ShroudedPlayer))
         {
             Coroutines.Start(PostMeetingIntro());
         }
@@ -95,10 +95,7 @@ public sealed class Shroud(IntPtr cppPtr)
     {
         yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime);
 
-        if (Player.CanKill(ShroudedPlayer))
-        {
-            MiscUtils.RpcApplyDeathReason(Player, ShroudedPlayer, DeathReasonShow.KilledByAShroud, false, false);
-        }
+        MiscUtils.RpcApplyDeathReason(Player, ShroudedPlayer, DeathReasonShow.KilledByAShroud, false, false);
         ShroudedPlayer = null;
     }
 
@@ -139,10 +136,13 @@ public sealed class Shroud(IntPtr cppPtr)
                     }
                 }
 
-                if (target.AmOwner)
+                if (player.AmOwner)
                 {
-                    WitnessKillEvent.ResetCooldown();
+                    var buttons = CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role) && x.Timer <= 0).ToList();
+                    foreach (var button in buttons) button.ResetCooldownAndOrEffect();
                 }
+
+                shroud.ShroudedPlayer = null;
             }
         }
     }
@@ -156,14 +156,14 @@ public sealed class Shroud(IntPtr cppPtr)
 public sealed class Shroud_Attack : AmongUsSalemRoleButton<Shroud, PlayerControl>
 {
     public override string Name => "Attack";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Shroud;
     public override float Cooldown => OptionGroupSingleton<Shroud_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Shroud_Attack;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
@@ -182,11 +182,15 @@ public sealed class Shroud_Attack : AmongUsSalemRoleButton<Shroud, PlayerControl
         if (Player.AmOwner)
         {
             var button = CustomButtonSingleton<Shroud_Shroud>.Instance;
-            WitnessKillEvent.ResetButtonTimer(Player, button, button.InitialCooldown);
+            button.ResetCooldownAndOrEffect();
         }
 
         if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByAShroud);
-        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+        else
+        {
+            MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+        }
         MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
     }
 
@@ -201,14 +205,14 @@ public sealed class Shroud_Attack : AmongUsSalemRoleButton<Shroud, PlayerControl
 public sealed class Shroud_Shroud : AmongUsSalemRoleButton<Shroud, PlayerControl>
 {
     public override string Name => "Shroud";
-    public override string Keybind => Keybinds.SecondaryAction;
+    public override BaseKeybind Keybind => Keybinds.SecondaryAction;
     public override Color TextOutlineColor => AUSColors.Shroud;
     public override float Cooldown => OptionGroupSingleton<Shroud_Options>.Instance.ShroudCD;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Shroud_Shroud;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -227,7 +231,7 @@ public sealed class Shroud_Shroud : AmongUsSalemRoleButton<Shroud, PlayerControl
         if (Player.AmOwner)
         {
             var button = CustomButtonSingleton<Shroud_Attack>.Instance;
-            WitnessKillEvent.ResetButtonTimer(Player, button, button.InitialCooldown);
+            button.ResetCooldownAndOrEffect();
         }
 
         Shroud.RpcShroud_Shroud(Role.Player, Target);
@@ -251,7 +255,7 @@ public sealed class Shroud_Shroud : AmongUsSalemRoleButton<Shroud, PlayerControl
 #endregion
 public sealed class Shroud_Options : AbstractOptionGroup<Shroud>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Shroud, "Shroud");
+    public override string GroupName => "Shroud";
 
     [ModdedNumberOption("<color=#6699ff>Shroud</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

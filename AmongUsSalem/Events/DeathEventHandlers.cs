@@ -9,7 +9,6 @@ using Reactor.Utilities;
 using AmongUsSalem.Events.TouEvents;
 using AmongUsSalem.Modifiers;
 using AmongUsSalem.Modules;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
@@ -86,6 +85,7 @@ public static class DeathEventHandlers
         if (target.TryGetModifier<DeathHandlerModifier>(out var deathHandler2) && !deathHandler2.LockInfo)
         {
             deathHandler2.KilledBy = $"By {source.Data.PlayerName}";
+            deathHandler2.KillerPlayer = source;
             deathHandler2.DiedThisRound = !MeetingHud.Instance && !ExileController.Instance;
         }
     }

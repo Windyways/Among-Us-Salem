@@ -4,7 +4,6 @@ using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Roles;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -26,7 +25,7 @@ public sealed class CovenGameOver : CustomGameOver
 
         Logger<AUSPlugin>.Error($"VerifyCondition - mainRole: '{mainRole.NiceName}', IsDead: '{role.IsDead}'");
 
-        if (role.IsDead && role is not HaunterRole)
+        if (role.IsDead)
         {
             mainRole = role.Player.GetRoleWhenAlive();
 

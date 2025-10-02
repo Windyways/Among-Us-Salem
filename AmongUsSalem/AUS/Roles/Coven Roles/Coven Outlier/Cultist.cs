@@ -12,13 +12,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Covenite(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
 {
-    public string RoleName => TouLocale.Get(TouNames.Covenite, "Covenite");
+    public string RoleName => Covenite, "Covenite");
     public string revealText => "placeholder.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Coven;
+    public Faction Faction { get; set; } = Faction.Coven;
     public Color RoleColor { get; set; } = AUSColors.Coven;
     public Alignment Alignment => Alignment.CovenOutlier;
     public Attack Attack { get; set; } = Attack.None;
@@ -81,14 +81,14 @@ public sealed class Covenite(IntPtr cppPtr)
 public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerControl>
 {
     public override string Name => "Attack";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
     public override float Cooldown => OptionGroupSingleton<Covenite_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.NecronomiconButton;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
@@ -118,7 +118,7 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.RoleFaction == Role.RoleFaction);
+            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction);
     }
 
     public override bool CanUse()
@@ -156,7 +156,7 @@ public static class Cultist_Events
 #endregion
 public sealed class Cultist_Options : AbstractOptionGroup<Conjurer>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Cultist, "Cultist");
+    public override string GroupName => Cultist, "Cultist");
 
     [ModdedNumberOption("<color=#B545FF>Cultist</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

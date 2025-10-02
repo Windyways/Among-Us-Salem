@@ -22,7 +22,7 @@ namespace AmongUsSalem;
 /// <summary>
 ///     Plugin class for Among Us Salem.
 /// </summary>
-[BepInAutoPlugin("auavengers.tou.mira", "Among Us Salem")]
+[BepInAutoPlugin("windyways.aus", "Among Us Salem")]
 [BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
 [BepInDependency(MiraApiPlugin.Id)]
@@ -40,15 +40,10 @@ public partial class AUSPlugin : BasePlugin, IMiraPlugin
     public Harmony Harmony { get; } = new(Id);
 
     public static ConfigEntry<bool> DeadSeeGhosts { get; set; }
-    public static ConfigEntry<bool> ShowShieldHud { get; set; }
-    public static ConfigEntry<bool> ShowSummaryMessage { get; set; }
-    public static ConfigEntry<bool> ShowWelcomeMessage { get; set; }
     public static ConfigEntry<bool> ColorPlayerName { get; set; }
     public static ConfigEntry<int> GameSummaryMode { get; set; }
     public static ConfigEntry<float> ButtonUIFactor { get; set; }
     public static ConfigEntry<bool> OffsetButtons { get; set; }
-    public static ConfigEntry<bool> PreciseCooldowns { get; set; }
-    public static ConfigEntry<int> ArrowStyle { get; set; }
 
     /// <summary>
     ///     Determines if the current build is a dev build or not. This will change certain visuals as well as always grab news locally to be up to date.
@@ -66,7 +61,7 @@ public partial class AUSPlugin : BasePlugin, IMiraPlugin
 
     public AUSPlugin()
     {
-        TouLocale.Initialize();
+        
     }
 
     /// <summary>
@@ -75,9 +70,6 @@ public partial class AUSPlugin : BasePlugin, IMiraPlugin
     public override void Load()
     {
         ReactorCredits.Register("Among Us Salem III", Version, IsDevBuild, ReactorCredits.AlwaysShow);
-        LocalizationManager.Register(new TaskProvider());
-
-        TouAssets.Initialize();
 
         IL2CPPChainloader.Instance.Finished += ModCompatibility.Initialize; // Initialise AFTER the mods are loaded to ensure maximum parity (no need for the soft dependency either then)
         IL2CPPChainloader.Instance.Finished += ModNewsFetcher.CheckForNews; // Checks for mod announcements after everything is loaded to avoid Epic Games crashing
@@ -87,12 +79,6 @@ public partial class AUSPlugin : BasePlugin, IMiraPlugin
         AddressablesLoader.RegisterHats("touhats");
 
         DeadSeeGhosts = Config.Bind("LocalSettings", "DeadSeeGhosts", true, "If you see other ghosts when dead");
-        ShowShieldHud = Config.Bind("LocalSettings", "ShowShieldHud", true,
-            "If you see shield modifiers with a description, turn this off if it gets in your way.");
-        ShowSummaryMessage = Config.Bind("LocalSettings", "ShowSummaryMessage", true,
-            "If you see the game summary message when you join the lobby again.");
-        ShowWelcomeMessage = Config.Bind("LocalSettings", "ShowWelcomeMessage", true,
-            "If you see the welcome message when you first join a game.");
         ColorPlayerName = Config.Bind("LocalSettings", "ColorPlayerName", false,
             "If your name is colored with your role color or if it's left as white.");
         ButtonUIFactor = Config.Bind("LocalSettings", "ButtonUIFactor", 0.8f,
@@ -101,10 +87,6 @@ public partial class AUSPlugin : BasePlugin, IMiraPlugin
             "How the Game Summary appears in the Win Screen. 0 is to the left, 1 is split, and 2 is hidden.");
         OffsetButtons = Config.Bind("LocalSettings", "OffsetButtons", false,
             "If venting is disabled (and you're not an Mafia), should there be a blank spot where the vent button usually is?");
-        PreciseCooldowns = Config.Bind("LocalSettings", "PreciseCooldowns", false,
-            "Whether Button Cooldowns Show To 1 Decimal Place When It is Less Than 10 Seconds Remaining.");
-        ArrowStyle = Config.Bind("LocalSettings", "ArrowStyle", 2,
-            "How role arrows appear. 0 is the basic arrow, 1 is the arrow with a dark glow, 2 is the arrow with a light glow, and 3 is the legacy arrow / task arrow.");
 
         Harmony.PatchAll();
 

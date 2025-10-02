@@ -48,7 +48,7 @@ public static class PlayerJoinPatch
         TouRoleManagerPatches.ReplaceRoleManager = false;
 
         var time = 0f;
-        if (GameHistory.EndGameSummary != string.Empty && AUSPlugin.ShowSummaryMessage.Value)
+        if (GameHistory.EndGameSummary != string.Empty)
         {
             var factionText = string.Empty;
             var msg = string.Empty;
@@ -60,19 +60,6 @@ public static class PlayerJoinPatch
             var title =
                 $"<color=#8BFDFD>System (Toggleable In Options)</color>\n<size=62%>{factionText}{GameHistory.EndGameSummary}</size>";
             MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.Data, title, msg);
-        }
-
-        if (!SentOnce && AUSPlugin.ShowWelcomeMessage.Value)
-        {
-            var name = "<color=#8BFDFD>System</color>";
-            var msg =
-                $"Welcome to Among Us Salem v{AUSPlugin.Version}!\nUse the wiki (the globe icon) to get more info on roles or modifiers, where you can use the searchbar. Otherwise use /help in the chat to get a list of commands.\nYou can also disable this message through your options menu.";
-            MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.Data, name, msg, true);
-            time = 5f;
-        }
-        else if (!AUSPlugin.ShowWelcomeMessage.Value)
-        {
-            time = 2.48f;
         }
 
         if (time == 0)

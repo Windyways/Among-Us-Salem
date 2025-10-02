@@ -8,7 +8,6 @@ using MiraAPI.Roles;
 using Reactor.Utilities;
 using AmongUsSalem.Modifiers.Game;
 using AmongUsSalem.Roles;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 using AmongUsSalem.Utilities;
 using UnityEngine;
@@ -41,36 +40,6 @@ public static class GhostRoleEvents
         if (@event.TriggeredByIntro)
         {
             return;
-        }
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            var haunterData = MiscUtils.GetAssignData((RoleTypes)RoleId.Get<HaunterRole>());
-
-            if (haunterData != null &&
-                CustomRoleUtils.GetActiveRoles().OfType<HaunterRole>().Count() < haunterData.Count)
-            {
-                var isSkipped = haunterData.Chance < 100 && HashRandom.Next(101) > haunterData.Chance;
-
-                if (!isSkipped)
-                {
-                    var deadCrew = PlayerControl.AllPlayerControls.ToArray().Where(x =>
-                        x.Data.IsDead && x.IsCrewmate() && !x.HasModifier<AllianceGameModifier>() &&
-                        x.Data.Role.Role is not RoleTypes.GuardianAngel).ToList();
-
-                    if (deadCrew.Count > 0)
-                    {
-                        deadCrew.Shuffle();
-
-                        var player = deadCrew.TakeFirst();
-
-                        if (player != null)
-                        {
-                            player.RpcChangeRole(RoleId.Get<HaunterRole>());
-                        }
-                    }
-                }
-            }
         }
 
         Coroutines.Start(SpawnCoroutine());

@@ -11,7 +11,7 @@ public static class SmartNecroPassing
 {
     public static void Start(NecroPassing necroPassing)
     {
-        if (Debugger.IsDebuggerActive) Coroutines.Start(DelayStart(necroPassing));
+        if (Debugger.IsDebuggerActive && Debugger.SmartBotsEnabled) Coroutines.Start(DelayStart(necroPassing));
     }
 
     public static IEnumerator DelayStart(NecroPassing necroPassing)

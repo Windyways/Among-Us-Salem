@@ -1,7 +1,6 @@
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using AmongUsSalem.Options;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;

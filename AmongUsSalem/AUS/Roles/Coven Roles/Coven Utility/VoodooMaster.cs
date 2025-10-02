@@ -11,13 +11,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class VoodooMaster(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.VoodooMaster, "Voodoo Master");
+    public string RoleName { get; set; } = "Voodoo Master";
     public string revealText => "works with dolls.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "Prevent players from chatting.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Coven;
+    public Faction Faction { get; set; } = Faction.Coven;
     public Color RoleColor { get; set; } = AUSColors.Coven;
     public Alignment Alignment => Alignment.CovenUtility;
     public Attack Attack { get; set; } = Attack.None;
@@ -74,7 +74,7 @@ public sealed class VoodooMaster(IntPtr cppPtr)
         var aliveCoven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
         if (aliveCoven == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
         return result;
     }
 
@@ -93,19 +93,7 @@ public sealed class VoodooMaster(IntPtr cppPtr)
         }
 
         var voodoomaster = player.GetRole<VoodooMaster>();
-        if (voodoomaster.PreviouslySilencedPlayer != target) voodoomaster.SilencedPlayer = target;
-
-        if (target.AmOwner())
-        {
-            if (voodoomaster.PreviouslySilencedPlayer == target)
-            {
-                MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Coven, "Voodoo Master Info"), Info(Type.WellRested));
-            }
-            else
-            {
-                MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Coven, "Voodoo Master Info"), Info(Type.Silenced));
-            }
-        }
+        voodoomaster.SilencedPlayer = target;
     }
 
     public void IntroPrefix(IntroCutscene._ShowTeam_d__38 __instance)
@@ -134,14 +122,14 @@ public sealed class VoodooMaster(IntPtr cppPtr)
 public sealed class VoodooMaster_Voodoo : AmongUsSalemRoleButton<VoodooMaster, PlayerControl>
 {
     public override string Name => "Voodoo";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
     public override float Cooldown => OptionGroupSingleton<VoodooMaster_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.VoodooMaster_Voodoo;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, Role.Necronomicon, true))
             {
@@ -160,7 +148,11 @@ public sealed class VoodooMaster_Voodoo : AmongUsSalemRoleButton<VoodooMaster, P
         if (Role.Necronomicon)
         {
             if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByTheCoven);
-            else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            else
+            {
+                MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+                MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+            }
         }
 
         VoodooMaster.RpcVoodooMaster_Voodoo(Player, Target);
@@ -176,7 +168,7 @@ public sealed class VoodooMaster_Voodoo : AmongUsSalemRoleButton<VoodooMaster, P
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.RoleFaction == Role.RoleFaction);
+            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction);
     }
 }
 
@@ -205,6 +197,28 @@ public static class VoodooMaster_Events
     }
 
     [RegisterEvent]
+    public static void StartMeetingEventHandler(StartMeetingEvent @event) // Show target that their silenced!
+    {
+        var player = PlayerControl.LocalPlayer;
+        if (player.AmOwner() && player.IsSilenced())
+        {
+            foreach (var voodooMasters in MiscUtils.GetPlayersWithRole<VoodooMaster>())
+            {
+                var voodooMaster = voodooMasters.GetRole<VoodooMaster>();
+                if (voodooMaster.PreviouslySilencedPlayer == player)
+                {
+                    voodooMaster.SilencedPlayer = null;
+                    MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Coven, "Voodoo Master Info"), VoodooMaster.Info(VoodooMaster.Type.WellRested));
+                }
+                else
+                {
+                    MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Coven, "Voodoo Master Info"), VoodooMaster.Info(VoodooMaster.Type.Silenced));
+                }
+            }
+        }
+    }
+
+    [RegisterEvent]
     public static void HandleVoteEvent(HandleVoteEvent @event)
     {
         if (!@event.VoteData.Owner.IsSilenced())
@@ -221,7 +235,7 @@ public static class VoodooMaster_Events
 #endregion
 public sealed class VoodooMaster_Options : AbstractOptionGroup<VoodooMaster>
 {
-    public override string GroupName => TouLocale.Get(TouNames.VoodooMaster, "VoodooMaster");
+    public override string GroupName => "Voodoo Master";
 
     [ModdedNumberOption("<color=#B545FF>Voodoo Master</color> <color=#4a86e8>Voodoo</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

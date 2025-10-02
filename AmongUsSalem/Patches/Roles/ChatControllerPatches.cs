@@ -4,7 +4,6 @@ using MiraAPI.Modifiers;
 using TMPro;
 using AmongUsSalem.Modifiers.Crewmate;
 using AmongUsSalem.Modifiers.Impostor;
-using AmongUsSalem.Options.Roles.Crewmate;
 using AmongUsSalem.Patches.Options;
 using Object = UnityEngine.Object;
 
@@ -57,7 +56,7 @@ public static class ChatControllerPatches
             __instance.freeChatField.SetVisible(true);
             __instance.quickChatField.SetVisible(false);
         }
-        else if (PlayerControl.LocalPlayer.HasModifier<JailedModifier>() && !PlayerControl.LocalPlayer.Data.IsDead && !TeamChatPatches.TeamChatActive)
+        /*else if (PlayerControl.LocalPlayer.HasModifier<JailedModifier>() && !PlayerControl.LocalPlayer.Data.IsDead && !TeamChatPatches.TeamChatActive)
         {
             var canChat = OptionGroupSingleton<JailorOptions>.Instance.JaileePublicChat;
             if (canChat)
@@ -71,7 +70,7 @@ public static class ChatControllerPatches
                 __instance.freeChatField.SetVisible(false);
                 __instance.quickChatField.SetVisible(false);
             }
-        }
+        }*/
         else
         {
             __instance.freeChatField.SetVisible(true);

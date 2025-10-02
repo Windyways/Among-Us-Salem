@@ -1,7 +1,6 @@
 ﻿using MiraAPI.Modifiers;
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
-using AmongUsSalem.Modifiers.Neutral;
 
 namespace AmongUsSalem.Modifiers.Game;
 
@@ -27,6 +26,6 @@ public abstract class AllianceGameModifier : GameModifier
 
     public override bool IsModifierValidOn(RoleBehaviour role)
     {
-        return !role.Player.GetModifierComponent().HasModifier<AllianceGameModifier>(true) && !role.Player.HasModifier<ExecutionerTargetModifier>();
+        return !role.Player.GetModifierComponent().HasModifier<AllianceGameModifier>(true);
     }
 }

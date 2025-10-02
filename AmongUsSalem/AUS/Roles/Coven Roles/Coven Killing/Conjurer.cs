@@ -11,13 +11,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Conjurer(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Conjurer, "Conjurer");
+    public string RoleName { get; set; } = "Conjurer";
     public string revealText => "is able to pull items out of thin air.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "Perform a murder at day.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Coven;
+    public Faction Faction { get; set; } = Faction.Coven;
     public Color RoleColor { get; set; } = AUSColors.Coven;
     public Alignment Alignment => Alignment.CovenKilling;
     public Attack Attack { get; set; } = Attack.None;
@@ -27,8 +27,6 @@ public sealed class Conjurer(IntPtr cppPtr)
     public Attack ogAttack { get; set; } = Attack.None;
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
-
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
     public NecronomiconPriority NecronomiconPriority => NecronomiconPriority.Conjurer;
     public bool Necronomicon { get; set; }
@@ -67,8 +65,8 @@ public sealed class Conjurer(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Conjure",
-            "You can Conjure a meteor upon a player during the Day." +
-            "\n\nYou will deal a Powerful Attack to your target.",
+            "You can Conjure a meteor upon a player during the Day.\n\n" +
+            "You will deal a Powerful Attack to your target.",
             AUSAssets.Conjurer_Conjure)
     ];
 
@@ -77,7 +75,7 @@ public sealed class Conjurer(IntPtr cppPtr)
         var aliveCoven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
         if (aliveCoven == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
         return result;
     }
 
@@ -212,14 +210,14 @@ public sealed class Conjurer(IntPtr cppPtr)
 public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerControl>
 {
     public override string Name => "Attack";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
     public override float Cooldown => OptionGroupSingleton<Conjurer_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.NecronomiconButton;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
@@ -236,7 +234,11 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
         }
 
         if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByTheCoven);
-        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+        else
+        {
+            MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+        }
         MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
     }
 
@@ -249,7 +251,7 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.RoleFaction == Role.RoleFaction);
+            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction);
     }
 
     public override bool CanUse()
@@ -262,7 +264,7 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
 #endregion
 public sealed class Conjurer_Options : AbstractOptionGroup<Conjurer>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Conjurer, "Conjurer");
+    public override string GroupName => "Conjurer";
 
     [ModdedNumberOption("<color=#B545FF>Conjurer</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

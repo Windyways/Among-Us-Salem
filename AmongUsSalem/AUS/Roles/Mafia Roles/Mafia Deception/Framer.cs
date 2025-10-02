@@ -11,13 +11,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Framer(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Framer, "Framer");
+    public string RoleName { get; set; } = "Framer";
     public string revealText => "has a desire or deceive.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
-    public Faction RoleFaction { get; set; } = Faction.Mafia;
+    public Faction Faction { get; set; } = Faction.Mafia;
     public Color RoleColor { get; set; } = AUSColors.Mafia;
     public Alignment Alignment => Alignment.MafiaDeception;
 
@@ -96,14 +96,14 @@ public sealed class Framer(IntPtr cppPtr)
 public sealed class Framer_Frame : AmongUsSalemRoleButton<Framer, PlayerControl>
 {
     public override string Name => "Frame";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<Framer_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Framer_Frame;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -140,7 +140,7 @@ public sealed class Framer_Frame : AmongUsSalemRoleButton<Framer, PlayerControl>
 #endregion
 public sealed class Framer_Options : AbstractOptionGroup<Framer>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Framer, "Framer");
+    public override string GroupName => "Framer";
 
     [ModdedNumberOption("<color=#DD0000>Framer</color> <color=#4a86e8>Frame</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

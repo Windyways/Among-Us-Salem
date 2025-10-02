@@ -1,7 +1,6 @@
 ﻿using AuAvengers.Animations;
 using MiraAPI.Modifiers;
 using PowerTools;
-using AmongUsSalem.Modifiers.Game.Universal;
 using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -31,14 +30,6 @@ public static class AnimStore
         var a = prefab.transform.localScale;
         var b = player.transform.localScale;
         var scale = new Vector3(a.x / b.x, a.y / b.y, 1);
-        if (player.HasModifier<GiantModifier>())
-        {
-            scale /= 0.7f;
-        }
-        else if (player.HasModifier<MiniModifier>())
-        {
-            scale *= 0.7f;
-        }
 
         spawned.transform.localScale = scale;
 

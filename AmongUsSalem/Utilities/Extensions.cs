@@ -12,13 +12,10 @@ using AmongUsSalem.Events.TouEvents;
 using AmongUsSalem.Modifiers;
 using AmongUsSalem.Modifiers.Crewmate;
 using AmongUsSalem.Modifiers.Game;
-using AmongUsSalem.Modifiers.Game.Alliance;
-using AmongUsSalem.Modifiers.Game.Impostor;
 using AmongUsSalem.Modifiers.Impostor;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Patches;
 using AmongUsSalem.Roles;
-using AmongUsSalem.Roles.Impostor;
 using AmongUsSalem.Utilities.Appearances;
 using UnityEngine;
 using UnityEngine.Events;
@@ -32,7 +29,7 @@ public static class Extensions
 {
     public static bool Is(this PlayerControl player, Faction faction)
     {
-        if (player.Data.Role is IAUSRole role && role.RoleFaction == faction)
+        if (player.Data.Role is IAUSRole role && role.Faction == faction)
         {
             return true;
         }
@@ -91,7 +88,7 @@ public static class Extensions
 
     public static bool IsLover(this PlayerControl player)
     {
-        return player?.HasModifier<LoverModifier>() == true;
+        return false;
     }
 
     public static bool IsImpostor(this PlayerControl player)
@@ -104,12 +101,6 @@ public static class Extensions
         return role is ICustomRole customRole
             ? customRole.Team is ModdedRoleTeams.Impostor
             : role.TeamType is RoleTeamTypes.Impostor;
-    }
-
-    public static bool IsTraitor(this PlayerControl player)
-    {
-        return player?.Data && player?.Data?.Role && player?.Data?.Role.IsImpostor() == true &&
-               (player?.HasModifier<TraitorCacheModifier>() == true || player?.Data?.Role is TraitorRole);
     }
 
     public static bool IsCrewmate(this PlayerControl player)
@@ -161,14 +152,7 @@ public static class Extensions
 
     public static bool IsJailed(this PlayerControl player)
     {
-        return player.HasModifier<JailedModifier>() && !player.HasDied();
-    }
-
-    public static bool IsHysteria(this PlayerControl player)
-    {
-        var mod = player.GetModifier<HypnotisedModifier>();
-
-        return mod?.HysteriaActive == true;
+        return false;//player.HasModifier<JailedModifier>() && !player.HasDied();
     }
 
     public static bool HasDied(this PlayerControl player)
@@ -680,11 +664,6 @@ public static class Extensions
         vent.myRend.material.SetFloat(ShaderID.Outline, on ? 1 : 0);
         vent.myRend.material.SetColor(ShaderID.OutlineColor, color);
         vent.myRend.material.SetColor(ShaderID.AddColor, mainTarget ? color : Color.clear);
-    }
-
-    public static float GetKillCooldown(this PlayerControl player)
-    {
-        return UnderdogModifier.GetKillCooldown(player);
     }
 
     /// <summary>

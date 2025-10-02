@@ -35,10 +35,10 @@ public static class MessageTexts
 
         if (player.AmOwner()) Coroutines.Start(MiscUtils.CoFlash(AUSColors.Mafia));
 
-        if (player.IsRole<VigilanteRole>())
+        /*if (player.IsRole<Vigilante>())
         {
             return target.GetDefaultAppearance().PlayerName + " was immune to your attack.";
-        }
+        }*/
         return target.GetDefaultAppearance().PlayerName + "'s defense was too high to kill!";
     }
 

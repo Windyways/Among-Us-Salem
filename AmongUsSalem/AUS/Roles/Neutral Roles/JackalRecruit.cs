@@ -25,11 +25,11 @@ public sealed class JackalRecruit(PlayerControl otherRec) : AllianceGameModifier
 
     public override bool? DidWin(GameOverReason reason)
     {
-        var aliveVampires = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Vampire>());
+        var aliveJackals = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Jackal>());
         var aliveRecs = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.HasModifier<JackalRecruit>());
-        if (aliveVampires == 0 && aliveRecs == 0) return false;
+        if (aliveJackals == 0 && aliveRecs == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= (aliveVampires + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveVampires + aliveRecs);
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= (aliveJackals + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveJackals + aliveRecs);
         return result;
     }
 

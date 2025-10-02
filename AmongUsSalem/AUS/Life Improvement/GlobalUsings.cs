@@ -14,6 +14,8 @@ global using MiraAPI.Events.Mira;
 global using MiraAPI.GameOptions.OptionTypes;
 global using MiraAPI.Modifiers;
 global using MiraAPI.PluginLoading;
+global using MiraAPI.Modifiers.Types;
+global using MiraAPI.Keybinds;
 
 global using Reactor.Utilities.Extensions;
 global using Reactor.Utilities.Attributes;
@@ -27,18 +29,17 @@ global using AmongUsSalem.Utilities;
 global using AmongUsSalem.LifeImprovement;
 global using AmongUsSalem.Modules.RainbowMod;
 global using AmongUsSalem.Utilities.Appearances;
-global using AmongUsSalem.Roles.Crewmate;
 global using AmongUsSalem.Roles.Neutral;
 global using AmongUsSalem.Modules;
 global using AmongUsSalem.LifeImprovement.MCI;
 global using AmongUsSalem.LifeImprovement.MCI.SmartMCI;
-global using AmongUsSalem.Roles.Impostor;
 global using AmongUsSalem.Roles;
 global using AmongUsSalem.LifeImprovement.Roles;
 global using AmongUsSalem.LifeImprovement.Events;
 global using AmongUsSalem.Modifiers.Game;
 global using AmongUsSalem.Modifiers.Impostor;
 global using AmongUsSalem.LifeImprovement.GameMechanics;
+global using AmongUsSalem.Modifiers;
 
 global using InnerNet;
 

@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime.Attributes;
+﻿using System.Collections;
+using Il2CppInterop.Runtime.Attributes;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -41,8 +42,14 @@ public sealed class NecroPassing : TouGameModifier
 
         if (Player.AmOwner)
         {
-            Coroutines.Start(meetingMenu.GenButtonsDelay(MeetingHud.Instance, Player.AmOwner && !Player.HasDied()));
+            Coroutines.Start(GenButtons());
         }
+    }
+
+    public IEnumerator GenButtons()
+    {
+        yield return new WaitForSeconds(3f);
+        meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied());
     }
 
     public override void OnDeactivate()
@@ -70,7 +77,7 @@ public sealed class NecroPassing : TouGameModifier
     public bool IsExempt(PlayerVoteArea voteArea)
     {
         return Player.Data.IsDead || voteArea!.AmDead ||
-               !(MiscUtils.PlayerById(voteArea.TargetPlayerId)?.Data.Role is IAUSRole ausRole && Player.Data.Role is IAUSRole ausRole2 && ausRole.RoleFaction == ausRole2.RoleFaction);
+               !(MiscUtils.PlayerById(voteArea.TargetPlayerId)?.Data.Role is IAUSRole ausRole && Player.Data.Role is IAUSRole ausRole2 && ausRole.Faction == ausRole2.Faction);
     }
 
     [MethodRpc((uint)AUSRpc.NecroPassing_PassNecronomicon, SendImmediately = true)]

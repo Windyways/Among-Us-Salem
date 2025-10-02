@@ -58,6 +58,12 @@ public static class Keyboard_Joystick
                 Cycle(increment);
                 InstanceControlPatches.SwitchTo((byte)ControllingFigure);
             }
+            
+            PlayerControl.LocalPlayer.SetKillTimer(0f);
+            foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(PlayerControl.LocalPlayer.Data.Role)))
+            {
+                button.SetTimer(0f);
+            }
         }
     }
 
@@ -82,7 +88,7 @@ public static class Keyboard_Joystick
         return player.PlayerId;
     }
 
-    private static void Cycle(bool increment)
+    public static void Cycle(bool increment)
     {
         if (increment)
             ControllingFigure++;

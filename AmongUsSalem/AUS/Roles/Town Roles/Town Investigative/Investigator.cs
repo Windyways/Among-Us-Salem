@@ -11,13 +11,13 @@ namespace AmongUsSalem.Roles;
 public sealed class Investigator(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Investigator, "Investigator");
+    public string RoleName { get; set; } = "Investigator";
     public string revealText => "gathers information about people.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownInvestigative;
 
@@ -110,14 +110,14 @@ public sealed class Investigator(IntPtr cppPtr)
 public sealed class Investigator_Investigate : AmongUsSalemRoleButton<Investigator, PlayerControl>
 {
     public override string Name => "Investigate";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Town;
     public override float Cooldown => OptionGroupSingleton<Investigator_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Investigator_Investigate;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -166,7 +166,7 @@ public sealed class Investigator_Investigate : AmongUsSalemRoleButton<Investigat
 #endregion
 public sealed class Investigator_Options : AbstractOptionGroup<Investigator>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Investigator, "Investigator");
+    public override string GroupName => "Investigator";
 
     [ModdedNumberOption("<color=#06E00C>Investigator</color> <color=#4a86e8>Investigate</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

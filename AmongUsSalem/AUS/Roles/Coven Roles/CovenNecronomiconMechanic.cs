@@ -57,6 +57,12 @@ public static class CovenNecronomiconMechanic
                 button.OverrideSprite(AUSAssets.NecronomiconButton.LoadAsset());
                 button.OverrideName("Attack & Voodoo");
             }
+            else if (player.IsRole<Jinx>())
+            {
+                var button = CustomButtonSingleton<Jinx_Jinx>.Instance;
+                button.OverrideSprite(AUSAssets.NecronomiconButton.LoadAsset());
+                button.OverrideName("Attack & Jinx");
+            }
         }
     }
 
@@ -95,6 +101,12 @@ public static class CovenNecronomiconMechanic
                         var button = CustomButtonSingleton<VoodooMaster_Voodoo>.Instance;
                         button.OverrideSprite(AUSAssets.VoodooMaster_Voodoo.LoadAsset());
                         button.OverrideName("Voodoo");
+                    }
+                    else if (covenRole.Player.IsRole<Jinx>())
+                    {
+                        var button = CustomButtonSingleton<Jinx_Jinx>.Instance;
+                        button.OverrideSprite(AUSAssets.Jinx_Jinx.LoadAsset());
+                        button.OverrideName("Jinx");
                     }
                 }
             }

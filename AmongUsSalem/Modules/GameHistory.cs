@@ -4,9 +4,6 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using AmongUsSalem.Modifiers.Impostor;
-using AmongUsSalem.Options.Roles.Crewmate;
-using AmongUsSalem.Roles.Crewmate;
-using AmongUsSalem.Roles.Impostor;
 using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -25,82 +22,6 @@ public sealed class BodyReport
     public PlayerControl? Reporter { get; set; }
     public PlayerControl? Body { get; set; }
     public float KillAge { get; set; }
-
-    public static string ParseMedicReport(BodyReport br)
-    {
-        var reportColorDuration = OptionGroupSingleton<MedicOptions>.Instance.MedicReportColorDuration;
-        var reportNameDuration = OptionGroupSingleton<MedicOptions>.Instance.MedicReportNameDuration;
-
-        if (br.KillAge > reportColorDuration * 1000 && reportColorDuration > 0)
-        {
-            return
-                $"Body Report: The corpse is too old to gain information from. (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        if (br.Killer?.PlayerId == br.Body?.PlayerId)
-        {
-            return
-                $"Body Report: The kill appears to have been a suicide! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        if (br.KillAge < reportNameDuration * 1000)
-        {
-            return
-                $"Body Report: The killer appears to be {br.Killer?.Data.PlayerName}! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        var typeOfColor = MedicRole.GetColorTypeForPlayer(br.Killer!);
-
-        return
-            $"Body Report: The killer appears to be a {typeOfColor} color. (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-    }
-
-    public static string ParseDetectiveReport(BodyReport br)
-    {
-        if (br.KillAge > OptionGroupSingleton<DetectiveOptions>.Instance.DetectiveFactionDuration * 1000 && OptionGroupSingleton<DetectiveOptions>.Instance.DetectiveFactionDuration > 0)
-        {
-            return
-                $"Body Report: The corpse is too old to gain information from. (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        if (br.Killer!.PlayerId == br.Body!.PlayerId)
-        {
-            return
-                $"Body Report: The kill appears to have been a suicide! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        // if the killer died, they would still appear correctly here
-        var role = br.Killer.GetRoleWhenAlive();
-        if (br.Killer.HasModifier<TraitorCacheModifier>())
-        {
-            role = RoleManager.Instance.GetRole((RoleTypes)RoleId.Get<TraitorRole>());
-        }
-
-        var prefix = "a";
-        if (role.NiceName.StartsWithVowel())
-        {
-            prefix = "an";
-        }
-
-        if (br.KillAge < OptionGroupSingleton<DetectiveOptions>.Instance.DetectiveRoleDuration * 1000)
-        {
-            return
-                $"Body Report: The killer appears to be {prefix} {role.NiceName}! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        if (br.Killer.IsNeutral())
-        {
-            return
-                $"Body Report: The killer appears to be a Neutral Role! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        if (br.Killer.IsCrewmate())
-        {
-            return $"Body Report: The killer appears to be a Crewmate! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        return $"Body Report: The killer appears to be an Impostor! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-    }
 }
 
 public static class GameHistory

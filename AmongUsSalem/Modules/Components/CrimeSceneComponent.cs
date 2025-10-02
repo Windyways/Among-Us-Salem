@@ -3,7 +3,6 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Attributes;
 using Reactor.Utilities.Attributes;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Utilities;
 using UnityEngine;
 
@@ -83,10 +82,6 @@ public sealed class CrimeSceneComponent(nint cppPtr) : MonoBehaviour(cppPtr)
         _crimeScenes.Add(scene);
 
         scene.gameObject.SetActive(false);
-        if (PlayerControl.LocalPlayer.Data.Role is DetectiveRole)
-        {
-            scene.gameObject.SetActive(true);
-        }
     }
 
     public static IEnumerator CoClean(DeadBody body)

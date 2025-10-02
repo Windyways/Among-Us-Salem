@@ -21,7 +21,7 @@ public sealed class VampireRecruit(int num) : AllianceGameModifier
         if (Player.Data.Role is IAUSRole ausRole)
         {
             ausRole.RoleColor = AUSColors.Vampire;
-            ausRole.RoleFaction = Faction.Neutral;
+            ausRole.Faction = Faction.Neutral;
         }
     }
 
@@ -34,11 +34,11 @@ public sealed class VampireRecruit(int num) : AllianceGameModifier
     {
         if (id == 0)
         {
-            Player.RpcChangeRole(RoleId.Get<Vampire>());
             if (Player.AmOwner)
             {
+                Player.RpcChangeRole(RoleId.Get<Vampire>());
                 var button = CustomButtonSingleton<Vampire_Convert>.Instance;
-                button.UsesLeft = Owner.Charges;
+                button.DecreaseUses(3 + Owner.Charges);
             }
 
             Player.RpcRemoveModifier<VampireRecruit>();
@@ -47,11 +47,11 @@ public sealed class VampireRecruit(int num) : AllianceGameModifier
 
     public override bool? DidWin(GameOverReason reason)
     {
-        var aliveJackals = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Jackal>());
-        var aliveRecs = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.HasModifier<JackalRecruit>());
-        if (aliveJackals == 0 && aliveRecs == 0) return false;
+        var aliveVampires = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Vampire>());
+        var aliveRecs = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.HasModifier<VampireRecruit>());
+        if (aliveVampires == 0 && aliveRecs == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= (aliveJackals + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveJackals + aliveRecs);
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= (aliveVampires + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveVampires + aliveRecs);
         return result;
     }
 

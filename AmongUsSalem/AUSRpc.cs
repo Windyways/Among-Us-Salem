@@ -44,6 +44,27 @@ public enum AUSRpc : uint
     // Ambusher
     Ambusher_Ambush,
     Ambusher_Notify,
+    // Survivor
+    Survivor_Vest,
+    Survivor_Notify,
+    // Jinx
+    Jinx_Jinx,
+    Jinx_Notify,
+    // Escort
+    Escort_Distract,
+    Escort_Notify,
+    // Cleric
+    Cleric_Barrier,
+    Cleric_Notify,
+    Cleric_SelfBarrier,
+    // Investigator
+    AddTrespassing,
+    AddMurder,
+    // Prosecutor
+    Prosecutor_Prosecute,
+    // Janitor
+    Janitor_Clean,
+    Janitor_DoClean,
     // Other
     AssignNecronomicon,
     ApplyDeathReason,

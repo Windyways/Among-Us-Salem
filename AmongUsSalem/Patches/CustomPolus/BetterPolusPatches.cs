@@ -4,6 +4,7 @@ using AmongUsSalem.Options;
 using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using TownOfUs.Modules.Localization;
 
 namespace AmongUsSalem.Patches.CustomPolus;
 

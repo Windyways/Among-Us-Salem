@@ -3,6 +3,7 @@ using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
 using Color = UnityEngine.Color;
 using UnityEngine;
+using System.Collections;
 
 namespace AmongUsSalem.Roles;
 
@@ -12,13 +13,13 @@ public sealed class Deputy(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable, IContinueGame
 {
     public bool continueGame => true;
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Deputy, "Deputy");
-    public string revealText => "N/A.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleName { get; set; } = "Deputy";
+    public string revealText => "is a powerful force for Justice.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownKilling;
 
@@ -77,22 +78,30 @@ public sealed class Deputy(IntPtr cppPtr)
         {
             MiscUtils.RpcApplyDeathReason(player, target, DeathReasonShow.ShotByADeputy, false, false);
             AUSAssets.PlaySound(AUSAssets.Deputy_Shoot_SFX);
-            
-            MiscUtils.ShowNotification(Info(Type.Shot, player), Color.white, AUSAssets.DeputyRoleCard.LoadAsset());
-            MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Deputy Info"), Info(Type.Shot, player));
+
+            MiscUtils.ShowNotification(Info(Type.Shot, target), Color.white, AUSAssets.DeputyRoleCard.LoadAsset());
+            MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Deputy Info"), Info(Type.Shot, target));
         }
-        else
+        else if (player.AmOwner())
         {
-            MiscUtils.ShowNotification(Info(Type.Missed, player), Color.white, AUSAssets.DeputyRoleCard.LoadAsset());
-            MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Deputy Info"), Info(Type.Missed, player));
+            MiscUtils.ShowNotification(Info(Type.Missed, target), Color.white, AUSAssets.DeputyRoleCard.LoadAsset());
+            MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Deputy Info"), Info(Type.Missed, target));
+        }
+        
+        if (Debugger.IsDebuggerActive)
+        {
+        CalculatedVoting.EvidenceAgainst.Remove(target);
+        CalculatedVoting.KillerContagious.Remove(target);
+        CalculatedVoting.QueueEvidenceAgainst.Remove(target);
+        CalculatedVoting.QueueKillerContagious.Remove(target);
         }
     }
 
     public enum Type { Shot, Missed }
-    public static string Info(Type type, PlayerControl player)
+    public static string Info(Type type, PlayerControl target)
     {
         if (type == Type.Shot) return "A <b><color=#06E00C>Deputy</color></b> decided to fire their Revolver!";
-        return "Placeholder text, aka you missed your shot.";
+        return $"You missed your shot! This could be because {target.GetDefaultAppearance().PlayerName} has.";
     }
 
     public override void Initialize(PlayerControl player)
@@ -121,8 +130,14 @@ public sealed class Deputy(IntPtr cppPtr)
 
         if (Player.AmOwner)
         {
-            Coroutines.Start(meetingMenu.GenButtonsDelay(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && Charges > 0 && DayNightMechanic.DayCount >= 2));
+            Coroutines.Start(GenButtons());
         }
+    }
+
+    public IEnumerator GenButtons()
+    {
+        yield return new WaitForSeconds(3f);
+        meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && Charges > 0 && DayNightMechanic.DayCount >= 2);
     }
 
     public override void OnVotingComplete()
@@ -149,7 +164,9 @@ public sealed class Deputy(IntPtr cppPtr)
     public void ClickGuess(PlayerVoteArea voteArea, MeetingHud __)
     {
         var target = GameData.Instance.GetPlayerById(voteArea.TargetPlayerId).Object;
+        
         RpcDeputy_Shoot(Player, target);
+        Charges--;
 
         if (Player.AmOwner)
         {
@@ -159,7 +176,7 @@ public sealed class Deputy(IntPtr cppPtr)
 
     public bool IsExempt(PlayerVoteArea voteArea)
     {
-        return voteArea?.TargetPlayerId != Player.PlayerId || Player.Data.IsDead || voteArea!.AmDead;
+        return voteArea?.TargetPlayerId == Player.PlayerId || Player.Data.IsDead || voteArea!.AmDead;
     }
 
     public MeetingMenu meetingMenu;
@@ -170,7 +187,7 @@ public sealed class Deputy(IntPtr cppPtr)
 #endregion
 public sealed class Deputy_Options : AbstractOptionGroup<Deputy>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Deputy, "Deputy");
+    public override string GroupName => "Deputy";
 
     [ModdedNumberOption("<color=#06E00C>Deputy</color> Max <color=#4a86e8>Shots</color>", 1f, 30f, 1f)]
     public float Charges { get; set; } = 1f;

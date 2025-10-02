@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
-using AmongUsSalem.Modifiers.Game.Crewmate;
 using AmongUsSalem.Modifiers.Impostor;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Options;
@@ -57,12 +56,6 @@ public static class ShipStatus_CalculateLightRadius
             }
 
             var t = switchSystem?.Level ?? 1;
-
-
-            if (player._object.HasModifier<TorchModifier>() && !player._object.HasModifier<EclipsalBlindModifier>())
-            {
-                t = 1;
-            }
 
             __result = Mathf.Lerp(__instance.MinLightRadius, __instance.MaxLightRadius, t) *
                        GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod * visionFactor;

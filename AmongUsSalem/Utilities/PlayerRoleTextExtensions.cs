@@ -2,15 +2,10 @@
 using MiraAPI.Modifiers;
 using AmongUsSalem.Modifiers;
 using AmongUsSalem.Modifiers.Crewmate;
-using AmongUsSalem.Modifiers.Game.Alliance;
 using AmongUsSalem.Modifiers.Impostor;
-using AmongUsSalem.Modifiers.Neutral;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Options;
-using AmongUsSalem.Options.Roles.Neutral;
 using AmongUsSalem.Roles;
-using AmongUsSalem.Roles.Crewmate;
-using AmongUsSalem.Roles.Impostor;
 using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 
@@ -48,10 +43,16 @@ public static class PlayerRoleTextExtensions
             color = AUSColors.Town;
         }
 
-        if ((PlayerControl.LocalPlayer.Data.Role is Crusader crusader && crusader.FortifiedPlayer == player))
+        if (PlayerControl.LocalPlayer.Data.Role is Crusader crusader && crusader.FortifiedPlayer == player)
         {
             color = AUSColors.Town;
         }
+        
+        if (PlayerControl.LocalPlayer.Data.Role is Escort escort && escort.DistractedPlayer == player)
+        {
+            color = AUSColors.Town;
+        }
+
         // Neutral
         if (PlayerControl.LocalPlayer.Data.Role is Arsonist arsonist && arsonist.DousedPlayers.Contains(player.PlayerId))
         {
@@ -87,6 +88,12 @@ public static class PlayerRoleTextExtensions
         {
             color = AUSColors.Mafia;
         }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Janitor janitor && janitor.CleanedPlayer == player)
+            || (player.IsCleanTarget() && PlayerControl.LocalPlayer.Is(Faction.Mafia)))
+        {
+            color = AUSColors.Mafia;
+        }
 
         // Coven
         if ((PlayerControl.LocalPlayer.Data.Role is HexMaster hexMaster && hexMaster.HexedPlayers.Contains(player.PlayerId))
@@ -103,6 +110,12 @@ public static class PlayerRoleTextExtensions
         
         if ((PlayerControl.LocalPlayer.Data.Role is VoodooMaster voodooMaster && voodooMaster.SilencedPlayer == player)
             || (player.IsSilenced() && PlayerControl.LocalPlayer.Is(Faction.Coven)))
+        {
+            color = AUSColors.Coven;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Jinx jinx && jinx.JinxedPlayer == player)
+            || (player.IsJinxed() && PlayerControl.LocalPlayer.Is(Faction.Coven)))
         {
             color = AUSColors.Coven;
         }
@@ -124,24 +137,6 @@ public static class PlayerRoleTextExtensions
 
     public static string UpdateAllianceSymbols(this string name, PlayerControl player, bool hidden = false)
     {
-        var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
-
-        if (player.HasModifier<LoverModifier>() && (PlayerControl.LocalPlayer.HasModifier<LoverModifier>() ||
-                                                    (PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow &&
-                                                     !hidden)))
-        {
-            name += "<color=#FF66CC> ♥</color>";
-        }
-
-        if (player.HasModifier<EgotistModifier>() && (player.AmOwner ||
-                                                      (EgotistModifier.EgoVisibilityFlag(player) &&
-                                                       (player.GetModifiers<RevealModifier>().Any(x => x.Visible && x.RevealRole))) ||
-                                                      (PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow &&
-                                                       !hidden)))
-        {
-            name += "<color=#FFFFFF> (<color=#669966>Egotist</color>)</color>";
-        }
-
         return name;
     }
 
@@ -183,6 +178,12 @@ public static class PlayerRoleTextExtensions
         {
             name += "<color=#06E00C> Ⓕ</color>";
         }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Escort escort && escort.DistractedPlayer == player)
+            || (player.IsDistracted() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06E00C> Ⓓ</color>";
+        }
 
         // Neutral
         if ((PlayerControl.LocalPlayer.Data.Role is Arsonist arsonist && arsonist.DousedPlayers.Contains(player.PlayerId))
@@ -198,13 +199,14 @@ public static class PlayerRoleTextExtensions
         }
         
         if ((PlayerControl.LocalPlayer.Data.Role is Jackal && player.HasModifier<JackalRecruit>()) ||
-            (PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() && player.HasModifier<JackalRecruit>())
+            (PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() && player.HasModifier<JackalRecruit>()) ||
+            (player.HasModifier<JackalRecruit>() && player.HasDied())
             || (player.HasModifier<JackalRecruit>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#404040> ☯</color>";
         }
 
-        // Mafia
+        // Mafia -------------------------------------------------------------------------------------------------------
         if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && framer.FramedPlayers.Contains(player.PlayerId))
             || (player.IsFramed() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
             || (player.IsFramed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
@@ -224,6 +226,13 @@ public static class PlayerRoleTextExtensions
             || (player.IsAmbushed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#DD0000> Ⓐ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Janitor janitor && janitor.CleanedPlayer == player)
+            || (player.IsCleanTarget() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
+            || (player.IsCleanTarget() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#DD0000> Ⓙ</color>";
         }
         
         // Coven
@@ -246,6 +255,19 @@ public static class PlayerRoleTextExtensions
             || (player.IsSilenced() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#B545FF> Ⓢ</color>";
+        }
+        
+        if ((PlayerControl.LocalPlayer.Data.Role is Jinx jinx && jinx.JinxedPlayer == player)
+            || (player.IsJinxed() && PlayerControl.LocalPlayer.Is(Faction.Coven))
+            || (player.IsJinxed() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#B545FF> Ⓙ</color>";
+        }
+        
+        if ((player.HasModifier<CovenVIP>() && PlayerControl.LocalPlayer.Is(Faction.Coven))
+            || (player.HasModifier<CovenVIP>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#B545FF> [VIP]</color>";
         }
         
         if ((player.Data.Role is ICovenRole coven && coven.Necronomicon && PlayerControl.LocalPlayer.Is(Faction.Coven))

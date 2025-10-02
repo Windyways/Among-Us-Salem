@@ -10,16 +10,12 @@ using Reactor.Utilities;
 using TMPro;
 using AmongUsSalem.Modifiers;
 using AmongUsSalem.Modifiers.Crewmate;
-using AmongUsSalem.Modifiers.Game.Universal;
 using AmongUsSalem.Modifiers.Impostor;
 using AmongUsSalem.Modifiers.Impostor.Venerer;
-using AmongUsSalem.Modifiers.Neutral;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Options;
-using AmongUsSalem.Options.Roles.Crewmate;
 using AmongUsSalem.Patches.Options;
 using AmongUsSalem.Roles;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 using AmongUsSalem.Utilities;
 using AmongUsSalem.Utilities.Appearances;
@@ -213,7 +209,7 @@ public static class HudManagerPatches
     public static void UpdateTeamChat()
     {
         var isValid = MeetingHud.Instance &&
-                      (PlayerControl.LocalPlayer.IsJailed() || PlayerControl.LocalPlayer.Data.Role is JailorRole ||
+                      (PlayerControl.LocalPlayer.IsJailed() || 
                        (PlayerControl.LocalPlayer.IsImpostor())
                        /*(PlayerControl.LocalPlayer.Data.Role is VampireRole && genOpt.VampireChat)*/);
 
@@ -296,28 +292,54 @@ public static class HudManagerPatches
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
                     // This shows the role!
-
-                    color = role.TeamColor;
-                    if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
-
-                    if (player.HasModifier<JackalRecruit>() && (player.AmOwner || PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() || PlayerControl.LocalPlayer.IsRole<Jackal>()))
+                    if (!player.HasModifier<Cleaned>())
                     {
-                        roleName = $"<size=80%>{AUSColors.GradientColorText("404040", "b8b8b8", player.Data.Role.NiceName)}</size>";
+                        color = role.TeamColor;
+                        if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
+
+                        if (player.HasModifier<JackalRecruit>() && (player.AmOwner() || PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() || PlayerControl.LocalPlayer.IsRole<Jackal>() || player.HasDied()))
+                        {
+                            roleName = $"<size=80%>{AUSColors.GradientColorText("404040", "b8b8b8", player.Data.Role.NiceName)}</size>";
+                        }
+                        else roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
                     }
-                    else roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
+                    else
+                    {
+                        color = AUSColors.Neutral;
+                        roleName = $"<size=80%>{color.ToTextColor()}Cleaned</color></size>";
+                    }
 
                     if (VisibilityFlag(player))
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
-                        color = roleWhenAlive.TeamColor;
 
-                        roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
+                        if (!player.HasModifier<Cleaned>())
+                        {
+                            color = roleWhenAlive.TeamColor;
+
+                            if (player.HasModifier<JackalRecruit>() && (player.AmOwner() || PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() || PlayerControl.LocalPlayer.IsRole<Jackal>()))
+                            {
+                                roleName = $"<size=80%>{AUSColors.GradientColorText("404040", "b8b8b8", roleWhenAlive.NiceName)}</size>";
+                            }
+                            else roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
+                        }
+                        else
+                        {
+                            color = AUSColors.Neutral;
+                            roleName = $"<size=80%>{color.ToTextColor()}Cleaned</color></size>";
+                        }
                     }
 
                     if (player.TryGetModifier<DeathHandlerModifier>(out var deathMod))
                     {
                         var deathReason = $"<size=50%>({deathMod.DeathColor.ToTextColor()}{deathMod.CauseOfDeath.ToSpacedString()}</color>)</size>\n";
-                        roleName = $"{deathReason}{roleName}";
+
+                        var secondDeathReason = "";
+                        if (deathMod.SecondaryCauseOfDeath != DeathReasonShow.Alive) secondDeathReason = $"<size=40%>({deathMod.SecondaryDeathColor.ToTextColor()}{deathMod.SecondaryCauseOfDeath.ToSpacedString()}</color>)</size>\n";
+                        
+                        var thirdDeathReason = "";
+                        if (deathMod.ThirdCauseOfDeath != DeathReasonShow.Alive) thirdDeathReason = $"<size=30%>({deathMod.ThirdDeathColor.ToTextColor()}{deathMod.ThirdCauseOfDeath.ToSpacedString()}</color>)</size>\n";
+                        roleName = $"{deathReason}{secondDeathReason}{thirdDeathReason}{roleName}";
                     }
                 }
 
@@ -330,23 +352,6 @@ public static class HudManagerPatches
                     }
                     roleName += $"<size=80%>{player.TaskInfo()}</size>";
                 }
-
-                /*if (player.TryGetModifier<OracleConfessModifier>(out var confess, x => x.ConfessToAll))
-                {
-                    var accuracy = OptionGroupSingleton<OracleOptions>.Instance.RevealAccuracyPercentage;
-                    var revealText = confess.RevealedFaction switch
-                    {
-                        ModdedRoleTeams.Crewmate =>
-                            $"\n<size=75%>{Palette.CrewmateBlue.ToTextColor()}({accuracy}% Crew) </color></size>",
-                        ModdedRoleTeams.Custom =>
-                            $"\n<size=75%>{AUSColors.Neutral.ToTextColor()}({accuracy}% Neut) </color></size>",
-                        ModdedRoleTeams.Impostor =>
-                            $"\n<size=75%>{AUSColors.Mafia.ToTextColor()}({accuracy}% Imp) </color></size>",
-                        _ => string.Empty
-                    };
-
-                    playerName += revealText;
-                }*/
 
                 var revealedColorMod = revealMods.FirstOrDefault(x => x.Visible && x.NameColor != null);
                 if (revealedColorMod != null)
@@ -371,7 +376,6 @@ public static class HudManagerPatches
                 {
                     if (!(!TutorialManager.InstanceExists &&
                           ((PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow) ||
-                            GuardianAngelTouRole.GASeesRoleVisibilityFlag(player) ||
                             VisibilityFlag(player) ||
                            revealMods.Any(x => x.Visible && x.RevealRole))))
                     {
@@ -407,8 +411,7 @@ public static class HudManagerPatches
         }
         else
         {
-            var isVisible = (PlayerControl.LocalPlayer.TryGetModifier<DeathHandlerModifier>(out var deathHandler) &&
-                            !deathHandler.DiedThisRound) || TutorialManager.InstanceExists;
+            var isVisible = (PlayerControl.LocalPlayer.TryGetModifier<DeathHandlerModifier>(out var deathHandler) && !deathHandler.DiedThisRound) || TutorialManager.InstanceExists;
 
             foreach (var player in PlayerControl.AllPlayerControls)
             {
@@ -448,30 +451,16 @@ public static class HudManagerPatches
                     VisibilityFlag(player) ||
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
+                    // This shows the role!
+
                     color = role.TeamColor;
-                    roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
+                    if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
 
-                    var revealedRole = revealMods.FirstOrDefault(x => x.Visible && x.RevealRole && x.ShownRole != null);
-                    if (revealedRole != null)
+                    if (player.HasModifier<JackalRecruit>() && (player.AmOwner() || PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() || PlayerControl.LocalPlayer.IsRole<Jackal>()))
                     {
-                        color = revealedRole.ShownRole!.TeamColor;
-                        roleName = $"<size=80%>{color.ToTextColor()}{revealedRole.ShownRole!.NiceName}</color></size>";
+                        roleName = $"<size=80%>{AUSColors.GradientColorText("404040", "b8b8b8", player.Data.Role.NiceName)}</size>";
                     }
-
-                    var cachedMod = player.GetModifiers<BaseModifier>().FirstOrDefault(x => x is ICachedRole);
-                    if (cachedMod is ICachedRole cache && cache.Visible &&
-                        player.Data.Role.GetType() != cache.CachedRole.GetType())
-                    {
-                        roleName = cache.ShowCurrentRoleFirst
-                            ? $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color> ({cache.CachedRole.TeamColor.ToTextColor()}{cache.CachedRole.NiceName}</color>)</size>"
-                            : $"<size=80%>{cache.CachedRole.TeamColor.ToTextColor()}{cache.CachedRole.NiceName}</color> ({color.ToTextColor()}{player.Data.Role.NiceName}</color>)</size>";
-                    }
-
-                    // Guardian Angel here is vanilla's GA!
-                    if (player.Data.IsDead && role is GuardianAngelRole gaRole)
-                    {
-                        roleName = $"<size=80%>{gaRole.TeamColor.ToTextColor()}{gaRole.NiceName}</color></size>";
-                    }
+                    else roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
 
                     if (VisibilityFlag(player) || player.Data.IsDead)
                     {
@@ -539,19 +528,6 @@ public static class HudManagerPatches
         {
             var tabText = HudManager.Instance.TaskPanel.tab.transform.FindChild("TabText_TMP").GetComponent<TextMeshPro>();
             tabText.SetText($"Tasks {PlayerControl.LocalPlayer.TaskInfo()}");
-        }
-    }
-
-    public static void UpdateGhostRoles(HudManager instance)
-    {
-        foreach (var haunter in CustomRoleUtils.GetActiveRolesOfType<HaunterRole>())
-        {
-            if (haunter.Player.Data != null && haunter.Player.Data.Disconnected)
-            {
-                continue;
-            }
-
-            haunter.FadeUpdate(instance);
         }
     }
 
@@ -780,7 +756,6 @@ public static class HudManagerPatches
 
         UpdateTeamChat();
         UpdateRoleNameText();
-        UpdateGhostRoles(__instance);
     }
 
     [HarmonyPostfix]

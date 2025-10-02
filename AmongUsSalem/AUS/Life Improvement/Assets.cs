@@ -1,4 +1,3 @@
-using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
 namespace AmongUsSalem.LifeImprovement;
@@ -12,6 +11,7 @@ public static class AUSAssets
     private const string RoleCard = $"AmongUsSalem.Resources.Sprites.RoleCards";
     private const string Other = $"AmongUsSalem.Resources.Sprites.Other";
     private const string Audio = $"AmongUsSalem.Resources.Sprites.Sfx";
+    private const string Icon = $"AmongUsSalem.Resources.Sprites.Icons";
 
     // Abilities
     public static LoadableAsset<Sprite> NecronomiconButton { get; } = new LoadableResourceAsset($"{Ability}.NecronomiconButton.png");
@@ -42,6 +42,16 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> Crusader_Fortify { get; } = new LoadableResourceAsset($"{Ability}.Crusader_Fortify.png");
     public static LoadableAsset<Sprite> Ambusher_Ambush { get; } = new LoadableResourceAsset($"{Ability}.Ambusher_Ambush.png");
     public static LoadableAsset<Sprite> Jackal_Assassinate { get; } = new LoadableResourceAsset($"{Ability}.Jackal_Assassinate.png");
+    public static LoadableAsset<Sprite> Survivor_Vest { get; } = new LoadableResourceAsset($"{Ability}.Survivor_Vest.png");
+    public static LoadableAsset<Sprite> Jinx_Jinx { get; } = new LoadableResourceAsset($"{Ability}.Jinx_Jinx.png");
+    public static LoadableAsset<Sprite> Vigilante_Shoot { get; } = new LoadableResourceAsset($"{Ability}.Vigilante_Shoot.png");
+    public static LoadableAsset<Sprite> Escort_Distract { get; } = new LoadableResourceAsset($"{Ability}.Escort_Distract.png");
+    public static LoadableAsset<Sprite> Cleric_Barrier { get; } = new LoadableResourceAsset($"{Ability}.Cleric_Barrier.png");
+    public static LoadableAsset<Sprite> Cleric_SelfBarrier { get; } = new LoadableResourceAsset($"{Ability}.Cleric_SelfBarrier.png");
+    public static LoadableAsset<Sprite> Coroner_Autopsy { get; } = new LoadableResourceAsset($"{Ability}.Coroner_Autopsy.png");
+    public static LoadableAsset<Sprite> Coroner_Examine { get; } = new LoadableResourceAsset($"{Ability}.Coroner_Examine.png");
+    public static LoadableAsset<Sprite> Prosecutor_Prosecute { get; } = new LoadableResourceAsset($"{Ability}.Prosecutor_Prosecute.png");
+    public static LoadableAsset<Sprite> Janitor_Clean { get; } = new LoadableResourceAsset($"{Ability}.Janitor_Clean.png");
 
     // Role Cards
     public static LoadableAsset<Sprite> PilgrimRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.PilgrimRoleCard.png");
@@ -67,6 +77,17 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> CrusaderRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.CrusaderRoleCard.png");
     public static LoadableAsset<Sprite> AmbusherRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.AmbusherRoleCard.png");
     public static LoadableAsset<Sprite> JackalRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JackalRoleCard.png");
+    public static LoadableAsset<Sprite> SurvivorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.SurvivorRoleCard.png");
+    public static LoadableAsset<Sprite> JinxRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JinxRoleCard.png");
+    public static LoadableAsset<Sprite> VigilanteRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.VigilanteRoleCard.png");
+    public static LoadableAsset<Sprite> EscortRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.EscortRoleCard.png");
+    public static LoadableAsset<Sprite> ClericRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ClericRoleCard.png");
+    public static LoadableAsset<Sprite> CoronerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.CoronerRoleCard.png");
+    public static LoadableAsset<Sprite> ProsecutorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ProsecutorRoleCard.png");
+    public static LoadableAsset<Sprite> JanitorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JanitorRoleCard.png");
+
+    // Icons
+    public static LoadableAsset<Sprite> CovenVIPIcon { get; } = new LoadableResourceAsset($"{Icon}.CovenVIPIcon.png");
 
     // Audio
     public static LoadableAsset<AudioClip> Mayor_Reveal_SFX { get; } = new LoadableAudioResourceAsset($"{Audio}.Mayor_Reveal_SFX.wav");

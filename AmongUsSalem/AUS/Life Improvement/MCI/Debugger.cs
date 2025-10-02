@@ -4,7 +4,6 @@ using Il2CppInterop.Runtime.Attributes;
 using InnerNet;
 using MiraAPI.Hud;
 using MiraAPI.Networking;
-using AmongUsSalem.Buttons.Modifiers;
 using AmongUsSalem.Utilities;
 using UnityEngine;
 
@@ -83,7 +82,7 @@ public class Debugger : MonoBehaviour
                 DestroyableSingleton<HudManager>.Instance.StartCoroutine(DestroyableSingleton<HudManager>.Instance.CoShowIntro());
             }
 
-            if (!MeetingHud.Instance && GUILayout.Button("Start Meeting")) BarryButton.CallButtonBarry(PlayerControl.LocalPlayer);
+            if (!MeetingHud.Instance && GUILayout.Button("Start Meeting")) DayNightMechanic.StartDayOne(PlayerControl.LocalPlayer);
             if (GUILayout.Button("End Meeting") && MeetingHud.Instance) MeetingHud.Instance.RpcClose();
             if (GUILayout.Button("Kill Self")) PlayerControl.LocalPlayer.RpcCustomMurder(PlayerControl.LocalPlayer, didSucceed: true);
             if (GUILayout.Button("Kill All"))
@@ -111,8 +110,14 @@ public class Debugger : MonoBehaviour
                 }
             }
 
+            if (GUILayout.Button("Do Cycle Mode"))
+            {
+                CycleMode.Start();
+            }
+
             isRandomClientSwapping = GUILayout.Toggle(isRandomClientSwapping, "Enable Random Swapping");
             SmartBotsEnabled = GUILayout.Toggle(SmartBotsEnabled, "Enable Smart Bots");
+            ShowAllMessages = GUILayout.Toggle(ShowAllMessages, "Show All Messages");
             RoleReferences.CountRoundToLeaderboard = GUILayout.Toggle(RoleReferences.CountRoundToLeaderboard, "Round Counts To Leaderboard");
         });
     }
@@ -137,6 +142,7 @@ public class Debugger : MonoBehaviour
         WindowEnabled = false;
     }
 
+    public static bool ShowAllMessages;
     public static bool isRandomClientSwapping;
     public static bool SmartBotsEnabled;
 }

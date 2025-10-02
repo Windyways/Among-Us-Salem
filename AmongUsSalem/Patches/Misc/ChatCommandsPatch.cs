@@ -5,7 +5,6 @@ using Reactor.Utilities.Extensions;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Options;
 using AmongUsSalem.Patches.Options;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 using AmongUsSalem.Utilities;
 
@@ -70,9 +69,9 @@ public static class ChatPatches
         }
 
         if (TeamChatPatches.TeamChatActive && !PlayerControl.LocalPlayer.HasDied() &&
-            (PlayerControl.LocalPlayer.Data.Role is JailorRole || PlayerControl.LocalPlayer.IsJailed() ||
-             PlayerControl.LocalPlayer.Data.Role is VampireRole || PlayerControl.LocalPlayer.IsImpostor()))
+            (PlayerControl.LocalPlayer.IsJailed() || PlayerControl.LocalPlayer.IsImpostor()))
         {
+            /*
             if (PlayerControl.LocalPlayer.Data.Role is JailorRole)
             {
                 TeamChatPatches.RpcSendJailorChat(PlayerControl.LocalPlayer, textRegular);
@@ -87,7 +86,7 @@ public static class ChatPatches
 
                 return false;
             }
-
+            */
             if (PlayerControl.LocalPlayer.IsJailed())
             {
                 TeamChatPatches.RpcSendJaileeChat(PlayerControl.LocalPlayer, textRegular);

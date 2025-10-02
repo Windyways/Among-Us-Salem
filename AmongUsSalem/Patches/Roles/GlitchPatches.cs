@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using MiraAPI.Modifiers;
 using AmongUsSalem.Modifiers;
-using AmongUsSalem.Modifiers.Neutral;
 
 namespace AmongUsSalem.Patches.Roles;
 
@@ -18,12 +17,6 @@ public static class GlitchPatches
             return false;
         }
 
-        if (PlayerControl.LocalPlayer.HasModifier<GlitchHackedModifier>())
-        {
-            PlayerControl.LocalPlayer.GetModifier<GlitchHackedModifier>()!.ShowHacked();
-            return false;
-        }
-
         return true;
     }
 
@@ -34,12 +27,6 @@ public static class GlitchPatches
     [HarmonyPrefix]
     public static bool GlitchHackedSabotageButtonPatch(ActionButton __instance)
     {
-        if (PlayerControl.LocalPlayer.HasModifier<GlitchHackedModifier>())
-        {
-            PlayerControl.LocalPlayer.GetModifier<GlitchHackedModifier>()!.ShowHacked();
-            return false;
-        }
-
         return true;
     }
 
@@ -47,12 +34,6 @@ public static class GlitchPatches
     [HarmonyPrefix]
     public static bool GlitchHackedToggleMapVisiblePatch(HudManager __instance)
     {
-        if (PlayerControl.LocalPlayer.HasModifier<GlitchHackedModifier>() &&
-            !PlayerControl.LocalPlayer.GetModifier<GlitchHackedModifier>()!.ShouldHideHacked)
-        {
-            return false;
-        }
-
         if (PlayerControl.LocalPlayer.GetModifiers<DisabledModifier>().Any(x => !x.CanUseAbilities))
         {
             return false;

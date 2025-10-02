@@ -12,13 +12,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class HexMaster(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.HexMaster, "Hex Master");
+    public string RoleName { get; set; } = "Hex Master";
     public string revealText => "placeholder.";
     public string RoleDescription => "Placeholder.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Coven;
+    public Faction Faction { get; set; } = Faction.Coven;
     public Color RoleColor { get; set; } = AUSColors.Coven;
     public Alignment Alignment => Alignment.CovenPower;
     public Attack Attack { get; set; } = Attack.None;
@@ -89,6 +89,7 @@ public sealed class HexMaster(IntPtr cppPtr)
     public override void OnMeetingStart()
     {
         Coroutines.Start(PostMeetingIntro());
+        if (Necronomicon) CovenNecronomiconMechanic.AdjustButtons(Player);
     }
 
     public IEnumerator PostMeetingIntro()
@@ -111,13 +112,13 @@ public sealed class HexMaster(IntPtr cppPtr)
         }
     }
 
-    public void OnTargetDeath(PlayerControl target, DeathReason? reason)
+    /*public void OnTargetDeath(PlayerControl target, DeathReason? reason)
     {
         if (HexedPlayers.Contains(target.PlayerId))
         {
             HexedPlayers.Remove(target.PlayerId);
         }
-    }
+    }*/
 
     [MethodRpc((uint)AUSRpc.HexMaster_Hex, SendImmediately = true)]
     public static void RpcHexMaster_Hex(PlayerControl player, PlayerControl target)
@@ -140,14 +141,14 @@ public sealed class HexMaster(IntPtr cppPtr)
 public sealed class HexMaster_Hex : AmongUsSalemRoleButton<HexMaster, PlayerControl>
 {
     public override string Name => "Hex";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
     public override float Cooldown => OptionGroupSingleton<HexMaster_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.HexMaster_Hex;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, Role.Necronomicon, false)) // Astral visiting!
             {
@@ -166,7 +167,11 @@ public sealed class HexMaster_Hex : AmongUsSalemRoleButton<HexMaster, PlayerCont
         if (Role.Necronomicon)
         {
             if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByTheCoven);
-            else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            else
+            {
+                MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+                MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+            }
         }
 
         HexMaster.RpcHexMaster_Hex(Player, Target);
@@ -182,7 +187,7 @@ public sealed class HexMaster_Hex : AmongUsSalemRoleButton<HexMaster, PlayerCont
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.RoleFaction == Role.RoleFaction) &&
+            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction) &&
             !(Role.HexedPlayers.Contains(target.PlayerId) && !Role.Necronomicon)
             ;
     }
@@ -192,7 +197,7 @@ public sealed class HexMaster_Hex : AmongUsSalemRoleButton<HexMaster, PlayerCont
 #endregion
 public sealed class HexMaster_Options : AbstractOptionGroup<HexMaster>
 {
-    public override string GroupName => TouLocale.Get(TouNames.HexMaster, "Hex Master");
+    public override string GroupName => "Hex Master";
 
     [ModdedNumberOption("<color=#B545FF>Hex Master</color> <color=#4a86e8>Hex</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

@@ -1,6 +1,5 @@
 using HarmonyLib;
 using MiraAPI.Modifiers;
-using AmongUsSalem.Modifiers.Game.Universal;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Utilities;
 using UnityEngine;
@@ -22,38 +21,6 @@ public static class ShowVentsPatch
     [HarmonyPostfix]
     public static void Postfix(MapBehaviour __instance)
     {
-        if (PlayerControl.LocalPlayer.HasModifier<SatelliteModifier>())
-        {
-            foreach (var deadBody in ModifierUtils.GetActiveModifiers<SatelliteArrowModifier>()
-                         .Select(bodyMod => bodyMod.DeadBody))
-            {
-                var location = deadBody.transform.position / ShipStatus.Instance.MapScale;
-                location.z = -1.99f;
-
-                if (!BodyIcons.TryGetValue(deadBody.ParentId, out var Icon) || Icon == null)
-                {
-                    Icon = Object.Instantiate(__instance.HerePoint.gameObject, __instance.HerePoint.transform.parent);
-                    var renderer = Icon.GetComponent<SpriteRenderer>();
-                    renderer.sprite = TouAssets.MapBodySprite.LoadAsset();
-                    Icon.name = $"Satellite Body {deadBody.ParentId} Map Icon";
-                    Icon.transform.localPosition = location;
-                    BodyIcons[deadBody.ParentId] = Icon;
-                }
-
-                Icon.transform.localScale = Vector3.one;
-            }
-        }
-
-        if (!ModifierUtils.GetActiveModifiers<SatelliteArrowModifier>().Any())
-        {
-            foreach (var icon in BodyIcons.Values.Where(x => x))
-            {
-                Object.Destroy(icon);
-            }
-
-            BodyIcons.Clear();
-        }
-
         if (true)
         {
             foreach (var icon in VentIcons.Values.Where(x => x))

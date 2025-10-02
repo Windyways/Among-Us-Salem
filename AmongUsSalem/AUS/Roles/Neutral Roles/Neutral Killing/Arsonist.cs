@@ -11,13 +11,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Arsonist(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Arsonist, "Arsonist");
+    public string RoleName { get; set; } = "Arsonist";
     public string revealText => "likes to watch things burn.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Neutral;
     public Color RoleColor { get; set; } = AUSColors.Arsonist;
     public Alignment Alignment => Alignment.NeutralKilling;
     public Attack Attack { get; set; } = Attack.Unstoppable;
@@ -73,7 +73,7 @@ public sealed class Arsonist(IntPtr cppPtr)
         var aliveArsonists = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Arsonist>());
         if (aliveArsonists == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= aliveArsonists && MiscUtils.KillersAliveCount() == aliveArsonists;
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveArsonists && MiscUtils.KillersAliveCount() == aliveArsonists;
         return result;
     }
 
@@ -82,13 +82,13 @@ public sealed class Arsonist(IntPtr cppPtr)
         return WinConditionMet();
     }
 
-    public void OnTargetDeath(PlayerControl target, DeathReason? reason)
+    /*public void OnTargetDeath(PlayerControl target, DeathReason? reason)
     {
         if (DousedPlayers.Contains(target.PlayerId))
         {
             DousedPlayers.Remove(target.PlayerId);
         }
-    }
+    }*/
 
     public override void OnMeetingStart()
     {
@@ -150,14 +150,14 @@ public sealed class Arsonist(IntPtr cppPtr)
 public sealed class Arsonist_Douse : AmongUsSalemRoleButton<Arsonist, PlayerControl>
 {
     public override string Name => "Douse";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Arsonist;
     public override float Cooldown => OptionGroupSingleton<Arsonist_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Arsonist_Douse;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -176,7 +176,7 @@ public sealed class Arsonist_Douse : AmongUsSalemRoleButton<Arsonist, PlayerCont
         if (Player.AmOwner)
         {
             var button = CustomButtonSingleton<Arsonist_Ignite>.Instance;
-            WitnessKillEvent.ResetButtonTimer(Player, button, button.InitialCooldown);
+            button.ResetCooldownAndOrEffect();
         }
 
         Role.hasDoused = true;
@@ -202,7 +202,7 @@ public sealed class Arsonist_Douse : AmongUsSalemRoleButton<Arsonist, PlayerCont
 public sealed class Arsonist_Ignite : AmongUsSalemRoleButton<Arsonist>
 {
     public override string Name => "Ignite";
-    public override string Keybind => Keybinds.SecondaryAction;
+    public override BaseKeybind Keybind => Keybinds.SecondaryAction;
     public override Color TextOutlineColor => AUSColors.Arsonist;
     public override float Cooldown => OptionGroupSingleton<Arsonist_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Arsonist_Ignite;
@@ -227,9 +227,15 @@ public sealed class Arsonist_Ignite : AmongUsSalemRoleButton<Arsonist>
         {
             if (Player.CanKill(player) && player.IsDoused()) MiscUtils.RpcApplyDeathReason(Player, player, DeathReasonShow.IncineratedByAnArsonist, true, false);
         }
+
         Role.hasDoused = true;
         Role.DousedPlayers.Clear();
         MiscUtils.PostSuccessfulVisit(Player, Player, false, false);
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && Role.DousedPlayers.Count > 0;
     }
 }
 
@@ -237,7 +243,7 @@ public sealed class Arsonist_Ignite : AmongUsSalemRoleButton<Arsonist>
 #endregion
 public sealed class Arsonist_Options : AbstractOptionGroup<Arsonist>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Arsonist, "Arsonist");
+    public override string GroupName => "Arsonist";
 
     [ModdedNumberOption("<color=#ee7600>Arsonist</color> <color=#4a86e8>Douse</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

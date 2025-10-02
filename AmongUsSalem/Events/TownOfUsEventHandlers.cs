@@ -17,24 +17,13 @@ using PowerTools;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using AmongUsSalem.Buttons;
-using AmongUsSalem.Buttons.Crewmate;
-using AmongUsSalem.Buttons.Impostor;
-using AmongUsSalem.Buttons.Modifiers;
-using AmongUsSalem.Buttons.Neutral;
 using AmongUsSalem.Events.TouEvents;
 using AmongUsSalem.Modifiers;
-using AmongUsSalem.Modifiers.Game.Universal;
-using AmongUsSalem.Modifiers.Neutral;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Modules.Anims;
 using AmongUsSalem.Options;
-using AmongUsSalem.Options.Modifiers.Universal;
-using AmongUsSalem.Options.Roles.Crewmate;
-using AmongUsSalem.Options.Roles.Impostor;
 using AmongUsSalem.Patches;
 using AmongUsSalem.Roles;
-using AmongUsSalem.Roles.Crewmate;
-using AmongUsSalem.Roles.Impostor;
 using AmongUsSalem.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -44,25 +33,6 @@ namespace AmongUsSalem.Events;
 
 public static class AmongUsSalemEventHandlers
 {
-    [RegisterEvent]
-    public static void StartMeetingEventHandler(StartMeetingEvent @event)
-    {
-        foreach (var mod in ModifierUtils.GetActiveModifiers<MisfortuneTargetModifier>())
-        {
-            mod.ModifierComponent?.RemoveModifier(mod);
-        }
-
-        var exeButton = CustomButtonSingleton<ExeTormentButton>.Instance;
-        var jestButton = CustomButtonSingleton<JesterHauntButton>.Instance;
-        var phantomButton = CustomButtonSingleton<PhantomSpookButton>.Instance;
-        if (exeButton.Show || jestButton.Show || phantomButton.Show)
-        {
-            PlayerControl.LocalPlayer.RpcRemoveModifier<IndirectAttackerModifier>();
-        }
-        exeButton.Show = false;
-        jestButton.Show = false;
-        phantomButton.Show = false;
-    }
     [RegisterEvent]
     public static void RoundStartHandler(RoundStartEvent @event)
     {
@@ -88,69 +58,6 @@ public static class AmongUsSalemEventHandlers
 
         HudManager.Instance.SetHudActive(false);
         HudManager.Instance.SetHudActive(true);
-
-        CustomButtonSingleton<WatchButton>.Instance.ExtraUses = 0;
-        CustomButtonSingleton<WatchButton>.Instance.SetUses((int)OptionGroupSingleton<LookoutOptions>.Instance
-            .MaxWatches);
-        CustomButtonSingleton<TrackerTrackButton>.Instance.ExtraUses = 0;
-        CustomButtonSingleton<TrackerTrackButton>.Instance.SetUses((int)OptionGroupSingleton<TrackerOptions>.Instance
-            .MaxTracks);
-        CustomButtonSingleton<TrapperTrapButton>.Instance.ExtraUses = 0;
-        CustomButtonSingleton<TrapperTrapButton>.Instance.SetUses((int)OptionGroupSingleton<TrapperOptions>.Instance
-            .MaxTraps);
-
-        CustomButtonSingleton<HunterStalkButton>.Instance.ExtraUses = 0;
-        CustomButtonSingleton<HunterStalkButton>.Instance.SetUses((int)OptionGroupSingleton<HunterOptions>.Instance
-            .StalkUses);
-        CustomButtonSingleton<SheriffShootButton>.Instance.Usable =
-            OptionGroupSingleton<SheriffOptions>.Instance.FirstRoundUse;
-        CustomButtonSingleton<VeteranAlertButton>.Instance.ExtraUses = 0;
-        CustomButtonSingleton<VeteranAlertButton>.Instance.SetUses((int)OptionGroupSingleton<VeteranOptions>.Instance
-            .MaxNumAlerts);
-
-        CustomButtonSingleton<JailorJailButton>.Instance.ExecutedACrew = false;
-
-        var engiVent = CustomButtonSingleton<EngineerVentButton>.Instance;
-        engiVent.ExtraUses = 0;
-        engiVent.SetUses((int)OptionGroupSingleton<EngineerOptions>.Instance.MaxVents);
-        if ((int)OptionGroupSingleton<EngineerOptions>.Instance.MaxVents == 0)
-        {
-            engiVent.Button?.usesRemainingText.gameObject.SetActive(false);
-            engiVent.Button?.usesRemainingSprite.gameObject.SetActive(false);
-        }
-        else
-        {
-            engiVent.Button?.usesRemainingText.gameObject.SetActive(true);
-            engiVent.Button?.usesRemainingSprite.gameObject.SetActive(true);
-        }
-        
-        var medicShield = CustomButtonSingleton<MedicShieldButton>.Instance;
-        medicShield.SetUses(OptionGroupSingleton<MedicOptions>.Instance.ChangeTarget ? (int)OptionGroupSingleton<MedicOptions>.Instance.MedicShieldUses : 0);
-        if ((int)OptionGroupSingleton<MedicOptions>.Instance.MedicShieldUses == 0 || !OptionGroupSingleton<MedicOptions>.Instance.ChangeTarget)
-        {
-            medicShield.Button?.usesRemainingText.gameObject.SetActive(false);
-            medicShield.Button?.usesRemainingSprite.gameObject.SetActive(false);
-        }
-        else
-        {
-            medicShield.Button?.usesRemainingText.gameObject.SetActive(true);
-            medicShield.Button?.usesRemainingSprite.gameObject.SetActive(true);
-        }
-
-        CustomButtonSingleton<PlumberBlockButton>.Instance.ExtraUses = 0;
-        CustomButtonSingleton<PlumberBlockButton>.Instance.SetUses((int)OptionGroupSingleton<PlumberOptions>.Instance
-            .MaxBarricades);
-        CustomButtonSingleton<TransporterTransportButton>.Instance.ExtraUses = 0;
-        CustomButtonSingleton<TransporterTransportButton>.Instance.SetUses((int)OptionGroupSingleton<TransporterOptions>
-            .Instance.MaxNumTransports);
-
-        CustomButtonSingleton<WarlockKillButton>.Instance.Charge = 0f;
-        CustomButtonSingleton<WarlockKillButton>.Instance.BurstActive = false;
-
-        CustomButtonSingleton<BarryButton>.Instance.Usable =
-            OptionGroupSingleton<ButtonBarryOptions>.Instance.FirstRoundUse;
-        CustomButtonSingleton<SatelliteButton>.Instance.Usable =
-            OptionGroupSingleton<SatelliteOptions>.Instance.FirstRoundUse;
     }
 
     [RegisterEvent]
@@ -286,29 +193,6 @@ public static class AmongUsSalemEventHandlers
             }
         }
 
-        if (source.IsImpostor() && source.AmOwner && source != target && !MeetingHud.Instance)
-        {
-            switch (source.Data.Role)
-            {
-                case AmbusherRole:
-                    var ambushButton = CustomButtonSingleton<AmbusherAmbushButton>.Instance;
-                    ambushButton.ResetCooldownAndOrEffect();
-                    break;
-                case BomberRole:
-                    var bombButton = CustomButtonSingleton<BomberPlantButton>.Instance;
-                    bombButton.ResetCooldownAndOrEffect();
-                    break;
-                case JanitorRole:
-                    if (OptionGroupSingleton<JanitorOptions>.Instance.ResetCooldowns)
-                    {
-                        var cleanButton = CustomButtonSingleton<JanitorCleanButton>.Instance;
-                        cleanButton.ResetCooldownAndOrEffect();
-                    }
-
-                    break;
-            }
-        }
-
         // here we're adding support for kills during a meeting
         if (MeetingHud.Instance)
         {
@@ -316,18 +200,6 @@ public static class AmongUsSalemEventHandlers
         }
         else
         {
-            var body = Object.FindObjectsOfType<DeadBody>().FirstOrDefault(x => x.ParentId == target.PlayerId);
-
-            if (target.HasModifier<MiniModifier>() && body != null)
-            {
-                body.transform.localScale *= 0.7f;
-            }
-
-            if (target.HasModifier<GiantModifier>() && body != null)
-            {
-                body.transform.localScale /= 0.7f;
-            }
-
             if (target.AmOwner)
             {
                 if (Minigame.Instance != null)
@@ -502,10 +374,6 @@ public static class AmongUsSalemEventHandlers
         }
 
         targetVoteArea.Overlay.gameObject.SetActive(false);
-        if (target.GetRoleWhenAlive() is MayorRole mayor && mayor.Revealed)
-        {
-            MayorRole.DestroyReveal(targetVoteArea);
-        }
 
         Coroutines.Start(CoAnimateDeath(targetVoteArea));
 
@@ -519,17 +387,6 @@ public static class AmongUsSalemEventHandlers
         else if (!source.AmOwner && !target.AmOwner)
         {
             MeetingMenu.Instances.Do(x => x.HideSingle(target.PlayerId));
-            if (PlayerControl.LocalPlayer.Data.Role is SwapperRole swapperRole)
-            {
-                if (swapperRole.Swap1 == targetVoteArea)
-                {
-                    swapperRole.Swap1 = null;
-                }
-                else if (swapperRole.Swap2 == targetVoteArea)
-                {
-                    swapperRole.Swap2 = null;
-                }
-            }
         }
 
         foreach (var pva in instance.playerStates)

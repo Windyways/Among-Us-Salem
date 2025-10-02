@@ -20,7 +20,7 @@ public sealed class IndocrinateModifier : BaseModifier, ICovenRole
         if (Player.Data.Role is IAUSRole ausRole)
         {
             ausRole.RoleColor = AUSColors.Coven;
-            ausRole.RoleFaction = Faction.Coven;
+            ausRole.Faction = Faction.Coven;
         }
     }
 

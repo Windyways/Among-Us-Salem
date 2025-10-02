@@ -7,9 +7,35 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Resources\**\*.*"/>
+        <EmbeddedResource Include="Resources\**\*.*" />
     </ItemGroup>
 
-    <Import Project="../AmongUs.props"/>
+    <ItemGroup>
+      <Folder Include="Buttons\Crewmate\" />
+      <Folder Include="Buttons\Impostor\" />
+      <Folder Include="Buttons\Modifiers\" />
+      <Folder Include="Buttons\Neutral\" />
+      <Folder Include="Events\Crewmate\" />
+      <Folder Include="Events\Impostor\" />
+      <Folder Include="Events\Modifiers\" />
+      <Folder Include="Events\Neutral\" />
+      <Folder Include="Modifiers\Game\Crewmate\" />
+      <Folder Include="Modifiers\Game\Impostor\" />
+      <Folder Include="Modifiers\Game\Neutral\" />
+      <Folder Include="Modifiers\Game\Universal\" />
+      <Folder Include="Modifiers\Neutral\" />
+      <Folder Include="Options\Modifiers\Alliance\" />
+      <Folder Include="Options\Modifiers\Crewmate\" />
+      <Folder Include="Options\Modifiers\Impostor\" />
+      <Folder Include="Options\Modifiers\Universal\" />
+      <Folder Include="Options\Roles\Crewmate\" />
+      <Folder Include="Options\Roles\Impostor\" />
+      <Folder Include="Options\Roles\Neutral\" />
+      <Folder Include="Patches\Modifiers\" />
+      <Folder Include="Roles\Crewmate\" />
+      <Folder Include="Roles\Impostor\" />
+    </ItemGroup>
+
+    <Import Project="../AmongUs.props" />
 
 </Project>

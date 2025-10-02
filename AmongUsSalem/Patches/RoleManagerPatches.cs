@@ -8,8 +8,6 @@ using Reactor.Utilities;
 using AmongUsSalem.Events.TouEvents;
 using AmongUsSalem.Options;
 using AmongUsSalem.Roles;
-using AmongUsSalem.Roles.Crewmate;
-using AmongUsSalem.Roles.Impostor;
 using AmongUsSalem.Roles.Neutral;
 using AmongUsSalem.Utilities;
 using Random = UnityEngine.Random;
@@ -93,8 +91,6 @@ public static class TouRoleManagerPatches
                 }
             }
         }
-
-        CrewmateGhostRolePool.RemoveAll(x => x == (RoleTypes)RoleId.Get<HaunterRole>());
     }
 
     private static void AssignRoles(List<NetworkedPlayerInfo> infected)
@@ -193,7 +189,7 @@ public static class TouRoleManagerPatches
             }
         }
 
-        var nbRoles = MiscUtils.GetMaxRolesToAssign(Alignment.NeutralAssociative, nbCount);
+        var nbRoles = MiscUtils.GetMaxRolesToAssign(Alignment.NeutralBenign, nbCount);
         var neRoles = MiscUtils.GetMaxRolesToAssign(Alignment.NeutralEvil, neCount);
         var nkRoles = MiscUtils.GetMaxRolesToAssign(Alignment.NeutralKilling, nkCount);
 
@@ -203,7 +199,7 @@ public static class TouRoleManagerPatches
 
         if ((MapNames)GameOptionsManager.Instance.GameHostOptions.MapId == MapNames.Fungle)
         {
-            crewFilter = x => x.Role != (RoleTypes)RoleId.Get<SpyRole>();
+            //crewFilter = x => x.Role != (RoleTypes)RoleId.Get<SpyRole>();
         }
 
         var crewRoles = MiscUtils.GetMaxRolesToAssign(ModdedRoleTeams.Crewmate, crewCount, crewFilter);
@@ -447,7 +443,7 @@ public static class TouRoleManagerPatches
         Func<RoleBehaviour, bool>? roleFilter = null;
         if ((MapNames)GameOptionsManager.Instance.GameHostOptions.MapId == MapNames.Fungle)
         {
-            roleFilter = x => x.Role != (RoleTypes)RoleId.Get<SpyRole>();
+            //roleFilter = x => x.Role != (RoleTypes)RoleId.Get<SpyRole>();
         }
 
         var excluded = MiscUtils.AllRoles.Where(x => x is ISpawnChange { NoSpawn: true }).Select(x => x.Role).ToList();
@@ -487,6 +483,11 @@ public static class TouRoleManagerPatches
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenPowerRoles, RoleListOption.CovenPower, RoleListOption.RandomCoven));
         var randomCovenRoles = commonCovenRoles;
         randomCovenRoles.AddRange(covenPowerRoles);
+        if (OptionGroupSingleton<AUSOptions>.Instance.EnableAllOutliers)
+        {
+            crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomCovenRoles, RoleListOption.CovenOutlier, RoleListOption.RandomCoven));
+            randomCovenRoles.AddRange(covenOutlierRoles);
+        }
 
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenOutlierRoles, RoleListOption.CovenOutlier, RoleListOption.CovenOutlier));
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonCovenRoles, RoleListOption.CommonCoven, RoleListOption.RandomCoven));
@@ -513,6 +514,12 @@ public static class TouRoleManagerPatches
         randomNeutralRoles.AddRange(neutralEvil);
         randomNeutralRoles.AddRange(neutralKilling);
         randomNeutralRoles.AddRange(neutralPariah);
+        if (OptionGroupSingleton<AUSOptions>.Instance.EnableAllOutliers)
+        {
+            crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralOutlier, RoleListOption.NeutralOutlier, RoleListOption.RandomNeutral));
+            randomNeutralRoles.AddRange(neutralOutlier);
+        }
+        
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralOutlier, RoleListOption.NeutralOutlier, RoleListOption.NeutralOutlier));
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomNeutralRoles, RoleListOption.RandomNeutral, RoleListOption.RandomNeutral));
 
@@ -536,8 +543,14 @@ public static class TouRoleManagerPatches
         commonTownRoles.AddRange(townSupportRoles);
         commonTownRoles.AddRange(townUtilityRoles);
         
-        var randomTownRoles = commonTownRoles;
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townPowerRoles, RoleListOption.TownPower, RoleListOption.RandomTown));
+        var randomTownRoles = commonTownRoles;
+        randomTownRoles.AddRange(townPowerRoles);
+        if (OptionGroupSingleton<AUSOptions>.Instance.EnableAllOutliers)
+        {
+            crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townOutlierRoles, RoleListOption.TownOutlier, RoleListOption.RandomTown));
+            randomTownRoles.AddRange(townOutlierRoles);
+        }
 
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townOutlierRoles, RoleListOption.TownOutlier, RoleListOption.TownOutlier));
         crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonTownRoles, RoleListOption.CommonTown, RoleListOption.RandomTown));
@@ -711,21 +724,19 @@ public static class TouRoleManagerPatches
         // Note: I know this is a like for like recreation of the AssignRoleOnDeath function but for some reason
         // the original won't spawn the Phantom and just spawns Neutral Ghost instead
 
-        if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"AssignRoleOnDeathPatch - Player: '{player.Data.PlayerName}', specialRolesAllowed: {specialRolesAllowed}");
-        if (player == null || !player.Data.IsDead)
-            // Logger<AUSPlugin>.Message($"AssignRoleOnDeathPatch - !player.Data.IsDead: '{!player.Data.IsDead}'");
+        if (player == null || !player.Data.IsDead) // Logger<TownOfUsPlugin>.Message($"AssignRoleOnDeathPatch - !player.Data.IsDead: '{!player.Data.IsDead}'");
         {
             return false;
         }
 
-        if (!player.Data.Role.IsImpostor && specialRolesAllowed)
-            // Logger<AUSPlugin>.Message($"AssignRoleOnDeathPatch - !player.Data.Role.IsImpostor: '{!player.Data.Role.IsImpostor}' specialRolesAllowed: {specialRolesAllowed}");
+        /*if (specialRolesAllowed && !player.HasModifier<BasicGhostModifier>())
+            // Logger<TownOfUsPlugin>.Message($"AssignRoleOnDeathPatch - !player.Data.Role.IsImpostor: '{!player.Data.Role.IsImpostor}' specialRolesAllowed: {specialRolesAllowed}");
         {
-            RoleManager.TryAssignSpecialGhostRoles(player);
-        }
+            RoleManager.TryAssignSpecialGhostRoles(player, player.IsImpostor());
+        }*/
 
         if (!RoleManager.IsGhostRole(player.Data.Role.Role))
-            // Logger<AUSPlugin>.Message($"AssignRoleOnDeathPatch - !RoleManager.IsGhostRole(player.Data.Role.Role): '{!RoleManager.IsGhostRole(player.Data.Role.Role)}'");
+            // Logger<TownOfUsPlugin>.Message($"AssignRoleOnDeathPatch - !RoleManager.IsGhostRole(player.Data.Role.Role): '{!RoleManager.IsGhostRole(player.Data.Role.Role)}'");
         {
             player.RpcSetRole(player.Data.Role.DefaultGhostRole);
         }

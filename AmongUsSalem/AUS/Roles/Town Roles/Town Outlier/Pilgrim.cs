@@ -10,13 +10,13 @@ namespace AmongUsSalem.Roles;
 public sealed class Pilgrim(IntPtr cppPtr) 
     : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Pilgrim, "Pilgrim");
+    public string RoleName { get; set; } = "Pilgrim";
     public string revealText => "placeholder.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownOutlier;
 

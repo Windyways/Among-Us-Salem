@@ -5,7 +5,6 @@ using MiraAPI.GameOptions;
 using MiraAPI.Roles;
 using Reactor.Utilities;
 using AmongUsSalem.Modules;
-using AmongUsSalem.Options.Roles.Neutral;
 using UnityEngine;
 
 namespace AmongUsSalem.Roles.Neutral;
@@ -47,7 +46,7 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     Color IAUSRole.RoleColor { get; set; } = AUSColors.Town;
-    public Faction RoleFaction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Neutral;
     string IAUSRole.RoleName { get; set; } = "Neutral Ghost";
 
     [HideFromIl2Cpp]
@@ -128,13 +127,6 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
         var win = role.DidWin(gameOverReason);
 
         Logger<AUSPlugin>.Message($"NeutralGhostRole.DidWin - role: {role.NiceName} DidWin: {win}");
-
-        // Yes, this is bad, but we don't want to break the end game screen to allow other mods to still work with tou mira - Atony
-        if (role is JesterRole && win && OptionGroupSingleton<JesterOptions>.Instance.JestWin is JestWinOptions.EndsGame)
-        {
-            Logger<AUSPlugin>.Info($"Jester - Player: {Player.Data.PlayerName}");
-            Player.Data.IsDead = false;
-        }
 
         return win;
     }

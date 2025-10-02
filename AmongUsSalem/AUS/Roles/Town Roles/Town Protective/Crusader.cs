@@ -11,13 +11,13 @@ namespace AmongUsSalem.Roles;
 public sealed class Crusader(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Crusader, "Crusader");
+    public string RoleName { get; set; } = "Crusader";
     public string revealText => "is a divine protector.";
-    public string RoleDescription => "You are.";
-    public string RoleLongDescription => "Fortify players to kill their visitors!";
+    public string RoleDescription => "";
+    public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownProtective;
 
@@ -93,11 +93,14 @@ public sealed class Crusader(IntPtr cppPtr)
     }
 
     [MethodRpc((uint)AUSRpc.Crusader_Notify, SendImmediately = true)]
-    public static bool RpcCrusader_Notify(PlayerControl visitor, PlayerControl target, bool attacking)
+    public static void RpcCrusader_Notify(PlayerControl visitor, PlayerControl target, bool attacking)
     {
         foreach (var crusaders in MiscUtils.GetPlayersWithRole<Crusader>())
         {
             var crusader = crusaders.GetRole<Crusader>();
+            if (crusader.FortifiedPlayer == target && crusader.Player == visitor)
+                return;
+                
             if (crusader.FortifiedPlayer == target)
             {
                 if (crusader.Player.AmOwner())
@@ -115,8 +118,6 @@ public sealed class Crusader(IntPtr cppPtr)
                 crusader.FortifiedPlayer = null;
             }
         }
-
-        return false;
     }
 
     public PlayerControl FortifiedPlayer;
@@ -127,14 +128,14 @@ public sealed class Crusader(IntPtr cppPtr)
 public sealed class Crusader_Fortify : AmongUsSalemRoleButton<Crusader, PlayerControl>
 {
     public override string Name => "Fortify";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Town;
     public override float Cooldown => OptionGroupSingleton<Crusader_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Crusader_Fortify;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -170,7 +171,7 @@ public sealed class Crusader_Fortify : AmongUsSalemRoleButton<Crusader, PlayerCo
 #endregion
 public sealed class Crusader_Options : AbstractOptionGroup<Crusader>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Crusader, "Crusader");
+    public override string GroupName => "Crusader";
 
     [ModdedNumberOption("<color=#06E00C>Crusader</color> <color=#4a86e8>Fortify</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

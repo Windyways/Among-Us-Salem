@@ -1,11 +1,4 @@
 using System.Text;
-using AmongUs.GameOptions;
-using HarmonyLib;
-using MiraAPI.Modifiers;
-using MiraAPI.Modifiers.Types;
-using MiraAPI.Roles;
-using MiraAPI.Utilities;
-using Reactor.Utilities.Extensions;
 using TMPro;
 using AmongUsSalem.Events;
 using AmongUsSalem.Modifiers;
@@ -54,7 +47,14 @@ public static class EndGamePatches
                     roleName = role.Player.IsImpostor() ? "Impostor" : "Crewmate";
                 }
 
-                playerRoleString.Append(AUSPlugin.Culture, $"{color.ToTextColor()}{roleName}</color> > ");
+
+                if (role.Player.HasModifier<JackalRecruit>())
+                {
+                    playerRoleString.Append(AUSPlugin.Culture, $"{AUSColors.GradientColorText("404040", "b8b8b8", roleName)}</color> > ");
+                }
+                else playerRoleString.Append(AUSPlugin.Culture, $"{color.ToTextColor()}{roleName}</color> > ");
+
+                // playerRoleString.Append(AUSPlugin.Culture, $"{color.ToTextColor()}{roleName}</color> > ");
             }
 
             if (playerRoleString.Length > 3)
@@ -121,11 +121,19 @@ public static class EndGamePatches
             if (playerControl.TryGetModifier<DeathHandlerModifier>(out var deathHandler))
             {
                 playerRoleString.Append(AUSPlugin.Culture, $" | {deathHandler.DeathColor.ToTextColor()}{deathHandler.CauseOfDeath.ToSpacedString()}</color>");
+                if (deathHandler.SecondaryCauseOfDeath != DeathReasonShow.Alive)
+                {
+                    playerRoleString.Append(AUSPlugin.Culture, $" | {deathHandler.SecondaryDeathColor.ToTextColor()}{deathHandler.SecondaryCauseOfDeath.ToSpacedString()}</color>");
+                }
+                if (deathHandler.ThirdCauseOfDeath != DeathReasonShow.Alive)
+                {
+                    playerRoleString.Append(AUSPlugin.Culture, $" | {deathHandler.ThirdDeathColor.ToTextColor()}{deathHandler.ThirdCauseOfDeath.ToSpacedString()}</color>");
+                }
             }
-            else
-            {
-                playerRoleString.Append(AUSPlugin.Culture, $" | {AUSColors.Town.ToTextColor()}Alive</color>");
-            }
+                else
+                {
+                    playerRoleString.Append(AUSPlugin.Culture, $" | {AUSColors.Survivor.ToTextColor()}Alive</color>");
+                }
 
             var playerName = new StringBuilder();
             var playerWinner = false;
@@ -335,12 +343,6 @@ public static class EndGamePatches
 
                 var roleType = realPlayer.RoleWhenAlive;
                 var role = RoleManager.Instance.GetRole(roleType);
-
-                if (role is JesterRole)
-                {
-                    player.UpdateFromPlayerOutfit(realPlayer.Outfit, PlayerMaterial.MaskType.None,
-                        false, true);
-                }
 
                 var nameTxt = player.cosmetics.nameText;
                 nameTxt.gameObject.SetActive(true);

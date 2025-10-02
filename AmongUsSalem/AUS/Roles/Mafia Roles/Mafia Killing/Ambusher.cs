@@ -11,13 +11,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Ambusher(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Ambusher, "Ambusher");
+    public string RoleName { get; set; } = "Ambusher";
     public string revealText => "lies in wait";
-    public string RoleDescription => "You are.";
-    public string RoleLongDescription => "Ambush players to kill a visitor!";
+    public string RoleDescription => "";
+    public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
-    public Faction RoleFaction { get; set; } = Faction.Mafia;
+    public Faction Faction { get; set; } = Faction.Mafia;
     public Color RoleColor { get; set; } = AUSColors.Mafia;
     public Alignment Alignment => Alignment.MafiaKilling;
 
@@ -107,6 +107,8 @@ public sealed class Ambusher(IntPtr cppPtr)
                 if (visitor.AmOwner())
                 {
                     if (ambusher.Player.CanKill(visitor)) MiscUtils.RpcApplyDeathReason(ambusher.Player, visitor, DeathReasonShow.KilledByAnAmbusher);
+                    else if (Debugger.IsDebuggerActive) CalculatedVoting.QueueEvidenceAgainst.Add(visitor, ambusher.Player);
+
                     MiscUtils.ShowNotification(Info(Type.PreparedAmbush, ambusher.Player, target), Color.white, AUSAssets.AmbusherRoleCard.LoadAsset());
                     MiscUtils.AddFakeChat(visitor.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Mafia, "Ambusher Info"), Info(Type.PreparedAmbush, ambusher.Player, target));
                 }
@@ -126,14 +128,14 @@ public sealed class Ambusher(IntPtr cppPtr)
 public sealed class Ambusher_Ambush : AmongUsSalemRoleButton<Ambusher, PlayerControl>
 {
     public override string Name => "Ambush";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<Ambusher_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Ambusher_Ambush;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -163,7 +165,7 @@ public sealed class Ambusher_Ambush : AmongUsSalemRoleButton<Ambusher, PlayerCon
 #endregion
 public sealed class Ambusher_Options : AbstractOptionGroup<Ambusher>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Ambusher, "Ambusher");
+    public override string GroupName => "Ambusher";
 
     [ModdedNumberOption("<color=#DD0000>Ambusher</color> <color=#4a86e8>Ambush</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

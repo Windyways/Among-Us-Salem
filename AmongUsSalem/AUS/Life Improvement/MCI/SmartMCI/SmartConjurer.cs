@@ -11,7 +11,7 @@ public static class SmartConjurer
 {
     public static void Start()
     {
-        if (Debugger.IsDebuggerActive) Coroutines.Start(DelayStart());
+        if (Debugger.IsDebuggerActive && Debugger.SmartBotsEnabled) Coroutines.Start(DelayStart());
     }
 
     public static IEnumerator DelayStart()

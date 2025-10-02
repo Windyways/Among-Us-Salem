@@ -3,7 +3,6 @@ using InnerNet;
 using MiraAPI.GameOptions;
 using TMPro;
 using AmongUsSalem.Options;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
 using UnityEngine.Events;
@@ -26,26 +25,6 @@ public static class LocalSettings
         },
         new()
         {
-            Title = "Show Welcome Msg",
-            ObjName = "WelcomeMsgToggle",
-            OnClick = () =>
-            {
-                return AUSPlugin.ShowWelcomeMessage.Value = !AUSPlugin.ShowWelcomeMessage.Value;
-            },
-            DefaultValue = AUSPlugin.ShowWelcomeMessage.Value
-        },
-        new()
-        {
-            Title = "Show Summary Msg",
-            ObjName = "SummaryMsgToggle",
-            OnClick = () =>
-            {
-                return AUSPlugin.ShowSummaryMessage.Value = !AUSPlugin.ShowSummaryMessage.Value;
-            },
-            DefaultValue = AUSPlugin.ShowSummaryMessage.Value
-        },
-        new()
-        {
             Title = "Colored Player Name",
             ObjName = "ColoredPlayerNameToggle",
             Enabled = Palette.CrewmateBlue,
@@ -53,15 +32,6 @@ public static class LocalSettings
             Hover = Palette.CrewmateRoleBlue,
             OnClick = () => { return AUSPlugin.ColorPlayerName.Value = !AUSPlugin.ColorPlayerName.Value; },
             DefaultValue = AUSPlugin.ColorPlayerName.Value
-        },
-        new()
-        {
-            Title = "Show Shields On Hud",
-            //Enabled = new(0f, 1f, 0.7f, 1f),
-            //Hover = new(0f, 0.4f, 0f, 1f),
-            ObjName = "ShieldsHudToggle",
-            OnClick = () => { return AUSPlugin.ShowShieldHud.Value = !AUSPlugin.ShowShieldHud.Value; },
-            DefaultValue = AUSPlugin.ShowShieldHud.Value
         },
         new()
         {
@@ -110,42 +80,6 @@ public static class LocalSettings
             ObjName = "OffsetButtons",
             OnClick = () => { return AUSPlugin.OffsetButtons.Value = !AUSPlugin.OffsetButtons.Value; },
             DefaultValue = AUSPlugin.OffsetButtons.Value
-        },
-        new()
-        {
-            Title = "Button Cooldowns are in Decimal Under 10s",
-            ObjName = "PreciseCooldowns",
-            OnClick = () => { return AUSPlugin.PreciseCooldowns.Value = !AUSPlugin.PreciseCooldowns.Value; },
-            DefaultValue = AUSPlugin.PreciseCooldowns.Value
-        },
-        new()
-        {
-            Title = $"Arrow Style: {TouAssets.ArrowSpriteName}",
-            ObjName = "ArrowStyle",
-            OnClick = () =>
-            {
-                var newVal = AUSPlugin.ArrowStyle.Value + 1;
-                if (newVal is < 0 or > 3)
-                {
-                    newVal = 0;
-                }
-
-                AUSPlugin.ArrowStyle.Value = newVal;
-
-                var optionsMenu = GameObject.Find("Menu(Clone)") ? GameObject.Find("Menu(Clone)") : GameObject.Find("OptionsMenu(Clone)");
-
-                if (optionsMenu != null)
-                {
-                    var title = optionsMenu.transform.FindChild("ArrowStyle");
-                    if (title != null && title.transform.GetChild(2).TryGetComponent<TextMeshPro>(out var txt))
-                    {
-                        txt.text = $"Arrow Style: {TouAssets.ArrowSpriteName}";
-                    }
-                }
-
-                return AUSPlugin.ArrowStyle.Value <= 0;
-            },
-            DefaultValue = AUSPlugin.ArrowStyle.Value <= 0
         }
     ];
 
@@ -386,12 +320,6 @@ public static class LocalSettings
             if (!player.Data.IsDead)
             {
                 continue;
-            }
-
-            switch (player.Data.Role)
-            {
-                case HaunterRole { Caught: false }:
-                    continue;
             }
 
             var show = AUSPlugin.DeadSeeGhosts.Value;

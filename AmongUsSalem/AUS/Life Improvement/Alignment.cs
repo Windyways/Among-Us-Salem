@@ -2,12 +2,6 @@ public enum Alignment
 {
     None,
 
-    NeutralAssociative,
-
-    MafiaDisruption,
-    MafiaGunsman,
-    MafiaEvacuative,
-
     TownInvestigative,
     TownKilling,
     TownProtective,

@@ -15,7 +15,6 @@ using AmongUsSalem.Modifiers;
 using AmongUsSalem.Modifiers.Game;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Options;
-using AmongUsSalem.Options.Roles.Neutral;
 using AmongUsSalem.Roles;
 using AmongUsSalem.Roles.Neutral;
 using UnityEngine;
@@ -82,7 +81,7 @@ public static class MiscUtils
 
     public static bool AmOwner(this PlayerControl player)
     {
-        return player.AmOwner || Debugger.IsDebuggerActive;
+        return player.AmOwner || (Debugger.IsDebuggerActive && Debugger.ShowAllMessages);
     }
 
 
@@ -95,21 +94,25 @@ public static class MiscUtils
 
     public static bool SuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
     {
-        if (isAttacking && isVisiting) Statistics.HasMurder.Add(player);
-        if (!player.IsSameFaction(target)) Statistics.IsTrespassing.Add(player);
+        if (player.IsDistracted()) return Escort.RpcEscort_Notify(player, target);
+        // if (player.IsConsortDistracted()) return Escort.RpcConsort_Notify(player, target);
+
+        if ((isAttacking || player.IsShrouded()) && isVisiting) Statistics.RpcAddMurder(player);
+        if (!player.IsSameFaction(target)) Statistics.RpcAddTrespassing(player);
 
         // Doesn't stop visit.
-        if (player.IsShrouded())
-        {
+        if (player.IsShrouded() && isVisiting)
+        {  
+            var buttons = CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role) && x.Timer <= 0).ToList();
+            foreach (var button in buttons) button.ResetCooldownAndOrEffect();
             Shroud.RpcShroud_Notify(player, target);
-            isAttacking = true; // For BG/Trapper, etc.
         }
-        if (target.IsAlerted()) Veteran.RpcVeteran_Notify(player, target, isAttacking);
+
+        if (target.IsAlerted() && isVisiting) Veteran.RpcVeteran_Notify(player, target, isAttacking);
 
         // Stops visits.
-        if (target.IsGuarded() && isAttacking && isVisiting && !player.IsIllusioned()) return Bodyguard.RpcBodyguard_Notify(player, target);
-        if (target.IsFortified() && isVisiting) return Crusader.RpcCrusader_Notify(player, target, isAttacking);
         if (target.IsAmbushed() && isVisiting && !player.Is(Faction.Mafia)) return Ambusher.RpcAmbusher_Notify(player, target);
+        if (target.IsJinxed() && isVisiting && !player.Is(Faction.Coven)) return Jinx.RpcJinx_Notify(player, target);
 
         return true;
     }
@@ -117,8 +120,27 @@ public static class MiscUtils
     public static void PostSuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
     {
         if (player.Is(Alignment.TownInvestigative) && target.IsFramed()) Framer.RpcFramer_RemoveFrame(target);
-        if (target.IsSelfProtected(player.CanKill(target)) && isAttacking && isVisiting) Bodyguard.RpcBodyguard_Notify(player, target);
+        if (target.IsVesting(player.CanKill(target)) && isAttacking && isVisiting) Survivor.RpcSurvivor_Notify(target);
         if (target.IsRole<Arsonist>() && isVisiting) Arsonist.RpcArsonist_Douse(target, player, true);
+
+        // Town protectives when target is attacked! (or visited if you're Crusader).
+        if (target.IsGuarded() && (isAttacking || player.IsShrouded()) && isVisiting && !player.IsIllusioned()) Bodyguard.RpcBodyguard_Notify(player, target);
+        if (target.IsSelfProtected(player.CanKill(target)) && isAttacking && isVisiting) Bodyguard.RpcBodyguard_Notify(player, target);
+        if (target.IsBarriered() && isVisiting && isAttacking) Cleric.RpcCleric_Notify(player, target);
+
+        if (target.IsFortified() && isVisiting) Crusader.RpcCrusader_Notify(player, target, isAttacking);
+        
+        if (player.AmOwner) // Resets other ability cooldowns they have.
+        {
+            var buttons = CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role) && x.Timer <= 0).ToList();
+            foreach (var button in buttons) button.ResetCooldownAndOrEffect();
+        }
+    }
+
+    public static List<PlayerControl> GetAlivePlayersToEnd()
+    {
+        return
+            PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x.Data.Role is not INotThreatable).ToList();
     }
 
 
@@ -147,13 +169,6 @@ public static class MiscUtils
             ;
     }
 
-    public static int RealKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.IsImpostor() || x.Is(Alignment.NeutralKilling) || (x.Data.Role is InquisitorRole inquis &&
-                                                                 OptionGroupSingleton<InquisitorOptions>.Instance
-                                                                     .StallGame && inquis is
-                                                                     { CanVanquish: true, TargetsDead: false }
-                                                                 && Helpers.GetAlivePlayers().Count <= 3));
-
     public static int intKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
         x.Is(Alignment.NeutralKilling) ||
         x.Is(Alignment.NeutralApocalypse) ||
@@ -168,8 +183,6 @@ public static class MiscUtils
     {
         return 
             Helpers.GetAlivePlayers().Count(x => x.Is(Alignment.NeutralKilling) ||
-            (x.Data.Role is InquisitorRole inquis && OptionGroupSingleton<InquisitorOptions>.Instance.StallGame && inquis is { CanVanquish: true, TargetsDead: false } && Helpers.GetAlivePlayers().Count <= 3) ||
-            (x.Data.Role is ITouCrewRole { IsPowerCrew: true } && !(x.TryGetModifier<AllianceGameModifier>(out var allyMod) && !allyMod.CrewContinuesGame)) ||
             (x.Data.Role is IContinueGame { continueGame: true }));
     }
 
@@ -282,7 +295,7 @@ public static class MiscUtils
         }
         if (role.IsNeutral())
         {
-            return Alignment.NeutralAssociative;
+            return Alignment.NeutralBenign;
         }
         else if (role.IsImpostor())
         {
@@ -314,7 +327,7 @@ public static class MiscUtils
             case Alignment.MafiaSupport:
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Impostor));
                 break;
-            case Alignment.MafiaDisruption:
+            case Alignment.MafiaDeception:
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Shapeshifter));
                 registeredRoles.Add(RoleManager.Instance.GetRole(RoleTypes.Phantom));
                 break;
@@ -349,7 +362,7 @@ public static class MiscUtils
 
     public static IEnumerable<RoleBehaviour> GetRegisteredGhostRoles()
     {
-        var baseGhostRoles = RoleManager.Instance.AllRoles.Where(x => x.IsDead && AllRoles.All(y => y.Role != x.Role));
+        var baseGhostRoles = RoleManager.Instance.AllRoles.ToArray().Where(x => x.IsDead && AllRoles.All(y => y.Role != x.Role));
         var ghostRoles = AllRoles.Where(x => x.IsDead).Union(baseGhostRoles);
 
         return ghostRoles;
@@ -359,7 +372,7 @@ public static class MiscUtils
     {
         // we want to prioritize the custom roles because the role has the right RoleColour/TeamColor
         var role = AllRoles.FirstOrDefault(x => x.Role == roleType) ??
-                   RoleManager.Instance.AllRoles.FirstOrDefault(x => x.Role == roleType);
+                   RoleManager.Instance.AllRoles.ToArray().FirstOrDefault(x => x.Role == roleType);
 
         return role;
     }
@@ -436,17 +449,17 @@ public static class MiscUtils
     {
         var currentGameOptions = GameOptionsManager.Instance.CurrentGameOptions;
         var roleOptions = currentGameOptions.RoleOptions;
-        var assignmentData = RoleManager.Instance.AllRoles.Select(role =>
+        var assignmentData = RoleManager.Instance.AllRoles.ToArray().Select(role =>
             new RoleManager.RoleAssignmentData(role, roleOptions.GetNumPerGame(role.Role),
                 roleOptions.GetChancePerGame(role.Role))).ToList();
 
         var roleList = assignmentData.Where(x => x is { Chance: > 0, Role: ICustomRole }).Select(x => x.Role);
 
-        var crewmateRole = RoleManager.Instance.AllRoles.FirstOrDefault(x => x.Role == RoleTypes.Crewmate);
+        var crewmateRole = RoleManager.Instance.AllRoles.ToArray().FirstOrDefault(x => x.Role == RoleTypes.Crewmate);
         roleList = roleList.AddItem(crewmateRole!);
         //Logger<AUSPlugin>.Error($"GetPotentialRoles - crewmateRole: '{crewmateRole?.NiceName}'");
 
-        var impostorRole = RoleManager.Instance.AllRoles.FirstOrDefault(x => x.Role == RoleTypes.Impostor);
+        var impostorRole = RoleManager.Instance.AllRoles.ToArray().FirstOrDefault(x => x.Role == RoleTypes.Impostor);
         roleList = roleList.AddItem(impostorRole!);
         //Logger<AUSPlugin>.Error($"GetPotentialRoles - impostorRole: '{impostorRole?.NiceName}'");
 
@@ -792,24 +805,6 @@ public static class MiscUtils
 
             yield return new WaitForSeconds(delay);
         }
-    }
-
-    public static GameObject CreateSpherePrimitive(Vector3 location, float radius)
-    {
-        var spherePrimitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-
-        spherePrimitive.name = "Sphere Primitive";
-        spherePrimitive.transform.localScale = new Vector3(
-            radius * ShipStatus.Instance.MaxLightRadius * 2f,
-            radius * ShipStatus.Instance.MaxLightRadius * 2f,
-            radius * ShipStatus.Instance.MaxLightRadius * 2f);
-
-        Object.Destroy(spherePrimitive.GetComponent<SphereCollider>());
-
-        spherePrimitive.GetComponent<MeshRenderer>().material = AuAvengersAnims.BombMaterial.LoadAsset();
-        spherePrimitive.transform.position = location;
-
-        return spherePrimitive;
     }
 
     public static string ToTitleCase(this string input)

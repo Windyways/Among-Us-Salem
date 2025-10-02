@@ -1,7 +1,6 @@
 ﻿using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.Utilities;
-using AmongUsSalem.Modifiers.Game.Universal;
 using AmongUsSalem.Options;
 using UnityEngine;
 
@@ -210,18 +209,10 @@ public static class AppearanceExtensions
     public static VisualAppearance GetDefaultModifiedAppearance(this PlayerControl playerControl)
     {
         var appearance = new VisualAppearance(playerControl.Data.DefaultOutfit, AmongUsSalemAppearances.Default);
-        if (playerControl.HasModifier<MiniModifier>())
+        /*if (playerControl.HasModifier<MiniModifier>())
         {
             appearance = playerControl.GetModifier<MiniModifier>()!.GetVisualAppearance()!;
-        }
-        else if (playerControl.HasModifier<GiantModifier>())
-        {
-            appearance = playerControl.GetModifier<GiantModifier>()!.GetVisualAppearance()!;
-        }
-        else if (playerControl.HasModifier<FlashModifier>())
-        {
-            appearance = playerControl.GetModifier<FlashModifier>()!.GetVisualAppearance();
-        }
+        }*/
 
         return appearance;
     }

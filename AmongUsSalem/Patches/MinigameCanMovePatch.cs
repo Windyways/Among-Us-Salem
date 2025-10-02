@@ -2,12 +2,6 @@
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
 using MiraAPI.Modifiers;
-using AmongUsSalem.Buttons.Modifiers;
-using AmongUsSalem.Modifiers.Game.Crewmate;
-using AmongUsSalem.Options.Modifiers.Crewmate;
-using AmongUsSalem.Options.Roles.Crewmate;
-using AmongUsSalem.Options.Roles.Neutral;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 
 namespace AmongUsSalem.Patches;
@@ -27,24 +21,6 @@ public static class MinigameCanMovePatch
         if (MeetingHud.Instance)
         {
             return true;
-        }
-
-        // Only allows Scientist Vitals to allow you to move, not just vitals on the map
-        if (PlayerControl.LocalPlayer.HasModifier<ScientistModifier>() &&
-            CustomButtonSingleton<ScientistButton>.Instance.EffectActive &&
-            Minigame.Instance is VitalsMinigame && OptionGroupSingleton<ScientistOptions>.Instance.MoveWithMenu)
-        {
-            __result = __instance.moveable;
-            return false;
-        }
-
-        if (PlayerControl.LocalPlayer.HasModifier<OperativeModifier>() &&
-            ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard &&
-            CustomButtonSingleton<SecurityButton>.Instance.EffectActive &&
-            CustomButtonSingleton<SecurityButton>.Instance.canMoveWithMinigame)
-        {
-            __result = __instance.moveable;
-            return false;
         }
 
         return true;

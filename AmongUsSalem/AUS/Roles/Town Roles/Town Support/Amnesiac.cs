@@ -10,13 +10,13 @@ namespace AmongUsSalem.Roles;
 public sealed class Amnesiac(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Amnesiac, "Amnesiac");
+    public string RoleName { get; set; } = "Amnesiac";
     public string revealText => "does not remember their role.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownSupport;
 
@@ -74,10 +74,11 @@ public sealed class Amnesiac(IntPtr cppPtr)
         if (rememberTarget != null)
         {
             var targetRole = rememberTarget.GetRoleWhenAlive();
-            if (Player.AmOwner() && targetRole.Player is IAUSRole ausRole)
+            if (Player.AmOwner())
             {
-                MiscUtils.ShowNotification(Info(ausRole, rememberTarget), Color.white, AUSAssets.AmnesiacRoleCard.LoadAsset());
-                MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Amnesiac Info"), Info(ausRole, rememberTarget));
+                var roleWhenAlive = rememberTarget.GetRoleWhenAlive();
+                MiscUtils.ShowNotification(Info(roleWhenAlive.Role()), Color.white, AUSAssets.AmnesiacRoleCard.LoadAsset());
+                MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Amnesiac Info"), Info(roleWhenAlive.Role()));
             }
 
             Player.RpcChangeRole((ushort)targetRole.Role);
@@ -88,6 +89,8 @@ public sealed class Amnesiac(IntPtr cppPtr)
                 var vampires = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasModifier<VampireRecruit>() && !x.HasDied());
                 Player.RpcAddModifier<VampireRecruit>(vampires); 
             }
+
+            // Prevents other Amnesiacs from remembering the same player.
             foreach (var amnesiacs in MiscUtils.GetPlayersWithRole<Amnesiac>())
             {
                 var amnesiac = amnesiacs.GetRole<Amnesiac>();
@@ -104,10 +107,9 @@ public sealed class Amnesiac(IntPtr cppPtr)
         }
     }
 
-    public static string Info(IAUSRole ausRole, PlayerControl remembered)
+    public static string Info(string text)
     {
-        var roleColor = ausRole.RoleFaction != Faction.Neutral ? MiscUtils.GetFactionColour(remembered) : MiscUtils.GetRoleColour(ausRole.RoleName);
-        return $"You <b><color=#4a86e8>Remembered</color></b> that you were like the <b><color=#" + roleColor.ToHtmlStringRGBA() + $">{ausRole.RoleName}</color></b>.";
+        return $"You <b><color=#4a86e8>Remembered</color></b> that you were like the {text}.";
     }
 
     public List<PlayerControl> RememberablePlayers = new List<PlayerControl>();

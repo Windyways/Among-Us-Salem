@@ -11,13 +11,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Mafioso(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Mafioso, "Mafioso");
+    public string RoleName { get; set; } = "Mafioso";
     public string revealText => "does the Godfather's dirty work.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
-    public Faction RoleFaction { get; set; } = Faction.Mafia;
+    public Faction Faction { get; set; } = Faction.Mafia;
     public Color RoleColor { get; set; } = AUSColors.Mafia;
     public Alignment Alignment => Alignment.MafiaKilling;
 
@@ -74,14 +74,14 @@ public sealed class Mafioso(IntPtr cppPtr)
 public sealed class Mafioso_Attack : AmongUsSalemRoleButton<Mafioso, PlayerControl>
 {
     public override string Name => "Attack";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<Mafioso_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Mafioso_Attack;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
@@ -98,7 +98,11 @@ public sealed class Mafioso_Attack : AmongUsSalemRoleButton<Mafioso, PlayerContr
         }
 
         if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByAMemberOfTheMafia);
-        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+        else
+        {
+            MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+        }
         MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
     }
 
@@ -112,7 +116,7 @@ public sealed class Mafioso_Attack : AmongUsSalemRoleButton<Mafioso, PlayerContr
 #endregion
 public sealed class Mafioso_Options : AbstractOptionGroup<Mafioso>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Mafioso, "Mafioso");
+    public override string GroupName => "Mafioso";
 
     [ModdedNumberOption("<color=#DD0000>Mafioso</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

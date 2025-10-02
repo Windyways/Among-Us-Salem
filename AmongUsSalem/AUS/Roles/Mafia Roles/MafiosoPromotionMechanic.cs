@@ -7,6 +7,7 @@ namespace AmongUsSalem.LifeImprovement.GameMechanics;
 public static class MafiosoPromotionMechanic
 {
     public static bool GodfatherDiedWithMafiosoAlive;
+    
     [RegisterEvent]
     public static void RoundStartHandler(RoundStartEvent @event)
     {
@@ -15,6 +16,17 @@ public static class MafiosoPromotionMechanic
             return; // Only run when round starts.
         }
 
+        PromoteMafia();
+    }
+
+    [RegisterEvent]
+    public static void StartMeetingEventHandler(StartMeetingEvent @event)
+    {
+        PromoteMafia();
+    }
+
+    public static void PromoteMafia()
+    {
         /*if (PlayerControl.LocalPlayer.Is(Faction.Mafia))
         {
             TeamChatPatches.ToggleTeamChat();
@@ -22,11 +34,6 @@ public static class MafiosoPromotionMechanic
 
         foreach (var player in PlayerControl.AllPlayerControls)
         {
-            var promotionCandidates =
-                PlayerControl.AllPlayerControls.ToArray()
-                .Where(x => !x.HasDied() && x.Is(Faction.Mafia))
-                .OrderBy(x => !x.Is(Alignment.MafiaKilling)).FirstOrDefault();
-
             var aliveMafiosos = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Mafioso>());
             //var aliveGodfathers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Godfather>());
 
@@ -40,13 +47,13 @@ public static class MafiosoPromotionMechanic
                 }
                 GodfatherDiedWithMafiosoAlive = false;
             }
-            else */if (/*aliveGodfathers == 0 && */aliveMafiosos == 0 && player.Is(Faction.Mafia) && promotionCandidates != null)
+            else */if (/*aliveGodfathers == 0 && */aliveMafiosos == 0 && player.Is(Faction.Mafia))
             {
-                promotionCandidates.RpcChangeRole(RoleId.Get<Mafioso>());
-                if (promotionCandidates.AmOwner())
+                if (player.AmOwner())
                 {
+                    player.RpcChangeRole(RoleId.Get<Mafioso>());
                     MiscUtils.ShowNotification(Mafioso.Info(), Color.white, AUSAssets.MafiosoRoleCard.LoadAsset());
-                    MiscUtils.AddFakeChat(promotionCandidates.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Mafia, "Mafioso Info"), Mafioso.Info());
+                    MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Mafia, "Mafioso Info"), Mafioso.Info());
                 }
             }
         }

@@ -12,13 +12,13 @@ public sealed class Veteran(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole, IContinueGame
 {
     public bool continueGame => Charges > 0 || isAlerted;
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Veteran, "Veteran");
+    public string RoleName { get; set; } = "Veteran";
     public string revealText => "is a paranoid war hero.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownKilling;
 
@@ -75,7 +75,7 @@ public sealed class Veteran(IntPtr cppPtr)
 
     public static string ShotInfo()
     {
-        return "You have shot someone who visited you last <color=#922058>Night</color>!";
+        return "You have shot someone who visited you last <b><color=#922058>Night</color></b>!";
     }
 
     public static string AttackedInfo()
@@ -123,12 +123,6 @@ public sealed class Veteran(IntPtr cppPtr)
 
     public bool isAlerted;
     public int Charges = (int)OptionGroupSingleton<Veteran_Options>.Instance.Charges;
-
-    public enum Version
-    {
-        TownOfSalem,
-        TownOfSalem2
-    }
 }
 
 #region Veteran_Alert
@@ -136,7 +130,7 @@ public sealed class Veteran(IntPtr cppPtr)
 public sealed class Veteran_Alert : AmongUsSalemRoleButton<Veteran>
 {
     public override string Name => "Alert";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Town;
     public override float Cooldown => OptionGroupSingleton<Veteran_Options>.Instance.Cooldown;
     public override int MaxUses => (int)OptionGroupSingleton<Veteran_Options>.Instance.Charges;
@@ -155,7 +149,6 @@ public sealed class Veteran_Alert : AmongUsSalemRoleButton<Veteran>
         return base.CanUse() && !Role.isAlerted;
     }
 
-
     protected override void OnClick()
     {
         Veteran.RpcVeteran_Alert(Player);
@@ -167,7 +160,7 @@ public sealed class Veteran_Alert : AmongUsSalemRoleButton<Veteran>
 #endregion
 public sealed class Veteran_Options : AbstractOptionGroup<Veteran>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Veteran, "Veteran");
+    public override string GroupName => "Veteran";
 
     [ModdedNumberOption("<color=#06E00C>Veteran</color> <color=#4a86e8>Alert</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

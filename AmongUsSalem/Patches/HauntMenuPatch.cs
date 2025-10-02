@@ -9,7 +9,6 @@ using MiraAPI.Roles;
 using AmongUsSalem.Modifiers;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Options;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 using AmongUsSalem.Utilities;
 using UnityEngine;
@@ -72,7 +71,7 @@ public static class HauntMenuMinigamePatch
         }
 
         var role = target.Data.Role;
-        if (target.Data.IsDead && role is not GuardianAngelRole or HaunterRole)
+        if (target.Data.IsDead && role is not GuardianAngelRole)
         {
             role = target.GetRoleWhenAlive();
         }

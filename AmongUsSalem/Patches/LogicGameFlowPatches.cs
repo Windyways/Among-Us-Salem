@@ -12,9 +12,7 @@ using AmongUsSalem.GameOver;
 using AmongUsSalem.Modifiers;
 using AmongUsSalem.Modifiers.Crewmate;
 using AmongUsSalem.Modifiers.Game;
-using AmongUsSalem.Modifiers.Game.Alliance;
 using AmongUsSalem.Options;
-using AmongUsSalem.Options.Roles.Impostor;
 using AmongUsSalem.Roles;
 using AmongUsSalem.Utilities;
 
@@ -152,7 +150,7 @@ public static class LogicGameFlowPatches
 
         // If any traitor win condition is met -> game over
         if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
-            .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet() && role.RoleFaction == Faction.Traitor) is { } winner2)
+            .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet() && role.Faction == Faction.Traitor) is { } winner2)
         {
             Logger<AUSPlugin>.Message($"Game Over");
             CustomGameOver.Trigger<TraitorGameOver>([winner2.Player.Data]);
@@ -162,7 +160,7 @@ public static class LogicGameFlowPatches
 
         // If any coven win condition is met -> game over
         if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
-            .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet() && role.RoleFaction == Faction.Coven) is { } winner4)
+            .FirstOrDefault(x => x is IAUSRole role && role.WinConditionMet() && role.Faction == Faction.Coven) is { } winner4)
         {
             Logger<AUSPlugin>.Message($"Game Over");
             CustomGameOver.Trigger<CovenGameOver>([winner4.Player.Data]);

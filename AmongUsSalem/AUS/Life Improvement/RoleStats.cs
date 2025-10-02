@@ -58,16 +58,23 @@ namespace AmongUsSalem.LifeImprovement
             roleStats.Add("Investigator", new RoleStats("Investigator", AUSColors.Town));
             roleStats.Add("Deputy", new RoleStats("Deputy", AUSColors.Town));
             roleStats.Add("Crusader", new RoleStats("Crusader", AUSColors.Town));
+            roleStats.Add("Escort", new RoleStats("Escort", AUSColors.Town));
+            roleStats.Add("Coroner", new RoleStats("Coroner", AUSColors.Town));
+            roleStats.Add("Prosecutor", new RoleStats("Prosecutor", AUSColors.Town));
             #endregion
             #region Neutral
             #endregion
             roleStats.Add("Arsonist", new RoleStats("Arsonist", AUSColors.Arsonist));
             roleStats.Add("Shroud", new RoleStats("Shroud", AUSColors.Shroud));
+            roleStats.Add("Vampire", new RoleStats("Vampire", AUSColors.Vampire));
+            roleStats.Add("Jackal", new RoleStats(AUSColors.GradientColorText("404040", "b8b8b8", "Jackal"), AUSColors.Neutral));
+            roleStats.Add("Survivor", new RoleStats("Survivor", AUSColors.Survivor));
             #region Mafia
             roleStats.Add("Mafioso", new RoleStats("Mafioso", AUSColors.Mafia));
             roleStats.Add("Framer", new RoleStats("Framer", AUSColors.Mafia));
             roleStats.Add("Blackmailer", new RoleStats("Blackmailer", AUSColors.Mafia));
             roleStats.Add("Ambusher", new RoleStats("Ambusher", AUSColors.Mafia));
+            roleStats.Add("Janitor", new RoleStats("Janitor", AUSColors.Mafia));
             #endregion
             #region Coven
             roleStats.Add("Covenite", new RoleStats("Covenite", AUSColors.Coven));
@@ -75,6 +82,7 @@ namespace AmongUsSalem.LifeImprovement
             roleStats.Add("Illusionist", new RoleStats("Illusionist", AUSColors.Coven));
             roleStats.Add("Hex Master", new RoleStats("Hex Master", AUSColors.Coven));
             roleStats.Add("Voodoo Master", new RoleStats("Voodoo Master", AUSColors.Coven));
+            roleStats.Add("Jinx", new RoleStats("Jinx", AUSColors.Coven));
             #endregion
 
             LoadRoleStats(filePath);

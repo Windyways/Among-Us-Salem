@@ -186,27 +186,34 @@ public static class InstanceControlPatches
             if (!Debugger.IsDebuggerActive)
                 return;
 
-            if (true)
+            if (Debugger.SmartBotsEnabled)
             {
                 foreach (PlayerVoteArea playerVoteArea in MeetingHud.Instance.playerStates)
                 {
                     playerVoteArea.UnsetVote();
                     MeetingHud.Instance.ClearVote();
                 }
-            }
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-            {
-                if (!player.HasDied())
+                foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                 {
-                    if (player.IsRole<Arsonist>()) CalculatedVoting.RandomArsonistVoting(player, __instance);
-                    else if (player.IsRole<Vampire>() || player.HasModifier<VampireRecruit>()) CalculatedVoting.RandomVampireVoting(player, __instance);
-                    else if (player.HasModifier<JackalRecruit>()) CalculatedVoting.RandomJackalRecruitVoting(player, __instance);
-                    else if (player.IsRole<Jackal>()) CalculatedVoting.RandomJackalVoting(player, __instance);
-                    else if (player.Is(Faction.Town)) CalculatedVoting.RandomTownVoting(player, __instance);
-                    else if (player.Is(Faction.Mafia)) CalculatedVoting.RandomMafiaVoting(player, __instance);
-                    else if (player.Is(Faction.Neutral)) CalculatedVoting.RandomNeutralVoting(player, __instance);
-                    else if (player.Is(Faction.Coven)) CalculatedVoting.RandomCovenVoting(player, __instance);
+                    if (!player.HasDied())
+                    {
+                        if (player.IsRole<Arsonist>()) CalculatedVoting.RandomArsonistVoting(player, __instance);
+                        else if (player.IsRole<Vampire>() || player.HasModifier<VampireRecruit>()) CalculatedVoting.RandomVampireVoting(player, __instance);
+                        else if (player.HasModifier<JackalRecruit>()) CalculatedVoting.RandomJackalRecruitVoting(player, __instance);
+                        else if (player.IsRole<Jackal>()) CalculatedVoting.RandomJackalVoting(player, __instance);
+                        else if (player.Is(Faction.Town)) CalculatedVoting.RandomTownVoting(player, __instance);
+                        else if (player.Is(Faction.Mafia)) CalculatedVoting.RandomMafiaVoting(player, __instance);
+                        else if (player.Is(Faction.Neutral)) CalculatedVoting.RandomNeutralVoting(player, __instance);
+                        else if (player.Is(Faction.Coven)) CalculatedVoting.RandomCovenVoting(player, __instance);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var player in PlayerControl.AllPlayerControls)
+                {
+                    __instance.CmdCastVote(player.PlayerId, suspectStateIdx);
                 }
             }
         }

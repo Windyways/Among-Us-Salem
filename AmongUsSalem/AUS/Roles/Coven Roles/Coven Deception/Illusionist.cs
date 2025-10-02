@@ -11,13 +11,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Illusionist(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Illusionist, "Illusionist");
+    public string RoleName { get; set; } = "Illusionist";
     public string revealText => "can alter a person's appearance to others.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "Disguise the Coven.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Coven;
+    public Faction Faction { get; set; } = Faction.Coven;
     public Color RoleColor { get; set; } = AUSColors.Coven;
     public Alignment Alignment => Alignment.CovenDeception;
     public Attack Attack { get; set; } = Attack.None;
@@ -66,11 +66,9 @@ public sealed class Illusionist(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Cast",
-            "Your illusioned target will appear innocent to the Sheriff and Investigator." +
-            "\n\nYour illusion will make a Psychic see your target as good." +
-            "\n\nYour illusion will make Bodyguards and Traps see your target as a non-harmful visitor." +
-            "\n\nSeers will see your illusioned target as a Town member." +
-            "\n\nCasting an illusion on a Coven member is an Astral visit.",
+            "You can Cast an illusion on a Coven member at Night.\n\n".ApplyKeywords() +
+            "You will make your target appear as a member of the Town for the Night.\n\n".ApplyKeywords() +
+            "This is an Astral visit.".ApplyKeywords(),
             AUSAssets.Illusionist_Cast)
     ];
 
@@ -79,7 +77,7 @@ public sealed class Illusionist(IntPtr cppPtr)
         var aliveCoven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
         if (aliveCoven == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
         return result;
     }
 
@@ -104,7 +102,9 @@ public sealed class Illusionist(IntPtr cppPtr)
     public override void OnVotingComplete()
     {
         RoleBehaviourStubs.OnVotingComplete(this);
+        
         IllusionedPlayer = null;
+        if (Necronomicon) CovenNecronomiconMechanic.AdjustButtons(Player);
     }
 
     public PlayerControl IllusionedPlayer;
@@ -115,7 +115,7 @@ public sealed class Illusionist(IntPtr cppPtr)
 public sealed class Illusionist_Cast : AmongUsSalemRoleButton<Illusionist, PlayerControl>
 {
     public override string Name => "Cast";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
     public override float Cooldown => OptionGroupSingleton<Illusionist_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Illusionist_Cast;
@@ -142,9 +142,9 @@ public sealed class Illusionist_Cast : AmongUsSalemRoleButton<Illusionist, Playe
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
-            if (MiscUtils.SuccessfulVisit(Player, Target, Role.Necronomicon, Role.Player.IsSameFaction(Target)))
+            if (MiscUtils.SuccessfulVisit(Player, Target, Role.Necronomicon && !Role.Player.IsSameFaction(Target), Role.Player.IsSameFaction(Target)))
             {
                 base.ClickHandler();
             }
@@ -166,7 +166,11 @@ public sealed class Illusionist_Cast : AmongUsSalemRoleButton<Illusionist, Playe
         else
         {
             if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.KilledByTheCoven);
-            else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            else
+            {
+                MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+                MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+            }
             MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
         }
     }
@@ -180,7 +184,7 @@ public sealed class Illusionist_Cast : AmongUsSalemRoleButton<Illusionist, Playe
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.RoleFaction != Role.RoleFaction && !Role.Necronomicon) &&
+            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction != Role.Faction && !Role.Necronomicon) &&
             Role.IllusionedPlayer != target;
     }
 }
@@ -189,7 +193,7 @@ public sealed class Illusionist_Cast : AmongUsSalemRoleButton<Illusionist, Playe
 #endregion
 public sealed class Illusionist_Options : AbstractOptionGroup<Illusionist>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Illusionist, "Illusionist");
+    public override string GroupName => "Illusionist";
 
     [ModdedNumberOption("<color=#B545FF>Illusionist</color> <color=#4a86e8>Cast</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

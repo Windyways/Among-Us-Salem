@@ -12,13 +12,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Jackal(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAssignableTargets, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Jackal, "Jackal");
+    public string RoleName { get; set; } = AUSColors.GradientColorText("404040", "b8b8b8", "Jackal");
     public string revealText => "N/A";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Neutral;
     public Color RoleColor { get; set; } = AUSColors.Neutral;
     public Alignment Alignment => Alignment.NeutralOutlier;
     public Attack Attack { get; set; } = Attack.Powerful;
@@ -69,7 +69,7 @@ public sealed class Jackal(IntPtr cppPtr)
         var aliveRecs = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.HasModifier<JackalRecruit>());
         if (aliveJackals == 0 && aliveRecs == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= (aliveJackals + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveJackals + aliveRecs);
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= (aliveJackals + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveJackals + aliveRecs);
         return result;
     }
 
@@ -80,7 +80,7 @@ public sealed class Jackal(IntPtr cppPtr)
 
     public void OnTargetDeath(PlayerControl target, DeathReason? reason)
     {
-        if (target.HasModifier<JackalRecruit>() && Player.AmOwner())
+        if (target.HasModifier<JackalRecruit>() && Player.AmOwner() && !RecruitsPerished)
         {
             MiscUtils.ShowNotification(Info(Type.RecruitsDied, null, null), Color.white, AUSAssets.JackalRoleCard.LoadAsset());
             MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, $"{AUSColors.GradientColorText("404040", "b8b8b8", "Jackal")} Info"), Info(Type.RecruitsDied, null, null));
@@ -113,6 +113,26 @@ public sealed class Jackal(IntPtr cppPtr)
 
             randomTarget.RpcAddModifier<JackalRecruit>(randomTarget2);
             randomTarget2.RpcAddModifier<JackalRecruit>(randomTarget);
+
+            Recruits.Add(randomTarget);
+            Recruits.Add(randomTarget2);
+        }
+    }
+
+    public override void OnMeetingStart()
+    {
+        if (Player.AmOwner())
+        {
+            MiscUtils.ShowNotification(Jackal.Info(Jackal.Type.JackalsRecs, Recruits[0], Recruits[1]), Color.white, AUSAssets.JackalRoleCard.LoadAsset());
+            MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, $"{AUSColors.GradientColorText("404040", "b8b8b8", "Jackal")} Info"), Jackal.Info(Jackal.Type.JackalsRecs, Recruits[0], Recruits[1]));
+        }
+
+        var player = PlayerControl.LocalPlayer;
+        if (player.HasModifier<JackalRecruit>() && player.AmOwner())
+        {
+            var recruit = player.GetModifier<JackalRecruit>();
+            MiscUtils.ShowNotification(Jackal.Info(Jackal.Type.AnnounceRecs, null, recruit.OtherRecruit), Color.white, AUSAssets.JackalRoleCard.LoadAsset());
+            MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, $"{AUSColors.GradientColorText("404040", "b8b8b8", "Jackal")} Info"), Jackal.Info(Jackal.Type.AnnounceRecs, null, recruit.OtherRecruit));
         }
     }
 
@@ -125,6 +145,7 @@ public sealed class Jackal(IntPtr cppPtr)
     }
 
     public bool RecruitsPerished;
+    public List<PlayerControl> Recruits = new List<PlayerControl>();
 }
 
 #region Jackal_Assassinate
@@ -132,14 +153,14 @@ public sealed class Jackal(IntPtr cppPtr)
 public sealed class Jackal_Assassinate : AmongUsSalemRoleButton<Jackal, PlayerControl>
 {
     public override string Name => "Assassinate";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Neutral;
     public override float Cooldown => OptionGroupSingleton<Jackal_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Jackal_Assassinate;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
@@ -156,7 +177,11 @@ public sealed class Jackal_Assassinate : AmongUsSalemRoleButton<Jackal, PlayerCo
         }
 
         if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.AssassinatedByAJackal);
-        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+        else
+        {
+            MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+        }
         MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
     }
 
@@ -183,18 +208,17 @@ public static class Jackal_Events
             return;
         }
         if (@event.Player == null || !@event.Player.TryGetModifier<JackalRecruit>(out var jackalRecruit)
-            || jackalRecruit.OtherRecruit == null
-            || jackalRecruit.OtherRecruit.HasDied())
+            || jackalRecruit.OtherRecruit == null || jackalRecruit.OtherRecruit.HasDied())
         {
             return;
         }
         switch (@event.DeathReason)
         {
             case DeathReason.Exile:
-                jackalRecruit.OtherRecruit.RpcPlayerExile();
+                MiscUtils.RpcApplyDeathReason(jackalRecruit.OtherRecruit, jackalRecruit.OtherRecruit, DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate, false);
                 break;
             case DeathReason.Kill:
-                jackalRecruit.OtherRecruit.RpcCustomMurder(jackalRecruit.OtherRecruit);
+                MiscUtils.RpcApplyDeathReason(jackalRecruit.OtherRecruit, jackalRecruit.OtherRecruit, DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate);
                 break;
         }
     }
@@ -204,8 +228,8 @@ public static class Jackal_Events
 #endregion
 public sealed class Jackal_Options : AbstractOptionGroup<Jackal>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Jackal, "Jackal");
+    public override string GroupName => "Jackal";
 
-    [ModdedNumberOption("<color=#a22929>Jackal</color> <color=#4a86e8>Assassinate</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#404040>Jackal</color> <color=#4a86e8>Assassinate</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 }

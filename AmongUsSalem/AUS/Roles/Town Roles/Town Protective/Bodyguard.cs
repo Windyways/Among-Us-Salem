@@ -11,13 +11,13 @@ namespace AmongUsSalem.Roles;
 public sealed class Bodyguard(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Bodyguard, "Bodyguard");
+    public string RoleName { get; set; } = "Bodyguard";
     public string revealText => "is a trained protector.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownProtective;
 
@@ -110,14 +110,14 @@ public sealed class Bodyguard(IntPtr cppPtr)
     }
 
     [MethodRpc((uint)AUSRpc.Bodyguard_Notify, SendImmediately = true)]
-    public static bool RpcBodyguard_Notify(PlayerControl visitor, PlayerControl target)
+    public static void RpcBodyguard_Notify(PlayerControl visitor, PlayerControl target)
     {
         foreach (var bodyguards in MiscUtils.GetPlayersWithRole<Bodyguard>())
         {
             var bodyguard = bodyguards.GetRole<Bodyguard>();
             if (bodyguard.Player == target && bodyguard.Player.AmOwner())
             {
-                MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Bodyguard Info"), Info(Type.AttackedButSelfProtected));
+                MiscUtils.AddFakeChat(bodyguard.Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Bodyguard Info"), Info(Type.AttackedButSelfProtected));
             }
 
             if (bodyguard.GuardedPlayer == target)
@@ -132,8 +132,6 @@ public sealed class Bodyguard(IntPtr cppPtr)
                 }
             }
         }
-
-        return false;
     }
 
     public PlayerControl GuardedPlayer;
@@ -145,14 +143,14 @@ public sealed class Bodyguard(IntPtr cppPtr)
 public sealed class Bodyguard_Guard : AmongUsSalemRoleButton<Bodyguard, PlayerControl>
 {
     public override string Name => "Guard";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Town;
     public override float Cooldown => OptionGroupSingleton<Bodyguard_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Bodyguard_Guard;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -171,7 +169,7 @@ public sealed class Bodyguard_Guard : AmongUsSalemRoleButton<Bodyguard, PlayerCo
         if (Player.AmOwner)
         {
             var button = CustomButtonSingleton<Bodyguard_SelfProtect>.Instance;
-            WitnessKillEvent.ResetButtonTimer(Player, button, button.InitialCooldown);
+            button.ResetCooldownAndOrEffect();
         }
 
         Bodyguard.RpcBodyguard_Guard(Player, Target);
@@ -195,7 +193,7 @@ public sealed class Bodyguard_Guard : AmongUsSalemRoleButton<Bodyguard, PlayerCo
 public sealed class Bodyguard_SelfProtect : AmongUsSalemRoleButton<Bodyguard>
 {
     public override string Name => "Self Protect";
-    public override string Keybind => Keybinds.SecondaryAction;
+    public override BaseKeybind Keybind => Keybinds.SecondaryAction;
     public override Color TextOutlineColor => AUSColors.Town;
     public override float Cooldown => OptionGroupSingleton<Bodyguard_Options>.Instance.Cooldown;
     public override int MaxUses => (int)OptionGroupSingleton<Bodyguard_Options>.Instance.Charges;
@@ -214,7 +212,7 @@ public sealed class Bodyguard_SelfProtect : AmongUsSalemRoleButton<Bodyguard>
         if (Player.AmOwner)
         {
             var button = CustomButtonSingleton<Bodyguard_Guard>.Instance;
-            WitnessKillEvent.ResetButtonTimer(Player, button, button.InitialCooldown);
+            button.ResetCooldownAndOrEffect();
         }
 
         Bodyguard.RpcBodyguard_SelfProtect(Player);
@@ -226,7 +224,7 @@ public sealed class Bodyguard_SelfProtect : AmongUsSalemRoleButton<Bodyguard>
 #endregion
 public sealed class Bodyguard_Options : AbstractOptionGroup<Bodyguard>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Bodyguard, "Bodyguard");
+    public override string GroupName => "Bodyguard";
 
     [ModdedNumberOption("<color=#06E00C>Bodyguard</color> <color=#4a86e8>Guard</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

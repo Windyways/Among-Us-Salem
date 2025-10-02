@@ -11,22 +11,19 @@ public static class SmartDeputy
 {
     public static void Start()
     {
-        if (Debugger.IsDebuggerActive) Coroutines.Start(DelayStart());
+        if (Debugger.IsDebuggerActive && Debugger.SmartBotsEnabled) Coroutines.Start(DelayStart());
     }
 
     public static IEnumerator DelayStart()
     {
-        yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime + 1.5f);
-        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
-        var evilPlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && !x.Is(Faction.Town));
+        yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime + 2f);
+        var townPlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Town));
         foreach (var deputys in MiscUtils.GetPlayersWithRole<Deputy>())
         {
             if (DayNightMechanic.DayCount >= 2)
             {
                 var deputy = deputys.GetRole<Deputy>();
-
-                var num = Random.Range(0, 100);
-                if ((alivePlayers / 2) <= evilPlayers && num <= 25) deputy.DoShoot(GetRandomTarget(deputy.Player));
+                if (townPlayers == 1) deputy.DoShoot(GetRandomTarget(deputy.Player));
                 else if (CalculatedVoting.EvidenceAgainst.Contains(deputy.Player))
                 {
                     deputy.DoShoot(GetRandomTarget(deputy.Player));
@@ -39,7 +36,7 @@ public static class SmartDeputy
 
     public static void DoShoot(this Deputy deputy, PlayerControl target)
     {
-        if (deputy.Charges == 0 || deputy.Player.HasDied())
+        if (deputy.Charges == 0 || deputy.Player.HasDied() || ExileController.Instance)
             return;
 
         if (deputy.Player.CanKill(target))

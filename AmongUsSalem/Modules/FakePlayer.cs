@@ -6,8 +6,6 @@ using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using PowerTools;
 using TMPro;
-using AmongUsSalem.Modifiers.Game.Universal;
-using AmongUsSalem.Options.Modifiers.Universal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -75,53 +73,6 @@ public sealed class FakePlayer : IDisposable
 
         body.transform.position = vector;
 
-        if (player.HasModifier<GiantModifier>())
-        {
-            body.transform.localScale /= 0.7f;
-        }
-        else if (player.HasModifier<MiniModifier>())
-        {
-            body.transform.localScale *= 0.7f;
-        }
-
-        if (player.HasModifier<ShyModifier>())
-        {
-            var colour = player.cosmetics.currentBodySprite.BodySprite.color;
-            var transparency = OptionGroupSingleton<ShyOptions>.Instance.FinalTransparency / 100;
-
-            colour.a = transparency;
-            _cosmeticsLayer.currentBodySprite.BodySprite.color = colour;
-
-            _cosmeticsLayer.nameText.color = _cosmeticsLayer.nameText.color.SetAlpha(transparency);
-
-            if (DataManager.Settings.Accessibility.ColorBlindMode)
-            {
-                _cosmeticsLayer.colorBlindText.color = _cosmeticsLayer.colorBlindText.color.SetAlpha(transparency);
-            }
-
-            //player.SetHatAndVisorAlpha(transparency);
-            _cosmeticsLayer.skin.layer.color = _cosmeticsLayer.skin.layer.color.SetAlpha(transparency);
-
-            foreach (var animation in _cosmeticsLayer.GetComponentsInParent<SpriteRenderer>())
-            {
-                animation.color = animation.color.SetAlpha(transparency);
-            }
-
-            foreach (var animation in _cosmeticsLayer.GetComponentsInChildren<SpriteRenderer>())
-            {
-                animation.color = animation.color.SetAlpha(transparency);
-            }
-
-            foreach (var animation in body.GetComponentsInParent<SpriteRenderer>())
-            {
-                animation.color = animation.color.SetAlpha(transparency);
-            }
-
-            foreach (var animation in body.GetComponentsInChildren<SpriteRenderer>())
-            {
-                animation.color = animation.color.SetAlpha(transparency);
-            }
-        }
 
         var cosmeticsObj = body.transform.GetChild(2).gameObject;
         if (cosmeticsObj != null && cosmeticsObj.transform.GetChildCount() > 4)
@@ -246,31 +197,6 @@ public sealed class FakePlayer : IDisposable
 
             DestroyAllCollider(petBehaviour.gameObject);
 
-            if (playerRef.HasModifier<GiantModifier>())
-            {
-                petBehaviour.transform.localScale *= 0.7f;
-                petBehaviour.transform.localPosition += Vector3.down * 0.1f;
-            }
-            else if (playerRef.HasModifier<MiniModifier>())
-            {
-                petBehaviour.transform.localScale /= 0.7f;
-                petBehaviour.transform.localPosition += Vector3.down * 0.1f;
-            }
-
-            if (playerRef.HasModifier<ShyModifier>())
-            {
-                var transparency = OptionGroupSingleton<ShyOptions>.Instance.FinalTransparency / 100;
-
-                foreach (var pet in petBehaviour.GetComponentsInParent<SpriteRenderer>())
-                {
-                    pet.color = pet.color.SetAlpha(transparency);
-                }
-
-                foreach (var pet in petBehaviour.GetComponentsInChildren<SpriteRenderer>())
-                {
-                    pet.color = pet.color.SetAlpha(transparency);
-                }
-            }
         }
 
         cosmetics.SetColor(colorId);
@@ -295,15 +221,6 @@ public sealed class FakePlayer : IDisposable
         nameObj.transform.localPosition = baseObject.transform.localPosition;
         nameObj.transform.localPosition -= new Vector3(0f, 0.247f, 0f);
 
-        if (player.HasModifier<GiantModifier>())
-        {
-            nameObj.transform.localScale *= 0.7f;
-        }
-        else if (player.HasModifier<MiniModifier>())
-        {
-            nameObj.transform.localScale /= 0.7f;
-        }
-
         var nameText = nameObj.transform.FindChild(NameTextObjName).GetComponent<TextMeshPro>();
         var baseNameText = baseObject.transform.FindChild(NameTextObjName).GetComponent<TextMeshPro>();
 
@@ -311,26 +228,15 @@ public sealed class FakePlayer : IDisposable
         _colorBindText = _colorBindTextObj.GetComponent<TextMeshPro>();
 
         var baseColorBindText = baseObject.transform.FindChild(ColorBindTextName).GetComponent<TextMeshPro>();
-        var transparency = OptionGroupSingleton<ShyOptions>.Instance.FinalTransparency / 100;
 
         if (nameText != null && baseNameText != null)
         {
             ChangeDummyName(nameText, baseNameText, info);
-            if (player.HasModifier<ShyModifier>())
-            {
-                nameText.GetComponent<TextMeshPro>().color =
-                    nameText.GetComponent<TextMeshPro>().color.SetAlpha(transparency);
-            }
         }
 
         if (_colorBindText != null && baseColorBindText != null)
         {
             UpdateColorName(_colorBindText, baseColorBindText, info.ColorInfo);
-            if (player.HasModifier<ShyModifier>())
-            {
-                _colorBindText.GetComponent<TextMeshPro>().color =
-                    _colorBindText.GetComponent<TextMeshPro>().color.SetAlpha(transparency);
-            }
         }
 
         RemoveRoleInfo(nameObj);

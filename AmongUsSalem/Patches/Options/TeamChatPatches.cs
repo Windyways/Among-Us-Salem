@@ -10,7 +10,6 @@ using TMPro;
 using AmongUsSalem.Modifiers.Crewmate;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Options;
-using AmongUsSalem.Roles.Crewmate;
 using AmongUsSalem.Roles.Neutral;
 using AmongUsSalem.Utilities;
 using UnityEngine;
@@ -55,6 +54,7 @@ public static class TeamChatPatches
     [MethodRpc((uint)AUSRpc.SendJaileeChat, SendImmediately = true)]
     public static void RpcSendJaileeChat(PlayerControl player, string text)
     {
+        /*
         if (PlayerControl.LocalPlayer.Data.Role is JailorRole || (PlayerControl.LocalPlayer.HasDied() &&
                                                                   OptionGroupSingleton<GeneralOptions>.Instance
                                                                       .TheDeadKnow))
@@ -62,6 +62,7 @@ public static class TeamChatPatches
             MiscUtils.AddTeamChat(player.Data,
                 $"<color=#{AUSColors.Jailor.ToHtmlStringRGBA()}>{player.Data.PlayerName} (Jailed)</color>", text);
         }
+        */
     }
 
     [MethodRpc((uint)AUSRpc.SendImpTeamChat, SendImmediately = true)]
@@ -85,7 +86,7 @@ public static class TeamChatPatches
         if (player == null) return;
         var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
         if (color == Color.white &&
-                 (player.AmOwner || player.Data.Role is MayorRole mayor && mayor.Revealed ||
+                 (player.AmOwner ||
                   PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow) && PlayerControl.AllPlayerControls
                      .ToArray()
                      .FirstOrDefault(x => x.Data.PlayerName == playerName) && MeetingHud.Instance)
@@ -122,12 +123,6 @@ public static class TeamChatPatches
 
                     var genOpt = OptionGroupSingleton<GeneralOptions>.Instance;
                     _teamText.text = string.Empty;
-                    if (PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow &&
-                        Helpers.GetAlivePlayers().Any(x => x.Data.Role is JailorRole))
-                    {
-                        _teamText.text = "Jailor, Impostor, and Vampire Chat can be seen here.";
-                        _teamText.color = Color.white;
-                    }
 
                     var ChatScreenContainer = GameObject.Find("ChatScreenContainer");
                     // var FreeChat = GameObject.Find("FreeChatInputField");
@@ -138,12 +133,6 @@ public static class TeamChatPatches
 
                     if (TeamChatActive)
                     {
-                        if (PlayerControl.LocalPlayer.TryGetModifier<JailedModifier>(out var jailMod) && !jailMod.HasOpenedQuickChat)
-                        {
-                            if (!__instance.quickChatMenu.IsOpen) __instance.OpenQuickChat();
-                            __instance.quickChatMenu.Close();
-                            jailMod.HasOpenedQuickChat = true;
-                        }
                         var ogChat = HudManager.Instance.Chat.chatButton;
                         ogChat.transform.Find("Inactive").gameObject.SetActive(true);
                         ogChat.transform.Find("Active").gameObject.SetActive(false);
@@ -165,13 +154,7 @@ public static class TeamChatPatches
                                 new Vector3(3.5133f + 3.49f * (Camera.main.orthographicSize / 3f), 4.576f);
                         }
 
-                        if ((PlayerControl.LocalPlayer.IsJailed() ||
-                             PlayerControl.LocalPlayer.Data.Role is JailorRole) && _teamText != null)
-                        {
-                            _teamText.text = "Jailor Chat is Open. Only the Jailor and Jailee can see this.";
-                            _teamText.color = AUSColors.Jailor;
-                        }
-                        else if (PlayerControl.LocalPlayer.IsImpostor() &&
+                        if (PlayerControl.LocalPlayer.IsImpostor() &&
                                  genOpt is { ImpostorChat.Value: true } &&
                                  !PlayerControl.LocalPlayer.Data.IsDead && _teamText != null)
                         {

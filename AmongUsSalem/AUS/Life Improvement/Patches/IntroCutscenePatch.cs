@@ -13,7 +13,7 @@ public static class IntroCutscene_ShowTeam__d_MoveNext
 
     public static AudioClip GetIntroSound(RoleTypes roleType)
     {
-        return (from role in DestroyableSingleton<RoleManager>.Instance.AllRoles
+        return (from role in DestroyableSingleton<RoleManager>.Instance.AllRoles.ToArray()
                 where role.Role == roleType
                 select role).FirstOrDefault<RoleBehaviour>().IntroSound;
     }
@@ -22,13 +22,13 @@ public static class IntroCutscene_ShowTeam__d_MoveNext
     {
         if (PlayerControl.LocalPlayer.Data.Role is IAUSRole ausRole)
         {
-            if (ausRole.RoleFaction == Faction.Coven)
+            if (ausRole.Faction == Faction.Coven)
             {
                 __instance.__4__this.TeamTitle.text = "Coven";
                 __instance.__4__this.TeamTitle.color = AUSColors.Coven;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
             }
-            if (ausRole.RoleFaction == Faction.Traitor)
+            if (ausRole.Faction == Faction.Traitor)
             {
                 __instance.__4__this.TeamTitle.text = "Traitor";
                 __instance.__4__this.TeamTitle.color = AUSColors.Traitor;
@@ -38,7 +38,7 @@ public static class IntroCutscene_ShowTeam__d_MoveNext
             {
                 __instance.__4__this.TeamTitle.text = "Apocalypse";
                 __instance.__4__this.TeamTitle.color = AUSColors.Apocalypse;
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = IntroCutscene_ShowTeam__d_MoveNext.GetIntroSound(RoleTypes.Shapeshifter);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
             }
 
             __instance.__4__this.BackgroundBar.material.color = ausRole.RoleColor;
@@ -58,13 +58,13 @@ public static class IntroCutscene_ShowRole_d__24
     {
         if (PlayerControl.LocalPlayer.Data.Role is IAUSRole ausRole)
         {
-            if (ausRole.RoleFaction == Faction.Coven)
+            if (ausRole.Faction == Faction.Coven)
             {
                 __instance.__4__this.TeamTitle.text = "Coven";
                 __instance.__4__this.TeamTitle.color = AUSColors.Coven;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = IntroCutscene_ShowTeam__d_MoveNext.GetIntroSound(RoleTypes.Shapeshifter);
             }
-            if (ausRole.RoleFaction == Faction.Traitor)
+            if (ausRole.Faction == Faction.Traitor)
             {
                 __instance.__4__this.TeamTitle.text = "Traitor";
                 __instance.__4__this.TeamTitle.color = AUSColors.Traitor;
@@ -95,13 +95,13 @@ public static class IntroCutscene_CoBegin_d__29
     {
         if (PlayerControl.LocalPlayer.Data.Role is IAUSRole ausRole)
         {
-            if (ausRole.RoleFaction == Faction.Coven)
+            if (ausRole.Faction == Faction.Coven)
             {
                 __instance.__4__this.TeamTitle.text = "Coven";
                 __instance.__4__this.TeamTitle.color = AUSColors.Coven;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = IntroCutscene_ShowTeam__d_MoveNext.GetIntroSound(RoleTypes.Shapeshifter);
             }
-            if (ausRole.RoleFaction == Faction.Traitor)
+            if (ausRole.Faction == Faction.Traitor)
             {
                 __instance.__4__this.TeamTitle.text = "Traitor";
                 __instance.__4__this.TeamTitle.color = AUSColors.Traitor;

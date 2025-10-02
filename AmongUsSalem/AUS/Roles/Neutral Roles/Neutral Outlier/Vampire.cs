@@ -10,13 +10,13 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Vampire(IntPtr cppPtr)
     : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Vampire, "Vampire");
-    public string revealText => "N/A";
-    public string RoleDescription => "Placeholder.";
+    public string RoleName { get; set; } = "Vampire";
+    public string revealText => "drinks blood.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction RoleFaction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Neutral;
     public Color RoleColor { get; set; } = AUSColors.Vampire;
     public Alignment Alignment => Alignment.NeutralOutlier;
     public Attack Attack { get; set; } = Attack.Basic;
@@ -72,7 +72,7 @@ public sealed class Vampire(IntPtr cppPtr)
         var aliveRecs = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.HasModifier<VampireRecruit>());
         if (aliveVampires == 0 && aliveRecs == 0) return false;
 
-        var result = Helpers.GetAlivePlayers().Count <= (aliveVampires + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveVampires + aliveRecs);
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= (aliveVampires + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveVampires + aliveRecs);
         return result;
     }
 
@@ -93,9 +93,9 @@ public sealed class Vampire(IntPtr cppPtr)
         var vampire = player.GetRole<Vampire>();
         vampire.Charges--;
         
-        if (player.Data.Role is IAUSRole ausRole)
+        if (vampire.Player.Data.Role is IAUSRole ausRole)
         {
-            ausRole.ApplyDefense(Defense.None, true);
+            ausRole.ApplyDefense(Defense.None, true, true);
         }
 
         var vampires = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasModifier<VampireRecruit>() && !x.HasDied());
@@ -128,14 +128,14 @@ public sealed class Vampire(IntPtr cppPtr)
 public sealed class Vampire_Drain : AmongUsSalemRoleButton<Vampire, PlayerControl>
 {
     public override string Name => "Drain";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Vampire;
     public override float Cooldown => OptionGroupSingleton<Vampire_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Vampire_Drain;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, true, true))
             {
@@ -158,7 +158,11 @@ public sealed class Vampire_Drain : AmongUsSalemRoleButton<Vampire, PlayerContro
         }
 
         if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.BittenByAVampire);
-        else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+        else
+        {
+            MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+        }
         MiscUtils.PostSuccessfulVisit(Player, Target, true, true);
     }
 
@@ -173,7 +177,7 @@ public sealed class Vampire_Drain : AmongUsSalemRoleButton<Vampire, PlayerContro
 public sealed class Vampire_Convert : AmongUsSalemRoleButton<Vampire, PlayerControl>
 {
     public override string Name => "Convert";
-    public override string Keybind => Keybinds.SecondaryAction;
+    public override BaseKeybind Keybind => Keybinds.SecondaryAction;
     public override Color TextOutlineColor => AUSColors.Vampire;
     public override float Cooldown => OptionGroupSingleton<Vampire_Options>.Instance.ConvertCD;
     public override int MaxUses => (int)OptionGroupSingleton<Vampire_Options>.Instance.Charges;
@@ -181,7 +185,7 @@ public sealed class Vampire_Convert : AmongUsSalemRoleButton<Vampire, PlayerCont
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, !IsConvertable(Target), true))
             {
@@ -200,16 +204,21 @@ public sealed class Vampire_Convert : AmongUsSalemRoleButton<Vampire, PlayerCont
         if (Player.AmOwner)
         {
             var button = CustomButtonSingleton<Vampire_Drain>.Instance;
-            WitnessKillEvent.ResetButtonTimer(Player, button, button.Cooldown);
+            button.ResetCooldownAndOrEffect();
         }
 
         if (IsConvertable(Target)) Vampire.RpcVampire_Convert(Role.Player, Target);
         else
         {
             if (Player.CanKill(Target)) MiscUtils.RpcApplyDeathReason(Player, Target, DeathReasonShow.BittenByAVampire);
-            else MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+            else
+            {
+                MiscUtils.ShowNotification(MessageTexts.TooMuchDefense(Player, Target), Color.white);
+                MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, "General Info"), MessageTexts.TooMuchDefense(Player, Target));
+            }
             IncreaseUses();
         }
+        
         MiscUtils.PostSuccessfulVisit(Player, Target, false, true);
     }
 
@@ -235,7 +244,7 @@ public sealed class Vampire_Convert : AmongUsSalemRoleButton<Vampire, PlayerCont
 #endregion
 public sealed class Vampire_Options : AbstractOptionGroup<Vampire>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Vampire, "Vampire");
+    public override string GroupName => "Vampire";
 
     [ModdedNumberOption("<color=#a22929>Vampire</color> <color=#4a86e8>Drain</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
@@ -243,6 +252,6 @@ public sealed class Vampire_Options : AbstractOptionGroup<Vampire>
     [ModdedNumberOption("<color=#a22929>Vampire</color> <color=#4a86e8>Convert</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float ConvertCD { get; set; } = 25f;
 
-    [ModdedNumberOption("<color=#a22929>Vampire</color> Max <color=#4a86e8>Converts</color>", 1f, 15f, 1f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#a22929>Vampire</color> Max <color=#4a86e8>Converts</color>", 1f, 15f, 1f)]
     public float Charges { get; set; } = 3f;
 }

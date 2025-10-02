@@ -11,13 +11,13 @@ namespace AmongUsSalem.Roles;
 public sealed class Sheriff(IntPtr cppPtr)
     : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
 {
-    public string RoleName { get; set; } = TouLocale.Get(TouNames.Sheriff, "Sheriff");
+    public string RoleName { get; set; } = "Sheriff";
     public string revealText => "is a protector of the town.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleDescription => "";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public Faction RoleFaction { get; set; } = Faction.Town;
+    public Faction Faction { get; set; } = Faction.Town;
     public Color RoleColor { get; set; } = AUSColors.Town;
     public Alignment Alignment => Alignment.TownInvestigative;
 
@@ -77,13 +77,14 @@ public sealed class Sheriff(IntPtr cppPtr)
         else if (target.IsIllusioned() || (target.Data.Role is ICovenRole coven && coven.Necronomicon) || target.IsTownTraitor()/* || target.IsRole<Godfather>()*/) return false;
         else if (target.Is(Faction.Coven) || target.Is(Faction.Mafia) || target.Is(Alignment.NeutralEvil) || target.Is(Alignment.NeutralPariah)) return true;
         else if (target.IsRole<Vampire>() && vampires > 0) return true;
+        else if (target.HasModifier<VampireRecruit>()) return true;
         
             /*
-        else if (target.Is(RoleEnum.SerialKiller) && SerialKiller.Version == SerialKiller.V.TownOfSalem) return true;
-        else if (target.Is(RoleEnum.Werewolf) && DayNightMechanic.FullMoon()) return true;
-        */
+    else if (target.Is(RoleEnum.SerialKiller) && SerialKiller.Version == SerialKiller.V.TownOfSalem) return true;
+    else if (target.Is(RoleEnum.Werewolf) && DayNightMechanic.FullMoon()) return true;
+    */
 
-            return false;
+        return false;
     }
 
     public static string Info(PlayerControl target)
@@ -111,14 +112,14 @@ public sealed class Sheriff(IntPtr cppPtr)
 public sealed class Sheriff_Search : AmongUsSalemRoleButton<Sheriff, PlayerControl>
 {
     public override string Name => "Search";
-    public override string Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Town;
     public override float Cooldown => OptionGroupSingleton<Sheriff_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Sheriff_Search;
 
     public override void ClickHandler()
     {
-        if (Target != null)
+        if (Target != null && Timer <= 0)
         {
             if (MiscUtils.SuccessfulVisit(Player, Target, false, true))
             {
@@ -157,7 +158,7 @@ public sealed class Sheriff_Search : AmongUsSalemRoleButton<Sheriff, PlayerContr
 #endregion
 public sealed class Sheriff_Options : AbstractOptionGroup<Sheriff>
 {
-    public override string GroupName => TouLocale.Get(TouNames.Sheriff, "Sheriff");
+    public override string GroupName => "Sheriff";
 
     [ModdedNumberOption("<color=#06E00C>Sheriff</color> <color=#4a86e8>Search</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

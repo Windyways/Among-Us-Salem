@@ -18,6 +18,7 @@ public static class AUSColors
     public static Color Vampire => new Color32(162, 41, 41, 255);
 
     public static Color NecroPassing => Coven;
+    public static Color CovenVIP => Coven;
     public static Color Sheriff => Town;
     public static Color Veteran => Town;
     public static Color Mayor => Town;
@@ -31,8 +32,10 @@ public static class AUSColors
         #region Gradients
         private static Color HexToColor(string hex)
         {
-            Color color = new();
-            _ = ColorUtility.TryParseHtmlString("#" + hex, out color);
+#pragma warning disable S1854 // Unused assignments should be removed
+        Color color = new();
+#pragma warning restore S1854 // Unused assignments should be removed
+        _ = ColorUtility.TryParseHtmlString("#" + hex, out color);
             return color;
         }
         private static string ColorToHex(Color color)

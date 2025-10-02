@@ -13,9 +13,11 @@ public static class AUSEvents
         }
 
         var target = MiscUtils.PlayerById(@event.Target.PlayerId);
-        if (target.IsAmbushed() && @event.Reporter.AmOwner)
+
+        if (@event.Reporter.AmOwner)
         {
             MiscUtils.SuccessfulVisit(@event.Reporter, target, false, true);
+            @event.UnCancel();
         }
     }
 }

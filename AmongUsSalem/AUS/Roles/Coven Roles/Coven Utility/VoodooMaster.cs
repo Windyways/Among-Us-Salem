@@ -9,7 +9,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region VoodooMaster
 #endregion
 public sealed class VoodooMaster(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
+    : CovenRole(cppPtr), IWikiDiscoverable, ICustomAURole, ICovenRole
 {
     public string RoleName { get; set; } = "Voodoo Master";
     public string revealText => "works with dolls.";
@@ -34,14 +34,15 @@ public sealed class VoodooMaster(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.VoodooMasterRoleCard,
-        CanUseSabotage = true,
+        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -64,7 +65,7 @@ public sealed class VoodooMaster(IntPtr cppPtr)
         new("Voodoo",
             "Create a Voodoo doll of your target at night and use it to silence them." +
             "\n\nYour target cannot talk the following day." +
-            "\n\nYour target cannot vote during the Discussion phase the following day." +
+            "\n\nYour target cannot vote during the Voting phase the following day." +
             "\n\nYou cannot choose the same person two nights in a row.",
             AUSAssets.VoodooMaster_Voodoo)
     ];
@@ -75,7 +76,7 @@ public sealed class VoodooMaster(IntPtr cppPtr)
         if (aliveCoven == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -96,16 +97,6 @@ public sealed class VoodooMaster(IntPtr cppPtr)
         voodoomaster.SilencedPlayer = target;
     }
 
-    public void IntroPrefix(IntroCutscene._ShowTeam_d__38 __instance)
-    {
-        Il2CppSystem.Collections.Generic.List<PlayerControl> teamCoven = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-        foreach (PlayerControl role in PlayerControl.AllPlayerControls)
-        {
-            if (role.Is(Faction.Coven)) teamCoven.Add(role);
-        }
-        __instance.teamToShow = teamCoven;
-    }
-
     public enum Type { Silenced, WellRested }
     public static string Info(Type type)
     {
@@ -124,7 +115,7 @@ public sealed class VoodooMaster_Voodoo : AmongUsSalemRoleButton<VoodooMaster, P
     public override string Name => "Voodoo";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
-    public override float Cooldown => OptionGroupSingleton<VoodooMaster_Options>.Instance.Cooldown;
+    public override float Cooldown => Role.Necronomicon ? OptionGroupSingleton<CovenOptions>.Instance.Cooldown : OptionGroupSingleton<VoodooMaster_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.VoodooMaster_Voodoo;
 
     public override void ClickHandler()
@@ -168,7 +159,7 @@ public sealed class VoodooMaster_Voodoo : AmongUsSalemRoleButton<VoodooMaster, P
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction);
+            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction == Role.Faction);
     }
 }
 

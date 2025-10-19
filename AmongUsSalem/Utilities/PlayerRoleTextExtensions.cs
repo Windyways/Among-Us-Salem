@@ -185,6 +185,16 @@ public static class PlayerRoleTextExtensions
             name += "<color=#06E00C> Ⓓ</color>";
         }
 
+        if (PlayerControl.LocalPlayer.Data.Role is Cleric cleric && cleric.BarrieredPlayers.Contains(player.PlayerId))
+        {
+            name += "<color=#06E00C> Ⓑ</color>";
+        }
+
+        if (PlayerControl.LocalPlayer.Data.Role is Coroner coroner && coroner.ExaminedPlayers.Contains(player.PlayerId))
+        {
+            name += "<color=#06E00C> Ⓔ</color>";
+        }
+
         // Neutral
         if ((PlayerControl.LocalPlayer.Data.Role is Arsonist arsonist && arsonist.DousedPlayers.Contains(player.PlayerId))
             || (player.IsDoused() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
@@ -279,3 +289,34 @@ public static class PlayerRoleTextExtensions
         return name;
     }
 }
+
+/* Status Alphabet
+
+Ⓐ
+Ⓑ
+Ⓒ
+Ⓓ
+Ⓔ
+Ⓕ
+Ⓖ
+Ⓗ
+Ⓘ
+Ⓙ
+Ⓚ
+Ⓛ
+Ⓜ
+Ⓝ
+Ⓞ
+Ⓟ
+Ⓠ
+Ⓡ
+Ⓢ
+Ⓣ
+Ⓤ
+Ⓥ
+Ⓦ
+Ⓧ
+Ⓨ
+Ⓩ
+
+*/

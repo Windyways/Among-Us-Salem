@@ -9,11 +9,11 @@ namespace AmongUsSalem.Roles;
 #region Sheriff
 #endregion
 public sealed class Sheriff(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : CrewmateRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Sheriff";
     public string revealText => "is a protector of the town.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Search for suspicious players.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -39,7 +39,7 @@ public sealed class Sheriff(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -91,10 +91,10 @@ public sealed class Sheriff(IntPtr cppPtr)
     {
         if (IsSuspicious(target))
         {
-            return target.GetDefaultAppearance().PlayerName + " is <b><color=#ff0000>Suspicious</color></b> or <b><color=#ff0000>Framed</color></b>!";
+            return $"{target.Name()} seems suspicious!";
         }
 
-        return target.GetDefaultAppearance().PlayerName + " is innocent or great at hiding secrets!";
+        return $"You cannot find evidence of wrongdoing. {target.Name()} seems innocent.";
     }
     
 	public List<byte> SuspiciousPlayers = new List<byte>();

@@ -6,7 +6,7 @@ namespace AmongUsSalem.Options;
 public sealed class BetterMapOptions : AbstractOptionGroup
 {
     public override string GroupName => "Better Polus";
-    public override uint GroupPriority => 5;
+    public override uint GroupPriority => 19;
 
     public override Func<bool> GroupVisible => () =>
         GameOptionsManager.Instance.currentGameOptions.MapId == (int)ShipStatus.MapType.Pb ||

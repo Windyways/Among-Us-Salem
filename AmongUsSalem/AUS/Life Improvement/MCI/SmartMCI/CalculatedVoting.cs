@@ -204,7 +204,7 @@ public static class CalculatedVoting
     public static void RandomTownVoting(PlayerControl player, MeetingHud __instance)
     {
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != player && !RecievedInformation.Contains(x) && 
-            !(x.Data.Role is IRevealable revealable && revealable.IsRevealed && x.Is(Faction.Town))).ToList();
+            !(x.HasModifier<GlobalReveal>() && x.Is(Faction.Town))).ToList();
 
         if (alivePlayers.Count > 0)
         {
@@ -243,5 +243,23 @@ public static class CalculatedVoting
             else RandomVote(player, __instance, alivePlayers);
         }
         else SkipVote(player, __instance);
+    }
+
+    public static void DoVotes(MeetingHud __instance)
+    {
+        foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+        {
+            if (!player.HasDied())
+            {
+                if (player.IsRole<Arsonist>()) CalculatedVoting.RandomArsonistVoting(player, __instance);
+                else if (player.IsRole<Vampire>() || player.HasModifier<VampireRecruit>()) CalculatedVoting.RandomVampireVoting(player, __instance);
+                else if (player.HasModifier<JackalRecruit>()) CalculatedVoting.RandomJackalRecruitVoting(player, __instance);
+                else if (player.IsRole<Jackal>()) CalculatedVoting.RandomJackalVoting(player, __instance);
+                else if (player.Is(Faction.Town)) CalculatedVoting.RandomTownVoting(player, __instance);
+                else if (player.Is(Faction.Mafia)) CalculatedVoting.RandomMafiaVoting(player, __instance);
+                else if (player.Is(Faction.Neutral)) CalculatedVoting.RandomNeutralVoting(player, __instance);
+                else if (player.Is(Faction.Coven)) CalculatedVoting.RandomCovenVoting(player, __instance);
+            }
+        }
     }
 }

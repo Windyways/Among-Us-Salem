@@ -22,7 +22,7 @@ namespace AmongUsSalem;
 /// <summary>
 ///     Plugin class for Among Us Salem.
 /// </summary>
-[BepInAutoPlugin("windyways.aus", "Among Us Salem")]
+[BepInAutoPlugin("windyways.aus", "Among Us Salem III")]
 [BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
 [BepInDependency(MiraApiPlugin.Id)]

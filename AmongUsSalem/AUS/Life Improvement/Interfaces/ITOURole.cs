@@ -108,7 +108,7 @@ public interface ITOURole : ICustomRole
 
     public static StringBuilder SetNewTabText(ICustomRole role)
     {
-        var alignment = role is IAUSRole touRole
+        var alignment = role is ICustomAURole touRole
             ? touRole.Alignment.ToDisplayString()
             : "Custom";
 
@@ -156,7 +156,7 @@ public interface ITOURole : ICustomRole
         stringB.Append("<size=70%>");
         stringB.AppendLine(CultureInfo.InvariantCulture, $"{role.RoleLongDescription}");
 
-        if (role is IAUSRole ausRole)
+        if (role is ICustomAURole ausRole)
         {
             stringB.AppendLine(CultureInfo.InvariantCulture, $"Attack: {ausRole.Attack}");
             stringB.AppendLine(CultureInfo.InvariantCulture, $"Defense: {ausRole.Defense}");
@@ -168,7 +168,7 @@ public interface ITOURole : ICustomRole
 
     public static StringBuilder SetDeadTabText(ICustomRole role)
     {
-        var alignment = role is IAUSRole touRole
+        var alignment = role is ICustomAURole touRole
             ? touRole.Alignment.ToDisplayString()
             : "Custom";
 

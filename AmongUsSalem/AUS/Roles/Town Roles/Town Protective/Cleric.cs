@@ -9,11 +9,11 @@ namespace AmongUsSalem.Roles;
 #region Cleric
 #endregion
 public sealed class Cleric(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : CrewmateRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Cleric";
-    public string revealText => "is a trained protector.";
-    public string RoleDescription => "";
+    public string revealText => "is skilled in protective magic.";
+    public string RoleDescription => "Barrier to protect others.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -38,7 +38,7 @@ public sealed class Cleric(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -51,7 +51,8 @@ public sealed class Cleric(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Protective</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
-            "\nYou cannot counterattack passive attacks." +
+            "\nYou are notified if your target is attacked." +
+            "\nYour target is notified that they were protected by a Cleric if attacked." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -59,12 +60,11 @@ public sealed class Cleric(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Barrier",
-            "If your target is directly attacked or is the victim of a harmful visit, you and the visitor will fight, stopping them from attacking your target." +
-            "\n\nYou will deal a Powerful Attack to your foe and yourself.",
+            "You can Barrier a player at Night. You will grant your target Powerful Defense.",
             AUSAssets.Cleric_Barrier),
 
         new("Self Barrier",
-            "You may stay at gome and protect yourself to gain Basic Defense.",
+            "You can Self Barrier at Night. You will grant yourself Powerful Defense.",
             AUSAssets.Cleric_SelfBarrier)
     ];
 
@@ -92,7 +92,7 @@ public sealed class Cleric(IntPtr cppPtr)
         var cleric = player.GetRole<Cleric>();
         cleric.BarrieredPlayers.Add(target.PlayerId);
 
-        if (target.Data.Role is IAUSRole ausRole) ausRole.ApplyDefense(Defense.Powerful);
+        if (target.Data.Role is ICustomAURole ausRole) ausRole.ApplyDefense(Defense.Powerful);
     }
 
     [MethodRpc((uint)AUSRpc.Cleric_SelfBarrier, SendImmediately = true)]
@@ -105,7 +105,7 @@ public sealed class Cleric(IntPtr cppPtr)
         }
 
         var cleric = player.GetRole<Cleric>();
-        if (cleric.Player.Data.Role is IAUSRole ausRole) ausRole.ApplyDefense(Defense.Powerful);
+        if (cleric.Player.Data.Role is ICustomAURole ausRole) ausRole.ApplyDefense(Defense.Powerful);
     }
 
     [MethodRpc((uint)AUSRpc.Cleric_Notify, SendImmediately = true)]

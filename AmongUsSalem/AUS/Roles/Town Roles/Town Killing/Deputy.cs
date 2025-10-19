@@ -10,12 +10,12 @@ namespace AmongUsSalem.Roles;
 #region Deputy
 #endregion
 public sealed class Deputy(IntPtr cppPtr) 
-    : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable, IContinueGame
+    : CrewmateRole(cppPtr), ICustomAURole, IWikiDiscoverable, IContinueGame
 {
     public bool continueGame => true;
     public string RoleName { get; set; } = "Deputy";
     public string revealText => "is a powerful force for Justice.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Shoot players at Day.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -39,7 +39,7 @@ public sealed class Deputy(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -52,15 +52,16 @@ public sealed class Deputy(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
-            "\nN/A" +
+            "\nIllusionists can make you miss your shot." +
+            "\nFramers can make you shoot your target successfully." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
     [HideFromIl2Cpp]
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
-        new("Reveal",
-            "N/A.",
+        new("High Noon",
+            "You can Shoot a player during the Day. If your target is not a Town member and has no Defense, you will kill them. Else, you will miss your shot.",
             AUSAssets.Deputy_Shoot)
     ];
 
@@ -76,7 +77,15 @@ public sealed class Deputy(IntPtr cppPtr)
 
         if (player.CanKill(target) && !target.IsIllusioned() && !(target.Is(Faction.Town) && player.Is(Faction.Town)))
         {
-            MiscUtils.RpcApplyDeathReason(player, target, DeathReasonShow.ShotByADeputy, false, false);
+            if (player.AmOwner()) MiscUtils.RpcApplyDeathReason(player, target, DeathReasonShow.ShotByADeputy, false, false);
+            AUSAssets.PlaySound(AUSAssets.Deputy_Shoot_SFX);
+
+            MiscUtils.ShowNotification(Info(Type.Shot, target), Color.white, AUSAssets.DeputyRoleCard.LoadAsset());
+            MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Deputy Info"), Info(Type.Shot, target));
+        }
+        else if (player.CanKill(target) && target.IsFramed())
+        {
+            if (player.AmOwner()) MiscUtils.RpcApplyDeathReason(player, target, DeathReasonShow.ShotByADeputy, false, false);
             AUSAssets.PlaySound(AUSAssets.Deputy_Shoot_SFX);
 
             MiscUtils.ShowNotification(Info(Type.Shot, target), Color.white, AUSAssets.DeputyRoleCard.LoadAsset());

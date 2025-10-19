@@ -10,12 +10,12 @@ namespace AmongUsSalem.Roles;
 #region Mayor
 #endregion
 public sealed class Mayor(IntPtr cppPtr) 
-    : CrewmateRole(cppPtr), IAUSRole, IRevealable, IWikiDiscoverable, IContinueGame
+    : CrewmateRole(cppPtr), ICustomAURole, IWikiDiscoverable, IContinueGame
 {
     public bool continueGame => true;
     public string RoleName { get; set; } = "Mayor";
     public string revealText => "is the leader of the town.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Reveal for extra votes.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -32,7 +32,6 @@ public sealed class Mayor(IntPtr cppPtr)
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     
     public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
-    public bool IsRevealed { get; set; }
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -42,7 +41,7 @@ public sealed class Mayor(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -80,7 +79,7 @@ public sealed class Mayor(IntPtr cppPtr)
         }
 
         var mayor = player.GetRole<Mayor>();
-        mayor.IsRevealed = true;
+        mayor.Player.AddModifier<GlobalReveal>();
         mayor.Votes++;
         
         AUSAssets.PlaySound(AUSAssets.Mayor_Reveal_SFX);
@@ -118,7 +117,7 @@ public sealed class Mayor(IntPtr cppPtr)
         AUSPlugin.DebugLogMessage("Mayor OnMeetingStart called!");
         SmartMayor.Start();
 
-        if (IsRevealed) Votes++;
+        if (Player.HasModifier<GlobalReveal>()) Votes++;
         if (Player.AmOwner)
         {
             Coroutines.Start(GenButtons());
@@ -128,7 +127,7 @@ public sealed class Mayor(IntPtr cppPtr)
     public IEnumerator GenButtons()
     {
         yield return new WaitForSeconds(3f);
-        meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && !IsRevealed && DayNightMechanic.DayCount >= 2);
+        meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && !Player.HasModifier<GlobalReveal>() && DayNightMechanic.DayCount >= 2);
     }
 
     public override void OnVotingComplete()
@@ -176,7 +175,7 @@ public static class Mayor_Events
     [RegisterEvent()]
     public static void HandleVoteEvent(HandleVoteEvent @event)
     {
-        if (@event.VoteData.Owner.Data.Role is not Mayor mayor || !mayor.IsRevealed || mayor.Player.IsSilenced())
+        if (@event.VoteData.Owner.Data.Role is not Mayor mayor || !mayor.Player.HasModifier<GlobalReveal>() || mayor.Player.IsSilenced())
         {
             return;
         }

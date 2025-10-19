@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using AmongUsSalem.Patches;
 using Il2CppInterop.Runtime.Attributes;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -17,7 +18,7 @@ public sealed class JackalRecruit(PlayerControl otherRec) : AllianceGameModifier
 
     public override void OnActivate()
     {
-        if (Player.Data.Role is IAUSRole ausRole)
+        if (Player.Data.Role is ICustomAURole ausRole)
         {
             ausRole.RoleName = AUSColors.GradientColorText("404040", "b8b8b8", ausRole.RoleName);
         }
@@ -30,6 +31,16 @@ public sealed class JackalRecruit(PlayerControl otherRec) : AllianceGameModifier
         if (aliveJackals == 0 && aliveRecs == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= (aliveJackals + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveJackals + aliveRecs);
+        
+        if (aliveJackals > 0)
+        {
+            foreach (var jackals in MiscUtils.GetPlayersWithRole<Jackal>())
+            {
+                var jackal = jackals.GetRole<Jackal>();
+                return result || LogicGameFlowPatches.EndGameEarlyCheck(jackal);
+            }
+        }
+
         return result;
     }
 

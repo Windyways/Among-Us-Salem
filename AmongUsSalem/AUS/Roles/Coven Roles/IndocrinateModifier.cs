@@ -17,7 +17,7 @@ public sealed class IndocrinateModifier : BaseModifier, ICovenRole
 
     public override void OnActivate()
     {
-        if (Player.Data.Role is IAUSRole ausRole)
+        if (Player.Data.Role is ICustomAURole ausRole)
         {
             ausRole.RoleColor = AUSColors.Coven;
             ausRole.Faction = Faction.Coven;

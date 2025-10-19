@@ -22,8 +22,6 @@ public static class MeetingHud_Start
         CalculatedVoting.vampiresAreSkipping = false;
         CalculatedVoting.PairVampireVotingTarget = null;
 
-        //DayNightMechanic.DayCount++;
-
         foreach (var player in PlayerControl.AllPlayerControls)
         {
             if (CalculatedVoting.QueueEvidenceAgainst.TryGetValue(player, out var target) && !player.IsBlackmailed() && !player.IsSilenced() && !player.HasDied())

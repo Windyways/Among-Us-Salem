@@ -6,7 +6,7 @@ namespace AmongUsSalem.Options;
 public sealed class TaskTrackingOptions : AbstractOptionGroup
 {
     public override string GroupName => "Task Tracking";
-    public override uint GroupPriority => 4;
+    public override uint GroupPriority => 14;
 
     [ModdedToggleOption("See Tasks During Round")]
     public bool ShowTaskRound { get; set; } = true;

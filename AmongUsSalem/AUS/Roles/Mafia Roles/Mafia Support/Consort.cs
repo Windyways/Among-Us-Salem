@@ -9,7 +9,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Consort
 #endregion
 public sealed class Consort(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : ImpostorRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = Consort, "Consort");
     public string revealText => "has a desire or deceive.";
@@ -38,7 +38,7 @@ public sealed class Consort(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

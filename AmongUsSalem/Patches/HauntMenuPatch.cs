@@ -82,21 +82,8 @@ public static class HauntMenuMinigamePatch
 
         if (!OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow && !TutorialManager.InstanceExists)
         {
-            if (role.IsNeutral())
-            {
-                name = "Neutral";
-                rColor = Color.gray;
-            }
-            else if (role.IsCrewmate())
-            {
-                name = "Crewmate";
-                rColor = Palette.CrewmateBlue;
-            }
-            else
-            {
-                name = "Mafia";
-                rColor = AUSColors.Mafia;
-            }
+            name = "Hidden";
+            rColor = AUSColors.Neutral;
         }
 
         __instance.NameText.text =

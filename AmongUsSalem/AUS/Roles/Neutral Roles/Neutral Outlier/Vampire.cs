@@ -8,11 +8,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Vampire
 #endregion
 public sealed class Vampire(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : NeutralRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Vampire";
     public string revealText => "drinks blood.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Convert townies to your team.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -37,7 +37,7 @@ public sealed class Vampire(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -50,7 +50,8 @@ public sealed class Vampire(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#A9A9A9>Neutral</color> <color=#1e45d4>Outlier</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill everyone in the town." +
             $"\n\nAttributes:" +
-            "\nN/A." +
+            "\nYou have Basic Defense as long as you have an alive Vampire." +
+            "\nUpon death, your oldest Recruit will be promoted to Vampire." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -58,11 +59,11 @@ public sealed class Vampire(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Drain",
-            "N/A",
+            "You can Drain a player at Night. You will deal a Basic Attack to your target.",
             AUSAssets.Vampire_Drain),
 
         new("Convert",
-            "N/A",
+            "You can Convert a player at Night. If your target is a Town member with no Defense, you will make them Vampire-Aligned. Else, you will deal a Basic Attack to your target.",
             AUSAssets.Vampire_Convert)
     ];
 
@@ -73,7 +74,7 @@ public sealed class Vampire(IntPtr cppPtr)
         if (aliveVampires == 0 && aliveRecs == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= (aliveVampires + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveVampires + aliveRecs);
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -93,7 +94,7 @@ public sealed class Vampire(IntPtr cppPtr)
         var vampire = player.GetRole<Vampire>();
         vampire.Charges--;
         
-        if (vampire.Player.Data.Role is IAUSRole ausRole)
+        if (vampire.Player.Data.Role is ICustomAURole ausRole)
         {
             ausRole.ApplyDefense(Defense.None, true, true);
         }
@@ -114,7 +115,7 @@ public sealed class Vampire(IntPtr cppPtr)
     public void OnTargetDeath(PlayerControl target, DeathReason? reason)
     {
         var vampires = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasModifier<VampireRecruit>() && !x.HasDied());
-        if (vampires == 0 && Player.Data.Role is IAUSRole ausRole)
+        if (vampires == 0 && Player.Data.Role is ICustomAURole ausRole)
         {
             ausRole.ApplyDefense(Defense.Basic, true);
         }
@@ -236,7 +237,7 @@ public sealed class Vampire_Convert : AmongUsSalemRoleButton<Vampire, PlayerCont
 
     public static bool IsConvertable(PlayerControl target)
     {
-        return target.Is(Faction.Town) && target.Data.Role is IAUSRole ausRole && ausRole.Defense == Defense.None;
+        return target.Is(Faction.Town) && target.Data.Role is ICustomAURole ausRole && ausRole.Defense == Defense.None;
     }
 }
 

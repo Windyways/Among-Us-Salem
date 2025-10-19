@@ -38,7 +38,7 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> Investigator_Investigate { get; } = new LoadableResourceAsset($"{Ability}.Investigator_Investigate.png");
     public static LoadableAsset<Sprite> Vampire_Drain { get; } = new LoadableResourceAsset($"{Ability}.Vampire_Drain.png");
     public static LoadableAsset<Sprite> Vampire_Convert { get; } = new LoadableResourceAsset($"{Ability}.Vampire_Convert.png");
-    public static LoadableAsset<Sprite> Deputy_Shoot { get; } = new LoadableResourceAsset($"{Ability}.Deputy_Shoot.png");
+    public static LoadableAsset<Sprite> Deputy_Shoot { get; } = new LoadableResourceAsset($"{Ability}.Deputy_HighNoon.png");
     public static LoadableAsset<Sprite> Crusader_Fortify { get; } = new LoadableResourceAsset($"{Ability}.Crusader_Fortify.png");
     public static LoadableAsset<Sprite> Ambusher_Ambush { get; } = new LoadableResourceAsset($"{Ability}.Ambusher_Ambush.png");
     public static LoadableAsset<Sprite> Jackal_Assassinate { get; } = new LoadableResourceAsset($"{Ability}.Jackal_Assassinate.png");

@@ -9,11 +9,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Blackmailer
 #endregion
 public sealed class Blackmailer(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : ImpostorRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Blackmailer";
     public string revealText => "has a desire or deceive.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Make players stop talking.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
@@ -40,7 +40,7 @@ public sealed class Blackmailer(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -53,7 +53,7 @@ public sealed class Blackmailer(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#DD0000>Mafia</color> <color=#1e45d4>Deception</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
             $"\n\nAttributes:" +
-            "\nTBD." +
+            "\nIf all Mafia Killing roles are dead, you will be promoted to Mafioso." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -61,7 +61,8 @@ public sealed class Blackmailer(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Blackmail",
-            "You can Blackmail a player during the round. You will kill your target.",
+            "You can Blackmail a player at Night" +
+            "\n\nYour target cannot talk the following day.",
             AUSAssets.Blackmailer_Blackmail)
     ];
 

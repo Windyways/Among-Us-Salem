@@ -17,7 +17,7 @@ public sealed class NeutralGameOver : CustomGameOver
 
     public override bool VerifyCondition(PlayerControl playerControl, NetworkedPlayerInfo[] winners)
     {
-        if (winners is not [{ Role: RoleBehaviour role and IAUSRole tRole }])
+        if (winners is not [{ Role: RoleBehaviour role and ICustomAURole tRole }])
         {
             return false;
         }

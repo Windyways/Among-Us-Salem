@@ -66,7 +66,7 @@ public static class EndGamePatches
             var playerRoleType = lastRole!.Role;
             var playerTeam = ModdedRoleTeams.Crewmate;
 
-            if (lastRole is IAUSRole touRole)
+            if (lastRole is ICustomAURole touRole)
             {
                 playerTeam = touRole.Team;
             }
@@ -142,12 +142,16 @@ public static class EndGamePatches
             {
                 playerName.Append(AUSPlugin.Culture, $"<color=#EFBF04>{playerControl.Data.PlayerName}</color>");
                 playerWinner = true;
-                RoleReferences.UpdateRoleResult(playerControl.Data.Role, killedPlayers, true, false);
+
+                var logRole = playerControl.GetRoleWhenAlive();
+                RoleReferences.UpdateRoleResult(logRole, killedPlayers, true, false);
             }
             else
             {
                 playerName.Append(playerControl.Data.PlayerName);
-                RoleReferences.UpdateRoleResult(playerControl.Data.Role, killedPlayers, false, false);
+
+                var logRole = playerControl.GetRoleWhenAlive();
+                RoleReferences.UpdateRoleResult(logRole, killedPlayers, false, false);
             }
 
             EndGameData.PlayerRecords.Add(new EndGameData.PlayerRecord

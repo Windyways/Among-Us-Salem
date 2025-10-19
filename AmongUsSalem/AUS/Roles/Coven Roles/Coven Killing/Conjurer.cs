@@ -9,7 +9,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Conjurer
 #endregion
 public sealed class Conjurer(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
+    : CovenRole(cppPtr), IWikiDiscoverable, ICustomAURole, ICovenRole
 {
     public string RoleName { get; set; } = "Conjurer";
     public string revealText => "is able to pull items out of thin air.";
@@ -34,14 +34,15 @@ public sealed class Conjurer(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.ConjurerRoleCard,
-        CanUseSabotage = true,
+        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -55,7 +56,6 @@ public sealed class Conjurer(IntPtr cppPtr)
             "\n<color=#fdbc00>Goal:</color> Kill all who would oppose the Coven." +
             $"\n\nAttributes:" +
             "\nYou cannot Conjure Day 1." +
-            "\nYou have access to Coven chat." +
             "\nWith the Necronomicon, you will also deal a Basic Attack to your target." +
             "\nYou will obtain the Necronomicon 2nd, after the <color=#B545FF>Coven Leader</color>." +
             MiscUtils.AppendOptionsText(GetType());
@@ -76,7 +76,7 @@ public sealed class Conjurer(IntPtr cppPtr)
         if (aliveCoven == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -128,6 +128,7 @@ public sealed class Conjurer(IntPtr cppPtr)
     public override void Initialize(PlayerControl player)
     {
         RoleBehaviourStubs.Initialize(this, player);
+        base.Initialize(player);
 
         if (Player.AmOwner())
         {
@@ -212,7 +213,7 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
-    public override float Cooldown => OptionGroupSingleton<Conjurer_Options>.Instance.Cooldown;
+    public override float Cooldown => OptionGroupSingleton<CovenOptions>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.NecronomiconButton;
 
     public override void ClickHandler()
@@ -251,7 +252,7 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction);
+            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction == Role.Faction);
     }
 
     public override bool CanUse()
@@ -265,9 +266,6 @@ public sealed class Conjurer_Attack : AmongUsSalemRoleButton<Conjurer, PlayerCon
 public sealed class Conjurer_Options : AbstractOptionGroup<Conjurer>
 {
     public override string GroupName => "Conjurer";
-
-    [ModdedNumberOption("<color=#B545FF>Conjurer</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
-    public float Cooldown { get; set; } = 25f;
 
     [ModdedNumberOption("<color=#B545FF>Conjurer</color> Max <color=#4a86e8>Conjures</color>", 1f, 15f, 1f)]
     public float Charges { get; set; } = 1f;

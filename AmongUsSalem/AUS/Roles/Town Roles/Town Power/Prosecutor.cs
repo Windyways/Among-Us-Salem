@@ -10,12 +10,12 @@ namespace AmongUsSalem.Roles;
 #region Prosecutor
 #endregion
 public sealed class Prosecutor(IntPtr cppPtr) 
-    : CrewmateRole(cppPtr), IAUSRole, IRevealable, IWikiDiscoverable, IContinueGame
+    : CrewmateRole(cppPtr), ICustomAURole, IWikiDiscoverable, IContinueGame
 {
     public bool continueGame => true;
     public string RoleName { get; set; } = "Prosecutor";
-    public string revealText => "???";
-    public string RoleDescription => "";
+    public string revealText => "will stop at nothing to see justice served.";
+    public string RoleDescription => "Lynch a player at Day.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -30,7 +30,6 @@ public sealed class Prosecutor(IntPtr cppPtr)
     public Attack ogAttack { get; set; } = Attack.None;
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
-    public bool IsRevealed { get; set; }
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -40,7 +39,7 @@ public sealed class Prosecutor(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -53,15 +52,15 @@ public sealed class Prosecutor(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Power</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
-            "\nN/A" +
+            "\nYou cannot Prosecute Day one." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
     [HideFromIl2Cpp]
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
-        new("Reveal",
-            "N/A.",
+        new("Prosecute",
+            "You can Prosecute a player during the Day. You will immediately lynch your target and the Day will continue as normal afterward. If you Prosecute a Town member, you will lose all remaining Charges.",
             AUSAssets.Prosecutor_Prosecute)
     ];
 
@@ -76,7 +75,7 @@ public sealed class Prosecutor(IntPtr cppPtr)
         }
 
         var prosecutor = player.GetRole<Prosecutor>();
-        prosecutor.IsRevealed = true;
+        prosecutor.Player.AddModifier<GlobalReveal>();
         
         Coroutines.Start(ProsecuteCoroutine(MeetingHud.Instance, target));
     }

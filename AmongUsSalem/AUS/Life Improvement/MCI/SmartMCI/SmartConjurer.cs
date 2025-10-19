@@ -27,9 +27,14 @@ public static class SmartConjurer
 
                 foreach (var player in PlayerControl.AllPlayerControls)
                 {
-                    if (player.Data.Role is Mayor mayor && mayor.IsRevealed)
+                    if (player.Data.Role is Mayor mayor && mayor.Player.HasModifier<GlobalReveal>())
                     {
                         conjurer.DoConjure(mayor.Player);
+                        yield break;
+                    }
+                    if (player.Data.Role is Prosecutor pros && pros.Player.HasModifier<GlobalReveal>())
+                    {
+                        conjurer.DoConjure(pros.Player);
                         yield break;
                     }
                 }

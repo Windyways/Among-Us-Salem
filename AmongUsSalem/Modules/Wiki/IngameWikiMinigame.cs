@@ -203,7 +203,7 @@ public sealed class IngameWikiMinigame(nint cppPtr) : Minigame(cppPtr)
         DetailDescription.Value.text = (_selectedItem != null) ? _selectedItem.GetAdvancedDescription() : _selectedSoftItem!.GetAdvancedDescription;
         DetailDescription.Value.fontSizeMax = 2.4f;
 
-        if (_selectedItem is IAUSRole touRole)
+        if (_selectedItem is ICustomAURole touRole)
         {
             DetailScreenItemName.Value.text =
                 $"{touRole.RoleName}\n<size=60%>{touRole.RoleColor.ToTextColor()}{touRole.Alignment.ToDisplayString()}</size></color>";

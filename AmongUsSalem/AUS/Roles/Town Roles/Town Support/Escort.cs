@@ -9,11 +9,11 @@ namespace AmongUsSalem.Roles;
 #region Escort
 #endregion
 public sealed class Escort(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : CrewmateRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Escort";
     public string revealText => "is a beautiful person working for the town.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Distract to stop abilities.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -38,7 +38,7 @@ public sealed class Escort(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -51,7 +51,7 @@ public sealed class Escort(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Support</color>" +
             "\n<color=#fdbc00>Goal:</color> Hang every criminal and evildoer." +
             $"\n\nAttributes:" +
-            "\nN/A." +
+            "\nNone." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -60,8 +60,7 @@ public sealed class Escort(IntPtr cppPtr)
     [
         new("Distract",
             "You can Distract a player at Night." +
-            "\n\nYou will grant your target Powerful Defense." +
-            "\n\nYou will deal a Basic Attack to a player that visits your target, or reports your target's body.",
+            "\n\nYou will RoleBlock your target, preventing them from using their abilities.",
             AUSAssets.Escort_Distract)
     ];
 
@@ -109,6 +108,14 @@ public sealed class Escort(IntPtr cppPtr)
         }
 
         return false;
+    }
+
+    public override void Initialize(PlayerControl player)
+    {
+        RoleBehaviourStubs.Initialize(this, player);
+
+        player.RpcAddModifier<RBimmune>();
+        if (player.TryGetModifier<RBimmune>(out var rb)) rb.permanent = true;
     }
 
     public PlayerControl DistractedPlayer;

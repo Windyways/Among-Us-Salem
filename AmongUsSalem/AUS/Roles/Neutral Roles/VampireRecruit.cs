@@ -1,6 +1,8 @@
 ﻿using AmongUs.GameOptions;
+using AmongUsSalem.Patches;
 using Il2CppInterop.Runtime.Attributes;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 using Object = UnityEngine.Object;
 
 namespace AmongUsSalem.LifeImprovement.Roles;
@@ -18,7 +20,7 @@ public sealed class VampireRecruit(int num) : AllianceGameModifier
 
     public override void OnActivate()
     {
-        if (Player.Data.Role is IAUSRole ausRole)
+        if (Player.Data.Role is ICustomAURole ausRole)
         {
             ausRole.RoleColor = AUSColors.Vampire;
             ausRole.Faction = Faction.Neutral;
@@ -34,7 +36,18 @@ public sealed class VampireRecruit(int num) : AllianceGameModifier
     {
         if (id == 0)
         {
-            if (Player.AmOwner)
+            // Ensures that Mayor being promoted still shows only if revealed!
+            // Although it wont have the extra votes so everyone is gonna know lol.
+            if (Player.HasModifier<GlobalReveal>())
+            {
+                if (Player.Data.Role is ICustomAURole customRole)
+                {
+                   // deepfake.roleColor = AUSColors.Town; // Only Town can GlobalReveal so far, so this will do for now.
+                    Player.RpcAddModifier<DeepfakeRole>(customRole.RoleName, AUSColors.Town);
+                }
+            }
+
+            if (Player.AmOwner())
             {
                 Player.RpcChangeRole(RoleId.Get<Vampire>());
                 var button = CustomButtonSingleton<Vampire_Convert>.Instance;
@@ -52,6 +65,16 @@ public sealed class VampireRecruit(int num) : AllianceGameModifier
         if (aliveVampires == 0 && aliveRecs == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= (aliveVampires + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveVampires + aliveRecs);
+
+        if (aliveVampires > 0)
+        {
+            foreach (var vampires in MiscUtils.GetPlayersWithRole<Vampire>())
+            {
+                var vampire = vampires.GetRole<Jackal>();
+                return result || LogicGameFlowPatches.EndGameEarlyCheck(vampire);
+            }
+        }
+
         return result;
     }
 

@@ -37,12 +37,22 @@ public static class SmartCoroner
         if (target.TryGetModifier<DeathHandlerModifier>(out var deathMod))
         {
             var killer = deathMod.KillerPlayer;
-            if (killer.Data.Role is IAUSRole ausRole && !coroner.AutopsiedPlayers.Contains(killer.PlayerId))
+            if (killer.Data.Role is ICustomAURole ausRole && !coroner.AutopsiedPlayers.Contains(killer.PlayerId))
             {
-                coroner.AutopsiedPlayers.Add(killer.PlayerId);
-                coroner.AutopsiedRoles.Add(ausRole.RoleName);
-                coroner.recentlyAutopsied = killer;
-                
+                if (killer.HasDied())
+                {
+                    var deadAusRole = killer.GetRoleWhenAlive();
+                    coroner.AutopsiedPlayers.Add(killer.PlayerId);
+                    coroner.AutopsiedRoles.Add(deadAusRole.NiceName, deadAusRole.TeamColor);
+                    coroner.recentlyAutopsied = killer;
+                }
+                else
+                {
+                    coroner.AutopsiedPlayers.Add(killer.PlayerId);
+                    coroner.AutopsiedRoles.Add(ausRole.RoleName, ausRole.RoleColor);
+                    coroner.recentlyAutopsied = killer;
+                }
+
                 AUSPlugin.DebugLogMessage("Coroner Autopsy - " + ausRole.RoleName);
             }
         }

@@ -9,11 +9,11 @@ namespace AmongUsSalem.Roles;
 #region Crusader
 #endregion
 public sealed class Crusader(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : CrewmateRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Crusader";
     public string revealText => "is a divine protector.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Fortify to kill visitors.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -38,7 +38,7 @@ public sealed class Crusader(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -89,7 +89,7 @@ public sealed class Crusader(IntPtr cppPtr)
         var crusader = player.GetRole<Crusader>();
         crusader.FortifiedPlayer = target;
 
-        if (target.Data.Role is IAUSRole ausRole) ausRole.ApplyDefense(Defense.Powerful);
+        if (target.Data.Role is ICustomAURole ausRole) ausRole.ApplyDefense(Defense.Powerful);
     }
 
     [MethodRpc((uint)AUSRpc.Crusader_Notify, SendImmediately = true)]

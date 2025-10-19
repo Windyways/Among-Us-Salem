@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles.Neutral;
 
-public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
+public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), ICustomAURole
 {
     private Minigame _hauntMenu = null!;
 
@@ -45,17 +45,17 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
     public Attack ogAttack { get; set; } = Attack.None;
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
-    Color IAUSRole.RoleColor { get; set; } = AUSColors.Town;
+    Color ICustomAURole.RoleColor { get; set; } = AUSColors.Town;
     public Faction Faction { get; set; } = Faction.Neutral;
-    string IAUSRole.RoleName { get; set; } = "Neutral Ghost";
+    string ICustomAURole.RoleName { get; set; } = "Neutral Ghost";
 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
         var stringB = new StringBuilder();
-        if (Player.GetRoleWhenAlive() is IAUSRole touRole)
+        if (Player.GetRoleWhenAlive() is ICustomAURole touRole)
         {
-            stringB = IAUSRole.SetDeadTabText(touRole);
+            stringB = ICustomAURole.SetDeadTabText(touRole);
             if (touRole.MetWinCon)
             {
                 stringB.Append("<b>You have already won.</b>");
@@ -77,7 +77,7 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), IAUSRole
     {
         var role = Player.GetRoleWhenAlive();
 
-        return role is IAUSRole tRole && tRole.WinConditionMet();
+        return role is ICustomAURole tRole && tRole.WinConditionMet();
     }
 
     public override void AppendTaskHint(Il2CppSystem.Text.StringBuilder taskStringBuilder)

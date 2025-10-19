@@ -9,11 +9,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Mafioso
 #endregion
 public sealed class Mafioso(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : ImpostorRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Mafioso";
     public string revealText => "does the Godfather's dirty work.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Kill players to win.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
@@ -38,7 +38,7 @@ public sealed class Mafioso(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -51,7 +51,7 @@ public sealed class Mafioso(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#DD0000>Mafia</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
             $"\n\nAttributes:" +
-            "\nTBD." +
+            "\nIf the Godfather dies during the Night, you will be promoted to Godfather." +
             MiscUtils.AppendOptionsText(GetType());
     }
 

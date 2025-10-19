@@ -9,11 +9,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Arsonist
 #endregion
 public sealed class Arsonist(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : NeutralRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Arsonist";
     public string revealText => "likes to watch things burn.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Douse and Ignite everyone.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -39,7 +39,7 @@ public sealed class Arsonist(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -52,7 +52,8 @@ public sealed class Arsonist(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#A9A9A9>Neutral</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill everyone in the town." +
             $"\n\nAttributes:" +
-            "\nN/A" +
+            "\nYou will passively Douse players that visit you." +
+            "\nYou will clean Gasoline off yourself if you do not Douse or Ignite during the Night." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -60,11 +61,13 @@ public sealed class Arsonist(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Douse",
-            "N/A",
+            "You can Douse a player at Night." +
+            "\n\nYou will Douse your target.",
             AUSAssets.Arsonist_Douse),
             
         new("Ignite",
-            "N/A",
+            "You can Ignite at Night." +
+            "\n\nAll Doused players will die, even if they were Doused from a different Arsonist.",
             AUSAssets.Arsonist_Ignite)
     ];
 
@@ -74,21 +77,13 @@ public sealed class Arsonist(IntPtr cppPtr)
         if (aliveArsonists == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveArsonists && MiscUtils.KillersAliveCount() == aliveArsonists;
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
     {
         return WinConditionMet();
     }
-
-    /*public void OnTargetDeath(PlayerControl target, DeathReason? reason)
-    {
-        if (DousedPlayers.Contains(target.PlayerId))
-        {
-            DousedPlayers.Remove(target.PlayerId);
-        }
-    }*/
 
     public override void OnMeetingStart()
     {

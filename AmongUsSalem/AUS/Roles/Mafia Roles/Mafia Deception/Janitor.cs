@@ -9,11 +9,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Janitor
 #endregion
 public sealed class Janitor(IntPtr cppPtr)
-    : ImpostorRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : ImpostorRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Janitor";
-    public string revealText => "";
-    public string RoleDescription => "";
+    public string revealText => "cleans up dead bodies.";
+    public string RoleDescription => "Make roles hidden.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
@@ -40,7 +40,7 @@ public sealed class Janitor(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -53,7 +53,7 @@ public sealed class Janitor(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#DD0000>Mafia</color> <color=#1e45d4>Deception</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
             $"\n\nAttributes:" +
-            "\nTBD." +
+            "\nIf all Mafia Killing roles are dead, you will be promoted to Mafioso." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -61,7 +61,9 @@ public sealed class Janitor(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Clean",
-            ".",
+            "You can clean a player or a dead body at Night" +
+            "\n\nIf your target dies, or is dead, their role will appear 'Cleaned' to others." +
+            "\n\nYou will know your targets true role.",
             AUSAssets.Janitor_Clean)
     ];
 
@@ -85,7 +87,7 @@ public sealed class Janitor(IntPtr cppPtr)
             var button2 = CustomButtonSingleton<Janitor_CleanBody>.Instance;
             button2.UsesLeft = janitor.Charges;
 
-            target.RpcAddModifier<Cleaned>();
+            target.RpcAddModifier<DeepfakeRole>("Cleaned", AUSColors.Neutral);
 
             var roleWhenAlive = target.GetRoleWhenAlive();
             MiscUtils.ShowNotification(Info(target, roleWhenAlive.Role()), Color.white, AUSAssets.JanitorRoleCard.LoadAsset());
@@ -220,6 +222,7 @@ public sealed class Janitor_CleanBody : AmongUsSalemRoleButton<Janitor, DeadBody
         {
             var button = CustomButtonSingleton<Janitor_CleanPlayer>.Instance;
             button.ResetCooldownAndOrEffect();
+            button.DecreaseUses();
         }
 
         Janitor.RpcJanitor_DoClean(Player, targetPlayer);

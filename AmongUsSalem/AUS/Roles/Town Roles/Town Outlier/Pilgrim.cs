@@ -8,11 +8,11 @@ namespace AmongUsSalem.Roles;
 #region Pilgrim
 #endregion
 public sealed class Pilgrim(IntPtr cppPtr) 
-    : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable
+    : CrewmateRole(cppPtr), ICustomAURole, IWikiDiscoverable
 {
     public string RoleName { get; set; } = "Pilgrim";
-    public string revealText => "placeholder.";
-    public string RoleDescription => "";
+    public string revealText => "lives a simple life.";
+    public string RoleDescription => "Exile the Coven and Mafia.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -38,7 +38,7 @@ public sealed class Pilgrim(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

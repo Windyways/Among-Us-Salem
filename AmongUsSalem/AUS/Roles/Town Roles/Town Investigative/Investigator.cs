@@ -9,11 +9,11 @@ namespace AmongUsSalem.Roles;
 #region Investigator
 #endregion
 public sealed class Investigator(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : CrewmateRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Investigator";
     public string revealText => "gathers information about people.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Look for Murder & Trespassing.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -38,7 +38,7 @@ public sealed class Investigator(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -61,7 +61,9 @@ public sealed class Investigator(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Investigate",
-            "N/A",
+            "You can Investigate a player at Night." +
+            "\nYour target will appear to be Trespassing if they visited an opposing faction at any point during the game." +
+            "\nYour target will appear to have Murder if they killed someone the same Night.",
             AUSAssets.Investigator_Investigate)
     ];
 
@@ -84,15 +86,15 @@ public sealed class Investigator(IntPtr cppPtr)
     public enum Type { Trespassing, Murder, NoCrime }
     public static string Info(PlayerControl target, Type type)
     {
-        if (type == Type.Trespassing && IsTrespassing(target))
+        if (type == Type.Trespassing && (IsTrespassing(target)) || target.IsFramed())
         {
             return "You discovered evidence that " + target.GetDefaultAppearance().PlayerName + " is <b><color=#4a86e8>Trespassing</color></b>!";
         }
-        else if (type == Type.Murder && HasMurder(target))
+        else if (type == Type.Murder && (HasMurder(target)) || target.IsFramed())
         {
             return "You found evidence of <b><color=#4a86e8>Murder</color></b> in " + target.GetDefaultAppearance().PlayerName + "'s house!";
         }
-        else if (type == Type.NoCrime && !IsTrespassing(target) && !HasMurder(target))
+        else if (type == Type.NoCrime && !IsTrespassing(target) && !HasMurder(target) && !target.IsFramed())
         {
             return "You didn't find any evidence of a <b><color=#4a86e8>Crime</color></b> in " + target.GetDefaultAppearance().PlayerName + "'s house.";
         }

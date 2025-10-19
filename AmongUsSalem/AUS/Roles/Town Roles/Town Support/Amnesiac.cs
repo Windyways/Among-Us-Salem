@@ -8,11 +8,11 @@ namespace AmongUsSalem.Roles;
 #region Amnesiac
 #endregion
 public sealed class Amnesiac(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IAUSRole, IWikiDiscoverable
+    : CrewmateRole(cppPtr), ICustomAURole, IWikiDiscoverable
 {
     public string RoleName { get; set; } = "Amnesiac";
     public string revealText => "does not remember their role.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Become the role a dead town.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -37,7 +37,7 @@ public sealed class Amnesiac(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

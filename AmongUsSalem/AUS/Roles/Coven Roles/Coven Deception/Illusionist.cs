@@ -1,7 +1,7 @@
 ﻿using System.Text;
+using AmongUsSalem.Utilities;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
-using AmongUsSalem.Utilities;
 using UnityEngine;
 
 namespace AmongUsSalem.LifeImprovement.Roles;
@@ -9,7 +9,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Illusionist
 #endregion
 public sealed class Illusionist(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
+    : CovenRole(cppPtr), IWikiDiscoverable, ICustomAURole, ICovenRole
 {
     public string RoleName { get; set; } = "Illusionist";
     public string revealText => "can alter a person's appearance to others.";
@@ -28,22 +28,21 @@ public sealed class Illusionist(IntPtr cppPtr)
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
 
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
-
     public NecronomiconPriority NecronomiconPriority => NecronomiconPriority.Illusionist;
     public bool Necronomicon { get; set; }
 
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.IllusionistRoleCard,
-        CanUseSabotage = true,
+        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -56,7 +55,6 @@ public sealed class Illusionist(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#B545FF>Coven</color> <color=#1e45d4>Deception</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill all who would oppose the Coven." +
             $"\n\nAttributes:" +
-            "\nYou have access to Coven chat." +
             "\nWith the Necronomicon, you can deal a Basic Attack to Non-Coven targets." +
             "\nYou will obtain the Necronomicon 3rd, after the <color=#B545FF>Conjurer</color>." +
             MiscUtils.AppendOptionsText(GetType());
@@ -78,7 +76,7 @@ public sealed class Illusionist(IntPtr cppPtr)
         if (aliveCoven == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -117,7 +115,7 @@ public sealed class Illusionist_Cast : AmongUsSalemRoleButton<Illusionist, Playe
     public override string Name => "Cast";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
-    public override float Cooldown => OptionGroupSingleton<Illusionist_Options>.Instance.Cooldown;
+    public override float Cooldown => Role.Necronomicon ? OptionGroupSingleton<CovenOptions>.Instance.Cooldown : OptionGroupSingleton<Illusionist_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Illusionist_Cast;
 
     public override void FixedUpdateHandler(PlayerControl playerControl)
@@ -184,7 +182,7 @@ public sealed class Illusionist_Cast : AmongUsSalemRoleButton<Illusionist, Playe
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction != Role.Faction && !Role.Necronomicon) &&
+            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction != Role.Faction && !Role.Necronomicon) &&
             Role.IllusionedPlayer != target;
     }
 }

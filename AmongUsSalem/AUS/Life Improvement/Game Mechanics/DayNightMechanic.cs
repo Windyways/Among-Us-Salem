@@ -62,10 +62,10 @@ public static class DayNightMechanic
 
     public static IEnumerator DelayResetDefense() // For attacks that occur when Day begins, (eg. Shroud, SK/ww/war jailor counterattack)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(PostMeetingIntroTime + 1);
         foreach (var role in GameHistory.AllRoles)
         {
-            if (!role || role is not IAUSRole ausRole)
+            if (!role || role is not ICustomAURole ausRole)
             {
                 continue;
             }
@@ -178,7 +178,7 @@ public static class ShowDayNight
             NightTime -= Time.deltaTime;
             NightTime = Math.Max(NightTime, 0);
 
-            if (AmongUsClient.Instance.AmHost && NightTime <= 0)
+            if (AmongUsClient.Instance.AmHost && NightTime <= 0 && AUSPlugin.InGame())
             {
                 DayNightMechanic.StartDayOne(PlayerControl.LocalPlayer);
             }

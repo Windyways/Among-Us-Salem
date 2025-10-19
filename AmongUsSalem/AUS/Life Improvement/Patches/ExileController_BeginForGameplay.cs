@@ -20,27 +20,9 @@ public static class ExileController_BeginForGameplay
             CalculatedVoting.QueueEvidenceAgainst.Remove(player);
             CalculatedVoting.QueueKillerContagious.Remove(player);
 
-            if (player.Data.Role is IAUSRole ausRole)
+            if (player.Data.Role is ICustomAURole ausRole)
             {
-                if (GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor)
-                {
-                    /*bool flag3 = player.Is(ModifierEnum.HiddenRoles);
-                    if (flag3)
-                    {
-                        __instance.completeString = player.GetDefaultOutfit().PlayerName + "'s Role Was <b><color=#a9a9a9>Hidden</color></b>!";
-                    }
-                    else
-                    {
-                        __instance.completeString = player.GetDefaultOutfit().PlayerName + "'s Role Was " + Colors.GetColorRole(role, true) + "!";
-                    }*/
-
-                    var roleColor = ausRole.Faction != Faction.Neutral ? MiscUtils.GetFactionColour(player) : MiscUtils.GetRoleColour(ausRole.RoleName);
-                    __instance.completeString = player.GetDefaultAppearance().PlayerName + "'s Role Was <b><color=#" + roleColor.ToHtmlStringRGBA() + $">{ausRole.RoleName}</color></b>!";
-                }
-                else
-                {
-                    __instance.completeString = player.GetDefaultAppearance().PlayerName + " Was Lynched";
-                }
+                __instance.completeString = player.GetDefaultAppearance().PlayerName + "'s Role Was <b><color=#" + ausRole.RoleColor.ToHtmlStringRGBA() + $">{ausRole.RoleName}</color></b>!";
             }
         }
     }

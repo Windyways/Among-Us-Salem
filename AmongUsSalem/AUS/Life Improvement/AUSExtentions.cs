@@ -12,7 +12,7 @@ public static class AUSExtentions
 
     public static string Role(this PlayerControl player)
     {
-        if (player.Data.Role is IAUSRole ausRole)
+        if (player.Data.Role is ICustomAURole ausRole)
         {
             var roleColor = ausRole.Faction != Faction.Neutral ? MiscUtils.GetFactionColour(player) : MiscUtils.GetRoleColour(ausRole.RoleName);
             return $"<b><color=#" + roleColor.ToHtmlStringRGBA() + $">{ausRole.RoleName}</color></b>";
@@ -96,7 +96,7 @@ public static class AUSExtentions
 
     public static bool IsSameFaction(this PlayerControl player, PlayerControl target)
     {
-        if (player.Data.Role is IAUSRole ausRole && target.Data.Role is IAUSRole targetAusRole && ausRole.Faction == targetAusRole.Faction) return true;
+        if (player.Data.Role is ICustomAURole ausRole && target.Data.Role is ICustomAURole targetAusRole && ausRole.Faction == targetAusRole.Faction) return true;
         if (player.Is(Faction.Town) && target.HasModifier<VampireRecruit>()) return true;
         if (player.HasModifier<VampireRecruit>() && target.Is(Faction.Town)) return true;
         return false;

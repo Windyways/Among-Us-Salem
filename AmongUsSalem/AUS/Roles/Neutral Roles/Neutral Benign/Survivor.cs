@@ -9,11 +9,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Survivor
 #endregion
 public sealed class Survivor(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, INotThreatable
+    : NeutralRole(cppPtr), IWikiDiscoverable, ICustomAURole, INotThreatable
 {
     public string RoleName { get; set; } = "Survivor";
     public string revealText => "simply wants to live";
-    public string RoleDescription => "";
+    public string RoleDescription => "Survive to win.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -39,7 +39,7 @@ public sealed class Survivor(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -52,7 +52,7 @@ public sealed class Survivor(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#A9A9A9>Neutral</color> <color=#1e45d4>Benign</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill everyone in the town." +
             $"\n\nAttributes:" +
-            "\nN/A" +
+            "\nYou will know if you are attacked while Vesting." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -92,7 +92,7 @@ public sealed class Survivor(IntPtr cppPtr)
         var survivor = player.GetRole<Survivor>();
         survivor.isVesting = true;
 
-        if (player.Data.Role is IAUSRole ausRole) ausRole.ApplyDefense(Defense.Basic);
+        if (player.Data.Role is ICustomAURole ausRole) ausRole.ApplyDefense(Defense.Basic);
     }
 
     [MethodRpc((uint)AUSRpc.Survivor_Notify, SendImmediately = true)]

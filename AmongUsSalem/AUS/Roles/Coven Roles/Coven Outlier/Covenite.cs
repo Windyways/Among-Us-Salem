@@ -9,11 +9,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Covenite
 #endregion
 public sealed class Covenite(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
+    : CovenRole(cppPtr), IWikiDiscoverable, ICustomAURole, ICovenRole
 {
     public string RoleName { get; set; } = "Covenite";
-    public string revealText => "placeholder.";
-    public string RoleDescription => "Placeholder.";
+    public string revealText => "is devoted to the Necronomicon.";
+    public string RoleDescription => "Kill via Necronomicon.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -27,8 +27,6 @@ public sealed class Covenite(IntPtr cppPtr)
     public Attack ogAttack { get; set; } = Attack.None;
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
-    
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
 
     public NecronomiconPriority NecronomiconPriority => NecronomiconPriority.Covenite;
     public bool Necronomicon { get; set; }
@@ -36,14 +34,15 @@ public sealed class Covenite(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.CoveniteRoleCard,
-        CanUseSabotage = true,
+        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -66,7 +65,7 @@ public sealed class Covenite(IntPtr cppPtr)
         if (aliveCoven == 0) return false;
         
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -82,7 +81,7 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
-    public override float Cooldown => OptionGroupSingleton<Covenite_Options>.Instance.Cooldown;
+    public override float Cooldown => OptionGroupSingleton<CovenOptions>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.NecronomiconButton;
 
     public override void ClickHandler()
@@ -121,21 +120,11 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction);
+            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction == Role.Faction);
     }
 
     public override bool CanUse()
     {
         return base.CanUse() && Player.Data.Role is ICovenRole coven && coven.Necronomicon;
     }
-}
-
-#region Covenite_Options
-#endregion
-public sealed class Covenite_Options : AbstractOptionGroup<Covenite>
-{
-    public override string GroupName => "Covenite";
-
-    [ModdedNumberOption("<color=#B545FF>Covenite</color> <color=#4a86e8>Attack</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
-    public float Cooldown { get; set; } = 25f;
 }

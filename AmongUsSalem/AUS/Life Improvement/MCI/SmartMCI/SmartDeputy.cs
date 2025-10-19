@@ -17,19 +17,29 @@ public static class SmartDeputy
     public static IEnumerator DelayStart()
     {
         yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime + 2f);
+        while (ExileController.Instance)
+        {
+            yield return new WaitForSeconds(1f);
+        }
+
         var townPlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Town));
         foreach (var deputys in MiscUtils.GetPlayersWithRole<Deputy>())
         {
             if (DayNightMechanic.DayCount >= 2)
             {
                 var deputy = deputys.GetRole<Deputy>();
-                if (townPlayers == 1) deputy.DoShoot(GetRandomTarget(deputy.Player));
-                else if (CalculatedVoting.EvidenceAgainst.Contains(deputy.Player))
+                if (deputy.Player.HasModifier<VampireRecruit>()) deputy.DoShoot(GetRandomTarget(deputy.Player));
+                else if (deputy.Player.HasModifier<JackalRecruit>()) deputy.DoShoot(GetRandomTarget(deputy.Player));
+                else
                 {
-                    deputy.DoShoot(GetRandomTarget(deputy.Player));
+                    if (townPlayers == 1) deputy.DoShoot(GetRandomTarget(deputy.Player));
+                    else if (CalculatedVoting.EvidenceAgainst.Contains(deputy.Player))
+                    {
+                        deputy.DoShoot(GetRandomTarget(deputy.Player));
+                    }
+                    else if (CalculatedVoting.EvidenceAgainst.Count > 0) deputy.DoShoot(CalculatedVoting.EvidenceAgainst.Random());
+                    else if (CalculatedVoting.KillerContagious.Count > 0) deputy.DoShoot(CalculatedVoting.KillerContagious.Random());
                 }
-                else if (CalculatedVoting.EvidenceAgainst.Count > 0) deputy.DoShoot(CalculatedVoting.EvidenceAgainst.Random());
-                else if (CalculatedVoting.KillerContagious.Count > 0) deputy.DoShoot(CalculatedVoting.KillerContagious.Random());
             }
         }
     }

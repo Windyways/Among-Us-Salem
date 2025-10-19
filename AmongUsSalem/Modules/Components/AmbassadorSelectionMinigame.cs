@@ -130,7 +130,7 @@ public sealed class AmbassadorSelectionMinigame(IntPtr cppPtr) : Minigame(cppPtr
         {
             var teamName = role.GetAlignment().ToDisplayString();
 
-            if (role is IAUSRole touRole)
+            if (role is ICustomAURole touRole)
             {
                 teamName = touRole.Alignment.ToDisplayString();
             }

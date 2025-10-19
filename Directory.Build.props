@@ -10,7 +10,7 @@
 
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 
-        <Version>1.0.0</Version>
+        <Version>3.0.0</Version>
 
         <Authors>Windyways</Authors>
         <RepositoryType>git</RepositoryType>

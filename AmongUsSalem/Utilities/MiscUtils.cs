@@ -76,7 +76,7 @@ public static class MiscUtils
 
     public static IEnumerable<RoleBehaviour> GetRoles(string name)
     {
-        return CustomRoleUtils.GetActiveRoles().Where(x => x is IAUSRole role && role.RoleName == name);
+        return CustomRoleUtils.GetActiveRoles().Where(x => x is ICustomAURole role && role.RoleName == name);
     }
 
     public static bool AmOwner(this PlayerControl player)
@@ -99,6 +99,9 @@ public static class MiscUtils
 
         if ((isAttacking || player.IsShrouded()) && isVisiting) Statistics.RpcAddMurder(player);
         if (!player.IsSameFaction(target)) Statistics.RpcAddTrespassing(player);
+
+        // Town protectives when target is attacked! (or visited if you're Crusader).
+        if (target.IsGuarded() && (isAttacking || player.IsShrouded()) && isVisiting && !player.IsIllusioned()) Bodyguard.RpcBodyguard_Notify(player, target);
 
         // Doesn't stop visit.
         if (player.IsShrouded() && isVisiting)
@@ -124,7 +127,6 @@ public static class MiscUtils
         if (target.IsRole<Arsonist>() && isVisiting) Arsonist.RpcArsonist_Douse(target, player, true);
 
         // Town protectives when target is attacked! (or visited if you're Crusader).
-        if (target.IsGuarded() && (isAttacking || player.IsShrouded()) && isVisiting && !player.IsIllusioned()) Bodyguard.RpcBodyguard_Notify(player, target);
         if (target.IsSelfProtected(player.CanKill(target)) && isAttacking && isVisiting) Bodyguard.RpcBodyguard_Notify(player, target);
         if (target.IsBarriered() && isVisiting && isAttacking) Cleric.RpcCleric_Notify(player, target);
 
@@ -277,7 +279,7 @@ public static class MiscUtils
 
     public static Alignment GetAlignment(this RoleBehaviour role)
     {
-        if (role is IAUSRole touRole)
+        if (role is ICustomAURole touRole)
         {
             return touRole.Alignment;
         }
@@ -385,7 +387,7 @@ public static class MiscUtils
     public static IEnumerable<RoleBehaviour> GetRoles(Alignment alignment)
     {
         return CustomRoleUtils.GetActiveRoles()
-            .Where(x => x is IAUSRole role && role.Alignment == alignment);
+            .Where(x => x is ICustomAURole role && role.Alignment == alignment);
     }
 
     public static PlayerControl? GetPlayerWithModifier<T>() where T : BaseModifier

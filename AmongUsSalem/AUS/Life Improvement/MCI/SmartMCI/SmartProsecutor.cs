@@ -23,13 +23,18 @@ public static class SmartProsecutor
             if (DayNightMechanic.DayCount >= 2)
             {
                 var prosecutor = prosecutors.GetRole<Prosecutor>();
-                if (townPlayers == 1) prosecutor.DoProsecute(GetRandomTarget(prosecutor.Player));
-                else if (CalculatedVoting.EvidenceAgainst.Contains(prosecutor.Player))
+                if (prosecutor.Player.HasModifier<VampireRecruit>()) prosecutor.DoProsecute(GetRandomTarget(prosecutor.Player));
+                else if (prosecutor.Player.HasModifier<JackalRecruit>()) prosecutor.DoProsecute(GetRandomTarget(prosecutor.Player));
+                else
                 {
-                    prosecutor.DoProsecute(GetRandomTarget(prosecutor.Player));
+                    if (townPlayers == 1) prosecutor.DoProsecute(GetRandomTarget(prosecutor.Player));
+                    else if (CalculatedVoting.EvidenceAgainst.Contains(prosecutor.Player))
+                    {
+                        prosecutor.DoProsecute(GetRandomTarget(prosecutor.Player));
+                    }
+                    else if (CalculatedVoting.EvidenceAgainst.Count > 0) prosecutor.DoProsecute(CalculatedVoting.EvidenceAgainst.Random());
+                    else if (CalculatedVoting.KillerContagious.Count > 0) prosecutor.DoProsecute(CalculatedVoting.KillerContagious.Random());
                 }
-                else if (CalculatedVoting.EvidenceAgainst.Count > 0) prosecutor.DoProsecute(CalculatedVoting.EvidenceAgainst.Random());
-                else if (CalculatedVoting.KillerContagious.Count > 0) prosecutor.DoProsecute(CalculatedVoting.KillerContagious.Random());
             }
         }
     }

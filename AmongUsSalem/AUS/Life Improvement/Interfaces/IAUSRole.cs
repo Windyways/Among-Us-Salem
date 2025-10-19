@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public interface IAUSRole : ICustomRole
+public interface ICustomAURole : ICustomRole
 { 
     string RoleName { get; set; }
     Color RoleColor { get; set; }
@@ -131,7 +131,7 @@ public interface IAUSRole : ICustomRole
 
     public static StringBuilder SetNewTabText(ICustomRole role)
     {
-        var alignment = role is IAUSRole touRole
+        var alignment = role is ICustomAURole touRole
             ? touRole.Alignment.ToDisplayString()
             : "Custom";
 
@@ -179,7 +179,7 @@ public interface IAUSRole : ICustomRole
         stringB.Append("<size=70%>");
         stringB.AppendLine(CultureInfo.InvariantCulture, $"{role.RoleLongDescription}");
 
-        if (role is IAUSRole ausRole)
+        if (role is ICustomAURole ausRole)
         {
             stringB.AppendLine(CultureInfo.InvariantCulture, $"<color=#e70052>Attack: {ausRole.Attack}</color>");
             stringB.AppendLine(CultureInfo.InvariantCulture, $"<color=#0000ff>Defense: {ausRole.Defense}</color>");
@@ -191,7 +191,7 @@ public interface IAUSRole : ICustomRole
 
     public static StringBuilder SetDeadTabText(ICustomRole role)
     {
-        var alignment = role is IAUSRole touRole
+        var alignment = role is ICustomAURole touRole
             ? touRole.Alignment.ToDisplayString()
             : "Custom";
 

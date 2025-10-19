@@ -55,133 +55,94 @@ public sealed class RoleOptions : AbstractOptionGroup
     public override string GroupName => "Role";
     public override uint GroupPriority => 2;
 
-    [ModdedToggleOption("Role List Enabled")]
-    public bool RoleListEnabled { get; set; } = true;
-
     public ModdedEnumOption Slot1 { get; } =
         new("Slot 1", (int)RoleListOption.RandomTown, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot2 { get; } =
         new("Slot 2", (int)RoleListOption.RandomTown, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot3 { get; } =
         new("Slot 3", (int)RoleListOption.RandomTown, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot4 { get; } =
         new("Slot 4", (int)RoleListOption.RandomMafia, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot5 { get; } =
         new("Slot 5", (int)RoleListOption.TownInvestigative, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot6 { get; } =
         new("Slot 6", (int)RoleListOption.TownInvestigative, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot7 { get; } =
         new("Slot 7", (int)RoleListOption.TownInvestigative, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot8 { get; } =
         new("Slot 8", (int)RoleListOption.TownInvestigative, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot9 { get; } =
         new("Slot 9", (int)RoleListOption.RandomMafia, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot10 { get; } =
         new("Slot 10", (int)RoleListOption.TownInvestigative, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot11 { get; } =
         new("Slot 11", (int)RoleListOption.TownInvestigative, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot12 { get; } =
         new("Slot 12", (int)RoleListOption.TownInvestigative, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot13 { get; } =
         new("Slot 13", (int)RoleListOption.RandomTown, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot14 { get; } =
         new("Slot 14", (int)RoleListOption.RandomMafia, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 
     public ModdedEnumOption Slot15 { get; } =
         new("Slot 15", (int)RoleListOption.TownInvestigative, typeof(RoleListOption), OptionStrings)
         {
-            Visible = () => OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
-        };
-
-    public ModdedNumberOption MinNeutralBenign { get; } =
-        new("Min Neutral Benign", 0f, 0f, 3f, 1f, MiraNumberSuffixes.None, "0")
-        {
-            Visible = () => !OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
-        };
-
-    public ModdedNumberOption MaxNeutralBenign { get; } =
-        new("Max Neutral Benign", 0f, 0f, 3f, 1f, MiraNumberSuffixes.None, "0")
-        {
-            Visible = () => !OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
-        };
-
-    public ModdedNumberOption MinNeutralEvil { get; } =
-        new("Min Neutral Evil", 0f, 0f, 3f, 1f, MiraNumberSuffixes.None, "0")
-        {
-            Visible = () => !OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
-        };
-
-    public ModdedNumberOption MaxNeutralEvil { get; } =
-        new("Max Neutral Evil", 0f, 0f, 3f, 1f, MiraNumberSuffixes.None, "0")
-        {
-            Visible = () => !OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
-        };
-
-    public ModdedNumberOption MinNeutralKiller { get; } =
-        new("Min Neutral Killer", 0f, 0f, 5f, 1f, MiraNumberSuffixes.None, "0")
-        {
-            Visible = () => !OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
-        };
-
-    public ModdedNumberOption MaxNeutralKiller { get; } =
-        new("Max Neutral Killer", 0f, 0f, 5f, 1f, MiraNumberSuffixes.None, "0")
-        {
-            Visible = () => !OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled
+            Visible = () => true
         };
 }
 

@@ -10,7 +10,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Covenite
 #endregion
 public sealed class Covenite(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
+    : NeutralRole(cppPtr), IWikiDiscoverable, ICustomAURole, ICovenRole
 {
     public string RoleName => Covenite, "Covenite");
     public string revealText => "placeholder.";
@@ -44,7 +44,7 @@ public sealed class Covenite(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -118,7 +118,7 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction);
+            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction == Role.Faction);
     }
 
     public override bool CanUse()

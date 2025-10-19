@@ -13,7 +13,7 @@ public static class PlayerControl_Die
 
         foreach (var role in GameHistory.AllRoles)
         {
-            if (!role || role is not IAUSRole ausRole)
+            if (!role || role is not ICustomAURole ausRole)
             {
                 continue;
             }

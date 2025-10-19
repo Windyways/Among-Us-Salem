@@ -7,7 +7,7 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 
 #region NecroPassing
 #endregion
-public sealed class NecroPassing : TouGameModifier
+public sealed class NecroPassing : BaseModifier
 {
     public override string ModifierName => "Necro Passing";
     public override bool Unique => false;
@@ -77,7 +77,7 @@ public sealed class NecroPassing : TouGameModifier
     public bool IsExempt(PlayerVoteArea voteArea)
     {
         return Player.Data.IsDead || voteArea!.AmDead ||
-               !(MiscUtils.PlayerById(voteArea.TargetPlayerId)?.Data.Role is IAUSRole ausRole && Player.Data.Role is IAUSRole ausRole2 && ausRole.Faction == ausRole2.Faction);
+               !(MiscUtils.PlayerById(voteArea.TargetPlayerId)?.Data.Role is ICustomAURole ausRole && Player.Data.Role is ICustomAURole ausRole2 && ausRole.Faction == ausRole2.Faction);
     }
 
     [MethodRpc((uint)AUSRpc.NecroPassing_PassNecronomicon, SendImmediately = true)]
@@ -130,7 +130,7 @@ public sealed class NecroPassing : TouGameModifier
             CovenNecronomiconMechanic.ClearNecronomicon();
 
             covenRole.Necronomicon = true;
-            if (nextHolder.Player.Data.Role is IAUSRole ausRole)
+            if (nextHolder.Player.Data.Role is ICustomAURole ausRole)
             {
                 ausRole.Attack = Attack.Basic;
                 ausRole.ogAttack = Attack.Basic;
@@ -156,21 +156,6 @@ public sealed class NecroPassing : TouGameModifier
     public static string Info(PlayerControl passingPlayer, PlayerControl target, int votes)
     {
         return passingPlayer.GetDefaultAppearance().PlayerName + " voted to pass the Necronomicon to " + target.GetDefaultAppearance().PlayerName + $" ({votes}).";
-    }
-
-    public override int GetAssignmentChance()
-    {
-        return OptionGroupSingleton<AUSOptions>.Instance.EnableNecroPassing ? 100 : 0;
-    }
-
-    public override int GetAmountPerGame()
-    {
-        return 15;
-    }
-
-    public override bool IsModifierValidOn(RoleBehaviour role)
-    {
-        return role is ICovenRole;
     }
 
     public static void OnRoundStart()

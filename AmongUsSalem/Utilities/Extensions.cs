@@ -29,7 +29,7 @@ public static class Extensions
 {
     public static bool Is(this PlayerControl player, Faction faction)
     {
-        if (player.Data.Role is IAUSRole role && role.Faction == faction)
+        if (player.Data.Role is ICustomAURole role && role.Faction == faction)
         {
             return true;
         }
@@ -39,7 +39,7 @@ public static class Extensions
     
     public static bool Is(this PlayerControl player, Alignment alignment)
     {
-        if (player.Data.Role is IAUSRole role && role.Alignment == alignment)
+        if (player.Data.Role is ICustomAURole role && role.Alignment == alignment)
         {
             return true;
         }
@@ -67,9 +67,9 @@ public static class Extensions
         return data.Role is IGhostRole ghostRole ? !ghostRole.GhostActive : data.IsDead;
     }
 
-    public static IAUSRole? GetOWRole(this PlayerControl player)
+    public static ICustomAURole? GetOWRole(this PlayerControl player)
     {
-        var role = player.Data?.Role as IAUSRole;
+        var role = player.Data?.Role as ICustomAURole;
 
         return role;
     }
@@ -132,7 +132,7 @@ public static class Extensions
 
     public static bool Is(this PlayerControl player, ModdedRoleTeams team)
     {
-        if (player.Data.Role is IAUSRole role && role.Team == team)
+        if (player.Data.Role is ICustomAURole role && role.Team == team)
         {
             return true;
         }
@@ -287,22 +287,22 @@ public static class Extensions
         //var material = panel.PlayerIcon.cosmetics.currentBodySprite.BodySprite.material;
         var color = roleBehaviour is ICustomRole customRole ? customRole.RoleColor : roleBehaviour.TeamColor;
 
-        //var teamName = roleBehaviour is IAUSRole touRole
+        //var teamName = roleBehaviour is ICustomAURole touRole
         //    ? touRole.Alignment.ToDisplayString()
         //    : roleBehaviour.TeamType.ToDisplayString();
-        //if (roleBehaviour is ICustomRole customOther && roleBehaviour is not IAUSRole) teamName = customOther.Team.ToDisplayString();
+        //if (roleBehaviour is ICustomRole customOther && roleBehaviour is not ICustomAURole) teamName = customOther.Team.ToDisplayString();
 
         //if (teamName.Contains("Crewmate")) teamName = teamName.Replace("Crewmate", $"<color=#68ACF4FF>Crewmate</color>");
         //else if (teamName.Contains("Impostor")) teamName = teamName.Replace("Impostor", $"<color=#D63F42FF>Impostor</color>");
-        //else if (roleBehaviour is not IAUSRole)
+        //else if (roleBehaviour is not ICustomAURole)
         //{
-        //    if (roleBehaviour is IAUSRole) teamName = "Neutral Benign";
-        //    else if (roleBehaviour is IAUSRole) teamName = "Neutral Evil";
-        //    else if (roleBehaviour is IAUSRole) teamName = "Neutral Killing";
+        //    if (roleBehaviour is ICustomAURole) teamName = "Neutral Benign";
+        //    else if (roleBehaviour is ICustomAURole) teamName = "Neutral Evil";
+        //    else if (roleBehaviour is ICustomAURole) teamName = "Neutral Killing";
         //    teamName = teamName.Replace("Neutral", $"<color=#8A8A8AFF>Neutral</color>");
         //}
 
-        var alignment = roleBehaviour is IAUSRole touRole
+        var alignment = roleBehaviour is ICustomAURole touRole
             ? touRole.Alignment.ToDisplayString()
             : roleBehaviour.TeamType.ToDisplayString();
 

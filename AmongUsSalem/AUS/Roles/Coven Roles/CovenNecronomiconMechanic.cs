@@ -26,7 +26,7 @@ public static class CovenNecronomiconMechanic
         if (nextHolder != null)
         {
             nextHolder.Necronomicon = true;
-            if (nextHolder.Player.Data.Role is IAUSRole ausRole)
+            if (nextHolder.Player.Data.Role is ICustomAURole ausRole)
             {
                 ausRole.Attack = Attack.Basic;
                 ausRole.ogAttack = Attack.Basic;

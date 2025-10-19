@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Modifiers;
 
-public sealed class CovenVIP : UniversalGameModifier,
+public sealed class CovenVIP : TouGameModifier,
     IWikiDiscoverable
 {
     public override string ModifierName => "Coven VIP";
@@ -46,7 +46,7 @@ public sealed class CovenVIP : UniversalGameModifier,
 
     public override void OnActivate()
     {
-        if (Player.Data.Role is IAUSRole ausRole)
+        if (Player.Data.Role is ICustomAURole ausRole)
         {
             ausRole.ApplyDefense(Defense.Invincible, true);
         }

@@ -10,11 +10,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Shroud
 #endregion
 public sealed class Shroud(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : NeutralRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Shroud";
     public string revealText => "is like a ghost.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Make players kill for you.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -39,7 +39,7 @@ public sealed class Shroud(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -52,7 +52,7 @@ public sealed class Shroud(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#A9A9A9>Neutral</color> <color=#1e45d4>Killing</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill everyone in the town." +
             $"\n\nAttributes:" +
-            "\nN/A." +
+            "\nYou know who your Shrouded targets attack." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -60,11 +60,12 @@ public sealed class Shroud(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Attack",
-            "N/A",
+            "You can Attack a player at Night." +
+            "\n\nYou will kill your target.",
             AUSAssets.Shroud_Attack),
             
         new("Shroud",
-            "N/A",
+            "You can Shroud a player at Night. The next player your target visits, they will deal a Basic Attack to them. If your target doesn't visit, deal a Basic Attack to them when the Day begins.",
             AUSAssets.Shroud_Shroud)
     ];
 
@@ -74,7 +75,7 @@ public sealed class Shroud(IntPtr cppPtr)
         if (aliveShrouds == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveShrouds && MiscUtils.KillersAliveCount() == aliveShrouds;
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -95,7 +96,7 @@ public sealed class Shroud(IntPtr cppPtr)
     {
         yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime);
 
-        MiscUtils.RpcApplyDeathReason(Player, ShroudedPlayer, DeathReasonShow.KilledByAShroud, false, false);
+        if (Player.AmOwner()) MiscUtils.RpcApplyDeathReason(Player, ShroudedPlayer, DeathReasonShow.KilledByAShroud, false, false);
         ShroudedPlayer = null;
     }
 

@@ -19,7 +19,7 @@ public static class EndGameEvents
     {
         winType = 0;
         var reason = EndGameResult.CachedGameOverReason;
-        var neutralWinner = CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom).Any(x => x is IAUSRole role && role.WinConditionMet());
+        var neutralWinner = CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom).Any(x => x is ICustomAURole role && role.WinConditionMet());
 
         if (neutralWinner)
         {

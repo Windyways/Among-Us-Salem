@@ -13,7 +13,7 @@ public static class LobbyBehaviourPatches
     {
         foreach (var role in GameHistory.AllRoles)
         {
-            if (!role || role is not IAUSRole touRole)
+            if (!role || role is not ICustomAURole touRole)
             {
                 continue;
             }

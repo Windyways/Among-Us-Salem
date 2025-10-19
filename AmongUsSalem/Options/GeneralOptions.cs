@@ -8,7 +8,7 @@ namespace AmongUsSalem.Options;
 public sealed class GeneralOptions : AbstractOptionGroup
 {
     public override string GroupName => "General";
-    public override uint GroupPriority => 1;
+    public override uint GroupPriority => 10;
 
     [ModdedToggleOption("Show Faction Modifier On Role Reveal")]
     public bool TeamModifierReveal { get; set; } = true;

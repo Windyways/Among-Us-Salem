@@ -46,7 +46,7 @@ public class Debugger : MonoBehaviour
             || GameManager.Instance?.GameHasStarted == true && AmongUsClient.Instance?.GameState != InnerNetClient.GameStates.Ended))
                 return;
 
-            if (GUILayout.Button($"Spawn Bot ({InstanceControlPatches.Clients.Count}/15)"))
+            if (GUILayout.Button($"Spawn Bot ({InstanceControlPatches.Clients.Count + 1}/15)"))
             {
                 Keyboard_Joystick.CreatePlayer();
             }
@@ -110,10 +110,7 @@ public class Debugger : MonoBehaviour
                 }
             }
 
-            if (GUILayout.Button("Do Cycle Mode"))
-            {
-                CycleMode.Start();
-            }
+            if (GUILayout.Button("Do Cycle Mode")) CycleMode.Start();
 
             isRandomClientSwapping = GUILayout.Toggle(isRandomClientSwapping, "Enable Random Swapping");
             SmartBotsEnabled = GUILayout.Toggle(SmartBotsEnabled, "Enable Smart Bots");
@@ -129,12 +126,34 @@ public class Debugger : MonoBehaviour
 
     public void Toggle()
     {
-        WindowEnabled = !WindowEnabled;
+        if (IsDebuggerActive)
+        {
+            WindowEnabled = !WindowEnabled;
+        }
     }
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F3) || Input.GetKeyDown(KeyCode.F1)) Toggle();
+        if (Input.GetKeyDown(KeyCode.F1))
+            Toggle();
+
+        if (Input.GetKeyDown(KeyCode.Keypad5))
+        {
+            if (Debugger.SmartBotsEnabled && MeetingHud.Instance && IsDebuggerActive)
+            {
+                foreach (PlayerVoteArea playerVoteArea in MeetingHud.Instance.playerStates)
+                {
+                    playerVoteArea.UnsetVote();
+                    MeetingHud.Instance.ClearVote();
+                }
+
+                CalculatedVoting.DoVotes(MeetingHud.Instance);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Keypad4))
+        {
+            if (isRandomClientSwapping && IsDebuggerActive) Keyboard_Joystick.Switch(true);
+        }
     }
 
     private void Start()

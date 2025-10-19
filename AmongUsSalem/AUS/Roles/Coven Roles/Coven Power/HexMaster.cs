@@ -10,11 +10,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region HexMaster
 #endregion
 public sealed class HexMaster(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAUSRole, ICovenRole
+    : CovenRole(cppPtr), IWikiDiscoverable, ICustomAURole, ICovenRole
 {
     public string RoleName { get; set; } = "Hex Master";
-    public string revealText => "placeholder.";
-    public string RoleDescription => "Placeholder.";
+    public string revealText => "is versed in the ways of hexes.";
+    public string RoleDescription => "HexBomb and kill all.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -29,22 +29,21 @@ public sealed class HexMaster(IntPtr cppPtr)
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
 
-    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
-
     public NecronomiconPriority NecronomiconPriority => NecronomiconPriority.HexMaster;
     public bool Necronomicon { get; set; }
 
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.HexMasterRoleCard,
-        CanUseSabotage = true,
+        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -66,9 +65,8 @@ public sealed class HexMaster(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Hex",
-            "Permanently Hex a player at night." +
-            "\n\nIf the Hex Master is alive and all Non-Coven players are Hexed, the Hex Master will kill all hexed players." +
-            "\n\nIf all Non-Coven plauers are Hexed, The Necromancer can reanimate the He Master to cause all Hexes to go off, killing all hexed players.",
+            "You can Hex a player at Night. If you are alive while all Non-Coven members are Hexed, you will perform a Hex-Bomb at Day, killing all Hexed players." +
+            "\n\nIf all Non-Coven players are Hexed, The Necromancer can reanimate the Hex Master to cause all Hexes to go off, killing all hexed players.",
             AUSAssets.HexMaster_Hex)
     ];
 
@@ -78,7 +76,7 @@ public sealed class HexMaster(IntPtr cppPtr)
         if (aliveCoven == 0) return false;
 
         var result = Helpers.GetAlivePlayers().Count <= aliveCoven && MiscUtils.KillersAliveCount() == aliveCoven;
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -112,14 +110,6 @@ public sealed class HexMaster(IntPtr cppPtr)
         }
     }
 
-    /*public void OnTargetDeath(PlayerControl target, DeathReason? reason)
-    {
-        if (HexedPlayers.Contains(target.PlayerId))
-        {
-            HexedPlayers.Remove(target.PlayerId);
-        }
-    }*/
-
     [MethodRpc((uint)AUSRpc.HexMaster_Hex, SendImmediately = true)]
     public static void RpcHexMaster_Hex(PlayerControl player, PlayerControl target)
     {
@@ -143,7 +133,7 @@ public sealed class HexMaster_Hex : AmongUsSalemRoleButton<HexMaster, PlayerCont
     public override string Name => "Hex";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Coven;
-    public override float Cooldown => OptionGroupSingleton<HexMaster_Options>.Instance.Cooldown;
+    public override float Cooldown => Role.Necronomicon ? OptionGroupSingleton<CovenOptions>.Instance.Cooldown : OptionGroupSingleton<HexMaster_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.HexMaster_Hex;
 
     public override void ClickHandler()
@@ -187,7 +177,7 @@ public sealed class HexMaster_Hex : AmongUsSalemRoleButton<HexMaster, PlayerCont
     {
         if (target == null) return base.IsTargetValid(target);
         return base.IsTargetValid(target) &&
-            !(target.Data.Role is IAUSRole ausrole && ausrole.Faction == Role.Faction) &&
+            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction == Role.Faction) &&
             !(Role.HexedPlayers.Contains(target.PlayerId) && !Role.Necronomicon)
             ;
     }

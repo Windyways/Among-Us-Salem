@@ -61,6 +61,7 @@ namespace AmongUsSalem.LifeImprovement
             roleStats.Add("Escort", new RoleStats("Escort", AUSColors.Town));
             roleStats.Add("Coroner", new RoleStats("Coroner", AUSColors.Town));
             roleStats.Add("Prosecutor", new RoleStats("Prosecutor", AUSColors.Town));
+            roleStats.Add("Cleric", new RoleStats("Cleric", AUSColors.Town));
             #endregion
             #region Neutral
             #endregion
@@ -90,11 +91,7 @@ namespace AmongUsSalem.LifeImprovement
 
         public static void UpdateRoleResult(RoleBehaviour roleBehaviour, int kills, bool won, bool wonAsNewTeam)
         {
-            var role = roleBehaviour.Player.GetOWRole();
-            if (role == null)
-                return;
-
-            string roleName = role.RoleName;
+            string roleName = roleBehaviour.NiceName;
             if (!CountRoundToLeaderboard)
             {
                 AUSPlugin.DebugLogMessage("CountRoundToLeaderboard is false, wins and loses do not count this game.");
@@ -198,7 +195,7 @@ namespace AmongUsSalem.LifeImprovement
                 foreach (var player in PlayerControl.AllPlayerControls)
                 {
                     if (!string.IsNullOrWhiteSpace(WinRate()) && player == PlayerControl.LocalPlayer)  DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, WinRate());
-                    if (!string.IsNullOrWhiteSpace(FactionRateCommand.WinRate()) && player == PlayerControl.LocalPlayer)  DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, FactionRateCommand.WinRate());
+                    if (!string.IsNullOrWhiteSpace(FactionRateCommand.WinRate()) && player == PlayerControl.LocalPlayer)  DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, "<size=62%>" + FactionRateCommand.WinRate() + "</size>");
                 }
                 return true;
             }

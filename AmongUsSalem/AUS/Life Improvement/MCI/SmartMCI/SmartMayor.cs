@@ -38,7 +38,7 @@ public static class SmartMayor
 
     public static void DoReveal(this Mayor mayor)
     {
-        if (mayor.IsRevealed || mayor.Player.HasDied())
+        if (mayor.Player.HasModifier<GlobalReveal>() || mayor.Player.HasDied())
             return;
 
         Mayor.RpcMayor_Reveal(mayor.Player);

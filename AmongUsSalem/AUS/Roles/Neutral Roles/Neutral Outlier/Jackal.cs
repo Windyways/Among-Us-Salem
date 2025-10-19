@@ -10,11 +10,11 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 #region Jackal
 #endregion
 public sealed class Jackal(IntPtr cppPtr)
-    : NeutralRole(cppPtr), IWikiDiscoverable, IAssignableTargets, IAUSRole
+    : NeutralRole(cppPtr), IWikiDiscoverable, IAssignableTargets, ICustomAURole
 {
     public string RoleName { get; set; } = AUSColors.GradientColorText("404040", "b8b8b8", "Jackal");
-    public string revealText => "N/A";
-    public string RoleDescription => "";
+    public string revealText => "TBD";
+    public string RoleDescription => "Thrive with your Recruits.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -38,7 +38,7 @@ public sealed class Jackal(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -51,7 +51,8 @@ public sealed class Jackal(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#A9A9A9>Neutral</color> <color=#1e45d4>Outlier</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill everyone in the town." +
             $"\n\nAttributes:" +
-            "\nN/A." +
+            "\nYou are assigned 2 Recruits when the game begins. Your Recruits cannot be on the same team, they will win with you. You will win with them." +
+            "\nYour Recruits will die together." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -59,7 +60,7 @@ public sealed class Jackal(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Assassinate",
-            "N/A",
+            "You can Assassinate a player at Night. You will deal a Powerful Attack to your target. You can only Assassinate once your Recruits perish.",
             AUSAssets.Jackal_Assassinate)
     ];
 
@@ -70,7 +71,7 @@ public sealed class Jackal(IntPtr cppPtr)
         if (aliveJackals == 0 && aliveRecs == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= (aliveJackals + aliveRecs) && MiscUtils.KillersAliveCount() == (aliveJackals + aliveRecs);
-        return result;
+        return result || AmongUsSalem.Patches.LogicGameFlowPatches.EndGameEarlyCheck(this);
     }
 
     public override bool DidWin(GameOverReason gameOverReason)
@@ -101,7 +102,6 @@ public sealed class Jackal(IntPtr cppPtr)
             var notCovenTargets = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.Is(Faction.Coven) && (x.Is(Faction.Mafia) || x.Is(Faction.Town) || x.Is(Alignment.NeutralKilling)) && !x.HasDied()).ToList();
             var notNKTargets = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.Is(Alignment.NeutralKilling) && (x.Is(Faction.Mafia) || x.Is(Faction.Town) || x.Is(Faction.Coven)) && !x.HasDied()).ToList();
 
-
             Random rndIndex = new();
             var randomTarget = targets[rndIndex.Next(0, targets.Count)];
 
@@ -116,23 +116,6 @@ public sealed class Jackal(IntPtr cppPtr)
 
             Recruits.Add(randomTarget);
             Recruits.Add(randomTarget2);
-        }
-    }
-
-    public override void OnMeetingStart()
-    {
-        if (Player.AmOwner())
-        {
-            MiscUtils.ShowNotification(Jackal.Info(Jackal.Type.JackalsRecs, Recruits[0], Recruits[1]), Color.white, AUSAssets.JackalRoleCard.LoadAsset());
-            MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, $"{AUSColors.GradientColorText("404040", "b8b8b8", "Jackal")} Info"), Jackal.Info(Jackal.Type.JackalsRecs, Recruits[0], Recruits[1]));
-        }
-
-        var player = PlayerControl.LocalPlayer;
-        if (player.HasModifier<JackalRecruit>() && player.AmOwner())
-        {
-            var recruit = player.GetModifier<JackalRecruit>();
-            MiscUtils.ShowNotification(Jackal.Info(Jackal.Type.AnnounceRecs, null, recruit.OtherRecruit), Color.white, AUSAssets.JackalRoleCard.LoadAsset());
-            MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, $"{AUSColors.GradientColorText("404040", "b8b8b8", "Jackal")} Info"), Jackal.Info(Jackal.Type.AnnounceRecs, null, recruit.OtherRecruit));
         }
     }
 
@@ -220,6 +203,26 @@ public static class Jackal_Events
             case DeathReason.Kill:
                 MiscUtils.RpcApplyDeathReason(jackalRecruit.OtherRecruit, jackalRecruit.OtherRecruit, DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate);
                 break;
+        }
+    }
+
+    [RegisterEvent(1)]
+    public static void StartMeetingEvent(StartMeetingEvent @event)
+    {
+        var player = PlayerControl.LocalPlayer;
+        if (DayNightMechanic.DayCount == 1)
+        {
+            if (player.AmOwner() && player.Data.Role is Jackal jackal)
+            {
+                MiscUtils.ShowNotification(Jackal.Info(Jackal.Type.JackalsRecs, jackal.Recruits[0], jackal.Recruits[1]), Color.white, AUSAssets.JackalRoleCard.LoadAsset());
+                MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, $"{AUSColors.GradientColorText("404040", "b8b8b8", "Jackal")} Info"), Jackal.Info(Jackal.Type.JackalsRecs, jackal.Recruits[0], jackal.Recruits[1]));
+            }
+
+            if (player.AmOwner() && player.TryGetModifier<JackalRecruit>(out var recruit))
+            {
+                MiscUtils.ShowNotification(Jackal.Info(Jackal.Type.AnnounceRecs, null, recruit.OtherRecruit), Color.white, AUSAssets.JackalRoleCard.LoadAsset());
+                MiscUtils.AddFakeChat(player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Neutral, $"{AUSColors.GradientColorText("404040", "b8b8b8", "Jackal")} Info"), Jackal.Info(Jackal.Type.AnnounceRecs, null, recruit.OtherRecruit));
+            }
         }
     }
 }

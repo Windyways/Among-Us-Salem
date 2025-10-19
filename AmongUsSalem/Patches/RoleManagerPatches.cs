@@ -93,171 +93,16 @@ public static class TouRoleManagerPatches
         }
     }
 
-    private static void AssignRoles(List<NetworkedPlayerInfo> infected)
-    {
-        var impCount = infected.Count;
-        var impostors = MiscUtils.GetImpostors(infected);
-        var crewmates = MiscUtils.GetCrewmates(impostors);
-
-        var nbCount = Random.RandomRange((int)OptionGroupSingleton<RoleOptions>.Instance.MinNeutralBenign.Value,
-            (int)OptionGroupSingleton<RoleOptions>.Instance.MaxNeutralBenign.Value + 1);
-        var neCount = Random.RandomRange((int)OptionGroupSingleton<RoleOptions>.Instance.MinNeutralEvil.Value,
-            (int)OptionGroupSingleton<RoleOptions>.Instance.MaxNeutralEvil.Value + 1);
-        var nkCount = Random.RandomRange((int)OptionGroupSingleton<RoleOptions>.Instance.MinNeutralKiller.Value,
-            (int)OptionGroupSingleton<RoleOptions>.Instance.MaxNeutralKiller.Value + 1);
-
-        var factions = new List<string> { "Benign", "Evil", "Killing" };
-
-        // Crew must always start out outnumbering neutrals, so subtract roles until that can be guaranteed.
-        while (Math.Ceiling((double)crewmates.Count / 2) <= nbCount + neCount + nkCount)
-        {
-            var canSubtractBenign = CanSubtract(nbCount,
-                (int)OptionGroupSingleton<RoleOptions>.Instance.MinNeutralBenign.Value);
-            var canSubtractEvil =
-                CanSubtract(neCount, (int)OptionGroupSingleton<RoleOptions>.Instance.MinNeutralEvil.Value);
-            var canSubtractKilling = CanSubtract(nkCount,
-                (int)OptionGroupSingleton<RoleOptions>.Instance.MinNeutralKiller.Value);
-            var canSubtractNone = !canSubtractBenign && !canSubtractEvil && !canSubtractKilling;
-
-            factions.Shuffle();
-            switch (factions[0])
-            {
-                case "Benign":
-                    if (nbCount > 0 && (canSubtractBenign || canSubtractNone))
-                    {
-                        nbCount -= 1;
-                        break;
-                    }
-
-                    goto case "Evil";
-                case "Evil":
-                    if (neCount > 0 && (canSubtractEvil || canSubtractNone))
-                    {
-                        neCount -= 1;
-                        break;
-                    }
-
-                    goto case "Killing";
-                case "Killing":
-                    if (nkCount > 0 && (canSubtractKilling || canSubtractNone))
-                    {
-                        nkCount -= 1;
-                        break;
-                    }
-
-                    goto default;
-                default:
-                    if (nbCount > 0)
-                    {
-                        nbCount -= 1;
-                    }
-                    else if (neCount > 0)
-                    {
-                        neCount -= 1;
-                    }
-                    else if (nkCount > 0)
-                    {
-                        nkCount -= 1;
-                    }
-
-                    break;
-            }
-
-            if (nbCount + neCount + nkCount == 0)
-            {
-                break;
-            }
-        }
-
-        var excluded = MiscUtils.AllRoles.Where(x => x is ISpawnChange { NoSpawn: true }).Select(x => x.Role);
-
-        var impRoles =
-            MiscUtils.GetMaxRolesToAssign(ModdedRoleTeams.Impostor, impCount, x => !excluded.Contains(x.Role));
-
-        var uniqueRole = MiscUtils.AllRoles.FirstOrDefault(x => x is ISpawnChange { NoSpawn: false });
-        if (uniqueRole != null && impRoles.Contains(RoleId.Get(uniqueRole.GetType())))
-        {
-            impCount = 1;
-            
-            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Removing Impostor Roles because of {uniqueRole.NiceName}");
-            
-            impRoles.RemoveAll(x => x != RoleId.Get(uniqueRole.GetType()));
-
-            while (impostors.Count > impCount)
-            {
-                crewmates.Add(impostors.TakeFirst());
-            }
-        }
-
-        var nbRoles = MiscUtils.GetMaxRolesToAssign(Alignment.NeutralBenign, nbCount);
-        var neRoles = MiscUtils.GetMaxRolesToAssign(Alignment.NeutralEvil, neCount);
-        var nkRoles = MiscUtils.GetMaxRolesToAssign(Alignment.NeutralKilling, nkCount);
-
-        var crewCount = crewmates.Count - nbRoles.Count - neRoles.Count - nkRoles.Count;
-
-        Func<RoleBehaviour, bool>? crewFilter = null;
-
-        if ((MapNames)GameOptionsManager.Instance.GameHostOptions.MapId == MapNames.Fungle)
-        {
-            //crewFilter = x => x.Role != (RoleTypes)RoleId.Get<SpyRole>();
-        }
-
-        var crewRoles = MiscUtils.GetMaxRolesToAssign(ModdedRoleTeams.Crewmate, crewCount, crewFilter);
-
-        var crewAndNeutRoles = new List<ushort>();
-        crewAndNeutRoles.AddRange(nbRoles);
-        crewAndNeutRoles.AddRange(neRoles);
-        crewAndNeutRoles.AddRange(nkRoles);
-        crewAndNeutRoles.AddRange(crewRoles);
-        crewAndNeutRoles.Shuffle();
-
-        foreach (var role in crewAndNeutRoles)
-        {
-            var num = HashRandom.FastNext(crewmates.Count);
-            var player = crewmates[num];
-
-            player.RpcSetRole((RoleTypes)role);
-
-            crewmates.RemoveAt(num);
-
-            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"SelectRoles - player: '{player.Data.PlayerName}', role: '{RoleManager.Instance.GetRole((RoleTypes)role).NiceName}'");
-        }
-
-        foreach (var role in impRoles)
-        {
-            var num = HashRandom.FastNext(impostors.Count);
-            var player = impostors[num];
-
-            player.RpcSetRole((RoleTypes)role);
-
-            impostors.RemoveAt(num);
-
-            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"SelectRoles - player: '{player.Data.PlayerName}', role: '{RoleManager.Instance.GetRole((RoleTypes)role).NiceName}'");
-        }
-
-        foreach (var player in crewmates)
-        {
-            player.RpcSetRole((RoleTypes)RoleId.Get<Pilgrim>());
-        }
-
-        foreach (var player in impostors)
-        {
-            player.RpcSetRole((RoleTypes)RoleId.Get<Mafioso>());
-        }
-
-        static bool CanSubtract(int faction, int minFaction)
-        {
-            return faction > minFaction;
-        }
-    }
-
     private static void AssignRolesFromRoleList(List<NetworkedPlayerInfo> infected)
     {
         var impostors = MiscUtils.GetImpostors(infected);
         var crewmates = MiscUtils.GetCrewmates(impostors);
 
-        var crewRoles = new List<ushort>();
-        var impRoles = new List<ushort>();
+        var townRoles = new List<ushort>();
+        var neutralRoles = new List<ushort>();
+        var mafiaRoles = new List<ushort>();
+        var covenRoles = new List<ushort>();
+        var traitorRoles = new List<ushort>();
 
         var opts = OptionGroupSingleton<RoleOptions>.Instance;
 
@@ -281,64 +126,21 @@ public static class TouRoleManagerPatches
             (RoleListOption)opts.Slot1.Value, (RoleListOption)opts.Slot2.Value, (RoleListOption)opts.Slot3.Value,
             (RoleListOption)opts.Slot4.Value
         ];
+
         var impCount = 0;
         var anySlots = 0;
 
-        if (players > 4)
-        {
-            buckets.Add((RoleListOption)opts.Slot5.Value);
-        }
-
-        if (players > 5)
-        {
-            buckets.Add((RoleListOption)opts.Slot6.Value);
-        }
-
-        if (players > 6)
-        {
-            buckets.Add((RoleListOption)opts.Slot7.Value);
-        }
-
-        if (players > 7)
-        {
-            buckets.Add((RoleListOption)opts.Slot8.Value);
-        }
-
-        if (players > 8)
-        {
-            buckets.Add((RoleListOption)opts.Slot9.Value);
-        }
-
-        if (players > 9)
-        {
-            buckets.Add((RoleListOption)opts.Slot10.Value);
-        }
-
-        if (players > 10)
-        {
-            buckets.Add((RoleListOption)opts.Slot11.Value);
-        }
-
-        if (players > 11)
-        {
-            buckets.Add((RoleListOption)opts.Slot12.Value);
-        }
-
-        if (players > 12)
-        {
-            buckets.Add((RoleListOption)opts.Slot13.Value);
-        }
-
-        if (players > 13)
-        {
-            buckets.Add((RoleListOption)opts.Slot14.Value);
-        }
-
-        if (players > 14)
-        {
-            buckets.Add((RoleListOption)opts.Slot15.Value);
-        }
-
+        if (players > 4) buckets.Add((RoleListOption)opts.Slot5.Value);
+        if (players > 5) buckets.Add((RoleListOption)opts.Slot6.Value);
+        if (players > 6) buckets.Add((RoleListOption)opts.Slot7.Value);
+        if (players > 7) buckets.Add((RoleListOption)opts.Slot8.Value);
+        if (players > 8) buckets.Add((RoleListOption)opts.Slot9.Value);
+        if (players > 9) buckets.Add((RoleListOption)opts.Slot10.Value);
+        if (players > 10) buckets.Add((RoleListOption)opts.Slot11.Value);
+        if (players > 11) buckets.Add((RoleListOption)opts.Slot12.Value);
+        if (players > 12) buckets.Add((RoleListOption)opts.Slot13.Value);
+        if (players > 13) buckets.Add((RoleListOption)opts.Slot14.Value);
+        if (players > 14) buckets.Add((RoleListOption)opts.Slot15.Value);
         if (players > 15)
         {
             for (var i = 0; i < players - 15; i++)
@@ -453,17 +255,17 @@ public static class TouRoleManagerPatches
         var traitorPowerRoles = MiscUtils.GetRolesToAssign(Alignment.TraitorPower, roleFilter);
         var traitorUtilityRoles = MiscUtils.GetRolesToAssign(Alignment.TraitorUtility, roleFilter);
 
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorDeceptiveRoles, RoleListOption.TraitorDeceptive, RoleListOption.CommonTraitor));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorUtilityRoles, RoleListOption.TraitorUtility, RoleListOption.CommonTraitor));
+        traitorRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorDeceptiveRoles, RoleListOption.TraitorDeceptive, RoleListOption.CommonTraitor));
+        traitorRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorUtilityRoles, RoleListOption.TraitorUtility, RoleListOption.CommonTraitor));
         var commonTraitorRoles = traitorDeceptiveRoles;
         commonTraitorRoles.AddRange(traitorUtilityRoles);
-        
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorPowerRoles, RoleListOption.TraitorPower, RoleListOption.RandomTraitor));
+
+        traitorRoles.AddRange(MiscUtils.ReadFromBucket(buckets, traitorPowerRoles, RoleListOption.TraitorPower, RoleListOption.RandomTraitor));
         var randomTraitorRoles = commonTraitorRoles;
         randomTraitorRoles.AddRange(traitorPowerRoles);
 
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonTraitorRoles, RoleListOption.CommonTraitor, RoleListOption.RandomTraitor));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomTraitorRoles, RoleListOption.RandomTraitor, RoleListOption.RandomTraitor));
+        traitorRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonTraitorRoles, RoleListOption.CommonTraitor, RoleListOption.RandomTraitor));
+        traitorRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomTraitorRoles, RoleListOption.RandomTraitor, RoleListOption.RandomTraitor));
 
 
         // coven buckets
@@ -473,25 +275,25 @@ public static class TouRoleManagerPatches
         var covenPowerRoles = MiscUtils.GetRolesToAssign(Alignment.CovenPower, roleFilter);
         var covenUtilityRoles = MiscUtils.GetRolesToAssign(Alignment.CovenUtility, roleFilter);
 
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenDeceptionRoles, RoleListOption.CovenDeception, RoleListOption.CommonCoven));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenKillingRoles, RoleListOption.CovenKilling, RoleListOption.CommonCoven));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenUtilityRoles, RoleListOption.CovenUtility, RoleListOption.CommonCoven));
+        covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenDeceptionRoles, RoleListOption.CovenDeception, RoleListOption.CommonCoven));
+        covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenKillingRoles, RoleListOption.CovenKilling, RoleListOption.CommonCoven));
+        covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenUtilityRoles, RoleListOption.CovenUtility, RoleListOption.CommonCoven));
         var commonCovenRoles = covenDeceptionRoles;
         commonCovenRoles.AddRange(covenKillingRoles);
         commonCovenRoles.AddRange(covenUtilityRoles);
-        
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenPowerRoles, RoleListOption.CovenPower, RoleListOption.RandomCoven));
+
+        covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenPowerRoles, RoleListOption.CovenPower, RoleListOption.RandomCoven));
         var randomCovenRoles = commonCovenRoles;
         randomCovenRoles.AddRange(covenPowerRoles);
         if (OptionGroupSingleton<AUSOptions>.Instance.EnableAllOutliers)
         {
-            crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomCovenRoles, RoleListOption.CovenOutlier, RoleListOption.RandomCoven));
+            covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomCovenRoles, RoleListOption.CovenOutlier, RoleListOption.RandomCoven));
             randomCovenRoles.AddRange(covenOutlierRoles);
         }
 
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenOutlierRoles, RoleListOption.CovenOutlier, RoleListOption.CovenOutlier));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonCovenRoles, RoleListOption.CommonCoven, RoleListOption.RandomCoven));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomCovenRoles, RoleListOption.RandomCoven, RoleListOption.RandomCoven));
+        covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, covenOutlierRoles, RoleListOption.CovenOutlier, RoleListOption.CovenOutlier));
+        covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonCovenRoles, RoleListOption.CommonCoven, RoleListOption.RandomCoven));
+        covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomCovenRoles, RoleListOption.RandomCoven, RoleListOption.RandomCoven));
 
         // neutral buckets
         var neutralApocalypse = MiscUtils.GetRolesToAssign(Alignment.NeutralApocalypse, x => !excluded.Contains(x.Role));
@@ -502,12 +304,12 @@ public static class TouRoleManagerPatches
         var neutralOutlier = MiscUtils.GetRolesToAssign(Alignment.NeutralOutlier, roleFilter);
         var neutralPariah = MiscUtils.GetRolesToAssign(Alignment.NeutralPariah, roleFilter);
 
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralApocalypse, RoleListOption.NeutralApocalypse, RoleListOption.RandomNeutral));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralBenign, RoleListOption.NeutralBenign, RoleListOption.RandomNeutral));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralChaos, RoleListOption.NeutralChaos, RoleListOption.RandomNeutral));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralEvil, RoleListOption.NeutralEvil, RoleListOption.RandomNeutral));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralKilling, RoleListOption.NeutralKilling, RoleListOption.RandomNeutral));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralPariah, RoleListOption.NeutralPariah, RoleListOption.RandomNeutral));
+        neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralApocalypse, RoleListOption.NeutralApocalypse, RoleListOption.RandomNeutral));
+        neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralBenign, RoleListOption.NeutralBenign, RoleListOption.RandomNeutral));
+        neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralChaos, RoleListOption.NeutralChaos, RoleListOption.RandomNeutral));
+        neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralEvil, RoleListOption.NeutralEvil, RoleListOption.RandomNeutral));
+        neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralKilling, RoleListOption.NeutralKilling, RoleListOption.RandomNeutral));
+        neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralPariah, RoleListOption.NeutralPariah, RoleListOption.RandomNeutral));
         var randomNeutralRoles = neutralApocalypse;
         randomNeutralRoles.AddRange(neutralBenign);
         randomNeutralRoles.AddRange(neutralChaos);
@@ -516,12 +318,12 @@ public static class TouRoleManagerPatches
         randomNeutralRoles.AddRange(neutralPariah);
         if (OptionGroupSingleton<AUSOptions>.Instance.EnableAllOutliers)
         {
-            crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralOutlier, RoleListOption.NeutralOutlier, RoleListOption.RandomNeutral));
+            neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralOutlier, RoleListOption.NeutralOutlier, RoleListOption.RandomNeutral));
             randomNeutralRoles.AddRange(neutralOutlier);
         }
-        
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralOutlier, RoleListOption.NeutralOutlier, RoleListOption.NeutralOutlier));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomNeutralRoles, RoleListOption.RandomNeutral, RoleListOption.RandomNeutral));
+
+        neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, neutralOutlier, RoleListOption.NeutralOutlier, RoleListOption.NeutralOutlier));
+        neutralRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomNeutralRoles, RoleListOption.RandomNeutral, RoleListOption.RandomNeutral));
 
         // town buckets
         var townInvestigativeRoles = MiscUtils.GetRolesToAssign(Alignment.TownInvestigative, roleFilter);
@@ -532,56 +334,61 @@ public static class TouRoleManagerPatches
         var townSupportRoles = MiscUtils.GetRolesToAssign(Alignment.TownSupport, roleFilter);
         var townUtilityRoles = MiscUtils.GetRolesToAssign(Alignment.TownUtility, roleFilter);
 
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townInvestigativeRoles, RoleListOption.TownInvestigative, RoleListOption.CommonTown));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townKillingRoles, RoleListOption.TownKilling, RoleListOption.CommonTown));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townProtectiveRoles, RoleListOption.TownProtective, RoleListOption.CommonTown));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townSupportRoles, RoleListOption.TownSupport, RoleListOption.CommonTown));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townUtilityRoles, RoleListOption.TownUtility, RoleListOption.CommonTown));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townInvestigativeRoles, RoleListOption.TownInvestigative, RoleListOption.CommonTown));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townKillingRoles, RoleListOption.TownKilling, RoleListOption.CommonTown));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townProtectiveRoles, RoleListOption.TownProtective, RoleListOption.CommonTown));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townSupportRoles, RoleListOption.TownSupport, RoleListOption.CommonTown));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townUtilityRoles, RoleListOption.TownUtility, RoleListOption.CommonTown));
         var commonTownRoles = townInvestigativeRoles;
         commonTownRoles.AddRange(townKillingRoles);
         commonTownRoles.AddRange(townProtectiveRoles);
         commonTownRoles.AddRange(townSupportRoles);
         commonTownRoles.AddRange(townUtilityRoles);
         
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townPowerRoles, RoleListOption.TownPower, RoleListOption.RandomTown));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townPowerRoles, RoleListOption.TownPower, RoleListOption.RandomTown));
         var randomTownRoles = commonTownRoles;
         randomTownRoles.AddRange(townPowerRoles);
         if (OptionGroupSingleton<AUSOptions>.Instance.EnableAllOutliers)
         {
-            crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townOutlierRoles, RoleListOption.TownOutlier, RoleListOption.RandomTown));
+            townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townOutlierRoles, RoleListOption.TownOutlier, RoleListOption.RandomTown));
             randomTownRoles.AddRange(townOutlierRoles);
         }
 
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townOutlierRoles, RoleListOption.TownOutlier, RoleListOption.TownOutlier));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonTownRoles, RoleListOption.CommonTown, RoleListOption.RandomTown));
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomTownRoles, RoleListOption.RandomTown, RoleListOption.RandomTown));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, townOutlierRoles, RoleListOption.TownOutlier, RoleListOption.TownOutlier));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonTownRoles, RoleListOption.CommonTown, RoleListOption.RandomTown));
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomTownRoles, RoleListOption.RandomTown, RoleListOption.RandomTown));
 
         // imp buckets
         var mafiaDeception = MiscUtils.GetRolesToAssign(Alignment.MafiaDeception, roleFilter);
         var mafiaKilling = MiscUtils.GetRolesToAssign(Alignment.MafiaKilling, roleFilter);
         var mafiaSupport = MiscUtils.GetRolesToAssign(Alignment.MafiaSupport, roleFilter);
 
-        impRoles.AddRange(MiscUtils.ReadFromBucket(buckets, mafiaDeception, RoleListOption.MafiaDeception, RoleListOption.CommonMafia));
-        impRoles.AddRange(MiscUtils.ReadFromBucket(buckets, mafiaSupport, RoleListOption.MafiaSupport, RoleListOption.CommonMafia));
+        mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, mafiaDeception, RoleListOption.MafiaDeception, RoleListOption.CommonMafia));
+        mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, mafiaSupport, RoleListOption.MafiaSupport, RoleListOption.CommonMafia));
         var commonImpRoles = mafiaDeception;
         commonImpRoles.AddRange(mafiaSupport);
 
         var randomImpRoles = commonImpRoles;
-        impRoles.AddRange(MiscUtils.ReadFromBucket(buckets, mafiaKilling, RoleListOption.MafiaKilling, RoleListOption.CommonMafia));
+        mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, mafiaKilling, RoleListOption.MafiaKilling, RoleListOption.CommonMafia));
 
-        impRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonImpRoles, RoleListOption.CommonMafia, RoleListOption.RandomMafia));
-        impRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomImpRoles, RoleListOption.RandomMafia, RoleListOption.RandomMafia));
+        mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonImpRoles, RoleListOption.CommonMafia, RoleListOption.RandomMafia));
+        mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomImpRoles, RoleListOption.RandomMafia, RoleListOption.RandomMafia));
 
-        var randomNotInfiltratorRoles = randomTownRoles;
-        randomNotInfiltratorRoles.AddRange(randomNeutralRoles);
-        crewRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomNotInfiltratorRoles, RoleListOption.NotMafia));
+        var randomNotMafiaRoles = randomTownRoles;
+        randomNotMafiaRoles.AddRange(randomNeutralRoles);
+        randomNotMafiaRoles.AddRange(randomCovenRoles);
+        randomNotMafiaRoles.AddRange(randomTraitorRoles);
+        townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomNotMafiaRoles, RoleListOption.NotMafia));
 
         // Shuffle roles before handing them out.
         // This should ensure a statistically equal chance of all permutations of roles.
-        crewRoles.Shuffle();
-        impRoles.Shuffle();
+        townRoles.Shuffle();
+        neutralRoles.Shuffle();
+        mafiaRoles.Shuffle();
+        covenRoles.Shuffle();
+        traitorRoles.Shuffle();
 
-        var chosenImpRoles = impRoles.Take(impCount).ToList();
+        var chosenImpRoles = mafiaRoles.Take(impCount).ToList();
         chosenImpRoles = chosenImpRoles.Pad(impCount, (ushort)(RoleTypes)RoleId.Get<Mafioso>());
 
         var uniqueRole = MiscUtils.AllRoles.FirstOrDefault(x => x is ISpawnChange { NoSpawn: false });
@@ -599,19 +406,19 @@ public static class TouRoleManagerPatches
             chosenImpRoles.RemoveAll(x => x != RoleId.Get(uniqueRole.GetType()));
         }
 
-        foreach (var role in chosenImpRoles)
+        foreach (var role in neutralRoles)
         {
-            var num = HashRandom.FastNext(impostors.Count);
-            var player = impostors[num];
+            var num = HashRandom.FastNext(crewmates.Count);
+            var player = crewmates[num];
 
             player.RpcSetRole((RoleTypes)role);
 
-            impostors.RemoveAt(num);
-            
-            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"SelectRoles - player: '{player.Data.PlayerName}', role: '{RoleManager.Instance.GetRole((RoleTypes)role).NiceName}'");
+            crewmates.RemoveAt(num);
+
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
         }
 
-        foreach (var role in crewRoles)
+        foreach (var role in townRoles)
         {
             var num = HashRandom.FastNext(crewmates.Count);
             var player = crewmates[num];
@@ -620,7 +427,55 @@ public static class TouRoleManagerPatches
 
             crewmates.RemoveAt(num);
             
-            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"SelectRoles - player: '{player.Data.PlayerName}', role: '{RoleManager.Instance.GetRole((RoleTypes)role).NiceName}'");
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
+        }
+
+        int coven = 0;
+        foreach (var role in covenRoles)
+        {
+            var num = HashRandom.FastNext(crewmates.Count);
+            var player = crewmates[num];
+
+            if (coven == 4)
+            {
+                ushort newRole = townRoles.LastOrDefault();
+                player.RpcSetRole((RoleTypes)newRole);
+
+                if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)newRole).NiceName} to {player.Data.PlayerName}.");
+            }
+            else
+            {
+                player.RpcSetRole((RoleTypes)role);
+                coven++;
+
+                if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
+            }
+
+            crewmates.RemoveAt(num);
+        }
+
+        foreach (var role in traitorRoles)
+        {
+            var num = HashRandom.FastNext(crewmates.Count);
+            var player = crewmates[num];
+
+            player.RpcSetRole((RoleTypes)role);
+
+            crewmates.RemoveAt(num);
+
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
+        }
+
+        foreach (var role in chosenImpRoles)
+        {
+            var num = HashRandom.FastNext(impostors.Count);
+            var player = impostors[num];
+
+            player.RpcSetRole((RoleTypes)role);
+
+            impostors.RemoveAt(num);
+
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
         }
 
         // Assign vanilla roles to anyone who did not receive a role.
@@ -681,15 +536,8 @@ public static class TouRoleManagerPatches
         infected.AddRange(players.Take(impCount));
 
         LastImps = [.. infected.Select(x => x.ClientId)];
-        if (OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled)
-        {
-            AssignRolesFromRoleList(infected);
-        }
-        else
-        {
-            AssignRoles(infected);
-        }
 
+        AssignRolesFromRoleList(infected);
         AssignTargets();
 
         return false;
@@ -786,7 +634,6 @@ public static class TouRoleManagerPatches
     public static bool GetAdjustedImposters(IGameOptions __instance, ref int __result)
     {
         if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return true;
-        if (!OptionGroupSingleton<RoleOptions>.Instance.RoleListEnabled) return true;
 
         var players = GameData.Instance.PlayerCount;
         var impostors = 0;
@@ -839,11 +686,12 @@ public static class TouRoleManagerPatches
             impProbability += 3;
         }
 
-        if (players < 7 || impostors == 0) impostors = 1;
+        /*if (players < 7 || impostors == 0) impostors = 1;
         else if (players < 10 && impostors > 2) impostors = 2;
         else if (players < 14 && impostors > 3) impostors = 3;
         else if (players < 19 && impostors > 4) impostors = 4;
-        else if (impostors > 5) impostors = 5;
+        else if (impostors > 5) impostors = 5;*/
+        if (impostors > 4) impostors = 4;
         __result = impostors;
         return false;
     }

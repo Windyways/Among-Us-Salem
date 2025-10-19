@@ -9,12 +9,12 @@ namespace AmongUsSalem.Roles;
 #region Veteran
 #endregion
 public sealed class Veteran(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole, IContinueGame
+    : CrewmateRole(cppPtr), IWikiDiscoverable, ICustomAURole, IContinueGame
 {
     public bool continueGame => Charges > 0 || isAlerted;
     public string RoleName { get; set; } = "Veteran";
     public string revealText => "is a paranoid war hero.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Alert to kill visitors.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -40,7 +40,7 @@ public sealed class Veteran(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -62,7 +62,7 @@ public sealed class Veteran(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Alert",
-            "If you go on Alert at night you will deal a Powerful Attack to." +
+            "If you go on Alert at night you will deal a Powerful Attack to your visitors." +
             "\nYou gain Basic Defense while on Alert.",
             AUSAssets.Veteran_Alert)
     ];

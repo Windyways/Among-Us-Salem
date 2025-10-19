@@ -33,11 +33,16 @@ public static class ShipStatus_CalculateLightRadius
             return;
         }
 
-        if (playerControl.Data.Role is IAUSRole owRole)
+        if (playerControl.Data.Role is ICustomAURole ausRole)
         {
+            if (playerControl.Is(Faction.Coven))
+            {
+                __result = __instance.MaxLightRadius * OptionGroupSingleton<CovenOptions>.Instance.Vision;
+                return;
+            }
             if (!playerControl.Is(Faction.Town))
             {
-                __result = __instance.MaxLightRadius * owRole.visionValue;
+                __result = __instance.MaxLightRadius * ausRole.visionValue;
                 return;
             }
         }

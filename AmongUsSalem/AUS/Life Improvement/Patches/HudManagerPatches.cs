@@ -43,7 +43,9 @@ public static class HudManagerPatches
 
             (PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse) && player.Is(Alignment.NeutralApocalypse)) ||
             (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasDied()) ||
-            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.Data.Role is IRevealable revealable && revealable.IsRevealed) ||
+
+            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasModifier<GlobalReveal>()) ||
+            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.TryGetModifier<RoleLearn>(out var roleLearned) && roleLearned.Visitor == PlayerControl.LocalPlayer) ||
             (PlayerControl.LocalPlayer == player)
             ;
     }
@@ -292,7 +294,7 @@ public static class HudManagerPatches
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
                     // This shows the role!
-                    if (!player.HasModifier<Cleaned>())
+                    if (!player.HasModifier<DeepfakeRole>())
                     {
                         color = role.TeamColor;
                         if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
@@ -303,17 +305,17 @@ public static class HudManagerPatches
                         }
                         else roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
                     }
-                    else
+                    else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole))
                     {
-                        color = AUSColors.Neutral;
-                        roleName = $"<size=80%>{color.ToTextColor()}Cleaned</color></size>";
+                        color = fakeRole.roleColor;
+                        roleName = $"<size=80%>{color.ToTextColor()}{fakeRole.roleName}</color></size>";
                     }
 
                     if (VisibilityFlag(player))
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
 
-                        if (!player.HasModifier<Cleaned>())
+                        if (!player.HasModifier<DeepfakeRole>())
                         {
                             color = roleWhenAlive.TeamColor;
 
@@ -323,10 +325,10 @@ public static class HudManagerPatches
                             }
                             else roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
                         }
-                        else
+                        else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole))
                         {
-                            color = AUSColors.Neutral;
-                            roleName = $"<size=80%>{color.ToTextColor()}Cleaned</color></size>";
+                            color = fakeRole.roleColor;
+                            roleName = $"<size=80%>{color.ToTextColor()}{fakeRole.roleName}</color></size>";
                         }
                     }
 
@@ -344,7 +346,7 @@ public static class HudManagerPatches
                 }
 
                 if (((taskOpt.ShowTaskInMeetings && player.AmOwner) ||
-                     (PlayerControl.LocalPlayer.HasDied() && taskOpt.ShowTaskDead)) && player.IsCrewmate())
+                     (PlayerControl.LocalPlayer.HasDied() && taskOpt.ShowTaskDead && genOpt.TheDeadKnow)) && player.IsCrewmate())
                 {
                     if (roleName != string.Empty)
                     {
@@ -452,22 +454,36 @@ public static class HudManagerPatches
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
                     // This shows the role!
-
-                    color = role.TeamColor;
-                    if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
-
-                    if (player.HasModifier<JackalRecruit>() && (player.AmOwner() || PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() || PlayerControl.LocalPlayer.IsRole<Jackal>()))
+                    if (!player.HasModifier<DeepfakeRole>())
                     {
-                        roleName = $"<size=80%>{AUSColors.GradientColorText("404040", "b8b8b8", player.Data.Role.NiceName)}</size>";
+                        color = role.TeamColor;
+                        if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
+
+                        if (player.HasModifier<JackalRecruit>() && (player.AmOwner() || PlayerControl.LocalPlayer.HasModifier<JackalRecruit>() || PlayerControl.LocalPlayer.IsRole<Jackal>() || player.HasDied()))
+                        {
+                            roleName = $"<size=80%>{AUSColors.GradientColorText("404040", "b8b8b8", player.Data.Role.NiceName)}</size>";
+                        }
+                        else roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
                     }
-                    else roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
+                    else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole))
+                    {
+                        color = fakeRole.roleColor;
+                        roleName = $"<size=80%>{color.ToTextColor()}{fakeRole.roleName}</color></size>";
+                    }
 
                     if (VisibilityFlag(player) || player.Data.IsDead)
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
-                        color = roleWhenAlive.TeamColor;
-
-                        roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
+                        if (!player.HasModifier<DeepfakeRole>())
+                        {
+                            color = roleWhenAlive.TeamColor;
+                            roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
+                        }
+                        else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole))
+                        {
+                            color = fakeRole.roleColor;
+                            roleName = $"<size=80%>{color.ToTextColor()}{fakeRole.roleName}</color></size>";
+                        }
                     }
                     if (PlayerControl.LocalPlayer.HasDied() && isVisible && player.TryGetModifier<DeathHandlerModifier>(out var deathMod))
                     {
@@ -478,7 +494,7 @@ public static class HudManagerPatches
                 }
 
                 if (((taskOpt.ShowTaskRound && player.AmOwner) || (PlayerControl.LocalPlayer.HasDied() &&
-                                                                   taskOpt.ShowTaskDead && isVisible)) && player.IsCrewmate())
+                                                                   taskOpt.ShowTaskDead && genOpt.TheDeadKnow && isVisible)) && player.IsCrewmate())
                 {
                     if (roleName != string.Empty)
                     {
@@ -575,43 +591,31 @@ public static class HudManagerPatches
             var maxSlots = players < 15 ? players : 15;
 
             var list = OptionGroupSingleton<RoleOptions>.Instance;
-            if (list.RoleListEnabled)
-            {
-                for (var i = 0; i < maxSlots; i++)
-                {
-                    var slotValue = i switch
-                    {
-                        0 => list.Slot1,
-                        1 => list.Slot2,
-                        2 => list.Slot3,
-                        3 => list.Slot4,
-                        4 => list.Slot5,
-                        5 => list.Slot6,
-                        6 => list.Slot7,
-                        7 => list.Slot8,
-                        8 => list.Slot9,
-                        9 => list.Slot10,
-                        10 => list.Slot11,
-                        11 => list.Slot12,
-                        12 => list.Slot13,
-                        13 => list.Slot14,
-                        14 => list.Slot15,
-                        _ => -1
-                    };
 
-                    rolelistBuilder.AppendLine(GetRoleForSlot(slotValue));
-                    objText.text = $"<color=#FFD700>Set Role List:</color>\n{rolelistBuilder}";
-                }
-            }
-            else
+            for (var i = 0; i < maxSlots; i++)
             {
-                rolelistBuilder.AppendLine(CultureInfo.InvariantCulture,
-                    $"<color=#999999>Neutral</color> Associates: {list.MinNeutralBenign.Value} Min, {list.MaxNeutralBenign.Value} Max");
-                rolelistBuilder.AppendLine(CultureInfo.InvariantCulture,
-                    $"<color=#999999>Neutral</color> Evils: {list.MinNeutralEvil.Value} Min, {list.MaxNeutralEvil.Value} Max");
-                rolelistBuilder.AppendLine(CultureInfo.InvariantCulture,
-                    $"<color=#999999>Neutral</color> Predator: {list.MinNeutralKiller.Value} Min, {list.MaxNeutralKiller.Value} Max");
-                objText.text = $"<color=#FFD700>Neutral Faction List:</color>\n{rolelistBuilder}";
+                var slotValue = i switch
+                {
+                    0 => list.Slot1,
+                    1 => list.Slot2,
+                    2 => list.Slot3,
+                    3 => list.Slot4,
+                    4 => list.Slot5,
+                    5 => list.Slot6,
+                    6 => list.Slot7,
+                    7 => list.Slot8,
+                    8 => list.Slot9,
+                    9 => list.Slot10,
+                    10 => list.Slot11,
+                    11 => list.Slot12,
+                    12 => list.Slot13,
+                    13 => list.Slot14,
+                    14 => list.Slot15,
+                    _ => -1
+                };
+
+                rolelistBuilder.AppendLine(GetRoleForSlot(slotValue));
+                objText.text = $"<color=#FFD700>Set Role List:</color>\n{rolelistBuilder}";
             }
 
             objText.alignment = TextAlignmentOptions.TopLeft;
@@ -741,11 +745,11 @@ public static class HudManagerPatches
         }
 
         // TERRIBLE FOR PERFORMANCE (FindObjectsOfType is very costly)
-        var body = Object.FindObjectsOfType<DeadBody>()
-            .FirstOrDefault(x => x.ParentId == PlayerControl.LocalPlayer.PlayerId);
-        var fakePlayer = FakePlayer.FakePlayers.FirstOrDefault(x => x.PlayerId == PlayerControl.LocalPlayer.PlayerId);
+        /*var body = Object.FindObjectsOfType<DeadBody>()
+            .FirstOrDefault(x => x.ParentId == PlayerControl.LocalPlayer.PlayerId);*/
+        //var fakePlayer = FakePlayer.FakePlayers.FirstOrDefault(x => x.PlayerId == PlayerControl.LocalPlayer.PlayerId);
 
-        if (((PlayerControl.LocalPlayer.Data.IsDead && !body && !fakePlayer?.body &&
+        if (((PlayerControl.LocalPlayer.Data.IsDead && /*!body && !fakePlayer?.body &&*/
               (PlayerControl.LocalPlayer.Data.Role is IGhostRole { Caught: true } ||
                PlayerControl.LocalPlayer.Data.Role is not IGhostRole)) || TutorialManager.InstanceExists)
             && Input.GetAxis("Mouse ScrollWheel") != 0 && !MeetingHud.Instance && Minigame.Instance == null &&

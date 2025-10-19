@@ -194,20 +194,7 @@ public static class InstanceControlPatches
                     MeetingHud.Instance.ClearVote();
                 }
 
-                foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-                {
-                    if (!player.HasDied())
-                    {
-                        if (player.IsRole<Arsonist>()) CalculatedVoting.RandomArsonistVoting(player, __instance);
-                        else if (player.IsRole<Vampire>() || player.HasModifier<VampireRecruit>()) CalculatedVoting.RandomVampireVoting(player, __instance);
-                        else if (player.HasModifier<JackalRecruit>()) CalculatedVoting.RandomJackalRecruitVoting(player, __instance);
-                        else if (player.IsRole<Jackal>()) CalculatedVoting.RandomJackalVoting(player, __instance);
-                        else if (player.Is(Faction.Town)) CalculatedVoting.RandomTownVoting(player, __instance);
-                        else if (player.Is(Faction.Mafia)) CalculatedVoting.RandomMafiaVoting(player, __instance);
-                        else if (player.Is(Faction.Neutral)) CalculatedVoting.RandomNeutralVoting(player, __instance);
-                        else if (player.Is(Faction.Coven)) CalculatedVoting.RandomCovenVoting(player, __instance);
-                    }
-                }
+                CalculatedVoting.DoVotes(__instance);
             }
             else
             {

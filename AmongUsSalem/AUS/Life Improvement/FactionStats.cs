@@ -156,7 +156,8 @@ namespace AmongUsSalem.LifeImprovement
             }
 
             if (rates == "") rates = "There are no data logged on this slot.";
-            return rates;
+            return "<size=60%>" + rates + "</size>";
+
         }
     }
 }

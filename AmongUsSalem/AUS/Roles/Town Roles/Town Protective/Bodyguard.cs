@@ -9,11 +9,11 @@ namespace AmongUsSalem.Roles;
 #region Bodyguard
 #endregion
 public sealed class Bodyguard(IntPtr cppPtr)
-    : CrewmateRole(cppPtr), IWikiDiscoverable, IAUSRole
+    : CrewmateRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
     public string RoleName { get; set; } = "Bodyguard";
     public string revealText => "is a trained protector.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Guard a player with your life.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -38,7 +38,7 @@ public sealed class Bodyguard(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return IAUSRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -92,8 +92,6 @@ public sealed class Bodyguard(IntPtr cppPtr)
 
         var bodyguard = player.GetRole<Bodyguard>();
         bodyguard.GuardedPlayer = target;
-
-        if (target.Data.Role is IAUSRole ausRole) ausRole.ApplyDefense(Defense.Powerful);
     }
 
     [MethodRpc((uint)AUSRpc.Bodyguard_SelfProtect, SendImmediately = true)]
@@ -106,7 +104,7 @@ public sealed class Bodyguard(IntPtr cppPtr)
         }
 
         var bodyguard = player.GetRole<Bodyguard>();
-        if (bodyguard.Player.Data.Role is IAUSRole ausRole) ausRole.ApplyDefense(Defense.Basic);
+        if (bodyguard.Player.Data.Role is ICustomAURole ausRole) ausRole.ApplyDefense(Defense.Basic);
     }
 
     [MethodRpc((uint)AUSRpc.Bodyguard_Notify, SendImmediately = true)]

@@ -4,7 +4,7 @@ public static class AttackDefenseMechanic
 {
     public static bool CanKill(this PlayerControl player, PlayerControl target, Attack overrideAttack = Attack.None)
     {
-        if (player.Data.Role is IAUSRole role && target.Data.Role is IAUSRole targetRole)
+        if (player.Data.Role is ICustomAURole role && target.Data.Role is ICustomAURole targetRole)
         {
             if (overrideAttack > Attack.None)
             {

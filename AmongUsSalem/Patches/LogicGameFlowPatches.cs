@@ -78,7 +78,7 @@ public static class LogicGameFlowPatches
             else if (role is Vampire) // Vampire end game early checks
             {
                 if (
-                    other.Data.Role is HexMaster or VoodooMaster or Mayor or Jackal or Shroud
+                    other.Data.Role is HexMaster or VoodooMaster or Mayor or Jackal or Shroud or Arsonist
                     || (other.Data.Role is Conjurer conjurer && conjurer.Charges > 0)
                     || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
                     || (other.Data.Role is Veteran veteran && veteran.Charges > 0)

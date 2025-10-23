@@ -112,7 +112,11 @@ public sealed class Jinx(IntPtr cppPtr)
 
                 if (visitor.AmOwner())
                 {
-                    if (jinx.Player.CanKill(visitor)) MiscUtils.RpcApplyDeathReason(jinx.Player, visitor, DeathReasonShow.KilledByAJinx);
+                    if (jinx.Player.CanKill(visitor))
+                    {
+                        jinx.Player.RpcAddModifier<InvisibleStatus>(OptionGroupSingleton<AUSOptions>.Instance.InvisDuration);
+                        MiscUtils.RpcApplyDeathReason(jinx.Player, visitor, DeathReasonShow.KilledByAJinx);
+                    }
                     else if (Debugger.IsDebuggerActive)
                     {
                         if (!CalculatedVoting.QueueEvidenceAgainst.ContainsValue(jinx.Player) && !jinx.Player.IsImpureToTown() && !jinx.Player.Is(Faction.Town))
@@ -193,14 +197,9 @@ public sealed class Jinx_Jinx : AmongUsSalemRoleButton<Jinx, PlayerControl>
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) &&
-            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction == Role.Faction);
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            x != Role.JinxedPlayer && 
+            (x.Data.Role is ICustomAURole customRole && customRole.Faction != Role.Faction));
     }
 }
 

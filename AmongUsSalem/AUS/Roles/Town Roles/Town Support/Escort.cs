@@ -155,13 +155,8 @@ public sealed class Escort_Distract : AmongUsSalemRoleButton<Escort, PlayerContr
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) && Role.DistractedPlayer != target;
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            x != Role.DistractedPlayer);
     }
 }
 

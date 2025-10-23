@@ -9,13 +9,15 @@ public static class MessageTexts
 {
     public static string RevealRole(PlayerControl player)
     {
-        var role = player.GetOWRole();
+        if (player.Data.Role is ICustomAURole customRole)
+        {
+            string text = player.GetDefaultAppearance().PlayerName + " ";
+            text += customRole.revealText;
 
-        string text = player.GetDefaultAppearance().PlayerName + " ";
-        text += role.revealText;
+            return text + $" they must be the <color=#" + customRole.RoleColor.ToHtmlStringRGBA() + $">{customRole.RoleName}!";
+        }
 
-        var roleColor = MiscUtils.GetRoleColour(role.RoleName);
-        return text + $" they must be the <color=#" + roleColor.ToHtmlStringRGBA() + $">{role.RoleName}!";
+        return "";
     }
 
     public static string UnknownObstacle(PlayerControl target)

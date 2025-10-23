@@ -175,15 +175,9 @@ public sealed class Illusionist_Cast : AmongUsSalemRoleButton<Illusionist, Playe
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) &&
-            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction != Role.Faction && !Role.Necronomicon) &&
-            Role.IllusionedPlayer != target;
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            x != Role.IllusionedPlayer &&
+            !(x.Data.Role is ICustomAURole customRole && customRole.Faction == Role.Faction && !Role.Necronomicon));
     }
 }
 

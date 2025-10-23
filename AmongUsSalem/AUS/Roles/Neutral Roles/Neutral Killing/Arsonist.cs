@@ -33,6 +33,7 @@ public sealed class Arsonist(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.ArsonistRoleCard,
+        CanUseVent = OptionGroupSingleton<Arsonist_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
@@ -181,14 +182,8 @@ public sealed class Arsonist_Douse : AmongUsSalemRoleButton<Arsonist, PlayerCont
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) &&
-            !Role.DousedPlayers.Contains(target.PlayerId);
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !Role.DousedPlayers.Contains(x.PlayerId));
     }
 }
 
@@ -242,4 +237,10 @@ public sealed class Arsonist_Options : AbstractOptionGroup<Arsonist>
 
     [ModdedNumberOption("<color=#ee7600>Arsonist</color> <color=#4a86e8>Douse</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
+
+    [ModdedNumberOption("<color=#ee7600>Arsonist</color> Vision", 0.25f, 5f, 0.25f, MiraNumberSuffixes.Multiplier, "0.00")]
+    public float Vision { get; set; } = 1f;
+
+    [ModdedToggleOption("<color=#ee7600>Arsonist</color> Can Vent")]
+    public bool CanVent { get; set; } = false;
 }

@@ -63,6 +63,16 @@ public static class CovenNecronomiconMechanic
                 button.OverrideSprite(AUSAssets.NecronomiconButton.LoadAsset());
                 button.OverrideName("Attack & Jinx");
             }
+            else if (player.IsRole<Enchanter>())
+            {
+                var button = CustomButtonSingleton<Enchanter_Enchant>.Instance;
+                button.OverrideSprite(AUSAssets.NecronomiconButton.LoadAsset());
+                button.OverrideName("Attack & Enchant");
+
+                var button2 = CustomButtonSingleton<Enchanter_AlteratePlayer>.Instance;
+                button2.OverrideSprite(AUSAssets.NecronomiconButton.LoadAsset());
+                button2.OverrideName("Attack & Alterate");
+            }
         }
     }
 
@@ -107,6 +117,16 @@ public static class CovenNecronomiconMechanic
                         var button = CustomButtonSingleton<Jinx_Jinx>.Instance;
                         button.OverrideSprite(AUSAssets.Jinx_Jinx.LoadAsset());
                         button.OverrideName("Jinx");
+                    }
+                    else if (covenRole.Player.IsRole<Enchanter>())
+                    {
+                        var button = CustomButtonSingleton<Enchanter_Enchant>.Instance;
+                        button.OverrideSprite(AUSAssets.Enchanter_Enchant.LoadAsset());
+                        button.OverrideName("Enchant");
+
+                        var button2 = CustomButtonSingleton<Enchanter_AlteratePlayer>.Instance;
+                        button2.OverrideSprite(AUSAssets.Enchanter_Alterate.LoadAsset());
+                        button2.OverrideName("Alterate");
                     }
                 }
             }

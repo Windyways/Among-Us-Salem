@@ -158,6 +158,16 @@ public static class AUSExtentions
         return player.IsNoCrime() || player.IsSearchedAndInno();
     }
 
+    public static bool IsEnchanted(this PlayerControl player)
+    {
+        foreach (var enchanters in MiscUtils.GetPlayersWithRole<Enchanter>())
+        {
+            var enchanter = enchanters.GetRole<Enchanter>();
+            return enchanter.EnchantedPlayers.Contains(player.PlayerId);
+        }
+        return false;
+    }
+
     public static bool IsFramed(this PlayerControl player)
     {
         foreach (var framers in MiscUtils.GetPlayersWithRole<Framer>())
@@ -188,7 +198,7 @@ public static class AUSExtentions
         return false;
     }
 
-    /*public static bool IsConsortDistracted(this PlayerControl player)
+    public static bool IsConsortDistracted(this PlayerControl player)
     {
         foreach (var consorts in MiscUtils.GetPlayersWithRole<Consort>())
         {
@@ -196,7 +206,7 @@ public static class AUSExtentions
             return consort.DistractedPlayer == player && !player.HasModifier<RBimmune>();
         }
         return false;
-    }*/
+    }
 
     public static bool IsDistracted(this PlayerControl player)
     {
@@ -234,6 +244,16 @@ public static class AUSExtentions
         {
             var bodyguard = bodyguards.GetRole<Bodyguard>();
             return bodyguard.GuardedPlayer == player;
+        }
+        return false;
+    }
+
+    public static bool IsOracleBarriered(this PlayerControl player)
+    {
+        foreach (var oracles in MiscUtils.GetPlayersWithRole<Oracle>())
+        {
+            var oracle = oracles.GetRole<Oracle>();
+            return oracle.AegisPlayers.Contains(player.PlayerId);
         }
         return false;
     }

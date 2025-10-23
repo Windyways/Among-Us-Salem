@@ -1,4 +1,4 @@
-﻿/*using System.Text;
+﻿using System.Text;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
 using AmongUsSalem.Utilities;
@@ -11,9 +11,9 @@ namespace AmongUsSalem.LifeImprovement.Roles;
 public sealed class Consort(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
-    public string RoleName { get; set; } = Consort, "Consort");
-    public string revealText => "has a desire or deceive.";
-    public string RoleDescription => "Placeholder.";
+    public string RoleName { get; set; } = "Consort";
+    public string revealText => "is a beautiful person working for the Mafia.";
+    public string RoleDescription => "Distract to stop abilities.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
@@ -51,7 +51,7 @@ public sealed class Consort(IntPtr cppPtr)
             "\n<color=#fdbc00>Sub-alignment:</color> <color=#DD0000>Mafia</color> <color=#1e45d4>Deception</color>" +
             "\n<color=#fdbc00>Goal:</color> Kill anyone that will not submit to the Mafia." +
             $"\n\nAttributes:" +
-            "\nTBD." +
+            "\nIf all Mafia Killing roles are dead, you will be promoted to Mafioso." +
             MiscUtils.AppendOptionsText(GetType());
     }
 
@@ -59,7 +59,8 @@ public sealed class Consort(IntPtr cppPtr)
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
         new("Distract",
-            "You can Distract a player during the round. You will kill your target.",
+            "You can Distract a player at Night." +
+            "\n\nYou will RoleBlock your target, preventing them from using their abilities.",
             AUSAssets.Consort_Distract)
     ];
 
@@ -76,23 +77,40 @@ public sealed class Consort(IntPtr cppPtr)
         consort.DistractedPlayer = target;
     }
 
-    [MethodRpc((uint)AUSRpc.Consort_Notify, SendImmediately = true)]
-    public static bool RpcConsort_Notifyy(PlayerControl visitor, PlayerControl target)
+    [MethodRpc((uint)AUSRpc.RpcNotifyConsort, SendImmediately = true)]
+    public static bool RpcNotifyConsort(PlayerControl visitor, PlayerControl target)
     {
         foreach (var consorts in MiscUtils.GetPlayersWithRole<Consort>())
         {
             var consort = consorts.GetRole<Consort>();
-            if (consort.DistractedPlayer == target)
+            if (consort.DistractedPlayer == visitor)
             {
-                if (visitor.AmOwner())
+                if (visitor.AmOwner)
                 {
+                    Coroutines.Start(MiscUtils.CoFlash(AUSColors.Town));
                     MiscUtils.ShowNotification(Escort.Info(), Color.white, AUSAssets.EscortRoleCard.LoadAsset());
                     MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Escort Info"), Escort.Info());
+
+                    var buttons = CustomButtonManager.Buttons.Where(x => x.Enabled(visitor.Data.Role) && x.Timer <= 0).ToList();
+                    foreach (var button in buttons) button.ResetCooldownAndOrEffect();
                 }
             }
         }
 
         return false;
+    }
+
+    public override void OnMeetingStart()
+    {
+        DistractedPlayer = null;
+    }
+
+    public override void Initialize(PlayerControl player)
+    {
+        RoleBehaviourStubs.Initialize(this, player);
+
+        player.RpcAddModifier<RBimmune>();
+        if (player.TryGetModifier<RBimmune>(out var rb)) rb.permanent = true;
     }
 
     public PlayerControl DistractedPlayer;
@@ -132,23 +150,18 @@ public sealed class Consort_Distract : AmongUsSalemRoleButton<Consort, PlayerCon
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) &&
-            Role.DistractedPlayer != target;
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance, predicate: x =>
+            x != Role.DistractedPlayer);
     }
 }
+
 
 #region Consort_Options
 #endregion
 public sealed class Consort_Options : AbstractOptionGroup<Consort>
 {
-    public override string GroupName => Consort, "Consort");
+    public override string GroupName => "Consort";
 
     [ModdedNumberOption("<color=#DD0000>Consort</color> <color=#4a86e8>Distract</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
-}*/
+}

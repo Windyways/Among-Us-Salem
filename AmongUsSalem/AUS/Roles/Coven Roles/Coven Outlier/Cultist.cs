@@ -111,14 +111,8 @@ public sealed class Covenite_Attack : AmongUsSalemRoleButton<Covenite, PlayerCon
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) &&
-            !(target.Data.Role is ICustomAURole ausrole && ausrole.Faction == Role.Faction);
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            (x.Data.Role is ICustomAURole customRole && customRole.Faction != Role.Faction));
     }
 
     public override bool CanUse()

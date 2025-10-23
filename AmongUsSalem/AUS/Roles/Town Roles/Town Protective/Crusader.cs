@@ -111,7 +111,11 @@ public sealed class Crusader(IntPtr cppPtr)
 
                 if (target.AmOwner())
                 {
-                    if (crusader.Player.CanKill(visitor)) MiscUtils.RpcApplyDeathReason(crusader.Player, visitor, DeathReasonShow.KilledByACrusader);
+                    if (crusader.Player.CanKill(visitor))
+                    {
+                        crusader.Player.RpcAddModifier<InvisibleStatus>(OptionGroupSingleton<AUSOptions>.Instance.InvisDuration);
+                        MiscUtils.RpcApplyDeathReason(crusader.Player, visitor, DeathReasonShow.KilledByACrusader);
+                    }
                     if (attacking) MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Crusader Info"), Info(Type.AttackedButProtected));
                 }
 
@@ -157,13 +161,8 @@ public sealed class Crusader_Fortify : AmongUsSalemRoleButton<Crusader, PlayerCo
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) && Role.FortifiedPlayer != target;
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            x != Role.FortifiedPlayer);
     }
 }
 

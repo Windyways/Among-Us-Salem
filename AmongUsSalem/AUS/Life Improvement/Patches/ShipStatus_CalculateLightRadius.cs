@@ -1,11 +1,12 @@
-﻿using HarmonyLib;
-using MiraAPI.GameOptions;
-using MiraAPI.Modifiers;
+﻿using AmongUsSalem.LifeImprovement.Roles;
 using AmongUsSalem.Modifiers.Impostor;
 using AmongUsSalem.Modules;
 using AmongUsSalem.Options;
 using AmongUsSalem.Roles;
 using AmongUsSalem.Utilities;
+using HarmonyLib;
+using MiraAPI.GameOptions;
+using MiraAPI.Modifiers;
 using UnityEngine;
 
 namespace AmongUsSalem.Patches;
@@ -40,9 +41,24 @@ public static class ShipStatus_CalculateLightRadius
                 __result = __instance.MaxLightRadius * OptionGroupSingleton<CovenOptions>.Instance.Vision;
                 return;
             }
-            if (!playerControl.Is(Faction.Town))
+            else if (playerControl.IsRole<Shroud>())
             {
-                __result = __instance.MaxLightRadius * ausRole.visionValue;
+                __result = __instance.MaxLightRadius * OptionGroupSingleton<Shroud_Options>.Instance.Vision;
+                return;
+            }
+            else if (playerControl.IsRole<Arsonist>())
+            {
+                __result = __instance.MaxLightRadius * OptionGroupSingleton<Arsonist_Options>.Instance.Vision;
+                return;
+            }
+            else if (playerControl.IsRole<Vampire>())
+            {
+                __result = __instance.MaxLightRadius * OptionGroupSingleton<Vampire_Options>.Instance.Vision;
+                return;
+            }
+            else if (playerControl.IsRole<Jackal>())
+            {
+                __result = __instance.MaxLightRadius * OptionGroupSingleton<Jackal_Options>.Instance.Vision;
                 return;
             }
         }

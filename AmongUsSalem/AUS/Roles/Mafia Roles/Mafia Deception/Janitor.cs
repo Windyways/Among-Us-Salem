@@ -1,7 +1,11 @@
 ﻿using System.Text;
+using AmongUsSalem.Events;
+using AmongUsSalem.Modules;
+using AmongUsSalem.Modules.Components;
+using AmongUsSalem.Options;
+using AmongUsSalem.Utilities;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
-using AmongUsSalem.Utilities;
 using UnityEngine;
 
 namespace AmongUsSalem.LifeImprovement.Roles;
@@ -164,9 +168,8 @@ public sealed class Janitor_CleanPlayer : AmongUsSalemRoleButton<Janitor, Player
         {
             var button = CustomButtonSingleton<Janitor_CleanBody>.Instance;
             button.ResetCooldownAndOrEffect();
+            button.DecreaseUses();
         }
-
-        IncreaseUses(); // don't use up a charge here.
 
         Janitor.RpcJanitor_Clean(Player, Target);
         MiscUtils.PostSuccessfulVisit(Player, Target, false, true);
@@ -174,7 +177,8 @@ public sealed class Janitor_CleanPlayer : AmongUsSalemRoleButton<Janitor, Player
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance);
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance, predicate: x =>
+            x != Role.CleanedPlayer && !(x.TryGetModifier<DeepfakeRole>(out var deepfake) && deepfake.roleName == "Cleaned"));
     }
 }
 
@@ -183,7 +187,7 @@ public sealed class Janitor_CleanPlayer : AmongUsSalemRoleButton<Janitor, Player
 public sealed class Janitor_CleanBody : AmongUsSalemRoleButton<Janitor, DeadBody>
 {
     public override string Name => "Clean (Body)";
-    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
+    public override BaseKeybind Keybind => Keybinds.SecondaryAction;
     public override Color TextOutlineColor => AUSColors.Mafia;
     public override float Cooldown => OptionGroupSingleton<Janitor_Options>.Instance.Cooldown;
     public override int MaxUses => (int)OptionGroupSingleton<Janitor_Options>.Instance.Charges;

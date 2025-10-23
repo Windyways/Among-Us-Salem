@@ -1,8 +1,9 @@
 ﻿using System.Text;
+using AmongUsSalem.LifeImprovement.Roles;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
-using Color = UnityEngine.Color;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace AmongUsSalem.Roles;
 
@@ -122,10 +123,11 @@ public sealed class Bodyguard(IntPtr cppPtr)
             {
                 if (target.AmOwner()) // Always put AmOwner inside of Rpcs that have RpcCustomMurder, or for client side notifications!
                 {
-                    // Might have to test these with other ppl since this doesnt appear to kill using MCI but shows the info.
                     if (bodyguard.Player.CanKill(visitor)) MiscUtils.RpcApplyDeathReason(bodyguard.Player, visitor, DeathReasonShow.KilledByABodyguard);
+                    
                     if (bodyguard.Player.CanKill(bodyguard.Player)) MiscUtils.RpcApplyDeathReason(bodyguard.Player, bodyguard.Player, DeathReasonShow.DiedWhileDefendingTheirTarget);
-
+                    else bodyguard.Player.RpcAddModifier<InvisibleStatus>(OptionGroupSingleton<AUSOptions>.Instance.InvisDuration);
+                   
                     MiscUtils.AddFakeChat(target.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Bodyguard Info"), Info(Type.AttackedButProtected));
                 }
             }
@@ -176,13 +178,8 @@ public sealed class Bodyguard_Guard : AmongUsSalemRoleButton<Bodyguard, PlayerCo
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) && Role.GuardedPlayer != target;
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            x != Role.GuardedPlayer);
     }
 }
 

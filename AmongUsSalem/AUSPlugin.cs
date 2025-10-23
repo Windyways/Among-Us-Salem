@@ -74,9 +74,9 @@ public partial class AUSPlugin : BasePlugin, IMiraPlugin
         IL2CPPChainloader.Instance.Finished += ModCompatibility.Initialize; // Initialise AFTER the mods are loaded to ensure maximum parity (no need for the soft dependency either then)
         IL2CPPChainloader.Instance.Finished += ModNewsFetcher.CheckForNews; // Checks for mod announcements after everything is loaded to avoid Epic Games crashing
 
-        var path = Path.GetDirectoryName(Assembly.GetAssembly(typeof(AUSPlugin))!.Location) + "\\touhats.catalog";
+        /*var path = Path.GetDirectoryName(Assembly.GetAssembly(typeof(AUSPlugin))!.Location) + "\\touhats.catalog";
         AddressablesLoader.RegisterCatalog(path);
-        AddressablesLoader.RegisterHats("touhats");
+        AddressablesLoader.RegisterHats("touhats");*/
 
         DeadSeeGhosts = Config.Bind("LocalSettings", "DeadSeeGhosts", true, "If you see other ghosts when dead");
         ColorPlayerName = Config.Bind("LocalSettings", "ColorPlayerName", false,

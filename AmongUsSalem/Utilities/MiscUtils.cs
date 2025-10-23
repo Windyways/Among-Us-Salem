@@ -94,45 +94,64 @@ public static class MiscUtils
 
     public static bool SuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
     {
+        bool isSuccessful = true;
+
         if (player.IsDistracted()) return Escort.RpcEscort_Notify(player, target);
-        // if (player.IsConsortDistracted()) return Escort.RpcConsort_Notify(player, target);
+        if (player.IsConsortDistracted()) return Consort.RpcNotifyConsort(player, target);
 
         if ((isAttacking || player.IsShrouded()) && isVisiting) Statistics.RpcAddMurder(player);
         if (!player.IsSameFaction(target)) Statistics.RpcAddTrespassing(player);
 
         // Town protectives when target is attacked! (or visited if you're Crusader).
-        if (target.IsGuarded() && (isAttacking || player.IsShrouded()) && isVisiting && !player.IsIllusioned()) Bodyguard.RpcBodyguard_Notify(player, target);
+        if (target.IsGuarded() && (isAttacking || player.IsShrouded()) && isVisiting && !player.IsIllusioned())
+        {
+            isSuccessful = false;
+            Bodyguard.RpcBodyguard_Notify(player, target);
+        }
 
         // Doesn't stop visit.
         if (player.IsShrouded() && isVisiting)
-        {  
+        {
             var buttons = CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role) && x.Timer <= 0).ToList();
             foreach (var button in buttons) button.ResetCooldownAndOrEffect();
             Shroud.RpcShroud_Notify(player, target);
         }
 
-        if (target.IsAlerted() && isVisiting) Veteran.RpcVeteran_Notify(player, target, isAttacking);
-
         // Stops visits.
-        if (target.IsAmbushed() && isVisiting && !player.Is(Faction.Mafia)) return Ambusher.RpcAmbusher_Notify(player, target);
-        if (target.IsJinxed() && isVisiting && !player.Is(Faction.Coven)) return Jinx.RpcJinx_Notify(player, target);
+        if (target.IsAmbushed() && isVisiting && !player.Is(Faction.Mafia))
+        {
+            var buttons = CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role) && x.Timer <= 0).ToList();
+            foreach (var button in buttons) button.ResetCooldownAndOrEffect();
+            return Ambusher.RpcAmbusher_Notify(player, target);
+        }
+        if (target.IsJinxed() && isVisiting && !player.Is(Faction.Coven))
+        {
+            var buttons = CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role) && x.Timer <= 0).ToList();
+            foreach (var button in buttons) button.ResetCooldownAndOrEffect();
+            return Jinx.RpcJinx_Notify(player, target);
+        }
 
-        return true;
+        return isSuccessful;
     }
 
-    public static void PostSuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting)
+    public static void PostSuccessfulVisit(PlayerControl player, PlayerControl target, bool isAttacking, bool isVisiting, bool resetAbilities = true)
     {
         if (player.Is(Alignment.TownInvestigative) && target.IsFramed()) Framer.RpcFramer_RemoveFrame(target);
+        if (player.Is(Alignment.TownInvestigative) && target.IsEnchanted()) Enchanter.RpcRemoveEnchant(target);
+
         if (target.IsVesting(player.CanKill(target)) && isAttacking && isVisiting) Survivor.RpcSurvivor_Notify(target);
         if (target.IsRole<Arsonist>() && isVisiting) Arsonist.RpcArsonist_Douse(target, player, true);
 
         // Town protectives when target is attacked! (or visited if you're Crusader).
         if (target.IsSelfProtected(player.CanKill(target)) && isAttacking && isVisiting) Bodyguard.RpcBodyguard_Notify(player, target);
         if (target.IsBarriered() && isVisiting && isAttacking) Cleric.RpcCleric_Notify(player, target);
+        if (target.IsOracleBarriered() && isVisiting && isAttacking) Oracle.RpcNotifyOracle(player, target);
 
         if (target.IsFortified() && isVisiting) Crusader.RpcCrusader_Notify(player, target, isAttacking);
-        
-        if (player.AmOwner) // Resets other ability cooldowns they have.
+
+        if (target.IsAlerted() && isVisiting) Veteran.RpcVeteran_Notify(player, target, isAttacking);
+
+        if (player.AmOwner && resetAbilities) // Resets other ability cooldowns they have.
         {
             var buttons = CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role) && x.Timer <= 0).ToList();
             foreach (var button in buttons) button.ResetCooldownAndOrEffect();

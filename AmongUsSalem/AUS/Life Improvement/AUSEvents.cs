@@ -16,7 +16,7 @@ public static class AUSEvents
 
         if (@event.Reporter.AmOwner)
         {
-            MiscUtils.SuccessfulVisit(@event.Reporter, target, false, true);
+            MiscUtils.PostSuccessfulVisit(@event.Reporter, target, false, true);
             @event.UnCancel();
         }
     }

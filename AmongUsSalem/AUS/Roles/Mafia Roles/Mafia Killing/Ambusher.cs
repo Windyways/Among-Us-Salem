@@ -106,7 +106,11 @@ public sealed class Ambusher(IntPtr cppPtr)
 
                 if (visitor.AmOwner())
                 {
-                    if (ambusher.Player.CanKill(visitor)) MiscUtils.RpcApplyDeathReason(ambusher.Player, visitor, DeathReasonShow.KilledByAnAmbusher);
+                    if (ambusher.Player.CanKill(visitor))
+                    {
+                        ambusher.Player.RpcAddModifier<InvisibleStatus>(OptionGroupSingleton<AUSOptions>.Instance.InvisDuration);
+                        MiscUtils.RpcApplyDeathReason(ambusher.Player, visitor, DeathReasonShow.KilledByAnAmbusher);
+                    }
                     else if (Debugger.IsDebuggerActive) CalculatedVoting.QueueEvidenceAgainst.Add(visitor, ambusher.Player);
 
                     MiscUtils.ShowNotification(Info(Type.PreparedAmbush, ambusher.Player, target), Color.white, AUSAssets.AmbusherRoleCard.LoadAsset());
@@ -157,7 +161,8 @@ public sealed class Ambusher_Ambush : AmongUsSalemRoleButton<Ambusher, PlayerCon
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance);
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance, predicate: x =>
+            x != Role.AmbushedPlayer);
     }
 }
 

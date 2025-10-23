@@ -32,6 +32,7 @@ public sealed class Jackal(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.JackalRoleCard,
+        CanUseVent = OptionGroupSingleton<Jackal_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
@@ -235,4 +236,10 @@ public sealed class Jackal_Options : AbstractOptionGroup<Jackal>
 
     [ModdedNumberOption("<color=#404040>Jackal</color> <color=#4a86e8>Assassinate</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
+
+    [ModdedNumberOption("<color=#404040>Jackal</color> Vision", 0.25f, 5f, 0.25f, MiraNumberSuffixes.Multiplier, "0.00")]
+    public float Vision { get; set; } = 1f;
+
+    [ModdedToggleOption("<color=#404040>Jackal</color> Can Vent")]
+    public bool CanVent { get; set; } = false;
 }

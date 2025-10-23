@@ -52,6 +52,12 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> Coroner_Examine { get; } = new LoadableResourceAsset($"{Ability}.Coroner_Examine.png");
     public static LoadableAsset<Sprite> Prosecutor_Prosecute { get; } = new LoadableResourceAsset($"{Ability}.Prosecutor_Prosecute.png");
     public static LoadableAsset<Sprite> Janitor_Clean { get; } = new LoadableResourceAsset($"{Ability}.Janitor_Clean.png");
+    public static LoadableAsset<Sprite> Forger_Forge { get; } = new LoadableResourceAsset($"{Ability}.Forger_Forge.png");
+    public static LoadableAsset<Sprite> Oracle_Aegis { get; } = new LoadableResourceAsset($"{Ability}.Oracle_Aegis.png");
+    public static LoadableAsset<Sprite> Consigliere_Check { get; } = new LoadableResourceAsset($"{Ability}.Consigliere_Check.png");
+    public static LoadableAsset<Sprite> Consort_Distract { get; } = new LoadableResourceAsset($"{Ability}.Consort_Distract.png");
+    public static LoadableAsset<Sprite> Enchanter_Enchant { get; } = new LoadableResourceAsset($"{Ability}.Enchanter_Enchant.png");
+    public static LoadableAsset<Sprite> Enchanter_Alterate { get; } = new LoadableResourceAsset($"{Ability}.Enchanter_Alterate.png");
 
     // Role Cards
     public static LoadableAsset<Sprite> PilgrimRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.PilgrimRoleCard.png");
@@ -85,6 +91,11 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> CoronerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.CoronerRoleCard.png");
     public static LoadableAsset<Sprite> ProsecutorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ProsecutorRoleCard.png");
     public static LoadableAsset<Sprite> JanitorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JanitorRoleCard.png");
+    public static LoadableAsset<Sprite> ForgerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ForgerRoleCard.png");
+    public static LoadableAsset<Sprite> OracleRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.OracleRoleCard.png");
+    public static LoadableAsset<Sprite> ConsigliereRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ConsigliereRoleCard.png");
+    public static LoadableAsset<Sprite> ConsortRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ConsortRoleCard.png");
+    public static LoadableAsset<Sprite> EnchanterRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.EnchanterRoleCard.png");
 
     // Icons
     public static LoadableAsset<Sprite> CovenVIPIcon { get; } = new LoadableResourceAsset($"{Icon}.CovenVIPIcon.png");

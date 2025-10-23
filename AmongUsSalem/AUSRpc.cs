@@ -65,6 +65,21 @@ public enum AUSRpc : uint
     // Janitor
     Janitor_Clean,
     Janitor_DoClean,
+    // Forger
+    Forger_DoForge,
+    Forger_Forge,
+    RpcSetForgeRole,
+    // Oracle
+    RpcNotifyOracle,
+    RpcAegisPlayers,
+    // Consort
+    Consort_Distract,
+    RpcNotifyConsort,
+    // Enchanter
+    RpcEnchant,
+    RpcRemoveEnchant,
+    RpcDoAlterate,
+    RpcAlterate,
     // Other
     AssignNecronomicon,
     ApplyDeathReason,

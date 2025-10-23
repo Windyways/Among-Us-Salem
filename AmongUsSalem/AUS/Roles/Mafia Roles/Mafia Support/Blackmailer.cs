@@ -116,14 +116,8 @@ public sealed class Blackmailer_Blackmail : AmongUsSalemRoleButton<Blackmailer, 
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) &&
-            Role.BlackmailedPlayer != target;
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance, predicate: x =>
+            x != Role.BlackmailedPlayer);
     }
 }
 
@@ -156,6 +150,6 @@ public sealed class Blackmailer_Options : AbstractOptionGroup<Blackmailer>
     [ModdedNumberOption("<color=#DD0000>Blackmailer</color> <color=#4a86e8>Blackmail</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 
-    [ModdedToggleOption("<color=#DD0000>Blackmailer</color> Sees Whispers>")]
+    [ModdedToggleOption("<color=#DD0000>Blackmailer</color> Sees Whispers")]
     public bool SeeWhispers { get; set; } = true;
 }

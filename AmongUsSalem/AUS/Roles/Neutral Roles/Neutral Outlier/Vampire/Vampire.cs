@@ -31,6 +31,7 @@ public sealed class Vampire(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.VampireRoleCard,
+        CanUseVent = OptionGroupSingleton<Vampire_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
@@ -169,7 +170,8 @@ public sealed class Vampire_Drain : AmongUsSalemRoleButton<Vampire, PlayerContro
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.HasModifier<VampireRecruit>());
     }
 }
 
@@ -225,14 +227,8 @@ public sealed class Vampire_Convert : AmongUsSalemRoleButton<Vampire, PlayerCont
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) &&
-            !target.HasModifier<VampireRecruit>();
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.HasModifier<VampireRecruit>());
     }
 
     public static bool IsConvertable(PlayerControl target)
@@ -255,4 +251,10 @@ public sealed class Vampire_Options : AbstractOptionGroup<Vampire>
 
     [ModdedNumberOption("<color=#a22929>Vampire</color> Max <color=#4a86e8>Converts</color>", 1f, 15f, 1f)]
     public float Charges { get; set; } = 3f;
+
+    [ModdedNumberOption("<color=#a22929>Vampire</color> Vision", 0.25f, 5f, 0.25f, MiraNumberSuffixes.Multiplier, "0.00")]
+    public float Vision { get; set; } = 1f;
+
+    [ModdedToggleOption("<color=#a22929>Vampire</color> Can Vent")]
+    public bool CanVent { get; set; } = false;
 }

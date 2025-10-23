@@ -33,6 +33,7 @@ public sealed class Shroud(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         Icon = AUSAssets.ShroudRoleCard,
+        CanUseVent = OptionGroupSingleton<Shroud_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
     };
 
@@ -241,14 +242,8 @@ public sealed class Shroud_Shroud : AmongUsSalemRoleButton<Shroud, PlayerControl
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) &&
-            Role.ShroudedPlayer != target;
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            x != Role.ShroudedPlayer);
     }
 }
 
@@ -263,6 +258,12 @@ public sealed class Shroud_Options : AbstractOptionGroup<Shroud>
 
     [ModdedNumberOption("<color=#6699ff>Shroud</color> <color=#4a86e8>Shroud</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float ShroudCD { get; set; } = 25f;
+
+    [ModdedNumberOption("<color=#6699ff>Shroud</color> Vision", 0.25f, 5f, 0.25f, MiraNumberSuffixes.Multiplier, "0.00")]
+    public float Vision { get; set; } = 1f;
+
+    [ModdedToggleOption("<color=#6699ff>Shroud</color> Can Vent")]
+    public bool CanVent { get; set; } = false;
 
     [ModdedToggleOption("<color=#6699ff>Shroud</color> Attacks <color=#4a86e8>Shrouded</color> If They Don't Visit")]
     public bool AttacksShroudedIfTheyDontVisit { get; set; } = true;

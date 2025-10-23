@@ -174,13 +174,8 @@ public sealed class Cleric_Barrier : AmongUsSalemRoleButton<Cleric, PlayerContro
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance);
-    }
-
-    public override bool IsTargetValid(PlayerControl? target)
-    {
-        if (target == null) return base.IsTargetValid(target);
-        return base.IsTargetValid(target) && !Role.BarrieredPlayers.Contains(target.PlayerId);
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !Role.BarrieredPlayers.Contains(x.PlayerId));
     }
 }
 

@@ -294,7 +294,7 @@ public static class HudManagerPatches
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
                     // This shows the role!
-                    if (!player.HasModifier<DeepfakeRole>())
+                    if (!player.HasModifier<DeepfakeRole>() || PlayerControl.LocalPlayer == player)
                     {
                         color = role.TeamColor;
                         if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
@@ -315,7 +315,7 @@ public static class HudManagerPatches
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
 
-                        if (!player.HasModifier<DeepfakeRole>())
+                        if (!player.HasModifier<DeepfakeRole>() || PlayerControl.LocalPlayer == player)
                         {
                             color = roleWhenAlive.TeamColor;
 
@@ -454,7 +454,7 @@ public static class HudManagerPatches
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
                     // This shows the role!
-                    if (!player.HasModifier<DeepfakeRole>())
+                    if (!player.HasModifier<DeepfakeRole>() || PlayerControl.LocalPlayer == player)
                     {
                         color = role.TeamColor;
                         if (player.HasModifier<VampireRecruit>() && !PlayerControl.LocalPlayer.HasDied()) color = AUSColors.Town;
@@ -474,7 +474,7 @@ public static class HudManagerPatches
                     if (VisibilityFlag(player) || player.Data.IsDead)
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
-                        if (!player.HasModifier<DeepfakeRole>())
+                        if (!player.HasModifier<DeepfakeRole>() || PlayerControl.LocalPlayer == player)
                         {
                             color = roleWhenAlive.TeamColor;
                             roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";

@@ -1,25 +1,27 @@
 ﻿using System.Text;
+using AmongUsSalem.Utilities;
 using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Roles;
-using AmongUsSalem.Utilities;
+using MiraAPI.Voting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.LifeImprovement.Roles;
 
-#region Framer
+#region Consigliere
 #endregion
-public sealed class Framer(IntPtr cppPtr)
+public sealed class Consigliere(IntPtr cppPtr)
     : ImpostorRole(cppPtr), IWikiDiscoverable, ICustomAURole
 {
-    public string RoleName { get; set; } = "Framer";
-    public string revealText => "has a desire or deceive.";
-    public string RoleDescription => "Make players appear Mafia.";
+    public string RoleName { get; set; } = "Consigliere";
+    public string revealText => "gathers information for the Mafia.";
+    public string RoleDescription => "Reveal the roles of players.";
     public string RoleLongDescription => RoleDescription;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
     public Faction Faction { get; set; } = Faction.Mafia;
     public Color RoleColor { get; set; } = AUSColors.Mafia;
-    public Alignment Alignment => Alignment.MafiaDeception;
+    public Alignment Alignment => Alignment.MafiaSupport;
 
     public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
@@ -32,7 +34,7 @@ public sealed class Framer(IntPtr cppPtr)
     public CustomRoleConfiguration Configuration => new(this)
     {
         UseVanillaKillButton = false,
-        Icon = AUSAssets.FramerRoleCard,
+        Icon = AUSAssets.ConsigliereRoleCard,
     };
 
     [HideFromIl2Cpp]
@@ -44,7 +46,7 @@ public sealed class Framer(IntPtr cppPtr)
     public string GetAdvancedDescription()
     {
         return
-            "<color=#DD0000>Framer</color>" +
+            "<color=#DD0000>Consigliere</color>" +
             $"\n<color=#e70052>Attack: {Attack}</color>" +
             $"\n<color=#0000ff>Defense: {Defense}</color>" +
             "\n<color=#fdbc00>Faction:</color> <color=#DD0000>Mafia</color>" +
@@ -58,48 +60,23 @@ public sealed class Framer(IntPtr cppPtr)
     [HideFromIl2Cpp]
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
-        new("Frame",
-            "You can Frame a player at Night." +
-            "\n\nYour target will appear to be a member of the Mafia to Investigative roles." +
-            "\n\nFrames wear off once an Investigative role visits them.",
-            AUSAssets.Framer_Frame)
+        new("Check",
+            "You can Check a player at Night. You will learn your targets role." +
+            "\nIf your target is Doused, they will appear to be an Arsonist." +
+            "\nIf your target is Hexed, they will appear to be a Hex Master.",
+            AUSAssets.Consigliere_Check)
     ];
-
-    [MethodRpc((uint)AUSRpc.Framer_Frame, SendImmediately = true)]
-    public static void RpcFramer_Frame(PlayerControl player, PlayerControl target)
-    {
-        if (player.Data.Role is not Framer)
-        {
-            Logger<AUSPlugin>.Error("RpcFramer_Frame - Invalid Framer");
-            return;
-        }
-
-        var framer = player.GetRole<Framer>();
-        framer.FramedPlayers.Add(target.PlayerId);
-    }
-
-    [MethodRpc((uint)AUSRpc.Framer_RemoveFrame, SendImmediately = true)]
-    public static void RpcFramer_RemoveFrame(PlayerControl target)
-    {
-        foreach (var framers in MiscUtils.GetPlayersWithRole<Framer>())
-        {
-            var framer = framers.GetRole<Framer>();
-            framer.FramedPlayers.Remove(target.PlayerId);
-        }
-    }
-
-    public List<byte> FramedPlayers = new List<byte>();
 }
 
-#region Framer_Frame
+#region Consigliere_Check
 #endregion
-public sealed class Framer_Frame : AmongUsSalemRoleButton<Framer, PlayerControl>
+public sealed class Consigliere_Check : AmongUsSalemRoleButton<Consigliere, PlayerControl>
 {
-    public override string Name => "Frame";
+    public override string Name => "Check";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => AUSColors.Mafia;
-    public override float Cooldown => OptionGroupSingleton<Framer_Options>.Instance.Cooldown;
-    public override LoadableAsset<Sprite> Sprite => AUSAssets.Framer_Frame;
+    public override float Cooldown => OptionGroupSingleton<Consigliere_Options>.Instance.Cooldown;
+    public override LoadableAsset<Sprite> Sprite => AUSAssets.Consigliere_Check;
 
     public override void ClickHandler()
     {
@@ -119,23 +96,34 @@ public sealed class Framer_Frame : AmongUsSalemRoleButton<Framer, PlayerControl>
             return;
         }
 
-        Framer.RpcFramer_Frame(Player, Target);
+        if (Player.AmOwner())
+        {
+            Target.AddModifier<RoleLearn>(Player, true);
+            if (Target.IsDoused() && OptionGroupSingleton<Consigliere_Options>.Instance.ShowArso)
+            {
+                Target.AddModifier<DeepfakeRole>("Arsonist", AUSColors.Arsonist);
+            }
+            else if (Target.IsHexed()) Target.AddModifier<DeepfakeRole>("Hex Master", AUSColors.Coven);
+        }
+
         MiscUtils.PostSuccessfulVisit(Player, Target, false, true);
     }
 
     public override PlayerControl? GetTarget()
     {
-        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance, predicate: x =>
-            !Role.FramedPlayers.Contains(x.PlayerId));
+        return PlayerControl.LocalPlayer.GetClosestLivingPlayer(false, Distance);
     }
 }
 
-#region Framer_Options
+#region Consigliere_Options
 #endregion
-public sealed class Framer_Options : AbstractOptionGroup<Framer>
+public sealed class Consigliere_Options : AbstractOptionGroup<Consigliere>
 {
-    public override string GroupName => "Framer";
+    public override string GroupName => "Consigliere";
 
-    [ModdedNumberOption("<color=#DD0000>Framer</color> <color=#4a86e8>Frame</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    [ModdedNumberOption("<color=#DD0000>Consigliere</color> <color=#4a86e8>Check</color> Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
+
+    [ModdedToggleOption("Doused Players Appear To Be An <color=#ee7600>Arsonist</color>")]
+    public bool ShowArso { get; set; } = true;
 }

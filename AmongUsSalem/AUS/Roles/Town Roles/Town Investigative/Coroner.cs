@@ -50,8 +50,8 @@ public sealed class Coroner(IntPtr cppPtr)
                 string roleName = kvp.Key.Item1;
                 var (examinedPlayers, isKiller) = kvp.Value;
 
-                // Show the killer role name (color-coded)
-                info.AppendLine($"<b><color=#{kvp.Key.Item2.ToHtmlStringRGBA()}>{roleName}</color></b>"); // red role name for now, or replace with your color logic
+                // Show the killer role name.
+                info.AppendLine($"<b><color=#{kvp.Key.Item2.ToHtmlStringRGBA()}>{roleName}</color></b>");
 
                 if (examinedPlayers.Count == 0)
                 {
@@ -59,10 +59,10 @@ public sealed class Coroner(IntPtr cppPtr)
                     continue;
                 }
 
-                // Show all examined players and whether they matched the killer
+                // Show all examined players and whether they matched the killer.
                 foreach (var player in examinedPlayers)
                 {
-                    string color = isKiller ? "#00FF00" : "#FF5555"; // green if matched, red if not
+                    string color = isKiller ? "#00FF00" : "#FF5555";
                     string result = isKiller ? "Killer" : "Not Killer";
 
                     info.AppendLine($"   <color={color}>{player.Data.PlayerName}</color> — {result}");
@@ -214,6 +214,7 @@ public sealed class Coroner(IntPtr cppPtr)
                 deathMod.CauseOfDeath == DeathReasonShow.Lynched ||
                 deathMod.CauseOfDeath == DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate ||
                 deathMod.CauseOfDeath == DeathReasonShow.LeftTown ||
+                deathMod.CauseOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget ||
                 deathMod.CauseOfDeath == DeathReasonShow.DishonoredTheTown ||
                 deathMod.CauseOfDeath == DeathReasonShow.None ||
                 deathMod.CauseOfDeath == DeathReasonShow.KilledByTheCovenVIP ||
@@ -261,18 +262,17 @@ public sealed class Coroner_Examine : AmongUsSalemRoleButton<Coroner, PlayerCont
             return;
         }
 
-        foreach (var key in Role.Information.Keys.ToList()) // ToList() prevents collection modification errors
+        foreach (var key in Role.Information.Keys.ToList())
         {
             var (players, isKiller) = Role.Information[key];
 
             players.Add(Target);
             if (Target.Data.Role is ICustomAURole customRole) isKiller = key.Item1 == customRole.RoleName;
 
-            // Update or remove based on result
             if (isKiller)
             {
                 Role.Information.Remove(key);
-                Target.RpcAddModifier<RoleLearn>(Player);
+                Target.RpcAddModifier<RoleLearn>(Player, false);
                 MiscUtils.ShowNotification(Coroner.Info(Coroner.Type.Killer, Target), Color.white, AUSAssets.CoronerRoleCard.LoadAsset());
                 MiscUtils.AddFakeChat(Player.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Coroner Info"), Coroner.Info(Coroner.Type.Killer, Target));
 

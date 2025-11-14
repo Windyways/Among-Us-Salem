@@ -1,0 +1,176 @@
+// Jailor role based on Veteran.cs structure
+using System.Text;
+using Il2CppInterop.Runtime.Attributes;
+using MiraAPI.Roles;
+using Color = UnityEngine.Color;
+using UnityEngine;
+
+namespace AmongUsSalem.Roles;
+
+#region Jailor
+#endregion
+public sealed class Jailor(IntPtr cppPtr)
+    : CrewmateRole(cppPtr), IWikiDiscoverable, ICustomAURole, IContinueGame
+{
+    public bool continueGame => true;
+    public string RoleName { get; set; } = "Jailor";
+    public string revealText => "is the town's executioner.";
+    public string RoleDescription => "Execute your prisoners at night.";
+    public string RoleLongDescription => RoleDescription;
+    public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
+
+    public Faction Faction { get; set; } = Faction.Town;
+    public Color RoleColor { get; set; } = AUSColors.Town;
+    public Alignment Alignment => Alignment.TownKilling;
+
+    public Attack Attack { get; set; } = Attack.Powerful;
+    public Defense Defense { get; set; } = Defense.None;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+
+    public Attack ogAttack { get; set; } = Attack.Powerful;
+    public Defense ogDefense { get; set; } = Defense.None;
+    public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
+
+    public DeathReasonShow deathReasonShow { get; set; } = DeathReasonShow.Alive;
+
+    public CustomRoleConfiguration Configuration => new(this)
+    {
+        Icon = AUSAssets.JailorRoleCard,
+    };
+
+    [HideFromIl2Cpp]
+    public StringBuilder SetTabText()
+    {
+        return ICustomAURole.SetNewTabText(this);
+    }
+
+    public string GetAdvancedDescription()
+    {
+        return
+            "<color=#06E00C>Jailor</color>" +
+            $"\n<color=#e70052>Attack: {Attack}</color>" +
+            $"\n<color=#0000ff>Defense: {Defense}</color>" +
+            "\n<color=#fdbc00>Faction:</color> <color=#06E00C>Town</color>" +
+            "\n<color=#fdbc00>Sub-alignment:</color> <color=#06E00C>Town</color> <color=#1e45d4>Killing</color>" +
+            "\n<color=#fdbc00>Goal:</color> Execute criminals and evildoers." +
+            "\n\nAttributes:" +
+            "\nYou may jail one player each night." +
+            "\nIf you execute a Town member, you will lose your ability to execute." +
+            MiscUtils.AppendOptionsText(GetType());
+    }
+
+    [HideFromIl2Cpp]
+    public List<CustomButtonWikiDescription> Abilities { get; } =
+    [
+        new(
+            "Jail",
+            "Select a player to jail at night. You may choose to execute them.",
+            AUSAssets.Jailor_JailButton),
+
+        new(
+            "Execute",
+            "Execute your prisoner tonight, dealing a Powerful attack.",
+            AUSAssets.Jailor_ExecuteButton)
+    ];
+
+    public PlayerControl jailedTarget;
+    public bool mayExecute = true;
+
+    public override void OnMeetingStart()
+    {
+        jailedTarget = null;
+    }
+
+    public static string ExecuteInfo()
+    {
+        return "You have executed your prisoner.";
+    }
+
+    public static string LostExecutionInfo()
+    {
+        return "You executed a Town member and lost your executions!";
+    }
+
+    [MethodRpc((uint)AUSRpc.Jailor_JailTarget, SendImmediately = true)]
+    public static void RpcJailor_Jail(PlayerControl jailor, PlayerControl target)
+    {
+        var role = jailor.GetRole<Jailor>();
+        role.jailedTarget = target;
+        MiscUtils.AddFakeChat(jailor.CachedPlayerData, MiscUtils.GetTitle(AUSColors.Town, "Jailor Info"), $"You have jailed {target.nameHistory}.");
+    }
+
+    [MethodRpc((uint)AUSRpc.Jailor_ExecuteTarget, SendImmediately = true)]
+    public static void RpcJailor_Execute(PlayerControl jailor)
+    {
+        var role = jailor.GetRole<Jailor>();
+        var target = role.jailedTarget;
+
+        if (target == null || !role.mayExecute)
+            return;
+
+        MiscUtils.ShowNotification(ExecuteInfo(), Color.white, AUSAssets.JailorRoleCard.LoadAsset());
+        MiscUtils.RpcApplyDeathReason(jailor, target, DeathReasonShow.JailedAndExecuted);
+
+        if (target.Data.Role.Faction == Faction.Town)
+        {
+            role.mayExecute = false;
+            MiscUtils.ShowNotification(LostExecutionInfo(), Color.white, AUSAssets.JailorRoleCard.LoadAsset());
+        }
+    }
+}
+
+#region Jailor_Jail
+#endregion
+public sealed class Jailor_Jail : AmongUsSalemRoleButton<Jailor>
+{
+    public override string Name => "Jail";
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
+    public override Color TextOutlineColor => AUSColors.Town;
+    public override float Cooldown => OptionGroupSingleton<Jailor_Options>.Instance.JailCooldown;
+    public override int MaxUses => int.MaxValue;
+    public override LoadableAsset<Sprite> Sprite => AUSAssets.Jailor_JailButton;
+
+    protected override void OnClick()
+    {
+        var target = Player.GetClosestPlayer();
+        if (target != null)
+        {
+            Jailor.RpcJailor_Jail(Player, target);
+        }
+    }
+}
+
+#region Jailor_Execute
+#endregion
+public sealed class Jailor_Execute : AmongUsSalemRoleButton<Jailor>
+{
+    public override string Name => "Execute";
+    public override BaseKeybind Keybind => Keybinds.SecondaryAction;
+    public override Color TextOutlineColor => AUSColors.Town;
+    public override float Cooldown => OptionGroupSingleton<Jailor_Options>.Instance.ExecuteCooldown;
+    public override int MaxUses => 3;
+    public override LoadableAsset<Sprite> Sprite => AUSAssets.Jailor_ExecuteButton;
+
+    public override bool CanUse()
+    {
+        return Role.jailedTarget != null && Role.mayExecute;
+    }
+
+    protected override void OnClick()
+    {
+        Jailor.RpcJailor_Execute(Player);
+    }
+}
+
+#region Jailor_Options
+#endregion
+public sealed class Jailor_Options : AbstractOptionGroup<Jailor>
+{
+    public override string GroupName => "Jailor";
+
+    [ModdedNumberOption("<color=#06E00C>Jailor</color> Jail Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    public float JailCooldown { get; set; } = 15f;
+
+    [ModdedNumberOption("<color=#06E00C>Jailor</color> Execute Cooldown", 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    public float ExecuteCooldown { get; set; } = 25f;
+}

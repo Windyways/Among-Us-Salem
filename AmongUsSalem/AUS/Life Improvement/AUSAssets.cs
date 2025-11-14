@@ -85,6 +85,7 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> JackalRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JackalRoleCard.png");
     public static LoadableAsset<Sprite> SurvivorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.SurvivorRoleCard.png");
     public static LoadableAsset<Sprite> JinxRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JinxRoleCard.png");
+    public static LoadableAsset<Sprite> JailorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JailorRoleCard.png");
     public static LoadableAsset<Sprite> VigilanteRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.VigilanteRoleCard.png");
     public static LoadableAsset<Sprite> EscortRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.EscortRoleCard.png");
     public static LoadableAsset<Sprite> ClericRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ClericRoleCard.png");

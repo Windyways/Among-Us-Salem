@@ -23,7 +23,10 @@ public static class HudManagerPatches
     public static bool VisibilityFlag(PlayerControl player)
     {
         return
+            // Mafia
             (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.Is(Faction.Mafia)) ||
+            (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.TryGetModifier<RoleLearn>(out var revealed) && revealed.Visitor.Is(Faction.Mafia)) ||
+
             (PlayerControl.LocalPlayer.Is(Faction.Coven) && player.Is(Faction.Coven)) ||
 
             //(PlayerControl.LocalPlayer.IsRole<Vampire>() && player.HasModifier<VampireRecruit>()) ||
@@ -34,7 +37,7 @@ public static class HudManagerPatches
             (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasDied()) ||
 
             (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasModifier<GlobalReveal>()) ||
-            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.TryGetModifier<RoleLearn>(out var roleLearned) && roleLearned.Visitor == PlayerControl.LocalPlayer) ||
+            (!PlayerControl.LocalPlayer.Is(Faction.None) && player.TryGetModifier<RoleLearn>(out var revealed2) && revealed2.Visitor == PlayerControl.LocalPlayer) ||
             (PlayerControl.LocalPlayer == player)
             ;
     }
@@ -288,7 +291,7 @@ public static class HudManagerPatches
                         color = role.TeamColor;
                         roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
                     }
-                    else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole))
+                    else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole) && fakeRole.foolingPlayer == PlayerControl.LocalPlayer)
                     {
                         color = fakeRole.roleColor;
                         roleName = $"<size=80%>{color.ToTextColor()}{fakeRole.roleName}</color></size>";
@@ -304,7 +307,7 @@ public static class HudManagerPatches
 
                             roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
                         }
-                        else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole))
+                        else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole) && fakeRole.foolingPlayer == PlayerControl.LocalPlayer)
                         {
                             color = fakeRole.roleColor;
                             roleName = $"<size=80%>{color.ToTextColor()}{fakeRole.roleName}</color></size>";
@@ -438,7 +441,7 @@ public static class HudManagerPatches
                         color = role.TeamColor;
                         roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
                     }
-                    else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole))
+                    else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole) && fakeRole.foolingPlayer == PlayerControl.LocalPlayer)
                     {
                         color = fakeRole.roleColor;
                         roleName = $"<size=80%>{color.ToTextColor()}{fakeRole.roleName}</color></size>";
@@ -452,7 +455,7 @@ public static class HudManagerPatches
                             color = roleWhenAlive.TeamColor;
                             roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";
                         }
-                        else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole))
+                        else if (player.TryGetModifier<DeepfakeRole>(out var fakeRole) && fakeRole.foolingPlayer == PlayerControl.LocalPlayer)
                         {
                             color = fakeRole.roleColor;
                             roleName = $"<size=80%>{color.ToTextColor()}{fakeRole.roleName}</color></size>";

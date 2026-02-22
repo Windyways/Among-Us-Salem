@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
-using HarmonyLib;
 using MiraAPI.PluginLoading;
-using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using TownOfUs.Modifiers;
 using TownOfUs.Options;
@@ -57,7 +55,11 @@ public abstract class TownOfUsButton : CustomActionButton
         {
             if (!TimerPaused && (!(ShouldPauseInVent && PlayerControl.LocalPlayer.inVent) || EffectActive))
             {
-                Timer -= Time.deltaTime;
+                if (playerControl.TryGetModifier<OverchargedModifier>(out var overcharged) && overcharged.currentState == OverchargedModifier.State.ActiveThisNight)
+                {
+                    Timer -= Time.deltaTime * OptionGroupSingleton<Catalyst_Options>.Instance.Multiplier;
+                }
+                else Timer -= Time.deltaTime;
             }
         }
         else if (HasEffect && EffectActive)
@@ -255,7 +257,11 @@ public abstract class TownOfUsTargetButton<T> : CustomActionButton<T> where T : 
         {
             if (!TimerPaused && (!(ShouldPauseInVent && PlayerControl.LocalPlayer.inVent) || EffectActive))
             {
-                Timer -= Time.deltaTime;
+                if (playerControl.TryGetModifier<OverchargedModifier>(out var overcharged) && overcharged.currentState == OverchargedModifier.State.ActiveThisNight)
+                {
+                    Timer -= Time.deltaTime * OptionGroupSingleton<Catalyst_Options>.Instance.Multiplier;
+                }
+                else Timer -= Time.deltaTime;
             }
         }
         else if (HasEffect && EffectActive)
@@ -414,6 +420,8 @@ public abstract class TownOfUsTargetButton<T> : CustomActionButton<T> where T : 
 public abstract class TownOfUsRoleButton<TRole> : TownOfUsButton where TRole : RoleBehaviour
 {
     public TRole Role => PlayerControl.LocalPlayer.GetRole<TRole>()!;
+    public PlayerControl Player => Role.Player;
+    public CustomActionButton button => this;
 
     public override bool Enabled(RoleBehaviour? role)
     {

@@ -5,6 +5,20 @@ namespace AmongUsSalem.MCI.SmartMCI;
 public static class WitnessKill
 {
     [RegisterEvent]
+    public static void EjectionEvent(EjectionEvent @event)
+    {
+        NetworkedPlayerInfo exiled = @event.ExileController.initData.networkedPlayer;
+        if (exiled != null)
+        {
+            PlayerControl player = exiled.Object;
+            if (player.TryGetModifier<ComparedModifier>(out var compared))
+            {
+                if (player.Is(Faction.Town)) compared.comparedTo.AddModifier<ConfirmedEvil>();
+            }
+        }
+    }
+
+    [RegisterEvent]
     public static void AfterMurderEvent(AfterMurderEvent @event)
     {
         var killer = @event.Source;
@@ -32,12 +46,16 @@ public static class WitnessKill
         {
             if (!IgnoreKill(killer, witness) && BotCanSeeKill(killer, witness, target.transform.position) && witness != target)
             {
-                // Add murder see modifier here.
-                var modifier = witness.AddModifier<SeenKill>();
-                if (modifier != null) modifier.killer = killer;
+                if (killer.IsRole<Bodyguard>()) killer.AddModifier<Confirmed>();
+                else
+                {
+                    // Add murder see modifier here.
+                    var modifier = witness.AddModifier<SeenKill>();
+                    if (modifier != null) modifier.killer = killer;
 
-                var modifier2 = killer.AddModifier<SeenKill>();
-                if (modifier2 != null) modifier2.killer = witness;
+                    var modifier2 = killer.AddModifier<SeenKill>();
+                    if (modifier2 != null) modifier2.killer = witness;
+                }
             }
         }
     }

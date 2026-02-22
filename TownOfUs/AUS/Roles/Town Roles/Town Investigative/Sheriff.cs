@@ -1,10 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using Rewired.Utils.Platforms.Windows;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.ProBuilder.AutoUnwrapSettings;
-using static UnityEngine.UIElements.UIR.Allocator2D;
 
 namespace AmongUsSalem.Roles;
 
@@ -36,7 +32,7 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return ITownOfUsRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -50,7 +46,7 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public string GetAttributes()
     {
         return
-            $"- Enchanters and Soul Collectors can make your target appear suspicious.\n" +
+            $"- Enchanters, Framers and Soul Collectors can make your target appear suspicious.\n" +
             $"- Illusionists can make your targets appear innocent.";
     }
 
@@ -67,10 +63,14 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
 
     public static bool IsSuspicious(PlayerControl target)
     {
-        if (target.Is(Faction.Mafia)) return true; // Not Godfather!
+        if (target.HasModifier<IllusionedModifier>()) return false;
+
+        if (target.Is(Faction.Mafia) || target.HasModifier<FramedModifier>()) return true; // Not Godfather!
         if (target.Is(Faction.Coven) && !target.HasModifier<Necronomicon>()) return true;
+
         if (target.Is(Alignment.NeutralEvil)) return true;
         if (target.Is(Alignment.NeutralApocalypse)) return true;
+
         return false;
     }
 

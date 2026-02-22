@@ -1,11 +1,7 @@
-﻿using AmongUsSalem.MCI;
-using Il2CppInterop.Runtime.Attributes;
-using MiraAPI.Roles;
-using MiraAPI.Utilities;
+﻿using Il2CppInterop.Runtime.Attributes;
 using Reactor.Utilities.Extensions;
 using System.Globalization;
 using System.Text;
-using TownOfUs.Utilities;
 using UnityEngine;
 
 namespace AmongUsSalem.Interfaces;
@@ -110,13 +106,8 @@ public interface ICustomAURole : ICustomRole
     public static StringBuilder SetNewTabText(ICustomRole role)
     {
         var alignment = role is ICustomAURole customRole
-            ? "<color=#" + RoleColors.Keyword.ToHtmlStringRGBA() + customRole.Alignment.ToDisplayString()
+            ? customRole.Alignment.ToDisplayString().ApplyKeywords()
             : "Custom";
-
-        if (alignment.Contains("Town")) alignment = alignment.Replace("Town", $"<color=#" + RoleColors.Town.ToHtmlStringRGBA() + ">Town</color>");
-        if (alignment.Contains("Neutral")) alignment = alignment.Replace("Neutral", $"<color=#" + RoleColors.Neutral.ToHtmlStringRGBA() + ">Neutral</color>");
-        if (alignment.Contains("Mafia")) alignment = alignment.Replace("Mafia", $"<color=#" + RoleColors.Mafia.ToHtmlStringRGBA() + ">Mafia</color>");
-        if (alignment.Contains("Coven")) alignment = alignment.Replace("Coven", $"<color=#" + RoleColors.Coven.ToHtmlStringRGBA() + ">Coven</color>");
 
         var prefix = " a";
         if (role.RoleName.StartsWithVowel()) prefix = " an";

@@ -32,7 +32,7 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return ITownOfUsRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -53,6 +53,11 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
             "You will deal a Basic Attack to your target if the Godfather has yet to give you orders.",
             AUSAssets.Mafioso_Kill),
     ];
+
+    public static string Info()
+    {
+        return "You were promoted to a <b><color=#DD0000>Mafioso</color></b>!";
+    }
 }
 
 public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>
@@ -76,7 +81,7 @@ public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>
         if (Player.CanKill(Target))
         {
             Player.RpcCustomMurder(Target);
-            Target.AddDeathReason(DeathReasonShow.KilledByAMemberOfTheMafia);
+            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByAMemberOfTheMafia);
         }
         else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
     }

@@ -1,4 +1,6 @@
-﻿namespace AmongUsSalem.CovenRoles;
+﻿using Il2CppSystem.Threading;
+
+namespace AmongUsSalem.CovenRoles;
 
 public class Necronomicon : BaseModifier
 {
@@ -17,7 +19,60 @@ public class Necronomicon : BaseModifier
             if (modifier != this) modifier.Player.RemoveModifier(modifier);
         }
 
-        RpcNotifyCoven(Player);
+        // RpcNotifyCoven(Player);
+        if (PlayerControl.LocalPlayer.Is(Faction.Coven))
+        {
+            PlayerControl.LocalPlayer.Notify(Info(Player), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.NecronomiconIcon.LoadAsset());
+        }
+
+        if (Player.Data.Role is ICustomAURole customRole)
+        {
+            customRole.Attack = Attack.Basic;
+
+            if (Player.AmOwner())
+            {
+                if (Player.IsRole<HexMaster>())
+                {
+                    var button = CustomButtonSingleton<HexMaster_Hex>.Instance;
+                    button.OverrideSprite(AUSAssets.Necronomicon.LoadAsset());
+                    button.OverrideName("Attack & Hex");
+                }
+                else if (Player.IsRole<Illusionist>())
+                {
+                    var button = CustomButtonSingleton<Illusionist_Cast>.Instance;
+                    button.OverrideSprite(AUSAssets.Necronomicon.LoadAsset());
+                    button.OverrideName("Attack / Cast");
+                }
+            }
+        }
+    }
+
+    public override void OnDeactivate()
+    {
+        if (Player.Data.Role is ICustomAURole customRole)
+        {
+            if (customRole.ogAttack == Attack.None)
+            {
+                customRole.Attack = Attack.None;
+                customRole.ogAttack = Attack.None;
+            }
+
+            if (Player.AmOwner())
+            {
+                if (Player.IsRole<HexMaster>())
+                {
+                    var button = CustomButtonSingleton<HexMaster_Hex>.Instance;
+                    button.OverrideSprite(AUSAssets.HexMaster_Hex.LoadAsset());
+                    button.OverrideName("Hex");
+                }
+                else if (Player.IsRole<Illusionist>())
+                {
+                    var button = CustomButtonSingleton<Illusionist_Cast>.Instance;
+                    button.OverrideSprite(AUSAssets.Illusionist_Cast.LoadAsset());
+                    button.OverrideName("Cast");
+                }
+            }
+        }
     }
 
     [MethodRpc((uint)AUSRpc.RpcNotifyCoven)]
@@ -32,5 +87,13 @@ public class Necronomicon : BaseModifier
     public static string Info(PlayerControl player)
     {
         return $"{player.Name()} possesses the Necronomicon. Their powers are enhanced!";
+    }
+
+    public void RefreshAttack()
+    {
+        if (Player.Data.Role is ICustomAURole customRole)
+        {
+            customRole.Attack = Attack.Basic;
+        }
     }
 }

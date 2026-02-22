@@ -85,8 +85,8 @@ public static class LogicGameFlowPatches
                     /*|| (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
                     || (other.Data.Role is Veteran veteran && veteran.Charges > 0)
                     || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)
-                    || other.IsGuarded() || other.IsFortified() || deadVetsOnAlert > 0 || deadFortified > 0 || other.IsAmbushed()*/
+                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)*/
+                    || other.HasModifier<GuardedModifier>()/* || other.IsFortified() || deadVetsOnAlert > 0 || deadFortified > 0 || other.IsAmbushed()*/
                     ) return false;
 
                 return true;
@@ -99,8 +99,8 @@ public static class LogicGameFlowPatches
                     /*|| (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
                     || (other.Data.Role is Veteran veteran && veteran.Charges > 0)
                     || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)
-                    || other.IsGuarded() || other.IsFortified() || deadVetsOnAlert > 0 || deadFortified > 0 || other.IsJinxed()*/
+                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)*/
+                    || other.HasModifier<GuardedModifier>()/* || other.IsFortified() || deadVetsOnAlert > 0 || deadFortified > 0 || other.IsJinxed()*/
                     ) return false;
 
                 return true;

@@ -1,6 +1,6 @@
-using AmongUsSalem.Enums;
+using System.Collections;
 using TownOfUs.Modifiers;
-using static UnityEngine.GraphicsBuffer;
+using UnityEngine;
 
 namespace AmongUsSalem.Mechanics;
 
@@ -16,11 +16,22 @@ public static class VisitingMechanic
 
     public static bool IsSuccessfulVisit(PlayerControl user, PlayerControl target, bool isAttacking, bool isVisiting)
     {
+        Coroutines.Start(PostSuccessfulVisit(user, target, isAttacking, isVisiting));
         bool blockVisit = false;
 
+        // --- PROTECTION INTERACTIONS ---
+        if (isAttacking && isVisiting && target.TryGetModifier<GuardedModifier>(out var guarded) && !user.HasModifier<IllusionedModifier>()) 
+            return guarded.bodyguard.PerformInteraction(user, target);
 
         if (blockVisit) return false;
         return true;
+    }
+
+    public static IEnumerator PostSuccessfulVisit(PlayerControl user, PlayerControl target, bool isAttacking, bool isVisiting)
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (isVisiting && target.HasModifier<FramedModifier>() && user.Is(Alignment.TownInvestigative)) 
+            target.RpcRemoveModifier<FramedModifier>();
     }
 
     public static bool CanKill(this PlayerControl player, PlayerControl target, Attack overrideAttack = Attack.None)
@@ -51,8 +62,9 @@ public static class VisitingMechanic
         return false;
     }
 
-    public static void AddDeathReason(this PlayerControl player, DeathReasonShow deathReasonShow)
+    [MethodRpc((uint)AUSRpc.RpcAddDeathReason)]
+    public static void RpcAddDeathReason(PlayerControl player, int deathReasonShow)
     {
-        DeathHandlerModifier.UpdateDeathHandler(player, deathReasonShow, DeathHandlerOverride.SetFalse);
+        DeathHandlerModifier.UpdateDeathHandler(player, (DeathReasonShow)deathReasonShow, DeathHandlerOverride.SetFalse);
     }
 }

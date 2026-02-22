@@ -1,7 +1,5 @@
 ﻿using MiraAPI.GameEnd;
-using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using TownOfUs.Modules;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -52,5 +50,14 @@ public sealed class CovenGameOver : CustomGameOver
         text.text = $"<size=4>{text.text}</size>";
         
         //AUSAssets.PlaySound(AUSAssets.CovenWin_SFX);
+    }
+
+    public static bool AnyCovenWon(GameOverReason gameOverReason)
+    {
+        foreach (var player in PlayerControl.AllPlayerControls)
+        {
+            if (player.Is(Faction.Coven) && player.Data.Role.DidWin(gameOverReason)) return true;
+        }
+        return false;
     }
 }

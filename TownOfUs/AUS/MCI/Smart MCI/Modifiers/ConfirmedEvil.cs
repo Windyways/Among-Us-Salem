@@ -1,7 +1,4 @@
-﻿using MiraAPI.Events;
-using MiraAPI.Events.Vanilla.Gameplay;
-using MiraAPI.Events.Vanilla.Meeting;
-using Reactor.Utilities.Extensions;
+﻿using Reactor.Utilities.Extensions;
 
 namespace AmongUsSalem.MCI;
 

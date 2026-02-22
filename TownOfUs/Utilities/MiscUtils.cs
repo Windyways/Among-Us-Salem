@@ -285,6 +285,7 @@ public static class MiscUtils
         bool showHeadsup = false, bool altColors = false, bool onLeft = true)
     {
         var chat = HudManager.Instance.Chat;
+        message = message.ApplyKeywords();
 
         var pooledBubble = chat.GetPooledBubble();
 

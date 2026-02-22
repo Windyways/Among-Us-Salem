@@ -32,7 +32,7 @@ public sealed class Pilgrim(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return ITownOfUsRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()

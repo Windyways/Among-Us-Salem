@@ -52,8 +52,8 @@ public sealed class DeathHandlerModifier : BaseModifier
         //if (causeOfDeath == DeathReasonShow.KilledByAShroud) return AUSColors.Shroud;
         //if (causeOfDeath == DeathReasonShow.BittenByAVampire) return AUSColors.Vampire;
         //if (causeOfDeath == DeathReasonShow.AssassinatedByAJackal || causeOfDeath == DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate) return AUSColors.Neutral;
-        //if (causeOfDeath == DeathReasonShow.KilledByABodyguard || causeOfDeath == DeathReasonShow.ShotByAVigilante || causeOfDeath == DeathReasonShow.ShotByADeputy || causeOfDeath == DeathReasonShow.ShotByAVeteran || causeOfDeath == DeathReasonShow.KilledByACrusader || causeOfDeath == DeathReasonShow.KilledByATrapper || causeOfDeath == DeathReasonShow.KilledByATrickster || causeOfDeath == DeathReasonShow.KilledByTheTownVIP || causeOfDeath == DeathReasonShow.KilledByThePerfectTown || causeOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget) return AUSColors.Town;
-        if (causeOfDeath == DeathReasonShow.KilledByTheCoven/* || causeOfDeath == DeathReasonShow.KilledByTheCovenVIP || causeOfDeath == DeathReasonShow.BombedByAHexMaster || causeOfDeath == DeathReasonShow.KilledByAConjurer || causeOfDeath == DeathReasonShow.KilledByAJinx || causeOfDeath == DeathReasonShow.KilledByAPoisoner || causeOfDeath == DeathReasonShow.KilledByARitualist*/) return RoleColors.Coven;
+        if (causeOfDeath == DeathReasonShow.KilledByABodyguard || causeOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget) return RoleColors.Town;
+        if (causeOfDeath == DeathReasonShow.KilledByTheCoven || causeOfDeath == DeathReasonShow.BombedByAHexMaster) return RoleColors.Coven;
         return RoleColors.Apocalypse;
     }
 

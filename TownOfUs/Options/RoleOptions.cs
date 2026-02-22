@@ -1,5 +1,4 @@
-﻿using MiraAPI.GameOptions;
-using MiraAPI.GameOptions.OptionTypes;
+﻿using MiraAPI.GameOptions.OptionTypes;
 
 namespace TownOfUs.Options;
 
@@ -11,6 +10,7 @@ public sealed class RoleOptions : AbstractOptionGroup
         "<color=#06E00C>Town</color> <color=#4a86e8>Executive</color>",
         "<color=#06E00C>Town</color> <color=#4a86e8>Government</color>",
         "<color=#06E00C>Town</color> <color=#4a86e8>Killing</color>",
+        "<color=#06E00C>Town</color> <color=#4a86e8>Outlier</color>",
         "<color=#06E00C>Town</color> <color=#4a86e8>Protective</color>",
         "<color=#06E00C>Town</color> <color=#4a86e8>Support</color>",
         "<color=#4a86e8>Random</color> <color=#06E00C>Town</color>",

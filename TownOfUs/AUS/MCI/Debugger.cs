@@ -113,6 +113,7 @@ public class Debugger : MonoBehaviour
             isRandomClientSwapping = GUILayout.Toggle(isRandomClientSwapping, "Enable Random Swapping");
             SmartBotsEnabled = GUILayout.Toggle(SmartBotsEnabled, "Enable Smart Bots");
             ShowAllMessages = GUILayout.Toggle(ShowAllMessages, "Show All Messages");
+            smartSwapping = GUILayout.Toggle(smartSwapping, "Enable Smart Client Swapping");
             //RoleReferences.CountRoundToLeaderboard = GUILayout.Toggle(RoleReferences.CountRoundToLeaderboard, "Round Counts To Leaderboard");
         });
     }
@@ -132,7 +133,7 @@ public class Debugger : MonoBehaviour
 
     public void Update()
     {
-        if (AmongUsClient.Instance.NetworkMode != NetworkModes.LocalGame)
+        if (AmongUsClient.Instance?.NetworkMode != NetworkModes.LocalGame)
             return;
 
         if (Input.GetKeyDown(KeyCode.F1))
@@ -165,6 +166,7 @@ public class Debugger : MonoBehaviour
     public static bool ShowAllMessages;
     public static bool isRandomClientSwapping;
     public static bool SmartBotsEnabled;
+    public static bool smartSwapping;
 
 
 

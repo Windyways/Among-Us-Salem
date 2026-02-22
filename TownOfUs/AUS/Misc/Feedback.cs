@@ -6,14 +6,24 @@ namespace AmongUsSalem.Misc;
 
 public static class Feedback
 {
-    public static string RevealRole(PlayerControl player)
+    public static string RevealRole(PlayerControl revealer, PlayerControl player)
     {
         if (player.Data.Role is ICustomAURole customRole)
         {
             string text = player.GetDefaultAppearance().PlayerName + " ";
-            text += customRole.revealText;
+            string roleName = customRole.RoleName;
+            Color roleColor = customRole.RoleColor;
 
-            return text + $" they must be the <color=#" + customRole.RoleColor.ToHtmlStringRGBA() + $">{customRole.RoleName}!";
+            if (revealer.IsRole<Consigliere>() && player.TryGetModifier<DeepfakeRole>(out var deepfake) && deepfake.foolingPlayer == revealer)
+            {
+                roleName = deepfake.roleName;
+                roleColor = deepfake.roleColor;
+                if (deepfake.roleName == "Hex Master") text += "is versed in the ways of hexes.";
+                // else if (revealer.IsRole<Consigliere>() && player.HasModifier<DousedModifier>()) text += "is versed in the ways of hexes."; For Arso
+            }
+            else text += customRole.revealText;
+
+            return text + $" they must be the <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>!";
         }
 
         return "";
@@ -46,7 +56,9 @@ public static class Feedback
             return target.GetDefaultAppearance().PlayerName + " was immune to your attack.";
         }*/
 
-        target.Notify(AttackedButDefense(), NotifyMode.OnlyMeeting);
+        if (target.HasModifier<SelfProtectedModifier>()) RpcNotify(target, (int)NotificationType.Bodyguard_SelfProtect);
+        else target.Notify(AttackedButDefense(), NotifyMode.OnlyMeeting);
+
         return target.GetDefaultAppearance().PlayerName + "'s defense was too high to kill!";
     }
 
@@ -61,6 +73,24 @@ public static class Feedback
                 MiscUtils.AddFakeChat(basePlayer == null ? player.CachedPlayerData : basePlayer, "FEEDBACK", feedback);
             }
             if (type == NotifyMode.OnlyMeeting) MiscUtils.AddFakeChat(basePlayer == null ? player.CachedPlayerData : basePlayer, "FEEDBACK", feedback);
+        }
+    }
+
+    [MethodRpc((uint)AUSRpc.RpcNotify)]
+    public static void RpcNotify(PlayerControl player, int notifyType)
+    {
+        if (player.AmOwner())
+        {
+            var notify = (NotificationType)notifyType;
+            switch (notify)
+            {
+                case NotificationType.Bodyguard_Protect:
+                    player.Notify(Bodyguard.Info(notify), NotifyMode.OnlyMeeting, sprite: AUSAssets.BodyguardRoleCard.LoadAsset());
+                    break;
+                case NotificationType.Bodyguard_SelfProtect:
+                    player.Notify(Bodyguard.Info(notify), NotifyMode.OnlyMeeting, sprite: AUSAssets.BodyguardRoleCard.LoadAsset());
+                    break;
+            }
         }
     }
 }

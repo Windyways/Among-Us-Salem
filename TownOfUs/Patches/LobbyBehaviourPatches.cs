@@ -24,5 +24,8 @@ public static class LobbyBehaviourPatches
         GameHistory.ClearAll();
         ScreenFlash.Clear();
         MeetingMenu.ClearAll();
+
+        DayNightMechanic.DayCount = 0;
+        DayNightMechanic.NightCount = 0;
     }
 }

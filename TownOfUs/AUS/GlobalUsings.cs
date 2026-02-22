@@ -29,6 +29,7 @@ global using MiraAPI.Hud;
 global using MiraAPI.Events;
 global using MiraAPI.Events.Vanilla.Meeting;
 global using MiraAPI.Events.Vanilla.Gameplay;
+global using MiraAPI.Patches.Stubs;
 global using MiraAPI.Events.Vanilla.Usables;
 
 global using HarmonyLib;

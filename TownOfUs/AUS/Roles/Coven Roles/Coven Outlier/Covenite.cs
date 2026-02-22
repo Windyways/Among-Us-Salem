@@ -18,15 +18,16 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     public Faction Faction { get; set; } = Faction.Coven;
     public Alignment Alignment => Alignment.CovenOutlier;
 
-    public Attack Attack { get; set; } = Attack.Basic;
+    public Attack Attack { get; set; } = Attack.None;
     public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
 
-    public Attack ogAttack { get; set; } = Attack.Basic;
+    public Attack ogAttack { get; set; } = Attack.None;
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
+        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.CoveniteRoleCard
@@ -35,7 +36,7 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return ITownOfUsRole.SetNewTabText(this);
+        return ICustomAURole.SetNewTabText(this);
     }
 
     public string GetAdvancedDescription()
@@ -46,6 +47,12 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that has no unique ability aside from being able to attack others while it has the Necronomicon.\n" +
             "Kill all who would oppose the Coven." + 
             MiscUtils.AppendOptionsText(GetType());
+    }
+
+    public string GetAttributes()
+    {
+        return
+            $"- With the Necronomicon, you will also deal a Basic Attack to your targets.";
     }
 
     public bool WinConditionMet()
@@ -59,7 +66,7 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
 
     public override bool DidWin(GameOverReason gameOverReason)
     {
-        return WinConditionMet();
+        return WinConditionMet() || CovenGameOver.AnyCovenWon(gameOverReason);
     }
 }
 
@@ -68,7 +75,7 @@ public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => RoleColors.Coven;
-    public override float Cooldown => OptionGroupSingleton<Covenite_Options>.Instance.Cooldown;
+    public override float Cooldown => OptionGroupSingleton<CovenOptions>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Necronomicon;
 
     public override void ClickHandler()
@@ -84,7 +91,7 @@ public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl
         if (Player.CanKill(Target))
         {
             Player.RpcCustomMurder(Target);
-            Target.AddDeathReason(DeathReasonShow.KilledByTheCoven);
+            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByTheCoven);
         }
         else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
     }
@@ -99,12 +106,4 @@ public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl
     {
         return base.CanUse() && Player.HasModifier<Necronomicon>();
     }
-}
-
-public sealed class Covenite_Options : AbstractOptionGroup<Covenite>
-{
-    public override string GroupName => "Covenite";
-
-    [ModdedNumberOption("Covenite Attack Cooldown", 2.5f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
-    public float Cooldown { get; set; } = 25f;
 }

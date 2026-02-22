@@ -86,8 +86,6 @@ public static class DayNightMechanic
         //if (TutorialManager.InstanceExists) PathfindingExperiment.BuildRoomGraphOnce();
         //else 
 
-        DayCount = 0;
-        NightCount = 0;
         if (AmongUsClient.Instance.AmHost) StartDayOne(PlayerControl.LocalPlayer);
     }
 }

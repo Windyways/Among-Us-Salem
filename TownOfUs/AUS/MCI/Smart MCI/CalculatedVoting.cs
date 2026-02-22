@@ -61,7 +61,7 @@ public static class CalculatedVoting
     {
         var allPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied()).ToList();
         var validPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x =>
-            !x.HasDied() && x != player && !x.HasModifier<TI>()).ToList();
+            !x.HasDied() && x != player && !x.HasModifier<TI>() && !x.HasModifier<Confirmed>()).ToList();
 
         var seenKill = SeenKill.GetAll();
         var confirmedEvil = ConfirmedEvil.GetAll();

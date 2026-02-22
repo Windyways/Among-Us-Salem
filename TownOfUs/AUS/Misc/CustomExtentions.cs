@@ -29,6 +29,7 @@ public static class CustomExtentions
 
     public static bool Is(this PlayerControl player, Faction faction)
     {
+        if (player == null) return false;
         if (player.Data.Role is ICustomAURole role && role.Faction == faction)
         {
             return true;
@@ -49,6 +50,16 @@ public static class CustomExtentions
 
     public static bool AmOwner(this PlayerControl player)
     {
-        return player.AmOwner;// || (Debugger.IsDebuggerActive && Debugger.ShowAllMessages);
+        return player.AmOwner || (Debugger.IsDebuggerActive && Debugger.ShowAllMessages);
+    }
+
+    public static bool HasNecronomicon(this PlayerControl player) => player.HasModifier<Necronomicon>();
+
+    public static bool IsSameFaction(this PlayerControl player, PlayerControl target)
+    {
+        if (player.Data.Role is ICustomAURole ausRole && target.Data.Role is ICustomAURole targetAusRole && ausRole.Faction == targetAusRole.Faction) return true;
+        //if (player.Is(Faction.Town) && target.HasModifier<VampireRecruit>()) return true;
+        //if (player.HasModifier<VampireRecruit>() && target.Is(Faction.Town)) return true;
+        return false;
     }
 }

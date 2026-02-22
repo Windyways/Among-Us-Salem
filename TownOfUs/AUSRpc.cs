@@ -9,6 +9,11 @@ public enum AUSRpc : uint
 
     // Other
     RpcNotifyCoven,
+    NecroPassing_PassNecronomicon,
+    NecroPassing_AssignNecronomicon,
+    RpcNotify,
+    RpcAddDeathReason,
+    RpcApplyDefense,
 
 
 

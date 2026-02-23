@@ -1,11 +1,7 @@
 ﻿using System.Collections;
 using System.Text;
-using HarmonyLib;
-using InnerNet;
-using Reactor.Utilities;
 using TMPro;
 using TownOfUs.Modifiers;
-using TownOfUs.Modules;
 using TownOfUs.Options;
 using TownOfUs.Patches.Options;
 using TownOfUs.Utilities.Appearances;
@@ -25,9 +21,10 @@ public static class HudManagerPatches
         return
             // Mafia
             (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.Is(Faction.Mafia)) ||
-            (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.TryGetModifier<RoleLearn>(out var revealed) && revealed.Visitor.Is(Faction.Mafia)) ||
+            (PlayerControl.LocalPlayer.Is(Faction.Mafia) && player.TryGetModifier<RoleLearn>(out var mafiaRevealed) && mafiaRevealed.Visitor.Is(Faction.Mafia)) ||
 
             (PlayerControl.LocalPlayer.Is(Faction.Coven) && player.Is(Faction.Coven)) ||
+            (PlayerControl.LocalPlayer.Is(Faction.Coven) && player.TryGetModifier<RoleLearn>(out var covenRevealed) && covenRevealed.Visitor.Is(Faction.Coven)) ||
 
             //(PlayerControl.LocalPlayer.IsRole<Vampire>() && player.HasModifier<VampireRecruit>()) ||
             //(PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.HasModifier<VampireRecruit>()) ||

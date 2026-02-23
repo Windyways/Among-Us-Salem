@@ -528,6 +528,22 @@ public sealed class IngameWikiMinigame(nint cppPtr) : Minigame(cppPtr)
 
         TownOfUsColors.UseBasic = AUSPlugin.UseCrewmateTeamColor.Value;
     }
+
+    [HideFromIl2Cpp]
+    public void OpenFor(IWikiDiscoverable? wikiDiscoverable)
+    {
+        _selectedItem = wikiDiscoverable;
+        _selectedSoftItem = null;
+        UpdatePage(WikiPage.DetailScreen);
+    }
+
+    [HideFromIl2Cpp]
+    public void OpenFor(SoftWikiInfo? softWikiInfo)
+    {
+        _selectedItem = null;
+        _selectedSoftItem = softWikiInfo;
+        UpdatePage(WikiPage.DetailScreen);
+    }
 }
 
 public enum WikiPage

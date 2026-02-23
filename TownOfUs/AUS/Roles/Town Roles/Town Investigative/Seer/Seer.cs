@@ -32,7 +32,28 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return ICustomAURole.SetNewTabText(this);
+        var info = ICustomAURole.SetNewTabText(this);
+
+        // Only show info if we have data
+        if (Information.Count > 0)
+        {
+            info.AppendLine();
+            foreach (var searched in Information)
+            {
+                string intuitName = searched.Item1.Item1.Name();
+                string gazeName = searched.Item1.Item2.Name();
+
+                string result = searched.Item2 ? "<color=#FF0000>Enemies!</color>" : "<color=#00FF00>Friends!</color>";
+                info.AppendLine($"{intuitName} & {gazeName} - {result}");
+            }
+        }
+        else
+        {
+            info.AppendLine();
+            info.AppendLine("No Compare results yet.");
+        }
+
+        return info;
     }
 
     public string GetAdvancedDescription()
@@ -135,6 +156,8 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
     public PlayerControl intuit;
     public PlayerControl gaze;
     public bool fullCooldown = true;
+
+    public List<((PlayerControl, PlayerControl), bool)> Information = new List<((PlayerControl, PlayerControl), bool)>();
 }
 
 public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
@@ -159,9 +182,11 @@ public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
         Role.intuit = Target;
         if (Role.intuit != null && Role.gaze != null)
         {
+            Role.Information.Add(((Role.intuit, Role.gaze), !Seer.IsFriends(Role.intuit, Role.gaze)));
+
             Role.fullCooldown = true;
-            Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze);
-            Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit);
+            Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze, Seer.IsFriends(Role.intuit, Role.gaze));
+            Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit, Seer.IsFriends(Role.intuit, Role.gaze));
             Player.Notify(Seer.Info(Player, Role.intuit, Role.gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
 
             Role.intuit = null;
@@ -200,9 +225,11 @@ public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
         Role.gaze = Target;
         if (Role.intuit != null && Role.gaze != null)
         {
+            Role.Information.Add(((Role.intuit, Role.gaze), !Seer.IsFriends(Role.intuit, Role.gaze)));
+
             Role.fullCooldown = true;
-            Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze);
-            Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit);
+            Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze, Seer.IsFriends(Role.intuit, Role.gaze));
+            Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit, Seer.IsFriends(Role.intuit, Role.gaze));
             Player.Notify(Seer.Info(Player, Role.intuit, Role.gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
 
             Role.intuit = null;

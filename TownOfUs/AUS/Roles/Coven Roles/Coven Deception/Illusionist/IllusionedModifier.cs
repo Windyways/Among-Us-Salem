@@ -7,14 +7,22 @@ public sealed class IllusionedModifier(PlayerControl c) : BaseModifier
     public override bool HideOnUi => true;
 
     public PlayerControl Caster => c;
-    /*public override void OnActivate()
+    public override void OnActivate()
     {
-        var player = ModifierUtils.GetPlayersWithModifier<IllusionedModifier>(x => x.Caster == Caster).FirstOrDefault();
-        player?.RpcRemoveModifier<IllusionedModifier>();
-    }*/
+        if (!Caster.HasModifier<OverchargedModifier>())
+        {
+            var player = ModifierUtils.GetPlayersWithModifier<IllusionedModifier>(x => x.Caster == Caster).FirstOrDefault();
+            player?.RpcRemoveModifier<IllusionedModifier>();
+        }
+    }
+}
 
-    public override void OnMeetingStart()
+public static class IllusionedModifier_Events
+{
+    [RegisterEvent]
+    public static void RoundStartEvent(RoundStartEvent @event)
     {
-        Player.RpcRemoveModifier<IllusionedModifier>();
+        foreach (var player in ModifierUtils.GetPlayersWithModifier<IllusionedModifier>())
+            player.RpcRemoveModifier<IllusionedModifier>();
     }
 }

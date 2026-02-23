@@ -72,7 +72,7 @@ public static class DayNightMechanic
             return; // Only run when round starts.
         }
 
-        NightCount++;
+        if (!SmartProsecutor.IsActive) NightCount++;
     }
 
     [RegisterEvent]
@@ -82,9 +82,6 @@ public static class DayNightMechanic
         {
             return; // Only run when game starts.
         }
-
-        //if (TutorialManager.InstanceExists) PathfindingExperiment.BuildRoomGraphOnce();
-        //else 
 
         if (AmongUsClient.Instance.AmHost) StartDayOne(PlayerControl.LocalPlayer);
     }

@@ -4,7 +4,7 @@ namespace AmongUsSalem.Misc;
 
 public static class CustomExtentions
 {
-    public static bool IsTpow(this PlayerControl player)
+    public static bool IsTPow(this PlayerControl player)
     {
         return player.Is(Alignment.TownExecutive) || player.Is(Alignment.TownGovernment);
     }
@@ -30,6 +30,15 @@ public static class CustomExtentions
     public static bool Is(this PlayerControl player, Faction faction)
     {
         if (player == null) return false;
+        if (player.HasDied())
+        {
+            var deadRole = player.GetRoleWhenAlive();
+            if (deadRole is ICustomAURole customRole && customRole.Faction == faction)
+            {
+                return true;
+            }
+        }
+
         if (player.Data.Role is ICustomAURole role && role.Faction == faction)
         {
             return true;
@@ -61,5 +70,44 @@ public static class CustomExtentions
         //if (player.Is(Faction.Town) && target.HasModifier<VampireRecruit>()) return true;
         //if (player.HasModifier<VampireRecruit>() && target.Is(Faction.Town)) return true;
         return false;
+    }
+
+    public static T? GetTrueRole<T>(this PlayerControl player) where T : RoleBehaviour
+    {
+        if (player == null) return null;
+        if (player.HasDied())
+        {
+            var r = player.GetRoleWhenAlive() as T;
+            return r;
+        }
+
+        var role = player.Data?.Role as T;
+        return role;
+    }
+
+    public static ICustomAURole GetICustomAURoleWhenAlive(this PlayerControl player)
+    {
+        ICustomAURole customRole = null;
+        //var role = RoleHistory.LastOrDefault(x => x.Key == player.PlayerId && !x.Value.IsDead);
+        //return role.Value != null ? role.Value : null;
+
+        if (GameHistory.RoleWhenAlive.TryGetValue(player.PlayerId, out var role))
+        {
+            if (role is ICustomAURole c3) customRole = c3;
+        }
+
+        if (!player.Data.IsDead)
+        {
+            if (player.Data.Role is ICustomAURole c4) customRole = c4;
+        }
+
+        var role2 = player.Data.RoleWhenAlive;
+        if (role2.HasValue)
+        {
+            if (RoleManager.Instance.GetRole(role2.Value) is ICustomAURole c2) customRole = c2;
+        }
+
+        if (player.Data.Role is ICustomAURole c) customRole = c;
+        return customRole;
     }
 }

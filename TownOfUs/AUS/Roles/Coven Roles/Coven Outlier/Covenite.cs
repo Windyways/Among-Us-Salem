@@ -55,15 +55,7 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
             $"- With the Necronomicon, you will also deal a Basic Attack to your targets.";
     }
 
-    public bool WinConditionMet()
-    {
-        var aliveCoven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
-        if (aliveCoven == 0) return false;
-
-        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount == aliveCoven;
-        return result || LogicGameFlowPatches.EndGameEarlyCheck(this);
-    }
-
+    public bool WinConditionMet() => CovenGameOver.WinConditionMet(this);
     public override bool DidWin(GameOverReason gameOverReason)
     {
         return WinConditionMet() || CovenGameOver.AnyCovenWon(gameOverReason);

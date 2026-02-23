@@ -97,7 +97,7 @@ public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerC
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
-            !x.HasModifier<RoleLearn>(x => x.Visitor == Player));
+            !x.HasModifier<RoleLearn>(x => x.Visitor == Player) && !x.HasModifier<GlobalReveal>());
     }
 }
 

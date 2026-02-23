@@ -7,11 +7,14 @@ public enum DeathReasonShow
     
     KilledByABodyguard,
     DiedWhileDefendingTheirTarget,
+    ShotByADeputy,
 
     KilledByAMemberOfTheMafia,
 
     KilledByTheCoven,
     BombedByAHexMaster,
+    KilledByAJinx,
+    KilledByARitualist,
 
     Lynched
 }

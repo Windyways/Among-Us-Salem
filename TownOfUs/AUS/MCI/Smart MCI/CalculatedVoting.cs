@@ -37,7 +37,9 @@ public static class CalculatedVoting
 
     public static void DoVotes(MeetingHud __instance)
     {
+        declaredTownTarget = (byte.MinValue, false);
         lastMafiaVoteTarget = (byte.MinValue, false);
+        lastCovenVoteTarget = (byte.MinValue, false);
 
         var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied()).ToList();
         foreach (PlayerControl player in PlayerControl.AllPlayerControls)
@@ -57,18 +59,20 @@ public static class CalculatedVoting
     /// If there are less than 7 players, vote a random player that isn't yourself.
     /// Abstain otherwise.
     /// </summary>
+    public static (byte, bool) declaredTownTarget = (byte.MinValue, false);
     public static void TownVoting(PlayerControl player, MeetingHud __instance)
     {
         var allPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied()).ToList();
         var validPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x =>
-            !x.HasDied() && x != player && !x.HasModifier<TI>() && !x.HasModifier<Confirmed>()).ToList();
+            !x.HasDied() && x != player && !x.HasModifier<TI>() && !x.HasModifier<Confirmed>() && !x.HasModifier<SoftCleared>()).ToList();
 
         var seenKill = SeenKill.GetAll();
         var confirmedEvil = ConfirmedEvil.GetAll();
-        var incriminatingEvidence = IncriminatingEvidence.GetAll();
+        var incriminatingEvidence = IncriminatingEvidence.GetRandom();
 
-        if (confirmedEvil != null) TryCastVote(player, __instance, confirmedEvil.Player);
-        else if (incriminatingEvidence != null) TryCastVote(player, __instance, incriminatingEvidence.Player);
+        if (declaredTownTarget.Item2 && ChanceIs(80)) TryCastVote(player, __instance, declaredTownTarget.Item1);
+        else if (confirmedEvil != null) declaredTownTarget = (TryCastVote(player, __instance, confirmedEvil.Player), true);
+        else if (incriminatingEvidence != null) declaredTownTarget = (TryCastVote(player, __instance, incriminatingEvidence.Player), true);
         else if (seenKill != null)
         {
             if (ChanceIs(seenKill.voteChance)) TryCastVote(player, __instance, seenKill.killer);
@@ -92,18 +96,28 @@ public static class CalculatedVoting
             !x.HasDied() && !x.Is(Faction.Mafia)).ToList();
 
         var seenKill = SeenKill.GetAll();
+
         var incriminatingEvidence = IncriminatingEvidence.GetAll();
+        if (incriminatingEvidence != null && incriminatingEvidence.Count >= 2)
+        {
+            // If one is Mafia and one isn't -> vote the non-Mafia
+            var nonMafiaTarget = incriminatingEvidence.FirstOrDefault(p => !p.Player.Is(Faction.Mafia));
+            if (nonMafiaTarget != null)
+            {
+                lastMafiaVoteTarget = (TryCastVote(player, __instance, nonMafiaTarget.Player), true);
+                return;
+            }
+        }
 
         if (lastMafiaVoteTarget.Item2 && ChanceIs(30)) TryCastVote(player, __instance, lastMafiaVoteTarget.Item1);
-        else if (incriminatingEvidence != null && !incriminatingEvidence.Player.Is(Faction.Mafia)) TryCastVote(player, __instance, incriminatingEvidence.Player);
-        else if (seenKill != null && seenKill.killer.Is(Faction.Mafia) && !seenKill.Player.HasDied()) lastMafiaVoteTarget = (TryCastVote(player, __instance, seenKill.Player.PlayerId), true);
+        else if (seenKill != null && !seenKill.killer.Is(Faction.Mafia) && !seenKill.Player.HasDied()) lastMafiaVoteTarget = (TryCastVote(player, __instance, seenKill.Player.PlayerId), true);
         else if (seenKill != null)
         {
             if (ChanceIs(seenKill.voteChance)) TryCastVote(player, __instance, seenKill.killer);
             else TryCastVote(player, __instance, seenKill.Player);
         }
         else if (allPlayers.Count < 12) lastMafiaVoteTarget = (RandomVote(player, __instance, validPlayers), true);
-        lastMafiaVoteTarget = (SkipVote(player, __instance), true);
+        else lastMafiaVoteTarget = (SkipVote(player, __instance), true);
     }
 
     /// <summary>
@@ -118,20 +132,30 @@ public static class CalculatedVoting
         var allPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied()).ToList();
         var validPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x =>
             !x.HasDied() && !x.Is(Faction.Coven)).ToList();
-
+        
         var seenKill = SeenKill.GetAll();
+
         var incriminatingEvidence = IncriminatingEvidence.GetAll();
+        if (incriminatingEvidence != null && incriminatingEvidence.Count >= 2)
+        {
+            // If one is Coven and one isn't -> vote the non-Coven
+            var nonCovenTarget = incriminatingEvidence.FirstOrDefault(p => !p.Player.Is(Faction.Coven));
+            if (nonCovenTarget != null)
+            {
+                lastCovenVoteTarget = (TryCastVote(player, __instance, nonCovenTarget.Player), true);
+                return;
+            }
+        }
 
         if (lastCovenVoteTarget.Item2 && ChanceIs(30)) TryCastVote(player, __instance, lastCovenVoteTarget.Item1);
-        else if (incriminatingEvidence != null && !incriminatingEvidence.Player.Is(Faction.Coven)) TryCastVote(player, __instance, incriminatingEvidence.Player);
-        else if (seenKill != null && seenKill.killer.Is(Faction.Coven) && !seenKill.Player.HasDied()) lastCovenVoteTarget = (TryCastVote(player, __instance, seenKill.Player.PlayerId), true);
+        else if (seenKill != null && !seenKill.killer.Is(Faction.Coven) && !seenKill.Player.HasDied()) lastCovenVoteTarget = (TryCastVote(player, __instance, seenKill.Player.PlayerId), true);
         else if (seenKill != null)
         {
             if (ChanceIs(seenKill.voteChance)) TryCastVote(player, __instance, seenKill.killer);
             else TryCastVote(player, __instance, seenKill.Player);
         }
         else if (allPlayers.Count < 12) lastCovenVoteTarget = (RandomVote(player, __instance, validPlayers), true);
-        lastCovenVoteTarget = (SkipVote(player, __instance), true);
+        else lastCovenVoteTarget = (SkipVote(player, __instance), true);
     }
 
     public static bool ChanceIs(int num)

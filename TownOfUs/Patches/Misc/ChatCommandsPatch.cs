@@ -45,25 +45,6 @@ public static class ChatPatches
             return false;
         }
 
-        if (text.Replace(" ", string.Empty).StartsWith("/nerfme", StringComparison.OrdinalIgnoreCase))
-        {
-            var title = "<color=#8BFDFD>System</color>";
-            var msg = "You cannot Nerf yourself outside of the lobby!";
-            if (LobbyBehaviour.Instance)
-            {
-                VisionPatch.NerfMe = !VisionPatch.NerfMe;
-                msg = $"Toggled Nerf Status To {VisionPatch.NerfMe}!";
-            }
-
-            MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.Data, title, msg);
-
-            __instance.freeChatField.Clear();
-            __instance.quickChatMenu.Clear();
-            __instance.quickChatField.Clear();
-            __instance.UpdateChatMode();
-            return false;
-        }
-
         
         if (text.Replace(" ", string.Empty).StartsWith("/help", StringComparison.OrdinalIgnoreCase))
         {

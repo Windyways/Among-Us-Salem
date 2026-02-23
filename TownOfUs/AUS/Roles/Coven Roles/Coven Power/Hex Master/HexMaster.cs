@@ -65,15 +65,7 @@ public sealed class HexMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
             AUSAssets.HexMaster_Hex),
     ];
 
-    public bool WinConditionMet()
-    {
-        var aliveCoven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
-        if (aliveCoven == 0) return false;
-
-        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount == aliveCoven;
-        return result || LogicGameFlowPatches.EndGameEarlyCheck(this);
-    }
-
+    public bool WinConditionMet() => CovenGameOver.WinConditionMet(this);
     public override bool DidWin(GameOverReason gameOverReason)
     {
         return WinConditionMet() || CovenGameOver.AnyCovenWon(gameOverReason);

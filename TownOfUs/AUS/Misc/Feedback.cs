@@ -14,12 +14,11 @@ public static class Feedback
             string roleName = customRole.RoleName;
             Color roleColor = customRole.RoleColor;
 
-            if (revealer.IsRole<Consigliere>() && player.TryGetModifier<DeepfakeRole>(out var deepfake) && deepfake.foolingPlayer == revealer)
+            if (revealer.IsRole<Consigliere>() && player.HasModifier<HexedModifier>())
             {
-                roleName = deepfake.roleName;
-                roleColor = deepfake.roleColor;
-                if (deepfake.roleName == "Hex Master") text += "is versed in the ways of hexes.";
-                // else if (revealer.IsRole<Consigliere>() && player.HasModifier<DousedModifier>()) text += "is versed in the ways of hexes."; For Arso
+                roleName = "Hex Master";
+                roleColor = RoleColors.Coven;
+                text += "is versed in the ways of hexes.";
             }
             else text += customRole.revealText;
 
@@ -43,7 +42,6 @@ public static class Feedback
     {
         /* if (SurvivorFunction.Interfere(target)) SurvivorFunction.NotifySurvivor(player, target);
          else if (ClericFunction.Interfere(target)) ClericFunction.NotifyCleric(player, target);
-         else if (BodyguardFunction.Interfere(BodyguardFunction.InterfereTypes.NotifyBodyguard, player, target, true, true, false)) BodyguardFunction.NotifyBodyguard(player, target);
          else if (OracleFunction.Interfere(target)) OracleFunction.NotifyOracle(player, target);
          else if (GuardianAngelFunction.Interfere(target)) GuardianAngelFunction.NotifyGuardianAngel(player, target);
          else if (target.IsTrapped()) // Some sort of trapper 'attacked' RPC here.
@@ -55,8 +53,13 @@ public static class Feedback
         {
             return target.GetDefaultAppearance().PlayerName + " was immune to your attack.";
         }*/
-
-        if (target.HasModifier<SelfProtectedModifier>()) RpcNotify(target, (int)NotificationType.Bodyguard_SelfProtect);
+        
+        if (target.HasModifier<SelfProtectedModifier>()) Bodyguard.RpcNotify(target, (int)NotificationType.Bodyguard_SelfProtect);
+        else if (target.TryGetModifier<BarrieredModifier>(out var barriered))
+        {
+            PotionMaster.RpcNotify(target, (int)NotificationType.PotionMaster_AttackAndBarriered, barriered.Caster);
+            PotionMaster.RpcNotify(barriered.Caster, (int)NotificationType.PotionMaster_TargetAttacked, target);
+        }
         else target.Notify(AttackedButDefense(), NotifyMode.OnlyMeeting);
 
         return target.GetDefaultAppearance().PlayerName + "'s defense was too high to kill!";
@@ -73,24 +76,6 @@ public static class Feedback
                 MiscUtils.AddFakeChat(basePlayer == null ? player.CachedPlayerData : basePlayer, "FEEDBACK", feedback);
             }
             if (type == NotifyMode.OnlyMeeting) MiscUtils.AddFakeChat(basePlayer == null ? player.CachedPlayerData : basePlayer, "FEEDBACK", feedback);
-        }
-    }
-
-    [MethodRpc((uint)AUSRpc.RpcNotify)]
-    public static void RpcNotify(PlayerControl player, int notifyType)
-    {
-        if (player.AmOwner())
-        {
-            var notify = (NotificationType)notifyType;
-            switch (notify)
-            {
-                case NotificationType.Bodyguard_Protect:
-                    player.Notify(Bodyguard.Info(notify), NotifyMode.OnlyMeeting, sprite: AUSAssets.BodyguardRoleCard.LoadAsset());
-                    break;
-                case NotificationType.Bodyguard_SelfProtect:
-                    player.Notify(Bodyguard.Info(notify), NotifyMode.OnlyMeeting, sprite: AUSAssets.BodyguardRoleCard.LoadAsset());
-                    break;
-            }
         }
     }
 }

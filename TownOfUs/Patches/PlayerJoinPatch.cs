@@ -66,7 +66,7 @@ public static class PlayerJoinPatch
         {
             var name = "<color=#8BFDFD>System</color>";
             var msg =
-                $"Welcome to Town of Us Mira v{AUSPlugin.Version}!\nUse the wiki (the globe icon) to get more info on roles or modifiers, where you can use the searchbar. Otherwise use /help in the chat to get a list of commands.\nYou can also disable this message through your options menu.";
+                $"Welcome to Among Us Salem IV v{AUSPlugin.Version}!\nUse the wiki (the globe icon) to get more info on roles or modifiers, where you can use the searchbar. Otherwise use /help in the chat to get a list of commands.\nYou can also disable this message through your options menu.";
             MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.Data, name, msg, true);
             time = 5f;
         }

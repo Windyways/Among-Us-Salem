@@ -17,13 +17,17 @@ public static class VisitingMechanic
     public static bool IsSuccessfulVisit(PlayerControl user, PlayerControl target, bool isAttacking, bool isVisiting)
     {
         Coroutines.Start(PostSuccessfulVisit(user, target, isAttacking, isVisiting));
-        bool blockVisit = false;
+        int blockVisit = 0;
 
         // --- PROTECTION INTERACTIONS ---
-        if (isAttacking && isVisiting && target.TryGetModifier<GuardedModifier>(out var guarded) && !user.HasModifier<IllusionedModifier>()) 
-            return guarded.bodyguard.PerformInteraction(user, target);
+        if (isAttacking && isVisiting && target.TryGetModifier<GuardedModifier>(out var guarded) && !user.HasModifier<IllusionedModifier>())
+            blockVisit += guarded.PerformInteraction(user, target);
 
-        if (blockVisit) return false;
+        // --- COUNTERATTACK INTERACTIONS ---
+        if (isVisiting && target.TryGetModifier<JinxedModifier>(out var jinxed) && !user.Is(Faction.Coven))
+            blockVisit += jinxed.PerformInteraction(user);
+
+        if (blockVisit > 0) return false;
         return true;
     }
 
@@ -38,6 +42,7 @@ public static class VisitingMechanic
     {
         if (player.Data.Role is ICustomAURole role && target.Data.Role is ICustomAURole targetRole)
         {
+            if (player.HasDied()) role = player.GetICustomAURoleWhenAlive();
             if (overrideAttack > Attack.None)
             {
                 if (!player.Is(Faction.Town) && target.Is(Alignment.NeutralPariah))

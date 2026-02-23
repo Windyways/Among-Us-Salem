@@ -1,16 +1,17 @@
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using AmongUs.GameOptions;
+using AmongUsSalem.Misc;
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using TownOfUs.Modifiers;
 using TownOfUs.Modifiers.Game;
 using TownOfUs.Modules;
@@ -25,6 +26,22 @@ namespace TownOfUs.Utilities;
 
 public static class MiscUtils
 {
+    public static List<T> GetRoles<T>() where T : RoleBehaviour
+    {
+        var r = new List<T>();
+        foreach (var player in PlayerControl.AllPlayerControls)
+        {
+            if (player.Data.Role is T t) r.Add(t);
+        }
+
+        return r;
+    }
+
+    public static IEnumerable<PlayerControl> GetPlayersWithRole<T>(Func<T, bool>? predicate = null) where T : RoleBehaviour
+    {
+        return PlayerControl.AllPlayerControls.ToArray().Where(x => x.IsRole<T>());
+    }
+
     public static List<PlayerControl> GetAlivePlayersToEnd()
     {
         return
@@ -58,7 +75,7 @@ public static class MiscUtils
     public static int ImpAliveCount => Helpers.GetAlivePlayers().Count(x => x.IsImpostor());
 
     public static int CrewKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.Is(Alignment.TownKilling) || x.IsTpow());
+        x.Is(Alignment.TownKilling) || x.IsTPow());
 
     public static IEnumerable<BaseModifier> AllModifiers => ModifierManager.Modifiers;
 
@@ -1016,4 +1033,10 @@ public static class MiscUtils
             ? TranslationController.Instance.GetString(plainShipRoom.RoomId)
             : "Outside/Hallway";
     }
+
+    public static IEnumerable<RoleBehaviour> AllRegisteredRoles =>
+        RoleManager.Instance.AllRoles.ToArray().Excluding(x => x.IsRoleBlacklisted());
+
+    public static IEnumerable<T> Excluding<T>(this IEnumerable<T> source, Func<T, bool> predicate) =>
+        source.Where(x => !predicate(x)); // Added for easier inversion and reading
 }

@@ -1,6 +1,4 @@
-﻿using Il2CppSystem.Threading;
-
-namespace AmongUsSalem.CovenRoles;
+﻿namespace AmongUsSalem.CovenRoles;
 
 public class Necronomicon : BaseModifier
 {
@@ -19,7 +17,6 @@ public class Necronomicon : BaseModifier
             if (modifier != this) modifier.Player.RemoveModifier(modifier);
         }
 
-        // RpcNotifyCoven(Player);
         if (PlayerControl.LocalPlayer.Is(Faction.Coven))
         {
             PlayerControl.LocalPlayer.Notify(Info(Player), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.NecronomiconIcon.LoadAsset());
@@ -42,6 +39,12 @@ public class Necronomicon : BaseModifier
                     var button = CustomButtonSingleton<Illusionist_Cast>.Instance;
                     button.OverrideSprite(AUSAssets.Necronomicon.LoadAsset());
                     button.OverrideName("Attack / Cast");
+                }
+                else if (Player.IsRole<Jinx>())
+                {
+                    var button = CustomButtonSingleton<Jinx_Jinx>.Instance;
+                    button.OverrideSprite(AUSAssets.Necronomicon.LoadAsset());
+                    button.OverrideName("Attack & Jinx");
                 }
             }
         }
@@ -71,16 +74,13 @@ public class Necronomicon : BaseModifier
                     button.OverrideSprite(AUSAssets.Illusionist_Cast.LoadAsset());
                     button.OverrideName("Cast");
                 }
+                else if (Player.IsRole<Jinx>())
+                {
+                    var button = CustomButtonSingleton<Jinx_Jinx>.Instance;
+                    button.OverrideSprite(AUSAssets.Jinx_Jinx.LoadAsset());
+                    button.OverrideName("Jinx");
+                }
             }
-        }
-    }
-
-    [MethodRpc((uint)AUSRpc.RpcNotifyCoven)]
-    public static void RpcNotifyCoven(PlayerControl bookHolder)
-    {
-        if (PlayerControl.LocalPlayer.Is(Faction.Coven))
-        {
-            PlayerControl.LocalPlayer.Notify(Info(bookHolder), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.NecronomiconIcon.LoadAsset());
         }
     }
 

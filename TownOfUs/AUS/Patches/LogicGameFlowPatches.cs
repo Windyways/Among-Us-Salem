@@ -100,7 +100,7 @@ public static class LogicGameFlowPatches
                     || (other.Data.Role is Veteran veteran && veteran.Charges > 0)
                     || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
                     || (other.Data.Role is Deputy deputy && deputy.Charges > 0)*/
-                    || other.HasModifier<GuardedModifier>()/* || other.IsFortified() || deadVetsOnAlert > 0 || deadFortified > 0 || other.IsJinxed()*/
+                    || other.HasModifier<GuardedModifier>() || /*other.IsFortified() || deadVetsOnAlert > 0 || deadFortified > 0 ||*/ other.HasModifier<JinxedModifier>()
                     ) return false;
 
                 return true;

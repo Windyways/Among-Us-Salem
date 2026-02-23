@@ -1,6 +1,4 @@
-﻿using MiraAPI.Events.Vanilla.Meeting.Voting;
-
-namespace AmongUsSalem.CovenRoles;
+﻿namespace AmongUsSalem.CovenRoles;
 
 public static class NecronomiconPatch
 {
@@ -11,12 +9,6 @@ public static class NecronomiconPatch
             if (player.Is(Faction.Coven) && OptionGroupSingleton<CovenOptions>.Instance.EnableNecroPassing)
                 player.RpcAddModifier<NecroPassing>();
         }
-    }
-
-    [RegisterEvent]
-    public static void VotingCompleteEvent(VotingCompleteEvent @event)
-    {
-        ApplyNecronomicon();
     }
 
     [RegisterEvent]
@@ -44,11 +36,28 @@ public static class NecronomiconPatch
         }
     }
 
-    public static void ApplyNecronomicon()
+    [RegisterEvent]
+    public static void ReportBodyEvent(ReportBodyEvent @event)
     {
-        var coven = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Coven) && !x.HasDied())
-            .OrderByDescending(x => x.IsRole<HexMaster>()) // Coven Leader
-            //.ThenBy(x => x.IsRole<Covenite>()) // Conjurer
+        SmartCovenStart.SwapToCoven();
+    }
+
+    [RegisterEvent]
+    public static void EjectionEvent(EjectionEvent @event)
+    {
+        NetworkedPlayerInfo exiled = @event.ExileController.initData.networkedPlayer;
+        if (exiled != null)
+        {
+            PlayerControl player = exiled.Object;
+            if (player.HasNecronomicon()) ApplyNecronomicon(player);
+        }
+    }
+
+    public static void ApplyNecronomicon(PlayerControl exclude = null)
+    {
+        var coven = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Coven) && !x.HasDied() && x != exclude)
+            .OrderByDescending(x => x.IsRole<PotionMaster>()) // Coven Leader
+            //.ThenByDescending(x => x.IsRole<Covenite>()) // Conjurer
             //.ThenBy(x => x.IsRole<Covenite>()) // Medusa
             //.ThenBy(x => x.IsRole<Covenite>()) // Poisoner
             //.ThenBy(x => x.IsRole<Covenite>()) // Witch
@@ -57,14 +66,14 @@ public static class NecronomiconPatch
             //.ThenBy(x => x.IsRole<Covenite>()) // Enchanter
             //.ThenBy(x => x.IsRole<Covenite>()) // Voodoo Master
             //.ThenBy(x => x.IsRole<Covenite>()) // Necromancer
-            //.ThenBy(x => x.IsRole<Covenite>()) // Potion Master
+            .ThenByDescending(x => x.IsRole<PotionMaster>())
             .ThenByDescending(x => x.IsRole<HexMaster>())
             .ThenByDescending(x => x.IsRole<Illusionist>())
-            //.ThenBy(x => x.IsRole<Covenite>()) // Ritualist
-            //.ThenBy(x => x.IsRole<Covenite>()) // Jinx
+            .ThenByDescending(x => x.IsRole<Ritualist>())
+            .ThenByDescending(x => x.IsRole<Jinx>()) 
             //.ThenBy(x => x.IsRole<Covenite>()) // Cultist
             .ThenByDescending(x => x.IsRole<Covenite>())
-            .ThenByDescending(x => x.IsRole<Covenite>()) // Indocrinated
+            //.ThenByDescending(x => x.IsRole<Covenite>()) // Indocrinated
             .ToList();
 
         if (coven.Count > 0)

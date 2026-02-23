@@ -1,9 +1,5 @@
 ﻿using AmongUs.GameOptions;
-using AmongUsSalem.Roles;
-using HarmonyLib;
 using Hazel;
-using MiraAPI.Events;
-using Reactor.Utilities;
 using TownOfUs.Events.TouEvents;
 using TownOfUs.Options;
 using Random = UnityEngine.Random;
@@ -272,6 +268,15 @@ public static class TouRoleManagerPatches
         covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonCovenRoles, RoleListOption.CommonCoven, RoleListOption.RandomCoven));
         covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomCovenRoles, RoleListOption.RandomCoven, RoleListOption.RandomCoven));
 
+        // Limit coven roles to a maximum of 4 for the game.
+        // Shuffle first so selection is random when more than 4 possible coven roles were generated.
+        int maxCoven = (int)OptionGroupSingleton<CovenOptions>.Instance.MaxCoven;
+        if (covenRoles.Count > maxCoven)
+        {
+            covenRoles.Shuffle();
+            covenRoles = covenRoles.Take(maxCoven).ToList();
+        }
+
         // neutral buckets
         var neutralApocalypse = MiscUtils.GetRolesToAssign(Alignment.NeutralApocalypse, x => !excluded.Contains(x.Role));
         var neutralBenign = MiscUtils.GetRolesToAssign(Alignment.NeutralBenign, roleFilter);
@@ -351,9 +356,16 @@ public static class TouRoleManagerPatches
         mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonImpRoles, RoleListOption.CommonMafia, RoleListOption.RandomMafia));
         mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomImpRoles, RoleListOption.RandomMafia, RoleListOption.RandomMafia));
 
+        var randomNotMafiaCovenRoles = randomCovenRoles;
+        while (randomNotMafiaCovenRoles.Count > maxCoven)
+        {
+            randomNotMafiaCovenRoles.Shuffle();
+            randomNotMafiaCovenRoles.Remove(randomNotMafiaCovenRoles.FirstOrDefault());
+        }
+
         var randomNotMafiaRoles = randomTownRoles;
         randomNotMafiaRoles.AddRange(randomNeutralRoles);
-        randomNotMafiaRoles.AddRange(randomCovenRoles);
+        randomNotMafiaRoles.AddRange(randomNotMafiaCovenRoles);
         townRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomNotMafiaRoles, RoleListOption.NotMafia));
 
         // Shuffle roles before handing them out.
@@ -406,28 +418,16 @@ public static class TouRoleManagerPatches
             if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
         }
 
-        int coven = 0;
         foreach (var role in covenRoles)
         {
             var num = HashRandom.FastNext(crewmates.Count);
             var player = crewmates[num];
 
-            if (coven == 4)
-            {
-                ushort newRole = townRoles.LastOrDefault();
-                player.RpcSetRole((RoleTypes)newRole);
-
-                if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)newRole).NiceName} to {player.Data.PlayerName}.");
-            }
-            else
-            {
-                player.RpcSetRole((RoleTypes)role);
-                coven++;
-
-                if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
-            }
+            player.RpcSetRole((RoleTypes)role);
 
             crewmates.RemoveAt(num);
+
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
         }
 
         foreach (var role in chosenImpRoles)

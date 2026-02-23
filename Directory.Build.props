@@ -10,7 +10,7 @@
 
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 
-        <Version>4.1.0</Version>
+        <Version>4.2.0</Version>
 
         <Authors>Windyways, Le Killer, whichtwix</Authors>
         <RepositoryType>git</RepositoryType>

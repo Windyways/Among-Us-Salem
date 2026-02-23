@@ -14,6 +14,11 @@ public static class TextColorizer
         { "Bodyguard", "#06e00c" },
         { "Catalyst", "#06e00c" },
         { "Seer", "#06e00c" },
+        { "Cleric", "#06e00c" },
+        { "Mayor", "#06e00c" },
+        { "Deputy", "#06e00c" },
+        { "Amnesiac", "#06e00c" },
+        { "Prosecutor", "#06e00c" },
 
         // Mafia
         { "Mafioso", "#dd0000" },
@@ -28,6 +33,9 @@ public static class TextColorizer
         { "Enchanters", "#ab42ef" },
         { "Illusionist", "#ab42ef" }, { "Illusionists", "#ab42ef" },
         { "Hex Master", "#ab42ef" },
+        { "Jinx", "#ab42ef" },
+        { "Potion Master", "#ab42ef" },
+        { "Ritualist", "#ab42ef" },
 
         // Neutral
         { "Neutral", "#a9a9a9" },
@@ -47,6 +55,9 @@ public static class TextColorizer
         { "Power", "#4a86e8" },
         { "Support", "#4a86e8" },
         { "Protective", "#4a86e8" },
+        { "Utility", "#4a86e8" },
+        { "Government", "#4a86e8" },
+        { "Executive", "#4a86e8" },
 
         // Keywords
         { "Search", "#4a86e8" },
@@ -60,11 +71,24 @@ public static class TextColorizer
         { "Guard", "#4a86e8" },
         { "Shrouded", "#4a86e8" },
         { "Self Protect", "#4a86e8" }, { "Self Protects", "#4a86e8" },
-        { "Night", "#922058" },
+        { "Night", "#922058" }, { "Nights", "#922058" },
         { "Day", "#ffff00" },
         { "Overcharge", "#4a86e8" }, { "Overcharged", "#4a86e8" },
         { "Intuit", "#4a86e8" },
         { "Gaze", "#4a86e8" },
+        { "Harmful", "#4a86e8" },
+        { "Barrier", "#4a86e8" },
+        { "Reveal", "#4a86e8" }, { "Revealed", "#4a86e8" },
+        { "Illuminated", "#4a86e8" },
+        { "Self Barrier", "#4a86e8" },
+        { "Poison", "#4a86e8" },
+        { "Blood Ritual", "#4a86e8" }, { "Blood Rituals", "#4a86e8" },
+        { "TT Hunt", "#4a86e8" },
+        { "Shoot", "#4a86e8" },
+        { "High Noon", "#4a86e8" }, { "High Noons", "#4a86e8" },
+        { "Remember", "#4a86e8" }, { "Remembered", "#4a86e8" }, { "Remembering", "#4a86e8" },
+        { "Graveyard", "#4a64e8" },
+        { "Prosecute", "#4a86e8" }, { "Prosecutes", "#4a86e8" },
 
         // Attack
         { "Basic Attack", "#e70052" },
@@ -78,6 +102,7 @@ public static class TextColorizer
         { "Defense: None", "#0000ff" },
 
         { "Basic Defense", "#0000ff" },
+        { "Powerful Defense", "#0000ff" },
     };
 
     // Build a single regex that matches any keyword. Longer keys are listed first to prefer them when overlapping.

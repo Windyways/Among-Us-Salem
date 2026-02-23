@@ -23,6 +23,11 @@ public static class PlayerRoleTextExtensions
             color = RoleColors.Town;
         }
 
+        if ((PlayerControl.LocalPlayer.Data.Role is Cleric cleric && player.HasModifier<BarrieredModifier>(x => x.Caster == cleric.Player)))
+        {
+            color = RoleColors.Town;
+        }
+
         // Mafia
         if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && player.HasModifier<FramedModifier>(x => x.Caster == framer.Player))
             || (player.HasModifier<FramedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Mafia)))
@@ -39,6 +44,18 @@ public static class PlayerRoleTextExtensions
 
         if ((PlayerControl.LocalPlayer.Data.Role is Illusionist illusionist && player.HasModifier<IllusionedModifier>(x => x.Caster == illusionist.Player))
             || (player.HasModifier<IllusionedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Coven)))
+        {
+            color = RoleColors.Coven;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Jinx jinx && player.HasModifier<JinxedModifier>(x => x.Caster == jinx.Player))
+            || (player.HasModifier<JinxedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Coven)))
+        {
+            color = RoleColors.Coven;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is PotionMaster PM && player.HasModifier<BarrieredModifier>(x => x.Caster == PM.Player))
+            || (player.HasModifier<BarrieredModifier>(x => x.Caster.Is(Faction.Coven)) && PlayerControl.LocalPlayer.Is(Faction.Coven)))
         {
             color = RoleColors.Coven;
         }
@@ -86,6 +103,17 @@ public static class PlayerRoleTextExtensions
             name += "<color=#06e00c> Ⓒ</color>";
         }
 
+        if (PlayerControl.LocalPlayer.Data.Role is Seer seer2 && (seer2.intuit == player || seer2.gaze == player))
+        {
+            name += "<color=#06e00c> *</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Cleric cleric && player.HasModifier<BarrieredModifier>(x => x.Caster == cleric.Player))
+            || (player.HasModifier<BarrieredModifier>(x => x.Caster.Is(Faction.Town)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06e00c> Ⓑ</color>";
+        }
+
         // Mafia -------------------------------------------------------------------------------------------------------
         if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && player.HasModifier<FramedModifier>(x => x.Caster == framer.Player))
             || (player.HasModifier<FramedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
@@ -107,6 +135,19 @@ public static class PlayerRoleTextExtensions
             || (player.HasModifier<IllusionedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#B545FF> Ⓘ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Jinx jinx && player.HasModifier<JinxedModifier>(x => x.Caster == jinx.Player))
+            || (player.HasModifier<JinxedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Coven))
+            || (player.HasModifier<JinxedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#B545FF> Ⓙ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is PotionMaster PM && player.HasModifier<BarrieredModifier>(x => x.Caster == PM.Player))
+            || (player.HasModifier<BarrieredModifier>(x => x.Caster.Is(Faction.Coven)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#B545FF> Ⓑ</color>";
         }
         return name;
     }

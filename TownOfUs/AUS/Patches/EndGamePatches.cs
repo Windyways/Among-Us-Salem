@@ -180,23 +180,16 @@ public static class EndGamePatches
             {
                 playerName.Append(AUSPlugin.Culture, $"<color=#EFBF04>{playerControl.Data.PlayerName}</color>");
                 playerWinner = true;
+
+                var logRole = playerControl.GetRoleWhenAlive();
+                RoleReferences.UpdateRoleResult(logRole, killedPlayers, true, false);
             }
             else
             {
                 playerName.Append(playerControl.Data.PlayerName);
-            }
 
-            var alliance = playerControl.GetModifiers<AllianceGameModifier>().FirstOrDefault();
-            if (alliance != null)
-            {
-                var modColor = MiscUtils.GetRoleColour(alliance.ModifierName.Replace(" ", string.Empty));
-                if (alliance is IColoredModifier colorMod)
-                {
-                    modColor = colorMod.ModifierColor;
-                }
-
-                playerName.Append(AUSPlugin.Culture,
-                    $" <b>{modColor.ToTextColor()}<size=60%>{alliance.Symbol}</size></color></b>");
+                var logRole = playerControl.GetRoleWhenAlive();
+                RoleReferences.UpdateRoleResult(logRole, killedPlayers, false, false);
             }
 
             EndGameData.PlayerRecords.Add(new EndGameData.PlayerRecord

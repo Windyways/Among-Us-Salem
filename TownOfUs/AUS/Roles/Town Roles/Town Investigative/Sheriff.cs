@@ -32,7 +32,27 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     [HideFromIl2Cpp]
     public StringBuilder SetTabText()
     {
-        return ICustomAURole.SetNewTabText(this);
+        var info = ICustomAURole.SetNewTabText(this);
+
+        // Only show info if we have data
+        if (Information.Count > 0)
+        {
+            info.AppendLine();
+            foreach (var searched in Information)
+            {
+                string playerName = searched.Item1.Name();
+
+                string result = searched.Item2 ? "<color=#FF0000>Suspicious</color>" : "<color=#00FF00>Innocent</color>";
+                info.AppendLine($"{playerName} - {result}");
+            }
+        }
+        else
+        {
+            info.AppendLine();
+            info.AppendLine("No Search results yet.");
+        }
+
+        return info;
     }
 
     public string GetAdvancedDescription()
@@ -85,6 +105,8 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
         }
         return $"You cannot find evidence of wrongdoing. {target.Name()} seems innocent.";
     }
+
+    public List<(PlayerControl, bool)> Information = new List<(PlayerControl, bool)>();
 }
 
 public sealed class Sheriff_Search : TownOfUsRoleButton<Sheriff, PlayerControl>
@@ -105,6 +127,7 @@ public sealed class Sheriff_Search : TownOfUsRoleButton<Sheriff, PlayerControl>
         if (Target == null)
             return;
 
+        Role.Information.Add((Target, Sheriff.IsSuspicious(Target)));
         Player.Notify(Sheriff.Info(Player, Target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SheriffRoleCard.LoadAsset());
     }
 

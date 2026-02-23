@@ -14,6 +14,7 @@ public static class WitnessKill
             if (player.TryGetModifier<ComparedModifier>(out var compared))
             {
                 if (player.Is(Faction.Town)) compared.comparedTo.AddModifier<ConfirmedEvil>();
+                else compared.comparedTo.RemoveModifier<IncriminatingEvidence>();
             }
         }
     }
@@ -21,6 +22,9 @@ public static class WitnessKill
     [RegisterEvent]
     public static void AfterMurderEvent(AfterMurderEvent @event)
     {
+        if (MeetingHud.Instance || !Debugger.IsDebuggerActive || !Debugger.SmartBotsEnabled)
+            return;
+
         var killer = @event.Source;
         var target = @event.Target;
         TryWitness(killer, target);
@@ -29,6 +33,9 @@ public static class WitnessKill
     [RegisterEvent]
     public static void EnterVentEvent(EnterVentEvent @event)
     {
+        if (MeetingHud.Instance || !Debugger.IsDebuggerActive || !Debugger.SmartBotsEnabled)
+            return;
+
         var venter = @event.Player;
         TryWitness(venter, venter);
     }
@@ -36,12 +43,21 @@ public static class WitnessKill
     [RegisterEvent]
     public static void ExitVentEvent(ExitVentEvent @event)
     {
+        if (MeetingHud.Instance || !Debugger.IsDebuggerActive || !Debugger.SmartBotsEnabled)
+            return;
+
         var venter = @event.Player;
         TryWitness(venter, venter);
     }
 
     public static void TryWitness(PlayerControl killer, PlayerControl target)
     {
+        if (killer.HasModifier<InvisibleStatus>())
+            return;
+
+        if (!(Vector2.Distance(killer.GetTruePosition(), target.GetTruePosition()) < 0.5f))
+            return;
+
         foreach (var witness in PlayerControl.AllPlayerControls)
         {
             if (!IgnoreKill(killer, witness) && BotCanSeeKill(killer, witness, target.transform.position) && witness != target)

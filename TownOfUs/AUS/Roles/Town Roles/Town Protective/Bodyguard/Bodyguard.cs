@@ -72,28 +72,22 @@ public sealed class Bodyguard(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
         return "Someone attacked you, but your armor protected you!";
     }
 
-    public bool PerformInteraction(PlayerControl attacker, PlayerControl target)
+    [MethodRpc((uint)AUSRpc.RpcNotifyBodyguard)]
+    public static void RpcNotify(PlayerControl player, int notifyType)
     {
-        bool bgKills = false;
-        bool aKills = false;
-        if (Player.CanKill(attacker)) bgKills = true;
-        if (attacker.CanKill(Player)) aKills = true;
-
-        Feedback.RpcNotify(target, (int)NotificationType.Bodyguard_Protect);
-        target.RpcRemoveModifier<GuardedModifier>();
-
-        if (bgKills)
+        if (player.AmOwner())
         {
-            Player.RpcCustomMurder(attacker);
-            VisitingMechanic.RpcAddDeathReason(attacker, (int)DeathReasonShow.KilledByABodyguard);
+            var notify = (NotificationType)notifyType;
+            switch (notify)
+            {
+                case NotificationType.Bodyguard_Protect:
+                    player.Notify(Info(notify), NotifyMode.OnlyMeeting, sprite: AUSAssets.BodyguardRoleCard.LoadAsset());
+                    break;
+                case NotificationType.Bodyguard_SelfProtect:
+                    player.Notify(Info(notify), NotifyMode.OnlyMeeting, sprite: AUSAssets.BodyguardRoleCard.LoadAsset());
+                    break;
+            }
         }
-        if (aKills)
-        {
-            attacker.RpcCustomMurder(Player);
-            VisitingMechanic.RpcAddDeathReason(Player, (int)DeathReasonShow.DiedWhileDefendingTheirTarget);
-        }
-
-        return false; // Block visit.
     }
 }
 

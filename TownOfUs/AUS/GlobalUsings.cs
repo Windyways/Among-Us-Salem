@@ -9,6 +9,8 @@ global using AmongUsSalem.MCI;
 global using AmongUsSalem.Modifiers;
 global using AmongUsSalem.CovenRoles;
 global using AmongUsSalem.Patches;
+global using AmongUsSalem.Events;
+global using AmongUsSalem.Wiki;
 
 global using TownOfUs.Roles;
 global using TownOfUs.Buttons;

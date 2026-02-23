@@ -102,11 +102,23 @@ public class Debugger : MonoBehaviour
                 }
             }
 
+            if (GUILayout.Button("Auto Use Ability Everyone"))
+            {
+                foreach (var player in PlayerControl.AllPlayerControls)
+                {
+                    foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role)))
+                    {
+                        button.ClickHandler();
+                    }
+                }
+            }
+
             if (GUILayout.Button("Gain Charge"))
             {
                 foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(PlayerControl.LocalPlayer.Data.Role)))
                 {
                     button.IncreaseUses();
+                    button.ClickHandler();
                 }
             }
 

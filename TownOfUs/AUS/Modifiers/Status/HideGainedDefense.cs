@@ -8,4 +8,9 @@ public class HideGainedDefense : BaseModifier
     {
         return "A player gave you defense!";
     }
+
+    public override void OnMeetingStart()
+    {
+        Player.RpcRemoveModifier<HideGainedDefense>();
+    }
 }

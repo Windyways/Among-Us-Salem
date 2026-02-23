@@ -3,6 +3,14 @@
 public enum AUSRpc : uint
 {
     // Roles
+    Mayor_Reveal,
+    Deputy_HighNoon,
+    Prosecutor_Prosecute,
+
+    // Notifications
+    RpcNotifyBodyguard,
+    RpcNotifyJinx,
+    RpcNotifyPotionMaster,
 
     // Mechanics
     StartDayOne,
@@ -11,7 +19,6 @@ public enum AUSRpc : uint
     RpcNotifyCoven,
     NecroPassing_PassNecronomicon,
     NecroPassing_AssignNecronomicon,
-    RpcNotify,
     RpcAddDeathReason,
     RpcApplyDefense,
 

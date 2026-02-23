@@ -56,8 +56,17 @@ public sealed class CovenGameOver : CustomGameOver
     {
         foreach (var player in PlayerControl.AllPlayerControls)
         {
-            if (player.Is(Faction.Coven) && player.Data.Role.DidWin(gameOverReason)) return true;
+            if (player.Is(Faction.Coven) && WinConditionMet(player.Data.Role)) return true;
         }
         return false;
+    }
+
+    public static bool WinConditionMet(RoleBehaviour role)
+    {
+        var aliveCoven = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Coven));
+        if (aliveCoven == 0) return false;
+
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount == aliveCoven;
+        return result || LogicGameFlowPatches.EndGameEarlyCheck(role);
     }
 }

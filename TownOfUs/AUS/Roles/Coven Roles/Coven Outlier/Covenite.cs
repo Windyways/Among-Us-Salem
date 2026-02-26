@@ -11,7 +11,7 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     public string RoleName { get; set; } = "Covenite";
     public string revealText => "is devoted to the Necronomicon.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a servant of the Necronomicon.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 

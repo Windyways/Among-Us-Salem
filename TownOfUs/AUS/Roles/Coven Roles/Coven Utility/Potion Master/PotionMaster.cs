@@ -1,10 +1,7 @@
 ﻿using AmongUs.GameOptions;
-using Cpp2IL.Core.Extensions;
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
-using TownOfUs.Utilities.Appearances;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -13,7 +10,7 @@ public sealed class PotionMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
     public string RoleName { get; set; } = "Potion Master";
     public string revealText => "works with alchemy.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are an alchemist who concocts powerful potions.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 

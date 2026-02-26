@@ -9,7 +9,7 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     public string RoleName { get; set; } = "Amnesiac";
     public string revealText => "does not remember their role.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You do not remember who you are.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -38,6 +38,8 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that becomes the role of a dead Town member, which can be very useful if a highly valuable Town role dies very early.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());
@@ -69,7 +71,7 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
             return;
 
         AUSPlugin.DebugLogMessage("Potential Remember Targets: " + RememberablePlayers.Count);
-        var rememberTarget = RememberablePlayers.OrderByDescending(x => x.IsTPow()).FirstOrDefault();
+        var rememberTarget = RememberablePlayers.OrderBy(x => x.IsTPow()).FirstOrDefault();
         if (rememberTarget != null)
         {
             var targetRole = rememberTarget.GetRoleWhenAlive();

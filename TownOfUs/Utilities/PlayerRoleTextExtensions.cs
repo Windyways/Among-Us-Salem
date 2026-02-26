@@ -28,6 +28,17 @@ public static class PlayerRoleTextExtensions
             color = RoleColors.Town;
         }
 
+        if ((PlayerControl.LocalPlayer.Data.Role is Crusader crusader && player.HasModifier<FortifiedModifier>(x => x.Caster == crusader.Player)))
+        {
+            color = RoleColors.Town;
+        }
+
+        // Neutral
+        if ((PlayerControl.LocalPlayer.Data.Role is Starspawn starspawn && player.HasModifier<IsolatedModifier>(x => x.Caster == starspawn.Player)))
+        {
+            color = RoleColors.Starspawn;
+        }
+
         // Mafia
         if ((PlayerControl.LocalPlayer.Data.Role is Framer framer && player.HasModifier<FramedModifier>(x => x.Caster == framer.Player))
             || (player.HasModifier<FramedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Mafia)))
@@ -112,6 +123,19 @@ public static class PlayerRoleTextExtensions
             || (player.HasModifier<BarrieredModifier>(x => x.Caster.Is(Faction.Town)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#06e00c> Ⓑ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Crusader crusader && player.HasModifier<FortifiedModifier>(x => x.Caster == crusader.Player))
+            || (player.HasModifier<FortifiedModifier>(x => x.Caster.Is(Faction.Town)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06e00c> Ⓕ</color>";
+        }
+
+        // Neutral -------------------------------------------------------------------------------------------------------
+        if ((PlayerControl.LocalPlayer.Data.Role is Starspawn starspawn && player.HasModifier<IsolatedModifier>(x => x.Caster == starspawn.Player))
+            || (player.HasModifier<IsolatedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#a4a4f4> Ⓘ</color>";
         }
 
         // Mafia -------------------------------------------------------------------------------------------------------

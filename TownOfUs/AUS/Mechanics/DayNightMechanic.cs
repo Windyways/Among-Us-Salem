@@ -73,6 +73,7 @@ public static class DayNightMechanic
         }
 
         if (!SmartProsecutor.IsActive) NightCount++;
+        SmartClientSwapping.RoundStart();
     }
 
     [RegisterEvent]

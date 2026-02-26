@@ -23,6 +23,20 @@ public interface ICustomAURole : ICustomRole
     Defense ogDefense { get; set; }
     EtherealDefense ogEtherealDefense { get; set; }
 
+    void ApplyAttack(Attack attack, bool perma = false, bool overrideValue = false)
+    {
+        if (overrideValue)
+        {
+            Attack = attack;
+            if (perma) ogAttack = attack;
+        }
+        else
+        {
+            if (Attack < attack) Attack = attack;
+            if (perma && ogAttack < attack) ogAttack = attack;
+        }
+    }
+
     void ApplyDefense(Defense defense, bool perma = false, bool overrideValue = false)
     {
         if (overrideValue)
@@ -165,5 +179,14 @@ public interface ICustomAURole : ICustomRole
     public StringBuilder SetTabText()
     {
         return SetNewTabText(this);
+    }
+
+
+    void Role_OnMeetingStart()
+    {
+    }
+
+    void Role_OnRoundStart()
+    {
     }
 }

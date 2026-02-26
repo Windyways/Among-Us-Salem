@@ -15,4 +15,7 @@ public sealed class AUSOptions : AbstractOptionGroup
 
     [ModdedNumberOption("Indirect Invisibility Duration", 0f, 60f, 0.5f, MiraNumberSuffixes.Seconds)]
     public float InvisDuration { get; set; } = 5f;
+
+    [ModdedNumberOption("Rampage Radius", 0.25f, 15f, 0.25f, MiraNumberSuffixes.Multiplier, "0.00")]
+    public float RampageRadius { get; set; } = 1f;
 }

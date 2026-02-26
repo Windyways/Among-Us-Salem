@@ -1,0 +1,169 @@
+﻿using AmongUs.GameOptions;
+using Il2CppInterop.Runtime.Attributes;
+using System.Text;
+using UnityEngine;
+
+namespace AmongUsSalem.Roles;
+
+public sealed class War(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable, ISpawnChange
+{
+    public string RoleName { get; set; } = "War";
+    public string revealText => "fills you with hate towards everyone.";
+    public string RoleDescription => "";
+    public string RoleLongDescription => "You are an acolyte of War, embodying nothing but raw power.";
+    public Color RoleColor { get; set; } = RoleColors.Apocalypse;
+    public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
+
+    public Faction Faction { get; set; } = Faction.Neutral;
+    public Alignment Alignment => Alignment.NeutralApocalypse;
+
+    public Attack Attack { get; set; } = Attack.Unstoppable;
+    public Defense Defense { get; set; } = Defense.Invincible;
+    public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
+
+    public Attack ogAttack { get; set; } = Attack.Unstoppable;
+    public Defense ogDefense { get; set; } = Defense.Invincible;
+    public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
+
+    public bool NoSpawn => true;
+    public CustomRoleConfiguration Configuration => new(this)
+    {
+        CanModifyChance = false,
+        MaxRoleCount = 0,
+
+        DefaultChance = 0,
+        DefaultRoleCount = 0,
+
+        CanUseVent = OptionGroupSingleton<War_Options>.Instance.CanVent,
+        GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
+        Icon = AUSAssets.WarRoleCard
+    };
+
+    [HideFromIl2Cpp]
+    public StringBuilder SetTabText()
+    {
+        return ICustomAURole.SetNewTabText(this);
+    }
+
+    public string GetAdvancedDescription()
+    {
+        return 
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
+            $"{RoleName} is a {Alignment.ToSpacedString()} role that can attack multiple players, as well as killing all nearby players, making it almost unstoppable once it’s transformed.\n" +
+            "Bring forth the Apocalypse, kill everyone in the town. You will win with other Neutral Apocalypse members." + 
+            MiscUtils.AppendOptionsText(GetType());
+    }
+
+    [HideFromIl2Cpp]
+    public List<CustomButtonWikiDescription> Abilities { get; } =
+    [
+        new("Attack",
+            "You can Attack a player at Night.\n" +
+            "You will deal a Powerful Attack to your target.\n" +
+            "If you have 0 kills, you can only Attack on Full Moon Nights.\n" +
+            "If you have 1 kill, you can Attack every Night.\n" +
+            "If you have 2 kills, you will Rampage your target and attack surrounding players.\n" +
+            "Once you obtain 3 kills, you will transform into War, horseman of apocalypse.",
+            AUSAssets.War_Attack),
+    ];
+
+    [MethodRpc((uint)AUSRpc.RpcNotifyWar)]
+    public static void RpcNotify(PlayerControl player, int notifyType)
+    {
+        if (player.AmOwner())
+        {
+            var notify = (NotificationType)notifyType;
+            switch (notify)
+            {
+                case NotificationType.War_Reveal:
+                    player.Notify(Info(), NotifyMode.OnlyMeeting, sprite: AUSAssets.WarRoleCard.LoadAsset());
+                    break;
+            }
+        }
+    }
+
+    public bool WinConditionMet() => ApocGameOver.WinConditionMet(this);
+    public override bool DidWin(GameOverReason gameOverReason)
+    {
+        return WinConditionMet() || ApocGameOver.AnyApocWon(gameOverReason);
+    }
+
+    public override void Initialize(PlayerControl player)
+    {
+        RoleBehaviourStubs.Initialize(this, player);
+        RpcNotify(PlayerControl.LocalPlayer, (int)NotificationType.War_Reveal);
+    }
+
+    public static string Info()
+    {
+        return $"The Berserker has transformed into War, Horseman of the Apocalypse! Cry 'Havoc!', and let slip the dogs of war.";
+    }
+}
+
+public sealed class War_Attack : TownOfUsRoleButton<War, PlayerControl>
+{
+    public override string Name => "Attack";
+    public override BaseKeybind Keybind => Keybinds.PrimaryAction;
+    public override Color TextOutlineColor => RoleColors.Apocalypse;
+    public override float Cooldown => OptionGroupSingleton<War_Options>.Instance.Cooldown;
+    public override LoadableAsset<Sprite> Sprite => AUSAssets.War_Attack;
+
+    public override void ClickHandler()
+    {
+        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
+    }
+
+    protected override void OnClick()
+    {
+        if (Target == null)
+            return;
+
+        Player.Rampage(Target, DeathReasonShow.DestroyedByWarHorsemanOfTheApocalypse);
+    }
+
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.Is(Alignment.NeutralApocalypse));
+    }
+}
+
+public sealed class War_Attack2 : TownOfUsRoleButton<War, PlayerControl>
+{
+    public override string Name => "Attack";
+    public override BaseKeybind Keybind => Keybinds.SecondaryAction;
+    public override Color TextOutlineColor => RoleColors.Apocalypse;
+    public override float Cooldown => OptionGroupSingleton<War_Options>.Instance.Cooldown;
+    public override LoadableAsset<Sprite> Sprite => AUSAssets.War_Attack;
+
+    public override void ClickHandler()
+    {
+        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
+    }
+
+    protected override void OnClick()
+    {
+        if (Target == null)
+            return;
+
+        Player.Rampage(Target, DeathReasonShow.DestroyedByWarHorsemanOfTheApocalypse);
+    }
+
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.Is(Alignment.NeutralApocalypse));
+    }
+}
+
+public sealed class War_Options : AbstractOptionGroup<War>
+{
+    public override string GroupName => "War";
+
+    [ModdedNumberOption("War Attack Cooldown", 2.5f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
+    public float Cooldown { get; set; } = 25f;
+
+    [ModdedToggleOption("War Can Vent")]
+    public bool CanVent { get; set; } = true;
+}

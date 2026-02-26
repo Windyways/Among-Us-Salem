@@ -1,9 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using MiraAPI.Events.Vanilla.Meeting.Voting;
 using System.Collections;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -12,7 +10,7 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
     public string RoleName { get; set; } = "Deputy";
     public string revealText => "is a powerful force for Justice.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are an enforcer of the law who won't hesitate to kill in broad daylight.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -41,6 +39,8 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that can Shoot players during the day to kill them, being a threat to evils in case they get information stacked against them.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());
@@ -144,9 +144,9 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
         }
     }
 
-    public IEnumerator GenButtons()
+    public IEnumerator GenButtons(float delay = 3f)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(delay);
         meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && Charges > 0 && DayNightMechanic.DayCount >= 2);
     }
 

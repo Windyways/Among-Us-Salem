@@ -301,7 +301,8 @@ public abstract class TownOfUsTargetButton<T> : CustomActionButton<T> where T : 
 
     public override void SetActive(bool visible, RoleBehaviour role)
     {
-        Button?.ToggleVisible(visible && Enabled(role) && !role.Player.HasDied());
+        if (UsableInDeath) Button?.ToggleVisible(visible && Enabled(role));
+        else Button?.ToggleVisible(visible && Enabled(role) && !role.Player.HasDied());
     }
 
     public override bool CanUse()
@@ -419,7 +420,7 @@ public abstract class TownOfUsTargetButton<T> : CustomActionButton<T> where T : 
 [MiraIgnore]
 public abstract class TownOfUsRoleButton<TRole> : TownOfUsButton where TRole : RoleBehaviour
 {
-    public TRole Role => PlayerControl.LocalPlayer.GetRole<TRole>()!;
+    public TRole Role => PlayerControl.LocalPlayer.GetTrueRole<TRole>()!;
     public PlayerControl Player => Role.Player;
     public CustomActionButton button => this;
 

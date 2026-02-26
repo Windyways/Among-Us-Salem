@@ -6,21 +6,34 @@ public enum AUSRpc : uint
     Mayor_Reveal,
     Deputy_HighNoon,
     Prosecutor_Prosecute,
+    RpcResetMafiosoCooldown,
+    RpcResetGodfatherCooldown,
+    RpcDaybreak,
 
     // Notifications
     RpcNotifyBodyguard,
     RpcNotifyJinx,
     RpcNotifyPotionMaster,
+    RpcNotifySurvivor,
+    RpcNotifyCrusader,
+    RpcNotifyWar,
+    RpcNotifyStarspawn,
 
     // Mechanics
     StartDayOne,
+    RpcApplyAttack,
+    RpcApplyDefense,
 
     // Other
     RpcNotifyCoven,
     NecroPassing_PassNecronomicon,
     NecroPassing_AssignNecronomicon,
     RpcAddDeathReason,
-    RpcApplyDefense,
+
+    // Misc
+    RequestDeathStateValidation,
+    SyncDeathState,
+    GhostRoleMurder,
 
 
 

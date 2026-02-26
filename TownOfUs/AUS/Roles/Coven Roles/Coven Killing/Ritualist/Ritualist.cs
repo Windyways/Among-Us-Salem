@@ -3,9 +3,7 @@ using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using System.Text;
 using TownOfUs.Modules.Components;
-using TownOfUs.Utilities.Appearances;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -14,7 +12,7 @@ public sealed class Ritualist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     public string RoleName { get; set; } = "Ritualist";
     public string revealText => "casts deadly rituals with specific knowledge.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a sorcerer who sacrifices members of the town to the Old Ones.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -45,7 +43,7 @@ public sealed class Ritualist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     public string GetAdvancedDescription()
     {
         return 
-            $"Attack: {Attack}\n" +
+            $"Attack: Unstoppable\n" +
             $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that punishes players that claim their role with death.\n" +
             "Kill all who would oppose the Coven." + 

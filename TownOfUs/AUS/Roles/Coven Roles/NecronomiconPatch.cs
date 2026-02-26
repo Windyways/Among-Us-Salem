@@ -39,7 +39,7 @@ public static class NecronomiconPatch
     [RegisterEvent]
     public static void ReportBodyEvent(ReportBodyEvent @event)
     {
-        SmartCovenStart.SwapToCoven();
+        SmartClientSwapping.SwapToCoven();
     }
 
     [RegisterEvent]

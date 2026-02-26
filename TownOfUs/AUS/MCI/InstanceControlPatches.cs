@@ -26,6 +26,8 @@ public static class InstanceControlPatches
 
     public static void SwitchTo(byte playerId)
     {
+        OnSwitchPlayer(MiscUtils.PlayerById(PlayerControl.LocalPlayer.PlayerId), MiscUtils.PlayerById(playerId));
+
         var savedPlayerId = PlayerControl.LocalPlayer.PlayerId;
         PlayerControl savedPlayer = MiscUtils.PlayerById(savedPlayerId)!;
         var savedPosition = savedPlayer.transform.position;
@@ -287,5 +289,28 @@ public static class InstanceControlPatches
         bot.SetVisor(HatManager.Instance.allVisors[UnityEngine.Random.Range(0, HatManager.Instance.allVisors.Count)].ProdId, 0);
 
         AUSPlugin.IsBot.Add(bot);
+    }
+
+    public static void OnSwitchPlayer(PlayerControl oldBot, PlayerControl newBot)
+    {
+        if (MeetingHud.Instance)
+        {
+            Starspawn.ClearDayButtons(oldBot);
+            ApplyDayButtons(newBot);
+        }
+
+        // --- JESTER PATCH ---
+        var jesterButton = CustomButtonSingleton<Jester_Haunt>.Instance;
+        if (jesterButton.Show) jesterButton.Show = false;
+        if (newBot.GetRoleWhenAlive() is Jester jester && jester.Lynched()) jesterButton.Show = true;
+    }
+
+    public static void ApplyDayButtons(PlayerControl player)
+    {
+        if (player.TryGetModifier<NecroPassing>(out var necroPassing)) Coroutines.Start(necroPassing.GenButtons(0.1f));
+        if (player.Data.Role is Deputy deputy) Coroutines.Start(deputy.GenButtons(0.1f));
+        if (player.Data.Role is Mayor mayor) Coroutines.Start(mayor.GenButtons(0.1f));
+        if (player.Data.Role is Prosecutor prosecutor) Coroutines.Start(prosecutor.GenButtons(0.1f));
+        if (player.Data.Role is Starspawn starspawn) Coroutines.Start(starspawn.GenButtons(0.1f));
     }
 }

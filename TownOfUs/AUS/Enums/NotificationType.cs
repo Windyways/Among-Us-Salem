@@ -16,5 +16,14 @@ public enum NotificationType
     Mayor_TownGainingConfidence,
 
     Deputy_MissedShot,
-    Deputy_Shoot
+    Deputy_Shoot,
+    Survivor_AttackedAndVested,
+
+    Crusader_AttackAndFortified,
+    Crusader_AttackedVisitor,
+    War_Reveal,
+
+    Starspawn_Isolate,
+    Starspawn_Daybreak,
+    Starspawn_IsolateButImmune
 }

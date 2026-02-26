@@ -1,7 +1,5 @@
 ﻿using MiraAPI.GameEnd;
-using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
-using TownOfUs.Modules;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -14,7 +12,7 @@ public sealed class NeutralGameOver : CustomGameOver
 
     public override bool VerifyCondition(PlayerControl playerControl, NetworkedPlayerInfo[] winners)
     {
-        if (winners is not [{ Role: RoleBehaviour role and ITownOfUsRole tRole }])
+        if (winners is not [{ Role: RoleBehaviour role and ICustomAURole tRole }])
         {
             return false;
         }

@@ -20,7 +20,9 @@ public static class SmartMayor
 
     public static IEnumerator DelayStart()
     {
-        yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime + 1f);
+        yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime + 0.5f);
+        if (SmartStarspawn.IsActive) yield break;
+
         if (DayNightMechanic.DayCount == 1)
             yield break;
 

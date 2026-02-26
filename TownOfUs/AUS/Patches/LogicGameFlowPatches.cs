@@ -13,15 +13,15 @@ public static class LogicGameFlowPatches
 {
     public static bool EndGameEarlyCheck(RoleBehaviour role)
     {
-        /*var deadAmneRoles = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasDied() &&
-            x.Data.Role is Veteran or Mayor or Prosecutor);
+        var deadAmneRoles = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasDied() &&
+            x.Data.Role is /*Veteran or*/ Mayor or Prosecutor);
 
-        var deadVetsOnAlert = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasDied() &&
-            x.Data.Role is Veteran veteran && veteran.isAlerted);
+        /*var deadVetsOnAlert = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasDied() &&
+            x.Data.Role is Veteran veteran && veteran.isAlerted);*/
 
         var deadFortified = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasDied() &&
-            x.IsFortified() || x.IsJinxed() || x.IsAmbushed());
-        */
+            x.HasModifier<FortifiedModifier>() || x.HasModifier<JinxedModifier>()/* || x.IsAmbushed()*/);
+        
         var enemyRoles = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x.Data.Role != role).ToList();
         if (enemyRoles.Count == 1)
         {
@@ -81,12 +81,27 @@ public static class LogicGameFlowPatches
             else */if (role.Player.Is(Faction.Coven)) // Coven end game early checks
             {
                 if (
-                    other.Data.Role is /*Mayor or Jackal or Shroud or Vampire or*/ ImpostorRole
-                    /*|| (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    || (other.Data.Role is Veteran veteran && veteran.Charges > 0)
+                    other.Data.Role is Mayor or /*Jackal or Shroud or Vampire or*/ ImpostorRole
+                    || other.Is(Alignment.NeutralApocalypse)
+                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
+                    /*|| (other.Data.Role is Veteran veteran && veteran.Charges > 0) */
                     || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)*/
-                    || other.HasModifier<GuardedModifier>()/* || other.IsFortified() || deadVetsOnAlert > 0 || deadFortified > 0 || other.IsAmbushed()*/
+                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)
+                    || other.HasModifier<GuardedModifier>() || other.HasModifier<FortifiedModifier>() || /*deadVetsOnAlert > 0 ||*/ deadFortified > 0 /*|| other.IsAmbushed()*/
+                    ) return false;
+
+                return true;
+            }
+            else if (role.Player.Is(Alignment.NeutralApocalypse)) // Coven end game early checks
+            {
+                if (
+                    other.Data.Role is Mayor or /*Jackal or Shroud or Vampire or*/ ImpostorRole 
+                    || other.Is(Faction.Coven)
+                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
+                    /*|| (other.Data.Role is Veteran veteran && veteran.Charges > 0) */
+                    || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
+                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)
+                    || other.HasModifier<GuardedModifier>() || other.HasModifier<FortifiedModifier>() || /*deadVetsOnAlert > 0 ||*/ deadFortified > 0 /*|| other.IsAmbushed()*/
                     ) return false;
 
                 return true;
@@ -94,13 +109,13 @@ public static class LogicGameFlowPatches
             else if (role is ImpostorRole) // Mafia end game early checks
             {
                 if (
-                    /*other.Data.Role is Mayor or Jackal or Shroud or Vampire*/
-                    other.Is(Faction.Coven)
-                    /*|| (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    || (other.Data.Role is Veteran veteran && veteran.Charges > 0)
+                    other.Data.Role is Mayor /*or Jackal or Shroud or Vampire*/
+                    || other.Is(Faction.Coven) || other.Is(Alignment.NeutralApocalypse)
+                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
+                    /*|| (other.Data.Role is Veteran veteran && veteran.Charges > 0)*/
                     || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)*/
-                    || other.HasModifier<GuardedModifier>() || /*other.IsFortified() || deadVetsOnAlert > 0 || deadFortified > 0 ||*/ other.HasModifier<JinxedModifier>()
+                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)
+                    || other.HasModifier<GuardedModifier>() || other.HasModifier<FortifiedModifier>() || /*deadVetsOnAlert > 0 ||*/ deadFortified > 0 || other.HasModifier<JinxedModifier>()
                     ) return false;
 
                 return true;
@@ -263,6 +278,16 @@ public static class LogicGameFlowPatches
         {
             Logger<AUSPlugin>.Message($"Game Over");
             CustomGameOver.Trigger<CovenGameOver>([winner4.Player.Data]);
+
+            return false;
+        }
+
+        // If any apoc win condition is met -> game over
+        if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
+            .FirstOrDefault(x => x is ICustomAURole role && role.WinConditionMet() && role.Alignment == Alignment.NeutralApocalypse) is { } winner5)
+        {
+            Logger<AUSPlugin>.Message($"Game Over");
+            CustomGameOver.Trigger<ApocGameOver>([winner5.Player.Data]);
 
             return false;
         }

@@ -11,7 +11,7 @@ public sealed class IllusionedModifier(PlayerControl c) : BaseModifier
     {
         if (!Caster.HasModifier<OverchargedModifier>())
         {
-            var player = ModifierUtils.GetPlayersWithModifier<IllusionedModifier>(x => x.Caster == Caster).FirstOrDefault();
+            var player = ModifierUtils.GetPlayersWithModifier<IllusionedModifier>(x => x.Caster == Caster && x != this).FirstOrDefault();
             player?.RpcRemoveModifier<IllusionedModifier>();
         }
     }

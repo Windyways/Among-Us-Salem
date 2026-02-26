@@ -14,8 +14,7 @@ public static class WikiHyperLinkPatches
 
     public static readonly char[] RemovedCharacters = [ '\'', '\"' ];
 
-    public static string
-        CheckForTags(string text, TextMeshPro tmp) // In theory, this method can be used for any TMP object
+    public static string CheckForTags(string text, TextMeshPro tmp) // In theory, this method can be used for any TMP object
     {
         var roleTags = Regex.Matches(text, @"#\w+(-\w+)*");
         var modifierTags = Regex.Matches(text, @"&\w+(-\w+)*");
@@ -49,7 +48,18 @@ public static class WikiHyperLinkPatches
             {
                 var role = MiscUtils.AllRegisteredRoles.FirstOrDefault(x =>
                     x.GetRoleName().Replace(' ', '-').RemoveAll(RemovedCharacters).Equals(key, StringComparison.OrdinalIgnoreCase));
-                if (role is ICustomRole customRole)
+
+                if (key == "Starspawn")
+                {
+                    role = MiscUtils.AllRoles.FirstOrDefault(x => x is Starspawn);
+                    if (role is ICustomRole customRole)
+                    {
+                        replacement =
+                            $"{fontTag}<b>{customRole.RoleColor.ToTextColor()}<link={RoleColors.StarspawnNameInGradient}:{linkIndex}>{RoleColors.StarspawnNameInGradient}</link></color></b></font>";
+                        shouldHyperlink = customRole is IWikiDiscoverable || SoftWikiEntries.RoleEntries.ContainsKey(role);
+                    }
+                }
+                else if (role is ICustomRole customRole)
                 {
                     replacement =
                         $"{fontTag}<b>{customRole.RoleColor.ToTextColor()}<link={customRole.GetType().FullName}:{linkIndex}>{customRole.RoleName}</link></color></b></font>";

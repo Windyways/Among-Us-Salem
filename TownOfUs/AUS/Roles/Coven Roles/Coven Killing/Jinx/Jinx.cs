@@ -3,7 +3,6 @@ using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using TownOfUs.Utilities.Appearances;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -12,7 +11,7 @@ public sealed class Jinx(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWik
     public string RoleName { get; set; } = "Jinx";
     public string revealText => "lies in wait.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a bad omen who causes harm to those around you.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 

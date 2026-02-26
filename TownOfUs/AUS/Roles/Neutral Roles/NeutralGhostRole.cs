@@ -1,8 +1,6 @@
 ﻿using System.Text;
 using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
-using Reactor.Utilities;
-using TownOfUs.Modules;
 using UnityEngine;
 
 namespace TownOfUs.Roles.Neutral;
@@ -135,5 +133,15 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), ICustomAUR
         Logger<AUSPlugin>.Message($"NeutralGhostRole.DidWin - role: {role.NiceName} DidWin: {win}");
 
         return win;
+    }
+
+    public override void Initialize(PlayerControl player)
+    {
+        RoleBehaviourStubs.Initialize(this, player);
+        if (Player.TryGetModifier<LinkStatAD>(out var stat))
+        {
+            AttackDefenseMechanic.RpcApplyAttack(Player, stat.attack, true, true);
+            AttackDefenseMechanic.RpcApplyDefense(Player, stat.defense, true, true);
+        }
     }
 }

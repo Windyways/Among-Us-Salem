@@ -1,3 +1,6 @@
+using Reactor.Networking.Rpc;
+using TownOfUs.Events;
+using TownOfUs.Modifiers;
 using TownOfUs.Utilities.Appearances;
 
 namespace AmongUsSalem.Misc;
@@ -72,6 +75,17 @@ public static class CustomExtentions
         return false;
     }
 
+    public static bool IsTrueRole<T>(this PlayerControl player) where T : RoleBehaviour
+    {
+        if (player == null) return false;
+        if (player.HasDied())
+        {
+            var r = player.GetRoleWhenAlive();
+            return r is T;
+        }
+        return player.Data?.Role is T;
+    }
+
     public static T? GetTrueRole<T>(this PlayerControl player) where T : RoleBehaviour
     {
         if (player == null) return null;
@@ -109,5 +123,48 @@ public static class CustomExtentions
 
         if (player.Data.Role is ICustomAURole c) customRole = c;
         return customRole;
+    }
+
+
+    /// <summary>
+    /// Networked Custom Murder method.
+    /// </summary>
+    /// <param name="source">The killer.</param>
+    /// <param name="target">The player to murder.</param>
+    [MethodRpc((uint)AUSRpc.GhostRoleMurder, LocalHandling = RpcLocalHandling.Before)]
+    public static void RpcGhostRoleMurder(
+        this PlayerControl source,
+        PlayerControl target)
+    {
+        if (LobbyBehaviour.Instance)
+            return;
+
+        if (!source.HasDied())
+            return;
+
+        var role = source.GetRoleWhenAlive();
+        if (source.Data.Role is IGhostRole)
+        {
+            role = source.Data.Role;
+        }
+
+        var customRole = role as ICustomAURole;
+        if (customRole == null)
+            return;
+
+        source.CustomMurder(
+            target,
+            MurderResultFlags.Succeeded);
+
+        // Force-sync death state after ghost role murder to prevent desyncs
+        if (target.HasDied())
+        {
+            DeathStateSync.ScheduleDeathStateSync(target, true);
+            // Request validation after kill to ensure all clients are in sync
+            if (source.AmOwner)
+            {
+                DeathStateSync.RequestValidationAfterKill(source);
+            }
+        }
     }
 }

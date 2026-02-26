@@ -13,11 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using TownOfUs.Modifiers;
-using TownOfUs.Modifiers.Game;
-using TownOfUs.Modules;
 using TownOfUs.Options;
-using TownOfUs.Roles;
-using TownOfUs.Roles.Neutral;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -26,6 +22,16 @@ namespace TownOfUs.Utilities;
 
 public static class MiscUtils
 {
+    public static void AddBotFakeChat(PlayerControl bot, string message,
+        bool showHeadsup = false, bool altColors = false, bool onLeft = true)
+    {
+        if (Debugger.IsDebuggerActive && Debugger.SmartBotsEnabled)
+        {
+            var basePlayer = bot.CachedPlayerData;
+            AddFakeChat(basePlayer, bot.Name(), message, showHeadsup, altColors, onLeft);
+        }
+    }
+
     public static List<T> GetRoles<T>() where T : RoleBehaviour
     {
         var r = new List<T>();
@@ -58,19 +64,16 @@ public static class MiscUtils
     }
 
     public static int KillersAliveCount => Helpers.GetAlivePlayers().Count(x => x.IsImpostor() ||
-        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling))
+        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling) || x.Is(Alignment.NeutralApocalypse))
     ;
 
     public static int RealKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling) ||
+        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling) || x.Is(Alignment.NeutralApocalypse) ||
 
         x.IsImpostor());
 
     public static int NKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling));
-
-    public static int NonImpKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.Is(Alignment.NeutralKilling));
+        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling) || x.Is(Alignment.NeutralApocalypse));
 
     public static int ImpAliveCount => Helpers.GetAlivePlayers().Count(x => x.IsImpostor());
 

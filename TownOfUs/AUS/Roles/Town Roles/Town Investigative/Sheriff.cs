@@ -9,7 +9,7 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public string RoleName { get; set; } = "Sheriff";
     public string revealText => "is a protector of the town.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are an authoritative figure who can search a townie's possessions.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -58,6 +58,8 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that prioritizes searching players for incriminating evidence, being a big threat against the Mafia and the Coven.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());
@@ -85,10 +87,10 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     {
         if (target.HasModifier<IllusionedModifier>()) return false;
 
-        if (target.Is(Faction.Mafia) || target.HasModifier<FramedModifier>()) return true; // Not Godfather!
+        if ((target.Is(Faction.Mafia) && !target.IsRole<Godfather>()) || target.HasModifier<FramedModifier>()) return true; // Not Godfather!
         if (target.Is(Faction.Coven) && !target.HasModifier<Necronomicon>()) return true;
 
-        if (target.Is(Alignment.NeutralEvil)) return true;
+        if (target.Is(Alignment.NeutralEvil) && !target.IsRole<Jester>()) return true;
         if (target.Is(Alignment.NeutralApocalypse)) return true;
 
         return false;

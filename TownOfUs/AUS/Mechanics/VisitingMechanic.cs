@@ -1,31 +1,39 @@
 using System.Collections;
 using TownOfUs.Modifiers;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Mechanics;
 
 public static class VisitingMechanic
 {
     public static bool IsTargetingValid(this CustomActionButton button, PlayerControl user, PlayerControl? target, 
-        bool isAttacking, bool isVisiting)
+        bool isAttacking, bool isVisiting, bool ignoreCooldown = false)
     {
         if (target == null || button == null || user == null) return false;
-        if (button.Timer > 0) return false;
-        return IsSuccessfulVisit(user, target, isAttacking, isVisiting);
+        if (button.Timer > 0 && !ignoreCooldown) return false;
+        return IsSuccessfulVisit(button, user, target, isAttacking, isVisiting);
     }
 
-    public static bool IsSuccessfulVisit(PlayerControl user, PlayerControl target, bool isAttacking, bool isVisiting)
+    public static bool IsSuccessfulVisit(CustomActionButton button, PlayerControl user, PlayerControl target, bool isAttacking, bool isVisiting)
     {
         Coroutines.Start(PostSuccessfulVisit(user, target, isAttacking, isVisiting));
         int blockVisit = 0;
 
-        // --- PROTECTION INTERACTIONS ---
-        if (isAttacking && isVisiting && target.TryGetModifier<GuardedModifier>(out var guarded) && !user.HasModifier<IllusionedModifier>())
-            blockVisit += guarded.PerformInteraction(user, target);
+        // --- UNKNOWN OBSTACLE INTERACTIONS ---
+        if (isVisiting && target.TryGetModifier<IsolatedModifier>(out var isolated) && isolated.state == IsolatedModifier.State.Isolated)
+            blockVisit += isolated.PerformInteraction(button, user, target);
 
-        // --- COUNTERATTACK INTERACTIONS ---
-        if (isVisiting && target.TryGetModifier<JinxedModifier>(out var jinxed) && !user.Is(Faction.Coven))
-            blockVisit += jinxed.PerformInteraction(user);
+        if (blockVisit < 100)
+        {
+            // --- PROTECTION INTERACTIONS ---
+            if (isAttacking && isVisiting && target.TryGetModifier<GuardedModifier>(out var guarded) && !user.HasModifier<IllusionedModifier>())
+                blockVisit += guarded.PerformInteraction(user, target);
+
+            // --- COUNTERATTACK INTERACTIONS ---
+            if (isVisiting && target.TryGetModifier<FortifiedModifier>(out var fortified) && fortified.Caster != user) blockVisit += fortified.PerformInteraction(user, target, isAttacking);
+            if (isVisiting && target.TryGetModifier<JinxedModifier>(out var jinxed) && !user.Is(Faction.Coven)) blockVisit += jinxed.PerformInteraction(user);
+        }
 
         if (blockVisit > 0) return false;
         return true;
@@ -38,38 +46,18 @@ public static class VisitingMechanic
             target.RpcRemoveModifier<FramedModifier>();
     }
 
-    public static bool CanKill(this PlayerControl player, PlayerControl target, Attack overrideAttack = Attack.None)
-    {
-        if (player.Data.Role is ICustomAURole role && target.Data.Role is ICustomAURole targetRole)
-        {
-            if (player.HasDied()) role = player.GetICustomAURoleWhenAlive();
-            if (overrideAttack > Attack.None)
-            {
-                if (!player.Is(Faction.Town) && target.Is(Alignment.NeutralPariah))
-                {
-                    if ((int)overrideAttack > (int)targetRole.EtherealDefense) return true;
-                    return false;
-                }
-
-                if ((int)overrideAttack > (int)targetRole.Defense) return true;
-
-                return false;
-            }
-
-            if (player.Is(Faction.Town) && target.Is(Alignment.NeutralPariah))
-            {
-                if ((int)role.Attack > (int)targetRole.EtherealDefense) return true;
-                return false;
-            }
-
-            if ((int)role.Attack > (int)targetRole.Defense) return true;
-        }
-        return false;
-    }
-
     [MethodRpc((uint)AUSRpc.RpcAddDeathReason)]
     public static void RpcAddDeathReason(PlayerControl player, int deathReasonShow)
     {
         DeathHandlerModifier.UpdateDeathHandler(player, (DeathReasonShow)deathReasonShow, DeathHandlerOverride.SetFalse);
+    }
+
+    public static void LeaveTown(this PlayerControl player)
+    {
+        if (player.AmOwner())
+        {
+            player.RpcCustomMurder(player);
+            RpcAddDeathReason(player, (int)DeathReasonShow.LeftTown);
+        }
     }
 }

@@ -22,6 +22,8 @@ public static class SmartProsecutor
     public static IEnumerator DelayStart()
     {
         yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime + 1f);
+        if (SmartStarspawn.IsActive) yield break;
+
         if (DayNightMechanic.DayCount == 1)
             yield break;
 

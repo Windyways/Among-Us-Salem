@@ -47,13 +47,18 @@ public sealed class DeathHandlerModifier : BaseModifier
 
     public static Color GetColor(DeathReasonShow causeOfDeath)
     {
+        if (causeOfDeath == DeathReasonShow.LeftTown) return RoleColors.Auditor;
+
         if (causeOfDeath == DeathReasonShow.KilledByAMemberOfTheMafia/* || causeOfDeath == DeathReasonShow.KilledByAnAmbusher*/) return RoleColors.Mafia;
         //if (causeOfDeath == DeathReasonShow.IncineratedByAnArsonist) return AUSColors.Arsonist;
         //if (causeOfDeath == DeathReasonShow.KilledByAShroud) return AUSColors.Shroud;
         //if (causeOfDeath == DeathReasonShow.BittenByAVampire) return AUSColors.Vampire;
         //if (causeOfDeath == DeathReasonShow.AssassinatedByAJackal || causeOfDeath == DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate) return AUSColors.Neutral;
-        if (causeOfDeath == DeathReasonShow.KilledByABodyguard || causeOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget || causeOfDeath == DeathReasonShow.ShotByADeputy) return RoleColors.Town;
+        if (causeOfDeath == DeathReasonShow.KilledByABodyguard || causeOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget || causeOfDeath == DeathReasonShow.ShotByADeputy || causeOfDeath == DeathReasonShow.KilledByACrusader) return RoleColors.Town;
         if (causeOfDeath == DeathReasonShow.KilledByTheCoven || causeOfDeath == DeathReasonShow.BombedByAHexMaster || causeOfDeath == DeathReasonShow.KilledByAJinx || causeOfDeath == DeathReasonShow.KilledByARitualist) return RoleColors.Coven;
+        if (causeOfDeath == DeathReasonShow.HauntedByAJester || causeOfDeath == DeathReasonShow.DiedOfBoredom) return RoleColors.Jester;
+        if (causeOfDeath == DeathReasonShow.DestroyedByABeserker || causeOfDeath == DeathReasonShow.DestroyedByWarHorsemanOfTheApocalypse) return RoleColors.Apocalypse;
+        if (causeOfDeath == DeathReasonShow.StabbedByASerialKiller) return RoleColors.SerialKiller;
         return RoleColors.Apocalypse;
     }
 

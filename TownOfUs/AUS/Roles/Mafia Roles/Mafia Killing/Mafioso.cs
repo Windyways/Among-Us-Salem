@@ -9,7 +9,7 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
     public string RoleName { get; set; } = "Mafioso";
     public string revealText => "does the Godfather's dirty work.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a member of organized crime, trying to work your way to the top.";
     public Color RoleColor { get; set; } = RoleColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 
@@ -40,7 +40,7 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
         return 
             $"Attack: {Attack}\n" +
             $"Defense: {Defense}\n" +
-            $"The {RoleName} is a {Alignment.ToSpacedString()} role that performs kills for the Godfather, and is promoted to Godfather if one dies. Although if there is no Godfather, it can kill on its own freely.\n" +
+            $"The {RoleName} is a {Alignment.ToSpacedString()} role that performs kills for the Godfather or on its own.\n" +
             "Kill anyone that will not submit to the Mafia." + 
             MiscUtils.AppendOptionsText(GetType());
     }
@@ -50,13 +50,29 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
     [
         new("Kill",
             "You can Kill a player at Night.\n" +
-            "You will deal a Basic Attack to your target if the Godfather has yet to give you orders.",
+            "You will deal a Basic Attack to your target. You may not Kill if the Godfather has given you orders.",
             AUSAssets.Mafioso_Kill),
     ];
 
+    public string GetAttributes()
+    {
+        return
+            $"- If the Godfather dies, you will be promoted to Godfather.";
+    }
+
     public static string Info()
     {
-        return "You were promoted to a <b><color=#DD0000>Mafioso</color></b>!";
+        return "You were promoted to a Mafioso!";
+    }
+
+    [MethodRpc((uint)AUSRpc.RpcResetGodfatherCooldown)]
+    public static void RpcResetGodfatherCooldown(PlayerControl player)
+    {
+        if (player.AmOwner())
+        {
+            CustomButtonSingleton<Godfather_Kill>.Instance.ResetCooldownAndOrEffect();
+            CustomButtonSingleton<Godfather_Order>.Instance.ResetCooldownAndOrEffect();
+        }
     }
 }
 
@@ -78,6 +94,7 @@ public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>
         if (Target == null)
             return;
 
+        foreach (var godfather in MiscUtils.GetRoles<Godfather>()) Mafioso.RpcResetGodfatherCooldown(godfather.Player);
         if (Player.CanKill(Target))
         {
             Player.RpcCustomMurder(Target);
@@ -89,6 +106,11 @@ public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(false, Distance);
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && !Player.HasModifier<OrderedModifier>();
     }
 }
 

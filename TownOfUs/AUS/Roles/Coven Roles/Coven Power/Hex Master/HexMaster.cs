@@ -2,7 +2,6 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -11,7 +10,7 @@ public sealed class HexMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     public string RoleName { get; set; } = "Hex Master";
     public string revealText => "is versed in the ways of hexes.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a powerful spellcaster preparing to disintegrate the town.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 

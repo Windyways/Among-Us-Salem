@@ -9,7 +9,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
     public string RoleName { get; set; } = "Seer";
     public string revealText => "can see into the hearts of people to find out their intentions.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are able to see into the hearts of townies to find out their intentions.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -59,6 +59,8 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that can check if two players are on opposing factions or not, being a huge threat to Coven and Mafia.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());
@@ -87,19 +89,6 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
             AUSAssets.Seer_Gaze),
     ];
 
-    public static bool IsSameFaction(PlayerControl target)
-    {
-        if (target.HasModifier<IllusionedModifier>()) return false;
-
-        if (target.Is(Faction.Mafia) || target.HasModifier<FramedModifier>()) return true; // Not Godfather!
-        if (target.Is(Faction.Coven) && !target.HasModifier<Necronomicon>()) return true;
-
-        if (target.Is(Alignment.NeutralEvil)) return true;
-        if (target.Is(Alignment.NeutralApocalypse)) return true;
-
-        return false;
-    }
-
     public static string Info(PlayerControl player, PlayerControl intuit, PlayerControl gaze)
     {
         player.AddModifier<TI>();
@@ -115,7 +104,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
         // --- Intuit ---
         if (intuit.HasModifier<IllusionedModifier>())
         {
-            if (gaze.Is(Faction.Town)) return true;
+            if (gaze.Is(Faction.Town) || intuit.IsRole<Jester>()) return true;
             if (gaze.HasModifier<IllusionedModifier>()) return true;
             return false;
         }
@@ -130,7 +119,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
         // --- GAZE ---
         if (gaze.HasModifier<IllusionedModifier>())
         {
-            if (intuit.Is(Faction.Town)) return true;
+            if (intuit.Is(Faction.Town) || intuit.IsRole<Jester>()) return true;
             if (intuit.HasModifier<IllusionedModifier>()) return true;
             return false;
         }
@@ -142,6 +131,8 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
             return false;
         }
 
+        if (intuit.Is(Faction.Town) && gaze.IsRole<Jester>()) return true;
+        if (gaze.Is(Faction.Town) && intuit.IsRole<Jester>()) return true;
         return intuit.IsSameFaction(gaze);
     }
 
@@ -199,7 +190,7 @@ public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit);
+            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && !x.HasModifier<GlobalReveal>());
     }
 }
 
@@ -242,7 +233,7 @@ public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit);
+            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && !x.HasModifier<GlobalReveal>());
     }
 }
 

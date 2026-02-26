@@ -61,7 +61,27 @@ public static class ChatPatches
             __instance.UpdateChatMode();
             return false;
         }
-        
+
+        if (AUSPlugin.InGame())
+        {
+            var player = PlayerControl.LocalPlayer;
+            var host = GameData.Instance.GetHost();
+            if (player.Data.Role is Jester jester) jester.OnMessageSend(__instance);
+
+            if (player.TryGetModifier<JuryModifier>(out var jury))
+            {
+                string name = jury.isJudge ? "JUDGE" : "JURY";
+                string newText = jury.isJudge ? "<color=#ffff00>" + text + "</color>" : text;
+                // MiscUtils.AddFakeChat(host, name, newText);
+
+                jury.AnonymousChatSendPatch(name, newText);
+                __instance.freeChatField.Clear();
+                __instance.quickChatMenu.Clear();
+                __instance.quickChatField.Clear();
+                __instance.UpdateChatMode();
+                return false;
+            }
+        }
         return true;
     }
 }

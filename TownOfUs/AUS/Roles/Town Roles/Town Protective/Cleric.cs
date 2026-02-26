@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -10,7 +9,7 @@ public sealed class Cleric(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
     public string RoleName { get; set; } = "Cleric";
     public string revealText => "is skilled in protective magic.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a healer providing protection to the town.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -39,6 +38,8 @@ public sealed class Cleric(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that can protect valuable Town roles, or just Town members in general and keep them alive for longer.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());
@@ -115,6 +116,7 @@ public sealed class Cleric_SelfBarrier : TownOfUsRoleButton<Cleric>
     protected override void OnClick()
     {
         Player.RpcAddModifier<BarrieredModifier>(Player);
+        Player.RpcAddModifier<OverrideDefense>((int)Defense.Powerful);
         AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful);
 
         CustomButtonSingleton<Cleric_Barrier>.Instance.ResetCooldownAndOrEffect();

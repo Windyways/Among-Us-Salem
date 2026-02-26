@@ -9,6 +9,15 @@ public sealed class JinxedModifier(PlayerControl c) : BaseModifier
     public override bool HideOnUi => true;
 
     public PlayerControl Caster => c;
+    public override void OnActivate()
+    {
+        if (!Caster.HasModifier<OverchargedModifier>())
+        {
+            var player = ModifierUtils.GetPlayersWithModifier<JinxedModifier>(x => x.Caster == Caster && x != this).FirstOrDefault();
+            player?.RpcRemoveModifier<JinxedModifier>();
+        }
+    }
+
     public enum State { KillVisitor, KilledVisitor }
     public State currentState;
 

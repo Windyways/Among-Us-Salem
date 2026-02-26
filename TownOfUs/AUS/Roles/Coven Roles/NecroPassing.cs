@@ -43,9 +43,9 @@ public sealed class NecroPassing : BaseModifier
         }
     }
 
-    public IEnumerator GenButtons()
+    public IEnumerator GenButtons(float delay = 3f)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(delay);
         meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied());
     }
 

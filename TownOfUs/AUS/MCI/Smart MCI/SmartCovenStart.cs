@@ -8,22 +8,7 @@ public static class SmartCovenStart
         if (AUSPlugin.InGame())
         {
             NecronomiconPatch.GrantCovenNecroPassing();
-            SwapToCoven();
-        }
-    }
-
-    public static void SwapToCoven()
-    {
-        if (Debugger.IsDebuggerActive && Debugger.smartSwapping)
-        {
-            foreach (var player in PlayerControl.AllPlayerControls)
-            {
-                if (!player.HasDied() && player.Is(Faction.Coven) && OptionGroupSingleton<CovenOptions>.Instance.EnableNecroPassing)
-                {
-                    InstanceControlPatches.SwitchTo(player.PlayerId);
-                    break;
-                }
-            }
+            SmartClientSwapping.SwapToCoven();
         }
     }
 }

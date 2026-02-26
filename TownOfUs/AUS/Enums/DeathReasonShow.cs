@@ -8,6 +8,13 @@ public enum DeathReasonShow
     KilledByABodyguard,
     DiedWhileDefendingTheirTarget,
     ShotByADeputy,
+    KilledByACrusader,
+
+    HauntedByAJester,
+    DiedOfBoredom,
+    DestroyedByABeserker,
+    DestroyedByWarHorsemanOfTheApocalypse,
+    StabbedByASerialKiller,
 
     KilledByAMemberOfTheMafia,
 
@@ -16,5 +23,6 @@ public enum DeathReasonShow
     KilledByAJinx,
     KilledByARitualist,
 
-    Lynched
+    Lynched,
+    LeftTown
 }

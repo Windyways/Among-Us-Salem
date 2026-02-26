@@ -37,6 +37,14 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> DeputyRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.DeputyRoleCard.png");
     public static LoadableAsset<Sprite> AmnesiacRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.AmnesiacRoleCard.png");
     public static LoadableAsset<Sprite> ProsecutorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ProsecutorRoleCard.png");
+    public static LoadableAsset<Sprite> SurvivorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.SurvivorRoleCard.png");
+    public static LoadableAsset<Sprite> CrusaderRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.CrusaderRoleCard.png");
+    public static LoadableAsset<Sprite> GodfatherRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.GodfatherRoleCard.png");
+    public static LoadableAsset<Sprite> JesterRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JesterRoleCard.png");
+    public static LoadableAsset<Sprite> BerserkerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.BerserkerRoleCard.png");
+    public static LoadableAsset<Sprite> WarRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.WarRoleCard.png");
+    public static LoadableAsset<Sprite> SerialKillerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.SerialKillerRoleCard.png");
+    public static LoadableAsset<Sprite> StarspawnRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.StarspawnRoleCard.png");
 
     // ABILITIES
     public static LoadableAsset<Sprite> Mafioso_Kill { get; } = new LoadableResourceAsset($"{Abilities}.Mafioso_Kill.png");
@@ -63,6 +71,16 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> Deputy_HighNoon { get; } = new LoadableResourceAsset($"{Abilities}.Deputy_HighNoon.png");
     public static LoadableAsset<Sprite> Amnesiac_Remember { get; } = new LoadableResourceAsset($"{Abilities}.Amnesiac_Remember.png");
     public static LoadableAsset<Sprite> Prosecutor_Prosecute { get; } = new LoadableResourceAsset($"{Abilities}.Prosecutor_Prosecute.png");
+    public static LoadableAsset<Sprite> Survivor_Vest { get; } = new LoadableResourceAsset($"{Abilities}.Survivor_Vest.png");
+    public static LoadableAsset<Sprite> Crusader_Fortify { get; } = new LoadableResourceAsset($"{Abilities}.Crusader_Fortify.png");
+    public static LoadableAsset<Sprite> Godfather_Order { get; } = new LoadableResourceAsset($"{Abilities}.Godfather_Order.png");
+    public static LoadableAsset<Sprite> Jester_Haunt { get; } = new LoadableResourceAsset($"{Abilities}.Jester_Haunt.png");
+    public static LoadableAsset<Sprite> Berserker_Attack { get; } = new LoadableResourceAsset($"{Abilities}.Berserker_Attack.png");
+    public static LoadableAsset<Sprite> War_Attack { get; } = new LoadableResourceAsset($"{Abilities}.War_Attack.png");
+    public static LoadableAsset<Sprite> SerialKiller_Attack { get; } = new LoadableResourceAsset($"{Abilities}.SerialKiller_Attack.png");
+    public static LoadableAsset<Sprite> SerialKiller_Cautious { get; } = new LoadableResourceAsset($"{Abilities}.SerialKiller_Cautious.png");
+    public static LoadableAsset<Sprite> Starspawn_Isolate { get; } = new LoadableResourceAsset($"{Abilities}.Starspawn_Isolate.png");
+    public static LoadableAsset<Sprite> Starspawn_Daybreak { get; } = new LoadableResourceAsset($"{Abilities}.Starspawn_Daybreak.png");
 
     // Audio
     public static LoadableAsset<AudioClip> Mayor_Reveal_SFX { get; } = new LoadableAudioResourceAsset($"{Audio}.Mayor_Reveal_SFX.wav");

@@ -60,17 +60,20 @@ public static class WitnessKill
 
         foreach (var witness in PlayerControl.AllPlayerControls)
         {
-            if (!IgnoreKill(killer, witness) && BotCanSeeKill(killer, witness, target.transform.position) && witness != target)
+            if (witness != target && witness != killer && !witness.HasDied())
             {
-                if (killer.IsRole<Bodyguard>()) killer.AddModifier<Confirmed>();
-                else
+                if (!IgnoreKill(killer, witness) && BotCanSeeKill(killer, witness, target.transform.position) && witness != target)
                 {
-                    // Add murder see modifier here.
-                    var modifier = witness.AddModifier<SeenKill>();
-                    if (modifier != null) modifier.killer = killer;
+                    if (killer.IsRole<Bodyguard>()) killer.AddModifier<Confirmed>();
+                    else
+                    {
+                        // Add murder see modifier here.
+                        var modifier = witness.AddModifier<SeenKill>();
+                        if (modifier != null) modifier.killer = killer;
 
-                    var modifier2 = killer.AddModifier<SeenKill>();
-                    if (modifier2 != null) modifier2.killer = witness;
+                        var modifier2 = killer.AddModifier<SeenKill>();
+                        if (modifier2 != null) modifier2.killer = witness;
+                    }
                 }
             }
         }
@@ -80,6 +83,7 @@ public static class WitnessKill
     {
         if (killer.Is(Faction.Mafia) && witness.Is(Faction.Mafia)) return true;
         if (killer.Is(Faction.Coven) && witness.Is(Faction.Coven)) return true;
+        if (killer.Is(Alignment.NeutralApocalypse) && witness.Is(Alignment.NeutralApocalypse)) return true;
         return false;
     }
 

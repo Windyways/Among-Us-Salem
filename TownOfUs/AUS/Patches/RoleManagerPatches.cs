@@ -1,10 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using Reactor.Utilities.Extensions;
 using TownOfUs.Events.TouEvents;
 using TownOfUs.Options;
 using Random = UnityEngine.Random;
 
-namespace TownOfUs.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class TouRoleManagerPatches
@@ -268,9 +269,9 @@ public static class TouRoleManagerPatches
         covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonCovenRoles, RoleListOption.CommonCoven, RoleListOption.RandomCoven));
         covenRoles.AddRange(MiscUtils.ReadFromBucket(buckets, randomCovenRoles, RoleListOption.RandomCoven, RoleListOption.RandomCoven));
 
+        int maxCoven = (int)OptionGroupSingleton<CovenOptions>.Instance.MaxCoven;
         // Limit coven roles to a maximum of 4 for the game.
         // Shuffle first so selection is random when more than 4 possible coven roles were generated.
-        int maxCoven = (int)OptionGroupSingleton<CovenOptions>.Instance.MaxCoven;
         if (covenRoles.Count > maxCoven)
         {
             covenRoles.Shuffle();
@@ -351,6 +352,8 @@ public static class TouRoleManagerPatches
         commonImpRoles.AddRange(mafiaSupport);
 
         var randomImpRoles = commonImpRoles;
+        randomImpRoles.AddRange(mafiaKilling);
+
         mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, mafiaKilling, RoleListOption.MafiaKilling, RoleListOption.CommonMafia));
 
         mafiaRoles.AddRange(MiscUtils.ReadFromBucket(buckets, commonImpRoles, RoleListOption.CommonMafia, RoleListOption.RandomMafia));
@@ -361,6 +364,7 @@ public static class TouRoleManagerPatches
         {
             randomNotMafiaCovenRoles.Shuffle();
             randomNotMafiaCovenRoles.Remove(randomNotMafiaCovenRoles.FirstOrDefault());
+            if (randomNotMafiaCovenRoles.Count <= maxCoven) break;
         }
 
         var randomNotMafiaRoles = randomTownRoles;
@@ -454,6 +458,115 @@ public static class TouRoleManagerPatches
         }
     }
 
+    public static int MafiaCount;
+    public static void PerformAllAnyRoleGeneration(List<NetworkedPlayerInfo> infected)
+    {
+        var impostors = MiscUtils.GetImpostors(infected);
+        var crewmates = MiscUtils.GetCrewmates(impostors);
+
+        var rolesAssigned = new List<ushort>();
+        var allRoles = MiscUtils.AllRoles.Where(x => x is ICustomAURole && x is not ISpawnChange).ToList();
+
+        // Here we try to add duplicate roles if there are more than 1 of it.
+        foreach (var role in allRoles.ToList())
+        {
+            if (role is ICustomAURole customRole)
+            {
+                var count = customRole.GetCount();
+                if (count != null)
+                {
+                    for (int i = 1; i < count; i++)
+                    {
+                        allRoles.Add(role);
+                    }
+                }
+            }
+        }
+
+        var rolesAssignable = allRoles.ToList();
+
+        // Remove Outlier roles from the pool if they're disabled.
+        if (!OptionGroupSingleton<RoleGenOptions>.Instance.EnableAllOutliers)
+        {
+            allRoles = allRoles.Where(x => x is ICustomAURole customRole && (customRole.Alignment == Alignment.TownOutlier || customRole.Alignment == Alignment.NeutralOutlier || customRole.Alignment == Alignment.CovenOutlier)).ToList();
+        }
+
+        var players = GameData.Instance.PlayerCount;
+
+        // --- COVEN ---
+        int maxCoven = (int)OptionGroupSingleton<CovenOptions>.Instance.MaxCoven;
+        int covenCount = 0;
+
+        while (rolesAssigned.Count < players)
+        {
+            int mafiaCount = rolesAssigned.Count(x => RoleManager.Instance.GetRole((RoleTypes)x).IsImpostor());
+            if (rolesAssignable.Count == 0)
+            {
+                rolesAssignable = allRoles.Where(x => !rolesAssigned.Contains(RoleId.Get(x.GetType()))).ToList();
+                AUSPlugin.DebugLogMessage($"No more roles to assign, refreshing!", AUSPlugin.MsgType.Warning);
+            }
+
+            var role = rolesAssignable.Random();
+            var customRole = role as ICustomAURole;
+            if (customRole != null)
+            {
+                var chance = customRole.GetChance();
+                if (chance != null)
+                {
+                    // Make sure to assign Mafia roles first because of this bs wegthyj3wregthn.
+                    if (rolesAssigned.Count(x => RoleManager.Instance.GetRole((RoleTypes)x).IsImpostor()) < MafiaCount && customRole.Faction != Faction.Mafia)
+                    {
+                        AUSPlugin.DebugLogMessage($"Failed to assign {customRole.RoleName} because Mafia roles need to be rolled first!", AUSPlugin.MsgType.Error);
+                    }
+                    else if (CalculatedVoting.ChanceIsNull(chance))
+                    {
+                        if (customRole.Faction == Faction.Coven) covenCount++;
+
+                        if (covenCount > maxCoven && customRole.Faction == Faction.Coven) AUSPlugin.DebugLogMessage($"Failed to assign {customRole.RoleName} because max Coven members reached!");
+                        else if (mafiaCount >= MafiaCount && customRole.Faction == Faction.Mafia) AUSPlugin.DebugLogMessage($"Failed to assign {customRole.RoleName} because max Mafia members reached!");
+                        else
+                        {
+                            rolesAssigned.Add(RoleId.Get(customRole.GetType()));
+                            AUSPlugin.DebugLogMessage($"Assigned {customRole.RoleName}!");
+                        }
+                    }
+                    else AUSPlugin.DebugLogMessage($"Failed to assign {customRole.RoleName} because it failed to roll chance!");
+                }
+            }
+
+            rolesAssignable.Remove(role);
+        }
+
+        foreach (var role in rolesAssigned.Where(x => !RoleManager.Instance.GetRole((RoleTypes)x).IsImpostor()))
+        {
+            var num = HashRandom.FastNext(crewmates.Count);
+            var player = crewmates[num];
+
+            player.RpcSetRole((RoleTypes)role);
+
+            crewmates.RemoveAt(num);
+
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
+        }
+
+        foreach (var role in rolesAssigned.Where(x => RoleManager.Instance.GetRole((RoleTypes)x).IsImpostor()))
+        {
+            if (impostors.Count == 0) break;
+            var num = HashRandom.FastNext(impostors.Count);
+            var player = impostors[num];
+
+            player.RpcSetRole((RoleTypes)role);
+
+            impostors.RemoveAt(num);
+
+            if (AUSPlugin.IsDevBuild) Logger<AUSPlugin>.Warning($"Assigning {RoleManager.Instance.GetRole((RoleTypes)role).NiceName} to {player.Data.PlayerName}.");
+        }
+
+        // Assign vanilla roles to anyone who did not receive a role.
+        foreach (var player in crewmates) player.RpcSetRole((RoleTypes)RoleId.Get<Pilgrim>());
+        foreach (var player in impostors) player.RpcSetRole((RoleTypes)RoleId.Get<Mafioso>());
+    }
+
     public static void AssignTargets()
     {
         foreach (var role in MiscUtils.AllRoles.Where(x => x is IAssignableTargets)
@@ -501,10 +614,46 @@ public static class TouRoleManagerPatches
 
         LastImps = [.. infected.Select(x => x.ClientId)];
 
-        AssignRolesFromRoleList(infected);
+        if (AllAnyMode()) PerformAllAnyRoleGeneration(infected);
+        else AssignRolesFromRoleList(infected);
+
         AssignTargets();
 
         return false;
+    }
+
+    public static bool AllAnyMode()
+    {
+        var playerCount = GameData.Instance.AllPlayers.Count;
+        var opts = OptionGroupSingleton<RoleOptions>.Instance;
+        List<RoleListOption> buckets =
+        [
+            (RoleListOption)opts.Slot1.Value, (RoleListOption)opts.Slot2.Value, (RoleListOption)opts.Slot3.Value,
+            (RoleListOption)opts.Slot4.Value
+        ];
+
+        var anySlots = 0;
+
+        if (playerCount > 4) buckets.Add((RoleListOption)opts.Slot5.Value);
+        if (playerCount > 5) buckets.Add((RoleListOption)opts.Slot6.Value);
+        if (playerCount > 6) buckets.Add((RoleListOption)opts.Slot7.Value);
+        if (playerCount > 7) buckets.Add((RoleListOption)opts.Slot8.Value);
+        if (playerCount > 8) buckets.Add((RoleListOption)opts.Slot9.Value);
+        if (playerCount > 9) buckets.Add((RoleListOption)opts.Slot10.Value);
+        if (playerCount > 10) buckets.Add((RoleListOption)opts.Slot11.Value);
+        if (playerCount > 11) buckets.Add((RoleListOption)opts.Slot12.Value);
+        if (playerCount > 12) buckets.Add((RoleListOption)opts.Slot13.Value);
+        if (playerCount > 13) buckets.Add((RoleListOption)opts.Slot14.Value);
+        if (playerCount > 14) buckets.Add((RoleListOption)opts.Slot15.Value);
+        if (playerCount > 15)
+        {
+            for (var i = 0; i < playerCount - 15; i++) buckets.Add(RoleListOption.Any);
+        }
+
+        foreach (var roleOption in buckets)
+            if (roleOption == RoleListOption.Any) anySlots += 1;
+
+        return anySlots == playerCount;
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
@@ -656,6 +805,36 @@ public static class TouRoleManagerPatches
         else if (players < 19 && impostors > 4) impostors = 4;
         else if (impostors > 5) impostors = 5;*/
         if (impostors > 4) impostors = 4;
+
+        if (AllAnyMode()) // in AA, assign Mafia Count based on the rate of all roles and mafia roles.
+        {
+            var allMafiaRoles = MiscUtils.AllRoles.Where(x => x is ICustomAURole customRole && customRole.Faction == Faction.Mafia).ToList();
+            var allRoles = MiscUtils.AllRoles.Where(x => x is ICustomAURole && x is not ISpawnChange).ToList();
+
+            // Here we try to add duplicate roles if there are more than 1 of it.
+            foreach (var role in allRoles.ToList())
+            {
+                if (role is ICustomAURole customRole)
+                {
+                    var count = customRole.GetCount();
+                    if (count != null)
+                    {
+                        for (int i = 1; i < count; i++)
+                        {
+                            if (customRole.Faction == Faction.Mafia) allMafiaRoles.Add(role);
+                            allRoles.Add(role);
+                        }
+                    }
+                }
+            }
+
+            for (var i = 0; i <= 4; i++)
+            {
+                int chance = (allMafiaRoles.Count / allRoles.Count) * 100;
+                if (CalculatedVoting.ChanceIs(chance)) impostors++;
+            }
+            MafiaCount = impostors;
+        }
         __result = impostors;
         return false;
     }

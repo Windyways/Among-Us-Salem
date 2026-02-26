@@ -39,6 +39,8 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that can instantly lynch players of their choice, which is very threatening to evils since being in the majority wouldn't matter.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());
@@ -107,9 +109,9 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
         }
     }
 
-    public IEnumerator GenButtons()
+    public IEnumerator GenButtons(float delay = 3f)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(delay);
         meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && Charges > 0 && DayNightMechanic.DayCount >= 2);
     }
 
@@ -176,6 +178,7 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
         HudManager.Instance.Chat.gameObject.SetActive(true);
 
         if (VotedPlayer.Is(Faction.Town)) prosecutor.Charges = 0;
+        if (VotedPlayer.IsRole<Jester>()) prosecutor.Player.AddModifier<HauntableModifier>(VotedPlayer);
 
         SmartProsecutor.IsActive = false;
     }

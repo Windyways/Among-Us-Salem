@@ -22,10 +22,12 @@ public static class SmartDeputy
     {
         yield return new WaitForSeconds(DayNightMechanic.PostMeetingIntroTime + 1.5f);
         if (SmartProsecutor.IsActive) yield return new WaitForSeconds(8f);
+        if (SmartStarspawn.IsActive) yield break;
 
         if (DayNightMechanic.DayCount == 1)
             yield break;
 
+        bool shot = true;
         foreach (var deputys in MiscUtils.GetPlayersWithRole<Deputy>())
         {
             var deputy = deputys.GetRole<Deputy>();
@@ -39,6 +41,9 @@ public static class SmartDeputy
             else if (incriminatingEvidence != null) deputy.DoShoot(incriminatingEvidence.Player);
             else if (seenKill != null) deputy.DoShoot(seenKill.killer);
             else if (allPlayers.Count <= 6) deputy.DoShoot(allPlayers.Random());
+            else shot = false;
+
+            if (shot) break;
         }
     }
 

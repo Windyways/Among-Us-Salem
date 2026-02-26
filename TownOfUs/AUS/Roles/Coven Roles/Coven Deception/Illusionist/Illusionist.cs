@@ -10,7 +10,7 @@ public sealed class Illusionist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURol
     public string RoleName { get; set; } = "Illusionist";
     public string revealText => "can alter a person's appearance to others.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a talented magician using cheap tricks to fool the town.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 

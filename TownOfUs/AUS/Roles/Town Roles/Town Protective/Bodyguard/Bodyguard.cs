@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -10,7 +9,7 @@ public sealed class Bodyguard(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
     public string RoleName { get; set; } = "Bodyguard";
     public string revealText => "is a trained protector.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a former knight dedicated to protecting the town.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -39,6 +38,8 @@ public sealed class Bodyguard(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that can protect potential targets or keep valuable Town roles alive.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());
@@ -68,7 +69,7 @@ public sealed class Bodyguard(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
 
     public static string Info(NotificationType type)
     {
-        if (type is NotificationType.Bodyguard_Protect) return "Someone attacked you, but a Bodyguard protected you!";
+        if (type is NotificationType.Bodyguard_Protect) return "Someone attacked you, but a Bodyguard fought off your attacker!";//return "Someone attacked you, but a Bodyguard protected you!";
         return "Someone attacked you, but your armor protected you!";
     }
 
@@ -136,6 +137,8 @@ public sealed class Bodyguard_SelfProtect : TownOfUsRoleButton<Bodyguard>
 
     protected override void OnClick()
     {
+        Player.RpcAddModifier<SelfProtectedModifier>(Player);
+        Player.RpcAddModifier<OverrideDefense>((int)Defense.Basic);
         AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic);
         CustomButtonSingleton<Bodyguard_Guard>.Instance.ResetCooldownAndOrEffect();
     }

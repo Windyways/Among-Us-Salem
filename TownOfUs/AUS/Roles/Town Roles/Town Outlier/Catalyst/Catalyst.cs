@@ -9,7 +9,7 @@ public sealed class Catalyst(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     public string RoleName { get; set; } = "Catalyst";
     public string revealText => "is overflowing with energy.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a crazed galvanist overflowing with energy.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -38,6 +38,8 @@ public sealed class Catalyst(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} rrole that can Overcharge others to make their ability cooldowns 2x faster!\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());

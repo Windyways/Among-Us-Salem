@@ -17,10 +17,10 @@ public static class DisableTasks
             switch (task.TaskType)
             {
                 //case TaskTypes.SwipeCard when Options.DisableSwipeCard.GetBool():
-                //case TaskTypes.SubmitScan when Options.DisableSubmitScan.GetBool():
+                case TaskTypes.SubmitScan when s.DisableSubmitScan:
                 //case TaskTypes.UnlockSafe when Options.DisableUnlockSafe.GetBool():
                 case TaskTypes.UploadData when s.DisableDownloadUpload:
-                //case TaskTypes.StartReactor when Options.DisableStartReactor.GetBool():
+                case TaskTypes.StartReactor when s.DisableStartReactor:
                 //case TaskTypes.ResetBreakers when Options.DisableResetBreaker.GetBool():
                 //case TaskTypes.VentCleaning when Options.DisableCleanVent.GetBool():
                 //case TaskTypes.CalibrateDistributor when Options.DisableCalibrateDistributor.GetBool():
@@ -53,7 +53,7 @@ public static class DisableTasks
                 //case TaskTypes.AlignEngineOutput when Options.DisableAlignEngineOutput.GetBool():
                 //case TaskTypes.InspectSample when Options.DisableInspectSample.GetBool():
                 //case TaskTypes.EmptyChute when Options.DisableEmptyChute.GetBool():
-                //case TaskTypes.ClearAsteroids when Options.DisableClearAsteroids.GetBool():
+                case TaskTypes.ClearAsteroids when s.DisableClearAsteroids:
                 //case TaskTypes.WaterPlants when Options.DisableWaterPlants.GetBool():
                 //case TaskTypes.OpenWaterways when Options.DisableOpenWaterways.GetBool():
                 //case TaskTypes.ReplaceWaterJug when Options.DisableReplaceWaterJug.GetBool():

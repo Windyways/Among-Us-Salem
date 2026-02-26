@@ -283,7 +283,7 @@ public static class HudManagerPatches
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
                     // This shows the role!
-                    if (!player.HasModifier<DeepfakeRole>() || PlayerControl.LocalPlayer == player)
+                    if (!player.HasModifier<DeepfakeRole>(x => x.foolingPlayer == PlayerControl.LocalPlayer) || PlayerControl.LocalPlayer == player)
                     {
                         color = role.TeamColor;
                         roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
@@ -298,7 +298,7 @@ public static class HudManagerPatches
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
 
-                        if (!player.HasModifier<DeepfakeRole>() || PlayerControl.LocalPlayer == player)
+                        if (!player.HasModifier<DeepfakeRole>(x => x.foolingPlayer == PlayerControl.LocalPlayer) || PlayerControl.LocalPlayer == player)
                         {
                             color = roleWhenAlive.TeamColor;
 
@@ -433,7 +433,7 @@ public static class HudManagerPatches
                     revealMods.Any(x => x.Visible && x.RevealRole))
                 {
                     // This shows the role!
-                    if (!player.HasModifier<DeepfakeRole>() || PlayerControl.LocalPlayer == player)
+                    if (!player.HasModifier<DeepfakeRole>(x => x.foolingPlayer == PlayerControl.LocalPlayer) || PlayerControl.LocalPlayer == player)
                     {
                         color = role.TeamColor;
                         roleName = $"<size=80%>{color.ToTextColor()}{player.Data.Role.NiceName}</color></size>";
@@ -447,7 +447,7 @@ public static class HudManagerPatches
                     if (VisibilityFlag(player) || player.Data.IsDead)
                     {
                         var roleWhenAlive = player.GetRoleWhenAlive();
-                        if (!player.HasModifier<DeepfakeRole>() || PlayerControl.LocalPlayer == player)
+                        if (!player.HasModifier<DeepfakeRole>(x => x.foolingPlayer == PlayerControl.LocalPlayer) || PlayerControl.LocalPlayer == player)
                         {
                             color = roleWhenAlive.TeamColor;
                             roleName = $"<size=80%>{color.ToTextColor()}{roleWhenAlive.NiceName}</color></size>";

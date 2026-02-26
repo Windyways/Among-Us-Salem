@@ -10,19 +10,27 @@ public static class Feedback
     {
         if (player.Data.Role is ICustomAURole customRole)
         {
+            if (player.HasDied()) customRole = player.GetICustomAURoleWhenAlive();
+
             string text = player.GetDefaultAppearance().PlayerName + " ";
             string roleName = customRole.RoleName;
             Color roleColor = customRole.RoleColor;
+            string endText = $" They must be a <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>!";
 
             if (revealer.IsRole<Consigliere>() && player.HasModifier<HexedModifier>())
             {
                 roleName = "Hex Master";
                 roleColor = RoleColors.Coven;
                 text += "is versed in the ways of hexes.";
+                endText = $" They must be a <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>!";
             }
-            else text += customRole.revealText;
+            else
+            {
+                text += customRole.revealText;
+                if (player.IsRole<War>()) endText = $" They must be <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>, Horseman of the Apocalypse.";
+            }
 
-            return text + $" they must be the <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>!";
+            return text + endText;
         }
 
         return "";
@@ -30,7 +38,7 @@ public static class Feedback
 
     public static string UnknownObstacle(PlayerControl target)
     {
-        return "There was an <b><color=#4a86e8>Unknown Obstacle</color></b> when visiting " + target.GetDefaultAppearance().PlayerName + "!";
+        return "There was an Unknown Obstacle when visiting " + target.GetDefaultAppearance().PlayerName + "!";
     }
 
     public static string AttackedButDefense()
@@ -55,6 +63,7 @@ public static class Feedback
         }*/
         
         if (target.HasModifier<SelfProtectedModifier>()) Bodyguard.RpcNotify(target, (int)NotificationType.Bodyguard_SelfProtect);
+        else if (target.HasModifier<VestedModifier>()) Survivor.RpcNotify(target, (int)NotificationType.Bodyguard_SelfProtect);
         else if (target.TryGetModifier<BarrieredModifier>(out var barriered))
         {
             PotionMaster.RpcNotify(target, (int)NotificationType.PotionMaster_AttackAndBarriered, barriered.Caster);

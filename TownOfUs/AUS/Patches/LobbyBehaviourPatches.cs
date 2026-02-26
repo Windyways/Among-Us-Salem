@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-using TownOfUs.Modules;
-using TownOfUs.Roles;
+﻿using AmongUsSalem.MafiaRoles;
 
 namespace TownOfUs.Patches;
 
@@ -25,7 +23,22 @@ public static class LobbyBehaviourPatches
         ScreenFlash.Clear();
         MeetingMenu.ClearAll();
 
+        // --- ROLES ---
+        MafiosoPromotionMechanic.GodfatherDied = false;
+        TouRoleManagerPatches.MafiaCount = 0;
+
+        // --- MECHANICS ---
         DayNightMechanic.DayCount = 0;
         DayNightMechanic.NightCount = 0;
+
+        if (RoleReferences.PendingNotifications.Count != 0)
+        {
+            foreach (var msg in RoleReferences.PendingNotifications)
+            {
+                MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.CachedPlayerData, "PLACEMENT CHANGES", msg);
+            }
+
+            RoleReferences.PendingNotifications.Clear(); // prevent repeats
+        }
     }
 }

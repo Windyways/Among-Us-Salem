@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-using MiraAPI.Hud;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace AmongUsSalem.MCI;
 
@@ -46,7 +44,7 @@ public static class Keyboard_Joystick
     {
         if (!LobbyBehaviour.Instance)
         {
-            if (Debugger.isRandomClientSwapping)
+            if (Debugger.isRandomClientSwapping && !MeetingHud.Instance)
             {
                 if (AvailableSwapTargets.Count == 0)
                 {

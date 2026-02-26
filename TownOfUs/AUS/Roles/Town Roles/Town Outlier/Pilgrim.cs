@@ -38,6 +38,8 @@ public sealed class Pilgrim(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that has no special abilities.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());

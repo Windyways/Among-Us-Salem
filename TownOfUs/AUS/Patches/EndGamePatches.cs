@@ -182,14 +182,14 @@ public static class EndGamePatches
                 playerWinner = true;
 
                 var logRole = playerControl.GetRoleWhenAlive();
-                RoleReferences.UpdateRoleResult(logRole, killedPlayers, true, false);
+                RoleReferences.UpdateRoleResult(logRole, killedPlayers, true);
             }
             else
             {
                 playerName.Append(playerControl.Data.PlayerName);
 
                 var logRole = playerControl.GetRoleWhenAlive();
-                RoleReferences.UpdateRoleResult(logRole, killedPlayers, false, false);
+                RoleReferences.UpdateRoleResult(logRole, killedPlayers, false);
             }
 
             EndGameData.PlayerRecords.Add(new EndGameData.PlayerRecord

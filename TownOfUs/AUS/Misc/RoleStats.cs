@@ -50,11 +50,21 @@ namespace AmongUsSalem.Misc
             roleStats.Add("Cleric", new RoleStats("Cleric", RoleColors.Town));
             roleStats.Add("Seer", new RoleStats("Seer", RoleColors.Town));
             roleStats.Add("Catalyst", new RoleStats("Catalyst", RoleColors.Town));
+            roleStats.Add("Crusader", new RoleStats("Crusader", RoleColors.Town));
+
+            // --- NEUTRAL ---
+            roleStats.Add("Survivor", new RoleStats("Survivor", RoleColors.Survivor));
+            roleStats.Add("Jester", new RoleStats("Jester", RoleColors.Jester));
+            roleStats.Add("Berserker", new RoleStats("Berserker", RoleColors.Apocalypse));
+            roleStats.Add("War", new RoleStats("War", RoleColors.Apocalypse));
+            roleStats.Add("Serial Killer", new RoleStats("Serial Killer", RoleColors.SerialKiller));
+            roleStats.Add("Starspawn", new RoleStats(RoleColors.StarspawnNameInGradient, RoleColors.Starspawn));
 
             // --- MAFIA ---
             roleStats.Add("Mafioso", new RoleStats("Mafioso", RoleColors.Mafia));
             roleStats.Add("Framer", new RoleStats("Framer", RoleColors.Mafia));
             roleStats.Add("Consigliere", new RoleStats("Consigliere", RoleColors.Mafia));
+            roleStats.Add("Godfather", new RoleStats("Godfather", RoleColors.Mafia));
 
             // --- COVEN ---
             roleStats.Add("Covenite", new RoleStats("Covenite", RoleColors.Coven));
@@ -67,7 +77,8 @@ namespace AmongUsSalem.Misc
             LoadRoleStats(filePath);
         }
 
-        public static void UpdateRoleResult(RoleBehaviour roleBehaviour, int kills, bool won, bool wonAsNewTeam)
+        public static List<string> PendingNotifications = new List<string>();
+        public static void UpdateRoleResult(RoleBehaviour roleBehaviour, int kills, bool won)
         {
             string roleName = roleBehaviour.NiceName;
             if (!CountRoundToLeaderboard)
@@ -75,14 +86,50 @@ namespace AmongUsSalem.Misc
                 AUSPlugin.DebugLogMessage("CountRoundToLeaderboard is false, wins and loses do not count this game.");
                 return;
             }
-            
+
             if (roleStats.TryGetValue(roleName, out RoleStats? stats))
             {
+                // Store snapshot before updating
+                var oldStats = new RoleStats(stats.RoleName, stats.Color)
+                {
+                    Wins = stats.Wins,
+                    GamesPlayed = stats.GamesPlayed,
+                    Kills = stats.Kills
+                };
+
+                int oldRank = GetLeaderboardPosition(roleName);
+
+                // Update stats
                 stats.GamesPlayed++;
                 stats.Kills += kills;
                 if (won) stats.Wins++;
+
+                int newRank = GetLeaderboardPosition(roleName);
+
+                // Create notification text
+                //string arrow = newRank < oldRank ? "^" : (newRank > oldRank ? "?" : ">");
+                string colorArrow = newRank < oldRank ? "<color=#00ff00>^</color>" : (newRank > oldRank ? "<color=#ff0000>?</color>" : ">");
+                string hexColor = ColorUtility.ToHtmlStringRGB(stats.Color);
+                string coloredRole = $"<b><color=#{hexColor}>{stats.RoleName}</color></b>";
+
+                string msg = $"{coloredRole} {oldStats.WinRate * 100:F2}% > {stats.WinRate * 100:F2}% ({colorArrow} #{oldRank} > #{newRank})";
+
+                // Add to pending notifications
+                PendingNotifications.Add(msg);
+
             }
+
             SaveRoleStats(filePath);
+        }
+
+        private static int GetLeaderboardPosition(string roleName)
+        {
+            var sorted = roleStats.Values
+                .Where(r => r.GamesPlayed > 0)
+                .OrderByDescending(r => r.WinRate)
+                .ToList();
+
+            return sorted.FindIndex(r => r.RoleName == roleName) + 1; // +1 because 0-based index
         }
 
         public static void SaveRoleStats(string filePath)
@@ -91,7 +138,7 @@ namespace AmongUsSalem.Misc
             {
                 foreach (var role in roleStats.Values)
                 {
-                    //                    TryParse 0    TryParse 1     TryParse 2        TryParse 3          TryParse 4
+                    //                    TryParse 0    TryParse 1     TryParse 2        TryParse 3 
                     writer.WriteLine($"{role.RoleName},{role.Wins},{role.GamesPlayed},{role.Kills}");
                 }
             }
@@ -109,8 +156,8 @@ namespace AmongUsSalem.Misc
             foreach (var line in File.ReadLines(filePath))
             {
                 var parts = line.Split(',');
-                if (parts.Length != 3) continue; // skip broken lines
-                // Add this by 1 for each saved stat i want.
+                if (parts.Length != 4) continue; // skip broken lines
+                                                 // Add this by 1 for each saved stat i want.
 
                 string roleName = parts[0];
                 Color color = Color.white;
@@ -158,7 +205,7 @@ namespace AmongUsSalem.Misc
             SaveRoleStats(filePath);  // This will save an empty leaderboard
         }
     }
-    
+
     [HarmonyPatch(typeof(ChatController), nameof(ChatController.SendChat))]
     public static class WinRateCommand
     {
@@ -184,6 +231,15 @@ namespace AmongUsSalem.Misc
                     {
                         DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, playerResults);
                     }
+                }
+                return true;
+            }
+
+            if (__instance.freeChatField.Text.ToLower(CultureInfo.CurrentCulture).Contains("/state", StringComparison.CurrentCultureIgnoreCase))
+            {
+                if (Debugger.IsDebuggerActive && AUSPlugin.InGame())
+                {
+                    MiscUtils.AddFakeChat(PlayerControl.LocalPlayer.CachedPlayerData, "Stats", GetState());
                 }
                 return true;
             }
@@ -217,6 +273,67 @@ namespace AmongUsSalem.Misc
         public static string ResetLeaderboard()
         {
             return "The leaderboard has been reset successfully.";
+        }
+
+        public static string GetState()
+        {
+            string state = "";
+
+            state += "--- SEEN KILL ---\n";
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.TryGetModifier<SeenKill>(out var seenKill))
+                {
+                    state += $"{player.Name()} saw {seenKill.killer.Name()} kill. ({seenKill.voteChance}%).\n";
+                }
+            }
+
+            state += "\n\n--- INCRIMINATING EVIDENCE ---\n";
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.TryGetModifier<IncriminatingEvidence>(out var incriminating))
+                {
+                    state += $"{player.Name()}\n";
+                }
+            }
+
+            state += "\n\n--- TOWN INVESTIGATIVES ---\n";
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.TryGetModifier<TI>(out var ti))
+                {
+                    state += $"{player.Name()}\n";
+                }
+            }
+
+            state += "\n\n--- SOFT CLEARED ---\n";
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.TryGetModifier<SoftCleared>(out var ti))
+                {
+                    state += $"{player.Name()}\n";
+                }
+            }
+
+            state += "\n\n--- CONFIRMED TOWNIES ---\n";
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.TryGetModifier<Confirmed>(out var ti))
+                {
+                    state += $"{player.Name()}\n";
+                }
+            }
+
+            state += "\n\n--- CONFIRMED EVILS ---\n";
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.TryGetModifier<ConfirmedEvil>(out var ti))
+                {
+                    state += $"{player.Name()}\n";
+                }
+            }
+
+            return state;
         }
     }
 }

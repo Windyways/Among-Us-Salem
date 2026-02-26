@@ -12,7 +12,7 @@ public sealed class Mayor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, 
     public string RoleName { get; set; } = "Mayor";
     public string revealText => "is the leader of the town.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are the leader of the town.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
@@ -41,6 +41,8 @@ public sealed class Mayor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, 
     public string GetAdvancedDescription()
     {
         return
+            $"Attack: {Attack}\n" +
+            $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that can Reveal themself to gain a substantial amount of votes, helping Town getting majority a lot easier, as well as being a huge late-game threat to evils.\n" +
             "Hang every criminal and evildoer." +
             MiscUtils.AppendOptionsText(GetType());
@@ -126,9 +128,9 @@ public sealed class Mayor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, 
         }
     }
 
-    public IEnumerator GenButtons()
+    public IEnumerator GenButtons(float delay = 3f)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(delay);
         meetingMenu.GenButtons(MeetingHud.Instance, Player.AmOwner && !Player.HasDied() && !Player.HasModifier<GlobalReveal>() && DayNightMechanic.DayCount >= 2);
     }
 
@@ -156,6 +158,10 @@ public sealed class Mayor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, 
     public void ClickGuess(PlayerVoteArea voteArea, MeetingHud __)
     {
         RpcMayor_Reveal(Player);
+        /*foreach (var player in PlayerControl.AllPlayerControls)
+        {
+            if (!player.HasDied()) player.RpcAddModifier<JuryModifier>(Player);
+        }*/
 
         if (Player.AmOwner)
         {

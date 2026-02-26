@@ -9,7 +9,7 @@ public sealed class Consigliere(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAU
     public string RoleName { get; set; } = "Consigliere";
     public string revealText => "gathers information for the Mafia.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "";
+    public string RoleLongDescription => "You are a corrupted investigator who gathers information for the Mafia.";
     public Color RoleColor { get; set; } = RoleColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
 

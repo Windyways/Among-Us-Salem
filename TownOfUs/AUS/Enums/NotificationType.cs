@@ -3,6 +3,7 @@
 public enum NotificationType
 {
     None,
+    LeftTown,
 
     Bodyguard_Protect,
     Bodyguard_SelfProtect,
@@ -25,5 +26,31 @@ public enum NotificationType
 
     Starspawn_Isolate,
     Starspawn_Daybreak,
-    Starspawn_IsolateButImmune
+    Starspawn_IsolateButImmune,
+
+    Lookout_Visited,
+    Lookout_NoOneVisited,
+    Lookout_MoreThan3,
+
+    Tracker_TargetVisited,
+    Tracker_TargetDV,
+
+    Agent_StalkedVisited,
+    Agent_StalkedDidntVisit,
+    Agent_PlayerVisitedStalked,
+    Agent_NoOneVisitedStalked,
+
+    Plaguebearer_SpreadPlague,
+    Pestilence_Reveal,
+
+    Pacifist_RallyFail,
+    Pacifist_RallySuccess,
+    Pacifist_BeginProtest,
+    Pacifist_UnderwayProtest,
+
+    Warlock_TargetVisited,
+    Warlock_PassiveGain,
+    Warlock_TargetVoted,
+
+    Death_Reveal
 }

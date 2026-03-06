@@ -8,7 +8,7 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
 {
     public string RoleName { get; set; } = "Mafioso";
     public string revealText => "does the Godfather's dirty work.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem";
     public string RoleLongDescription => "You are a member of organized crime, trying to work your way to the top.";
     public Color RoleColor { get; set; } = RoleColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;

@@ -8,7 +8,7 @@ public sealed class Crusader(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
 {
     public string RoleName { get; set; } = "Crusader";
     public string revealText => "is a divine protector.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a divine protector skilled in the art of combat.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -80,6 +80,7 @@ public sealed class Crusader(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
                     player.Notify(Info(notify, target), NotifyMode.OnlyMeeting, sprite: AUSAssets.CrusaderRoleCard.LoadAsset());
                     break;
                 case NotificationType.Crusader_AttackedVisitor:
+                    player.AddModifier<Confirmed>();
                     player.Notify(Info(notify, target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.CrusaderRoleCard.LoadAsset());
                     break;
             }
@@ -106,7 +107,7 @@ public sealed class Crusader_Fortify : TownOfUsRoleButton<Crusader, PlayerContro
             return;
 
         Target.RpcAddModifier<FortifiedModifier>(Player);
-        Target.RpcAddModifier<HideGainedDefense>();
+        //Target.RpcAddModifier<HideGainedDefense>();
         AttackDefenseMechanic.RpcApplyDefense(Target, Defense.Powerful);
     }
 

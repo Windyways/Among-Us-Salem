@@ -8,7 +8,7 @@ public sealed class Bodyguard(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
 {
     public string RoleName { get; set; } = "Bodyguard";
     public string revealText => "is a trained protector.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a former knight dedicated to protecting the town.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -138,8 +138,8 @@ public sealed class Bodyguard_SelfProtect : TownOfUsRoleButton<Bodyguard>
     protected override void OnClick()
     {
         Player.RpcAddModifier<SelfProtectedModifier>(Player);
-        Player.RpcAddModifier<OverrideDefense>((int)Defense.Basic);
-        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic);
+        //Player.RpcAddModifier<OverrideDefense>((int)Defense.Basic);
+        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
         CustomButtonSingleton<Bodyguard_Guard>.Instance.ResetCooldownAndOrEffect();
     }
 }

@@ -29,6 +29,10 @@ public static class WhisperPatches
                     {
                         chatText = chatText.Replace("/w " + player.Data.PlayerName, "<color=#DD0000>From " + sourcePlayer.Data.PlayerName + ": ");
                     }*/
+                    else if (PlayerControl.LocalPlayer.IsRole<Wildling>())
+                    {
+                        chatText = chatText.Replace("/w " + player.Data.PlayerName, "<color=#DD0000>From " + sourcePlayer.Data.PlayerName + ": ");
+                    }
                     else
                     {
                         chatText = "<color=#9a71e6>" + sourcePlayer.Data.PlayerName + " is whispering to " + player.Data.PlayerName + "</color>";

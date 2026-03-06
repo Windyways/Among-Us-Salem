@@ -8,7 +8,7 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
 {
     public string RoleName { get; set; } = "Amnesiac";
     public string revealText => "does not remember their role.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You do not remember who you are.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -48,7 +48,7 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     public string GetAttributes()
     {
         return
-            $"- You will prioritize Remembered Town Executive & Town Government roles.";
+            $"- You will prioritize Remembering Town Executive, Catalyst & Town Government roles.";
     }
 
     [HideFromIl2Cpp]
@@ -71,7 +71,9 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
             return;
 
         AUSPlugin.DebugLogMessage("Potential Remember Targets: " + RememberablePlayers.Count);
-        var rememberTarget = RememberablePlayers.OrderBy(x => x.IsTPow()).FirstOrDefault();
+        var rememberTarget = RememberablePlayers.Where(x => !x.HasModifier<RememberedModifier>())
+            .OrderBy(x => x.IsTPow())
+            .ThenBy(x => x.Is(Alignment.TownOutlier)).FirstOrDefault();
         if (rememberTarget != null)
         {
             var targetRole = rememberTarget.GetRoleWhenAlive();
@@ -81,23 +83,18 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
                 Player.Notify(Info(roleWhenAlive.NiceName), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.AmnesiacRoleCard.LoadAsset());
             }
 
-            Player.RpcChangeRole((ushort)targetRole.Role);
-
             // Prevents other Amnesiacs from remembering the same TPOW.
-            if (rememberTarget.IsTPow())
-            {
-                foreach (var amnesiac in MiscUtils.GetRoles<Amnesiac>())
-                {
-                    amnesiac.RememberablePlayers.Remove(rememberTarget);
-                }
-            }
+            if (rememberTarget.IsTPow() || rememberTarget.Is(Alignment.TownOutlier)) rememberTarget.RpcAddModifier<RememberedModifier>();
+
+            Player.RpcChangeRole((ushort)targetRole.Role);
+            if (Player.Data.Role is ICustomAURole customRole) customRole.Role_OnMeetingStart();
         }
     }
 
     public void OnTargetDeath(PlayerControl target)
     {
         var targetRole = target.GetRoleWhenAlive();
-        if (targetRole is ICustomAURole customRole && customRole.Faction == Faction.Town)
+        if (targetRole is ICustomAURole customRole && customRole.Faction == Faction.Town && targetRole is not Amnesiac)
         {
             RememberablePlayers.Add(target);
         }

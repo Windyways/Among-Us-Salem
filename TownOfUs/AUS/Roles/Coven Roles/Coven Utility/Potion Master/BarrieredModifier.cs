@@ -9,6 +9,6 @@ public sealed class BarrieredModifier(PlayerControl c) : BaseModifier
     public PlayerControl Caster => c;
     public override void OnMeetingStart()
     {
-        Player.RpcRemoveModifier<BarrieredModifier>();
+        Player.GetModifiers<BarrieredModifier>().Do(x => Player.RemoveModifier(x));
     }
 }

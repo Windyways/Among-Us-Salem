@@ -31,6 +31,8 @@ public static class LobbyBehaviourPatches
         DayNightMechanic.DayCount = 0;
         DayNightMechanic.NightCount = 0;
 
+        RolelistMechanic.CovenCount = 0;
+
         if (RoleReferences.PendingNotifications.Count != 0)
         {
             foreach (var msg in RoleReferences.PendingNotifications)

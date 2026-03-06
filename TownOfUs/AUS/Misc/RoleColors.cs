@@ -17,6 +17,7 @@ public static class RoleColors
     public static Color SerialKiller => new Color32(29, 77, 252, 255);
     public static Color Starspawn => new Color32(164, 164, 244, 255);
     public static Color Auditor => new Color32(174, 186, 135, 255);
+    public static Color Werewolf => new Color32(170, 109, 6, 255);
 
     // Other Colors
     public static Color Keyword => new Color32(74, 134, 232, 255);

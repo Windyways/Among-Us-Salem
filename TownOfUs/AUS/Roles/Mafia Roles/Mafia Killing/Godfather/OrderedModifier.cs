@@ -9,6 +9,6 @@ public sealed class OrderedModifier(PlayerControl c) : BaseModifier
     public PlayerControl Caster => c;
     public override void OnMeetingStart()
     {
-        Player.RpcRemoveModifier<OrderedModifier>();
+        Player.GetModifiers<OrderedModifier>().Do(x => Player.RemoveModifier(x));
     }
 }

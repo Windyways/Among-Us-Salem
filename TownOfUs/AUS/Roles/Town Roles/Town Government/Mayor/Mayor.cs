@@ -1,8 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using MiraAPI.Events.Vanilla.Meeting.Voting;
 using System.Collections;
 using System.Text;
-using TownOfUs.Utilities.Appearances;
 using UnityEngine;
 
 namespace AmongUsSalem.Roles;
@@ -11,7 +9,7 @@ public sealed class Mayor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, 
 {
     public string RoleName { get; set; } = "Mayor";
     public string revealText => "is the leader of the town.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are the leader of the town.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -111,8 +109,11 @@ public sealed class Mayor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, 
         }
     }
 
-    public override void OnMeetingStart()
+    public void Role_OnMeetingStart()
     {
+        if (Player.HasDied())
+            return;
+
         AUSPlugin.DebugLogMessage("Mayor OnMeetingStart called!");
         SmartMayor.Start();
 

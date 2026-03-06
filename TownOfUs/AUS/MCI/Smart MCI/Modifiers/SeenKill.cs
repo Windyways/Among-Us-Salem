@@ -32,6 +32,23 @@ public class SeenKill : BaseModifier
         if (modifiers.Count == 0) return null;
         return modifiers.Random();
     }
+
+    public static int GetSuspicion(PlayerControl p)
+    {
+        int suspicion = 0;
+
+        if (p.HasModifier<ConfirmedEvil>()) suspicion += 200;
+        if (p.HasModifier<IncriminatingEvidence>()) suspicion += 100;
+        if (p.HasModifier<SeenKill>()) suspicion += 50;
+
+        if (p.HasModifier<TI>()) suspicion -= 40;
+        if (p.HasModifier<SoftCleared>()) suspicion -= 60;
+        if (p.HasModifier<Confirmed>()) suspicion -= 100;
+
+        if (p.Is(Faction.Town) && p.HasModifier<GlobalReveal>()) suspicion -= 200;
+
+        return suspicion;
+    }
 }
 
 public static class SeenKillEvents

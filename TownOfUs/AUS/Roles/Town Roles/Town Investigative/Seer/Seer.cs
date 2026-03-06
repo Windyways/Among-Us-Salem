@@ -8,7 +8,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
 {
     public string RoleName { get; set; } = "Seer";
     public string revealText => "can see into the hearts of people to find out their intentions.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are able to see into the hearts of townies to find out their intentions.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -70,7 +70,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
     {
         return
             $"- Illusionists can make your target appear innocent.\n" +
-            $"- Enchanters and Framers can make your target appear suspicious.";
+            $"- Enchanters, Warlocks, Soul Collectors, and Framers can make your target appear suspicious.";
     }
 
     [HideFromIl2Cpp]
@@ -101,39 +101,32 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
 
     public static bool IsFriends(PlayerControl intuit, PlayerControl gaze)
     {
-        // --- Intuit ---
-        if (intuit.HasModifier<IllusionedModifier>())
-        {
-            if (gaze.Is(Faction.Town) || intuit.IsRole<Jester>()) return true;
-            if (gaze.HasModifier<IllusionedModifier>()) return true;
-            return false;
-        }
+        var intuitAlign = GetSeerAlignment(intuit);
+        var gazeAlign = GetSeerAlignment(gaze);
 
-        if (intuit.HasModifier<FramedModifier>())
-        {
-            if (gaze.Is(Faction.Mafia)) return true;
-            if (gaze.HasModifier<FramedModifier>()) return true;
-            return false;
-        }
+        // Neutral Pariah: friends with all non-town
+        if (intuitAlign == SeerAlignment.NeutralPariah && gazeAlign != SeerAlignment.Town)
+            return true;
 
-        // --- GAZE ---
-        if (gaze.HasModifier<IllusionedModifier>())
-        {
-            if (intuit.Is(Faction.Town) || intuit.IsRole<Jester>()) return true;
-            if (intuit.HasModifier<IllusionedModifier>()) return true;
-            return false;
-        }
+        if (gazeAlign == SeerAlignment.NeutralPariah && intuitAlign != SeerAlignment.Town)
+            return true;
 
-        if (gaze.HasModifier<FramedModifier>())
-        {
-            if (intuit.Is(Faction.Mafia)) return true;
-            if (intuit.HasModifier<FramedModifier>()) return true;
-            return false;
-        }
+        // Apocalypse
+        if (intuitAlign == SeerAlignment.Apocalypse && gazeAlign == SeerAlignment.Apocalypse)
+            return true;
 
-        if (intuit.Is(Faction.Town) && gaze.IsRole<Jester>()) return true;
-        if (gaze.Is(Faction.Town) && intuit.IsRole<Jester>()) return true;
-        return intuit.IsSameFaction(gaze);
+        if (gazeAlign == SeerAlignment.Apocalypse && intuitAlign == SeerAlignment.Apocalypse)
+            return true;
+
+        // Unique neutrals only like themselves
+        if (intuitAlign == SeerAlignment.UniqueNeutral || gazeAlign == SeerAlignment.UniqueNeutral)
+            return intuit.Data.Role.NiceName == gaze.Data.Role.NiceName;
+
+        // Same alignment
+        if (intuitAlign == gazeAlign)
+            return true;
+
+        return false;
     }
 
     public override void OnMeetingStart()
@@ -142,6 +135,36 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
         intuit = null;
         gaze = null;
         fullCooldown = true;
+    }
+
+    public static SeerAlignment GetSeerAlignment(PlayerControl player)
+    {
+        // Make sure modifiers have priority!
+        if (player.HasModifier<IllusionedModifier>())
+            return SeerAlignment.Town;
+
+        if (player.HasModifier<FramedModifier>())
+            return SeerAlignment.Mafia;
+
+        if (player.HasModifier<WarlockFramedModifier>() || player.Is(Alignment.NeutralApocalypse))
+            return SeerAlignment.Apocalypse;
+
+        if (player.Is(Faction.Town) || player.IsRole<Jester>())
+            return SeerAlignment.Town;
+
+        if (player.Is(Faction.Mafia))
+            return SeerAlignment.Mafia;
+
+        if (player.Is(Faction.Coven))
+            return SeerAlignment.Coven;
+
+        if (player.Is(Alignment.NeutralPariah))
+            return SeerAlignment.NeutralPariah;
+
+        if (player.Is(Faction.Neutral))
+            return SeerAlignment.UniqueNeutral;
+
+        return SeerAlignment.None;
     }
 
     public PlayerControl intuit;
@@ -161,7 +184,8 @@ public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
 
     public override void ClickHandler()
     {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
+        // Seer is astral when picking targets, this is handled when it has both targets set.
+        if (button.IsTargetingValid(Player, Target, false, false)) base.ClickHandler();
     }
 
     protected override void OnClick()
@@ -173,12 +197,17 @@ public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
         Role.intuit = Target;
         if (Role.intuit != null && Role.gaze != null)
         {
-            Role.Information.Add(((Role.intuit, Role.gaze), !Seer.IsFriends(Role.intuit, Role.gaze)));
+            if (button.IsTargetingValid(Player, Role.intuit, false, true) &&
+                button.IsTargetingValid(Player, Role.gaze, false, true))
+            {
+                if (Player.TryGetModifier<TrackedModifier>(out var tracked)) TrackedModifier.RpcPerformDoubleInteraction(tracked.Caster, Player, Role.intuit, Role.gaze);
+                Role.Information.Add(((Role.intuit, Role.gaze), !Seer.IsFriends(Role.intuit, Role.gaze)));
 
-            Role.fullCooldown = true;
-            Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze, Seer.IsFriends(Role.intuit, Role.gaze));
-            Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit, Seer.IsFriends(Role.intuit, Role.gaze));
-            Player.Notify(Seer.Info(Player, Role.intuit, Role.gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
+                Role.fullCooldown = true;
+                Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze, Seer.IsFriends(Role.intuit, Role.gaze));
+                Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit, Seer.IsFriends(Role.intuit, Role.gaze));
+                Player.Notify(Seer.Info(Player, Role.intuit, Role.gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
+            }
 
             Role.intuit = null;
             Role.gaze = null;
@@ -204,7 +233,8 @@ public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
 
     public override void ClickHandler()
     {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
+        // Seer is astral when picking targets, this is handled when it has both targets set.
+        if (button.IsTargetingValid(Player, Target, false, false)) base.ClickHandler();
     }
 
     protected override void OnClick()
@@ -216,12 +246,17 @@ public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
         Role.gaze = Target;
         if (Role.intuit != null && Role.gaze != null)
         {
-            Role.Information.Add(((Role.intuit, Role.gaze), !Seer.IsFriends(Role.intuit, Role.gaze)));
+            if (button.IsTargetingValid(Player, Role.intuit, false, true) &&
+                button.IsTargetingValid(Player, Role.gaze, false, true))
+            {
+                if (Player.TryGetModifier<TrackedModifier>(out var tracked)) TrackedModifier.RpcPerformDoubleInteraction(tracked.Caster, Player, Role.intuit, Role.gaze);
+                Role.Information.Add(((Role.intuit, Role.gaze), !Seer.IsFriends(Role.intuit, Role.gaze)));
 
-            Role.fullCooldown = true;
-            Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze, Seer.IsFriends(Role.intuit, Role.gaze));
-            Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit, Seer.IsFriends(Role.intuit, Role.gaze));
-            Player.Notify(Seer.Info(Player, Role.intuit, Role.gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
+                Role.fullCooldown = true;
+                Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze, Seer.IsFriends(Role.intuit, Role.gaze));
+                Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit, Seer.IsFriends(Role.intuit, Role.gaze));
+                Player.Notify(Seer.Info(Player, Role.intuit, Role.gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
+            }
 
             Role.intuit = null;
             Role.gaze = null;
@@ -233,7 +268,8 @@ public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && !x.HasModifier<GlobalReveal>());
+            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && 
+            !(x.HasModifier<GlobalReveal>(x => x.Player.Is(Faction.Town)) && !OptionGroupSingleton<Seer_Options>.Instance.RevealedTownComparable));
     }
 }
 
@@ -243,4 +279,7 @@ public sealed class Seer_Options : AbstractOptionGroup<Seer>
 
     [ModdedNumberOption("Seer Intuit & Gaze Cooldown", 2.5f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
+
+    [ModdedToggleOption("Seer Can Compare Revealed Town")]
+    public bool RevealedTownComparable { get; set; } = false;
 }

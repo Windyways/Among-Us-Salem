@@ -8,12 +8,13 @@ public static class AUS_ReportBodyEvent
         AUS_AfterVoteEvent.Voters.Clear();
 
         var player = @event.Reporter;
+        if (@event.Target == null)
+            return;
+
         var target = MiscUtils.PlayerById(@event.Target.PlayerId);
+        if (target == null)
+            return;
 
-        if (target.TryGetModifier<JinxedModifier>(out var jinxed) && !player.Is(Faction.Coven)) 
-            player.RpcAddModifier<JinxReportKillModifier>(jinxed.Caster, target);
-
-        if (target.TryGetModifier<FortifiedModifier>(out var fortified) && player != fortified.Caster)
-            player.RpcAddModifier<FortifyReportKillModifier>(fortified.Caster, target);
+        VisitingMechanic.IsSuccessfulVisit(null, player, target, false, true);
     }
 }

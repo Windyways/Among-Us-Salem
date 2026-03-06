@@ -15,6 +15,9 @@ public enum DeathReasonShow
     DestroyedByABeserker,
     DestroyedByWarHorsemanOfTheApocalypse,
     StabbedByASerialKiller,
+    MauledByAWerewolf,
+    SuccumbedToAPestilence,
+    KilledByDeathHorsemanOfApocalypse,
 
     KilledByAMemberOfTheMafia,
 
@@ -24,5 +27,6 @@ public enum DeathReasonShow
     KilledByARitualist,
 
     Lynched,
+    DishonoredTheTown,
     LeftTown
 }

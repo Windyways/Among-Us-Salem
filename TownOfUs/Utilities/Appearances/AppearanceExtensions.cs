@@ -8,23 +8,7 @@ public static class AppearanceExtensions
     public static void ResetAppearance(this PlayerControl player, bool override_checks = false, bool fullReset = false)
     {
         // swooper unswoop mid camo - needs testing
-        if (OptionGroupSingleton<GeneralOptions>.Instance.CamouflageComms &&
-            player.GetAppearanceType() == TownOfUsAppearances.Swooper)
-        {
-            var c = ShipStatus.Instance.Systems[SystemTypes.Comms];
-            var active = c.TryCast<HudOverrideSystemType>()?.IsActive;
-            if (active == null)
-            {
-                active = c.TryCast<HqHudSystemType>()?.IsActive;
-            }
-
-            if (active == true)
-            {
-                player.SetCamouflage();
-                return;
-            }
-        }
-
+        
         // preventing glitch from morphing -> camo -> unmorph early sorta thing...
         if (player.GetAppearanceType() == TownOfUsAppearances.Camouflage && !override_checks)
         {

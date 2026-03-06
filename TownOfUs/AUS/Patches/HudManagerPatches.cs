@@ -11,11 +11,34 @@ using UnityEngine.UI;
 using Color = UnityEngine.Color;
 using Object = UnityEngine.Object;
 
-namespace TownOfUs.Patches;
+namespace AmongUsSalem.Patches;
 
 [HarmonyPatch]
 public static class HudManagerPatches
 {
+    public static bool LocalVisibilityFlag(PlayerControl localPlayer, PlayerControl player)
+    {
+        return
+            // Mafia
+            (localPlayer.Is(Faction.Mafia) && player.Is(Faction.Mafia)) ||
+            (localPlayer.Is(Faction.Mafia) && player.TryGetModifier<RoleLearn>(out var mafiaRevealed) && mafiaRevealed.Visitor.Is(Faction.Mafia)) ||
+
+            (localPlayer.Is(Faction.Coven) && player.Is(Faction.Coven)) ||
+            (localPlayer.Is(Faction.Coven) && player.TryGetModifier<RoleLearn>(out var covenRevealed) && covenRevealed.Visitor.Is(Faction.Coven)) ||
+
+            //(PlayerControl.LocalPlayer.IsRole<Vampire>() && player.HasModifier<VampireRecruit>()) ||
+            //(PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.HasModifier<VampireRecruit>()) ||
+            //(PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.IsRole<Vampire>()) ||
+
+            (localPlayer.Is(Alignment.NeutralApocalypse) && player.Is(Alignment.NeutralApocalypse)) ||
+            (!localPlayer.Is(Faction.None) && player.HasDied()) ||
+
+            (!localPlayer.Is(Faction.None) && player.HasModifier<GlobalReveal>()) ||
+            (!localPlayer.Is(Faction.None) && player.TryGetModifier<RoleLearn>(out var revealed2) && revealed2.Visitor == PlayerControl.LocalPlayer) ||
+            (localPlayer == player)
+            ;
+    }
+
     public static bool VisibilityFlag(PlayerControl player)
     {
         return
@@ -680,7 +703,7 @@ public static class HudManagerPatches
 
             if ((ModCompatibility.IsWikiButtonOffset || ZoomButton.active) &&
                 !MeetingHud.Instance /*  && Minigame.Instance == null */ &&
-                (PlayerJoinPatch.SentOnce || TutorialManager.InstanceExists))
+                (TownOfUs.Patches.PlayerJoinPatch.SentOnce || TutorialManager.InstanceExists))
             {
                 distanceFromEdge.x += 0.84f;
             }

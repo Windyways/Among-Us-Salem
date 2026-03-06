@@ -3,7 +3,7 @@ using Reactor.Utilities.Extensions;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace AmongUsSalem.CovenRoles;
+namespace AmongUsSalem.ApocalypseRoles;
 
 public sealed class ApocGameOver : CustomGameOver
 {
@@ -58,7 +58,7 @@ public sealed class ApocGameOver : CustomGameOver
         if (aliveApoc == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveApoc && MiscUtils.KillersAliveCount == aliveApoc;
-        return result || LogicGameFlowPatches.EndGameEarlyCheck(role);
+        return result;
     }
 
     public static bool AnyApocWon(GameOverReason gameOverReason)

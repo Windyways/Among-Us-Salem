@@ -10,7 +10,7 @@ public sealed class War(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWiki
     public string RoleName { get; set; } = "War";
     public string revealText => "fills you with hate towards everyone.";
     public string RoleDescription => "";
-    public string RoleLongDescription => "You are an acolyte of War, embodying nothing but raw power.";
+    public string RoleLongDescription => "";
     public Color RoleColor { get; set; } = RoleColors.Apocalypse;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
@@ -34,6 +34,7 @@ public sealed class War(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWiki
         DefaultChance = 0,
         DefaultRoleCount = 0,
 
+        CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<War_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.WarRoleCard
@@ -60,11 +61,12 @@ public sealed class War(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWiki
     [
         new("Attack",
             "You can Attack a player at Night.\n" +
-            "You will deal a Powerful Attack to your target.\n" +
-            "If you have 0 kills, you can only Attack on Full Moon Nights.\n" +
-            "If you have 1 kill, you can Attack every Night.\n" +
-            "If you have 2 kills, you will Rampage your target and attack surrounding players.\n" +
-            "Once you obtain 3 kills, you will transform into War, horseman of apocalypse.",
+            "You will deal an Unstoppable Attack to your target and Rampage your target, attacking surrounding players.",
+            AUSAssets.War_Attack),
+
+        new("Attack",
+            "You can Attack a player at Night.\n" +
+            "You will deal an Unstoppable Attack to your target and Rampage your target, attacking surrounding players.",
             AUSAssets.War_Attack),
     ];
 
@@ -77,7 +79,7 @@ public sealed class War(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWiki
             switch (notify)
             {
                 case NotificationType.War_Reveal:
-                    player.Notify(Info(), NotifyMode.OnlyMeeting, sprite: AUSAssets.WarRoleCard.LoadAsset());
+                    player.Notify(Info(), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.WarRoleCard.LoadAsset());
                     break;
             }
         }

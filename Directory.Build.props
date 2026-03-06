@@ -10,9 +10,9 @@
 
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 
-        <Version>4.3.0</Version>
+        <Version>4.4.0</Version>
 
-        <Authors>Windyways, Le Killer, whichtwix</Authors>
+        <Authors>Windyways, Le Killer, whichtwix, wanderingPix</Authors>
         <RepositoryType>git</RepositoryType>
 
         <!-- SourceLink -->

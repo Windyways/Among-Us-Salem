@@ -8,7 +8,7 @@ public sealed class Framer(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole,
 {
     public string RoleName { get; set; } = "Framer";
     public string revealText => "has a desire or deceive.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem";
     public string RoleLongDescription => "You are a skilled counterfeiter who manipulates information.";
     public Color RoleColor { get; set; } = RoleColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;

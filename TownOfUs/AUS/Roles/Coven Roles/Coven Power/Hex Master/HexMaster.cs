@@ -9,7 +9,7 @@ public sealed class HexMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
 {
     public string RoleName { get; set; } = "Hex Master";
     public string revealText => "is versed in the ways of hexes.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a powerful spellcaster preparing to disintegrate the town.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;

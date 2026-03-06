@@ -56,12 +56,12 @@ public static class NecronomiconPatch
     public static void ApplyNecronomicon(PlayerControl exclude = null)
     {
         var coven = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Coven) && !x.HasDied() && x != exclude)
-            .OrderByDescending(x => x.IsRole<PotionMaster>()) // Coven Leader
+            .OrderByDescending(x => x.IsRole<Wildling>()) // Coven Leader
             //.ThenByDescending(x => x.IsRole<Covenite>()) // Conjurer
-            //.ThenBy(x => x.IsRole<Covenite>()) // Medusa
+            //.ThenByDescending(x => x.IsRole<Covenite>()) // Medusa
             //.ThenBy(x => x.IsRole<Covenite>()) // Poisoner
             //.ThenBy(x => x.IsRole<Covenite>()) // Witch
-            //.ThenBy(x => x.IsRole<Covenite>()) // Wildling
+            .ThenByDescending(x => x.IsRole<Wildling>()) // Wildling
             //.ThenBy(x => x.IsRole<Covenite>()) // Dreamweaver
             //.ThenBy(x => x.IsRole<Covenite>()) // Enchanter
             //.ThenBy(x => x.IsRole<Covenite>()) // Voodoo Master

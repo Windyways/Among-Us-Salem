@@ -8,7 +8,7 @@ public sealed class Pilgrim(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
 {
     public string RoleName { get; set; } = "Pilgrim";
     public string revealText => "lives a simple life.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;

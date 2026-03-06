@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -9,7 +10,7 @@ public sealed class PotionMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
 {
     public string RoleName { get; set; } = "Potion Master";
     public string revealText => "works with alchemy.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are an alchemist who concocts powerful potions.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
@@ -64,7 +65,7 @@ public sealed class PotionMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
 
         new("Reveal",
             "You can Reveal a player at Night.\n" +
-            "You and your Coven members will learn your target's role. Your target will become Illuminated for two Nights.",
+            "You and your Coven members will learn your target's role. Your target will become Illuminated for 3 Nights.",
             AUSAssets.PotionMaster_Reveal),
     ];
 
@@ -129,6 +130,7 @@ public sealed class PotionMaster_Harmful : TownOfUsRoleButton<PotionMaster, Play
         }
 
         CustomButtonSingleton<PotionMaster_Barrier>.Instance.ResetCooldownAndOrEffect();
+        CustomButtonSingleton<PotionMaster_SelfBarrier>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_Reveal>.Instance.ResetCooldownAndOrEffect();
     }
 
@@ -163,10 +165,11 @@ public sealed class PotionMaster_Barrier : TownOfUsRoleButton<PotionMaster, Play
             return;
 
         Target.RpcAddModifier<BarrieredModifier>(Player);
-        Target.RpcAddModifier<HideGainedDefense>();
+        //Target.RpcAddModifier<HideGainedDefense>();
         AttackDefenseMechanic.RpcApplyDefense(Target, Defense.Powerful);
 
         CustomButtonSingleton<PotionMaster_Harmful>.Instance.ResetCooldownAndOrEffect();
+        CustomButtonSingleton<PotionMaster_SelfBarrier>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_Reveal>.Instance.ResetCooldownAndOrEffect();
     }
 
@@ -195,16 +198,58 @@ public sealed class PotionMaster_Reveal : TownOfUsRoleButton<PotionMaster, Playe
             return;
 
         Target.RpcAddModifier<IlluminatedModifier>(Player);
+
+        if (Target.TryGetModifier<SelfReflectionModifier>(out var selfReflection))
+        {
+            // Since all Coven member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.Is(Faction.Coven) && player.AmOwner())
+                    Target.RpcAddModifier<DeepfakeRole>(player, selfReflection.GetRole().NiceName, RoleColors.Town);
+            }
+        }
         Target.RpcAddModifier<RoleLearn>(Player, true);
 
         CustomButtonSingleton<PotionMaster_Harmful>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_Barrier>.Instance.ResetCooldownAndOrEffect();
+        CustomButtonSingleton<PotionMaster_SelfBarrier>.Instance.ResetCooldownAndOrEffect();
     }
 
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !x.Is(Faction.Coven) && !x.HasModifier<RoleLearn>(x => x.Visitor == Player) && !x.HasModifier<GlobalReveal>());
+    }
+}
+
+public sealed class PotionMaster_SelfBarrier : TownOfUsRoleButton<PotionMaster>
+{
+    public override string Name => "Self Barrier";
+    public override BaseKeybind Keybind => Keybinds.ModifierAction;
+    public override Color TextOutlineColor => RoleColors.Coven;
+    public override float Cooldown => OptionGroupSingleton<PotionMaster_Options>.Instance.BarrierCD;
+    public override LoadableAsset<Sprite> Sprite => AUSAssets.PotionMaster_Barrier;
+    public override ButtonLocation Location => ButtonLocation.BottomLeft;
+
+    public override void ClickHandler()
+    {
+        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
+    }
+
+    protected override void OnClick()
+    {
+        Player.RpcAddModifier<BarrieredModifier>(Player);
+        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful, visualize: true);
+
+        CustomButtonSingleton<PotionMaster_Harmful>.Instance.ResetCooldownAndOrEffect();
+        CustomButtonSingleton<PotionMaster_Barrier>.Instance.ResetCooldownAndOrEffect();
+        CustomButtonSingleton<PotionMaster_Reveal>.Instance.ResetCooldownAndOrEffect();
+    }
+
+    public override bool CanUse()
+    {
+        if (Player.HasModifier<IsolatedModifier>(x => x.Caster == Player)) return false;
+        return base.CanUse();
     }
 }
 

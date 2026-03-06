@@ -23,7 +23,7 @@ public sealed class JinxedModifier(PlayerControl c) : BaseModifier
 
     public override void OnMeetingStart()
     {
-        Player.RpcRemoveModifier<JinxedModifier>();
+        Player.GetModifiers<JinxedModifier>().Do(x => Player.RemoveModifier(x));
     }
 
     public int PerformInteraction(PlayerControl visitor)

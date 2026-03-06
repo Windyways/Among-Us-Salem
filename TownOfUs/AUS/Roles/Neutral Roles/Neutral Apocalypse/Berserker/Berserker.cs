@@ -18,14 +18,15 @@ public sealed class Berserker(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.Powerful;
-    public Defense Defense { get; set; } = Defense.Basic;
+    public Defense Defense { get; set; } = Defense.None;
     public EtherealDefense EtherealDefense { get; set; } = EtherealDefense.None;
 
     public Attack ogAttack { get; set; } = Attack.Powerful;
-    public Defense ogDefense { get; set; } = Defense.Basic;
+    public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
+        CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<Berserker_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.BerserkerRoleCard

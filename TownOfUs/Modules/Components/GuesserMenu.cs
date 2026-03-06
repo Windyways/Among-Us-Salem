@@ -1,14 +1,7 @@
 ﻿using AmongUs.GameOptions;
-using HarmonyLib;
 using Il2CppInterop.Runtime.Attributes;
-using MiraAPI.Modifiers;
-using MiraAPI.Patches.Stubs;
-using MiraAPI.Utilities;
-using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
-using TownOfUs.Roles;
-using TownOfUs.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -137,8 +130,8 @@ public sealed class GuesserMenu(IntPtr cppPtr) : Minigame(cppPtr)
         potentialVictims = [];
 
         var roles = MiscUtils.GetPotentialRoles().Where(roleMatch).OrderBy(x =>
-            x is ITownOfUsRole touRole && AUSPlugin.SortGuessingByAlignment.Value
-                ? touRole.RoleAlignment.ToDisplayString() + x.NiceName
+            x is ICustomAURole customRole && AUSPlugin.SortGuessingByAlignment.Value
+                ? customRole.Alignment.ToDisplayString() + x.NiceName
                 : x.NiceName).ToList();
 
         for (var i = 0; i < roles.Count; i++)

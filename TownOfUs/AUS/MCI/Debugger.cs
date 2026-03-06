@@ -55,7 +55,7 @@ public class Debugger : MonoBehaviour
             if (GUILayout.Button("Remove All Bots")) InstanceControlPatches.RemoveAllPlayers();
             if (GUILayout.Button("Next Player")) Keyboard_Joystick.Switch(true);
             if (GUILayout.Button("Previous Player")) Keyboard_Joystick.Switch(false);
-            //if (GUILayout.Button("End Game") && !RoleReferences.CountRoundToLeaderboard) MiscUtils.EndGame();
+            if (GUILayout.Button("End Game") && !RoleReferences.CountRoundToLeaderboard) MiscUtils.EndGame();
 
             if (GUILayout.Button("Complete Tasks"))
             {

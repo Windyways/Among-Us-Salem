@@ -18,8 +18,8 @@ public static class IntroScenePatches
         __instance.TeamTitle.text = "Mafia";
         __instance.TeamTitle.color = RoleColors.Mafia;
 
-        var player = __instance.CreatePlayer(0, 1, PlayerControl.LocalPlayer.Data, true);
-        __instance.ourCrewmate = player;
+        var yourTeam = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Mafia)).ToList();
+        GenerateYourTeam(__instance, yourTeam, true);
 
         return false;
     }
@@ -32,12 +32,54 @@ public static class IntroScenePatches
         {
             __instance.TeamTitle.text = "Town";
             __instance.TeamTitle.color = RoleColors.Town;
+
+            var yourTeam = PlayerControl.AllPlayerControls.ToArray().ToList();
+            GenerateYourTeam(__instance, yourTeam);
+        }
+        else if (PlayerControl.LocalPlayer.Is(Faction.Coven))
+        {
+            __instance.TeamTitle.text = "Coven";
+            __instance.TeamTitle.color = RoleColors.Coven;
+
+            var yourTeam = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Coven)).ToList();
+            GenerateYourTeam(__instance, yourTeam);
+        }
+        else if (PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse))
+        {
+            __instance.TeamTitle.text = "Apocalypse";
+            __instance.TeamTitle.color = RoleColors.Apocalypse;
+
+            var yourTeam = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Alignment.NeutralApocalypse)).ToList();
+            GenerateYourTeam(__instance, yourTeam);
+        }
+        else
+        {
+            var player = __instance.CreatePlayer(0, 1, PlayerControl.LocalPlayer.Data, false);
+            __instance.ourCrewmate = player;
         }
 
-        var player = __instance.CreatePlayer(0, 1, PlayerControl.LocalPlayer.Data, false);
-        __instance.ourCrewmate = player;
-
         return false;
+    }
+
+    public static void GenerateYourTeam(IntroCutscene __instance, List<PlayerControl> yourTeam, bool mafia = false)
+    {
+        //var yourTeam = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Mafia)).ToList();
+        for (int i = 0; i < yourTeam.Count; i++)
+        {
+            PlayerControl playerControl = yourTeam[i];
+            if (playerControl)
+            {
+                NetworkedPlayerInfo data = playerControl.Data;
+                if (!(data == null))
+                {
+                    PoolablePlayer poolablePlayer = __instance.CreatePlayer(i, 1, data, mafia);
+                    if (i == 0 && data.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                    {
+                        __instance.ourCrewmate = poolablePlayer;
+                    }
+                }
+            }
+        }
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]

@@ -16,7 +16,7 @@ public sealed class RoleOptions : AbstractOptionGroup
         "<color=#4a86e8>Random</color> <color=#06E00C>Town</color>",
         "<color=#4a86e8>Common</color> <color=#06E00C>Town</color>",
 
-        "<color=#a9a9a9>Neutral</color> <color=#ff004e>Apocalypse</color>",
+        "<color=#4a86e8>Random</color> <color=#ff004e>Apocalypse</color>",
         "<color=#a9a9a9>Neutral</color> <color=#4a86e8>Benign</color>",
         "<color=#a9a9a9>Neutral</color> <color=#4a86e8>Chaos</color>",
         "<color=#a9a9a9>Neutral</color> <color=#4a86e8>Evil</color>",
@@ -40,6 +40,9 @@ public sealed class RoleOptions : AbstractOptionGroup
         "<color=#4a86e8>Common</color> <color=#ab42ef>Coven</color>",
 
         "Any",
+        "<color=#06E00C>T</color><color=#4a86e8>E</color>-<color=#06E00C>T</color><color=#4a86e8>G</color>",
+        "<color=#06E00C>T</color><color=#4a86e8>E</color>-<color=#06E00C>T</color><color=#4a86e8>G</color>-<color=#06E00C>T</color><color=#4a86e8>O</color>",
+        "<color=#4a86e8>R</color><color=#ff004e>A</color>-<color=#4a86e8>R</color><color=#a9a9a9>N</color>",
         "Not <color=#DD0000>Mafia</color>"
     ];
 
@@ -143,8 +146,8 @@ public enum RoleListOption
     TownExecutive,
     TownGovernment,
     TownKilling,
-    TownProtective,
     TownOutlier,
+    TownProtective,
     TownSupport,
     RandomTown,
     CommonTown,
@@ -173,5 +176,13 @@ public enum RoleListOption
     CommonCoven,
 
     Any,
-    NotMafia
+    TE_TG,
+    TE_TG_TO,
+    NA_RN,
+
+
+    NotMafia,
+
+
+    None
 }

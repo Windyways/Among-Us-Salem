@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using AmongUsSalem.MCI;
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
@@ -10,7 +9,7 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
 {
     public string RoleName { get; set; } = "Covenite";
     public string revealText => "is devoted to the Necronomicon.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a servant of the Necronomicon.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;

@@ -1,7 +1,4 @@
 using Reactor.Networking.Rpc;
-using TownOfUs.Events;
-using TownOfUs.Modifiers;
-using TownOfUs.Utilities.Appearances;
 
 namespace AmongUsSalem.Misc;
 
@@ -165,6 +162,23 @@ public static class CustomExtentions
             {
                 DeathStateSync.RequestValidationAfterKill(source);
             }
+        }
+    }
+
+    public static bool IsNeutral(this ICustomAURole customRole, bool includeApoc = false)
+    {
+        if (customRole.Alignment == Alignment.NeutralApocalypse && !includeApoc) return false;
+        return customRole.Faction == Faction.Neutral;
+    }
+
+    public static void LeaveTown(this PlayerControl player)
+    {
+        if (player.AmOwner())
+        {
+            Feedback.RpcLeaveTownNotify(player);
+
+            player.RpcCustomMurder(player, createDeadBody: false, showKillAnim: false, playKillSound: false);
+            VisitingMechanic.RpcAddDeathReason(player, (int)DeathReasonShow.LeftTown);
         }
     }
 }

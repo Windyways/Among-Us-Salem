@@ -11,126 +11,18 @@ namespace AmongUsSalem.Patches;
 [HarmonyPatch]
 public static class LogicGameFlowPatches
 {
-    public static bool EndGameEarlyCheck(RoleBehaviour role)
-    {
-        var deadAmneRoles = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasDied() &&
-            x.Data.Role is /*Veteran or*/ Mayor or Prosecutor);
-
-        /*var deadVetsOnAlert = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasDied() &&
-            x.Data.Role is Veteran veteran && veteran.isAlerted);*/
-
-        var deadFortified = PlayerControl.AllPlayerControls.ToArray().Count(x => x.HasDied() &&
-            x.HasModifier<FortifiedModifier>() || x.HasModifier<JinxedModifier>()/* || x.IsAmbushed()*/);
-        
-        var enemyRoles = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x.Data.Role != role).ToList();
-        if (enemyRoles.Count == 1)
-        {
-            var other = enemyRoles[0];
-            /*if (role is Jackal) // Jackal end game early checks
-            {
-                if (
-                    other.Data.Role is HexMaster or VoodooMaster or Arsonist or Mayor
-                    || (other.Data.Role is Conjurer conjurer && conjurer.Charges > 0)
-                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    || (other.Data.Role is Veteran veteran && veteran.Charges > 0)
-                    || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || other.IsGuarded() || deadVetsOnAlert > 0
-                    ) return false;
-
-                return true;
-            }
-            else if (role is Shroud) // Shroud end game early checks
-            {
-                if (
-                    other.Data.Role is HexMaster or VoodooMaster or Arsonist or Mayor or Jackal
-                    || (other.Data.Role is Conjurer conjurer && conjurer.Charges > 0)
-                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    || (other.Data.Role is Veteran veteran && veteran.Charges > 0)
-                    || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || other.IsGuarded() || deadVetsOnAlert > 0
-                    ) return false;
-
-                return true;
-            }
-            else if (role is Arsonist) // Arsonist end game early checks
-            {
-                if (
-                    other.Data.Role is HexMaster or VoodooMaster or Mayor or Jackal
-                    || (other.Data.Role is Conjurer conjurer && conjurer.Charges > 0)
-                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    || (other.Data.Role is Veteran veteran && veteran.Charges > 0 && !other.IsDoused())
-                    || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || deadVetsOnAlert > 0
-                    ) return false;
-
-                return true;
-            }
-            else if (role is Vampire) // Vampire end game early checks
-            {
-                if (
-                    other.Data.Role is HexMaster or VoodooMaster or Mayor or Jackal or Shroud or Arsonist
-                    || (other.Data.Role is Conjurer conjurer && conjurer.Charges > 0)
-                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    || (other.Data.Role is Veteran veteran && veteran.Charges > 0)
-                    || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || other.IsGuarded() || deadVetsOnAlert > 0
-                    ) return false;
-
-                return true;
-            }
-            else */if (role.Player.Is(Faction.Coven)) // Coven end game early checks
-            {
-                if (
-                    other.Data.Role is Mayor or /*Jackal or Shroud or Vampire or*/ ImpostorRole
-                    || other.Is(Alignment.NeutralApocalypse)
-                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    /*|| (other.Data.Role is Veteran veteran && veteran.Charges > 0) */
-                    || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)
-                    || other.HasModifier<GuardedModifier>() || other.HasModifier<FortifiedModifier>() || /*deadVetsOnAlert > 0 ||*/ deadFortified > 0 /*|| other.IsAmbushed()*/
-                    ) return false;
-
-                return true;
-            }
-            else if (role.Player.Is(Alignment.NeutralApocalypse)) // Coven end game early checks
-            {
-                if (
-                    other.Data.Role is Mayor or /*Jackal or Shroud or Vampire or*/ ImpostorRole 
-                    || other.Is(Faction.Coven)
-                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    /*|| (other.Data.Role is Veteran veteran && veteran.Charges > 0) */
-                    || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)
-                    || other.HasModifier<GuardedModifier>() || other.HasModifier<FortifiedModifier>() || /*deadVetsOnAlert > 0 ||*/ deadFortified > 0 /*|| other.IsAmbushed()*/
-                    ) return false;
-
-                return true;
-            }
-            else if (role is ImpostorRole) // Mafia end game early checks
-            {
-                if (
-                    other.Data.Role is Mayor /*or Jackal or Shroud or Vampire*/
-                    || other.Is(Faction.Coven) || other.Is(Alignment.NeutralApocalypse)
-                    || (other.Data.Role is Prosecutor prosecutor && prosecutor.Charges > 0)
-                    /*|| (other.Data.Role is Veteran veteran && veteran.Charges > 0)*/
-                    || (other.Data.Role is Amnesiac && deadAmneRoles > 0)
-                    || (other.Data.Role is Deputy deputy && deputy.Charges > 0)
-                    || other.HasModifier<GuardedModifier>() || other.HasModifier<FortifiedModifier>() || /*deadVetsOnAlert > 0 ||*/ deadFortified > 0 || other.HasModifier<JinxedModifier>()
-                    ) return false;
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public static bool IsInStalemate()
     {
-        //var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        var alivePlayers = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied());
+        // --- GODFATHER / SERIAL KILLER
+        var serialKillers = PlayerControl.AllPlayerControls.ToArray().Count(x => x.Data.Role is SerialKiller SK && SK.Bloodlust < 2 && !x.HasDied());
+        var godfathers = PlayerControl.AllPlayerControls.ToArray().Count(x => x.IsRole<Godfather>() && !x.HasDied());
+        if (alivePlayers == 2 && serialKillers == 1 && godfathers == 1) return true;
+
         //var shrouds = PlayerControl.AllPlayerControls.ToArray().Count(x => x.IsRole<Shroud>() && !x.HasDied());
         //var vampires = PlayerControl.AllPlayerControls.ToArray().Count(x => x.IsRole<Vampire>() && !x.HasDied());
         //if (alivePlayers == 2 && shrouds == 1 && vampires == 1) return true;
+
         return false;
     }
 

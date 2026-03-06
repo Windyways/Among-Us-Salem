@@ -47,22 +47,30 @@ public static class WikiHyperLinkPatches
             if (match.Value[0] == '#') // Role tag
             {
                 var role = MiscUtils.AllRegisteredRoles.FirstOrDefault(x =>
-                    x.GetRoleName().Replace(' ', '-').RemoveAll(RemovedCharacters).Equals(key, StringComparison.OrdinalIgnoreCase));
-
-                if (key == "Starspawn")
                 {
-                    role = MiscUtils.AllRoles.FirstOrDefault(x => x is Starspawn);
-                    if (role is ICustomRole customRole)
+                    var roleName = RemoveTMPTags(x.GetRoleName());
+
+                    roleName = roleName
+                        .Replace(' ', '-')
+                        .RemoveAll(RemovedCharacters);
+
+                    return roleName.Equals(key, StringComparison.OrdinalIgnoreCase);
+                });
+
+                if (role is ICustomRole customRole)
+                {
+                    bool hasColorTags = customRole.RoleName.Contains("<color=");
+
+                    if (hasColorTags)
                     {
                         replacement =
-                            $"{fontTag}<b>{customRole.RoleColor.ToTextColor()}<link={RoleColors.StarspawnNameInGradient}:{linkIndex}>{RoleColors.StarspawnNameInGradient}</link></color></b></font>";
-                        shouldHyperlink = customRole is IWikiDiscoverable || SoftWikiEntries.RoleEntries.ContainsKey(role);
+                            $"{fontTag}<b><link={customRole.GetType().FullName}:{linkIndex}>{customRole.RoleName}</link></b></font>";
                     }
-                }
-                else if (role is ICustomRole customRole)
-                {
-                    replacement =
-                        $"{fontTag}<b>{customRole.RoleColor.ToTextColor()}<link={customRole.GetType().FullName}:{linkIndex}>{customRole.RoleName}</link></color></b></font>";
+                    else
+                    {
+                        replacement =
+                            $"{fontTag}<b>{customRole.RoleColor.ToTextColor()}<link={customRole.GetType().FullName}:{linkIndex}>{customRole.RoleName}</link></color></b></font>";
+                    }
                     shouldHyperlink = customRole is IWikiDiscoverable || SoftWikiEntries.RoleEntries.ContainsKey(role);
                 }
                 else if (role != null && SoftWikiEntries.RoleEntries.ContainsKey(role))
@@ -75,27 +83,6 @@ public static class WikiHyperLinkPatches
                         $"{fontTag}<b>{role.TeamColor.ToTextColor()}<link={$"AmongUs.Roles.{role.Role.ToString()}"}:{linkIndex}>{role.GetRoleName()}</link></color></b></font>";
                     }
                     shouldHyperlink = true;
-                }
-                else
-                {
-                    // Some non-custom roles (specifically Impostor and Crewmate) can also be tagged, but they have no wiki entries.
-                    role = MiscUtils.AllRegisteredRoles.FirstOrDefault(x =>
-                        x.GetRoleName().Equals(key, StringComparison.OrdinalIgnoreCase));
-                    if (role != null)
-                    {
-                        if (role.Role is RoleTypes.Crewmate || role.Role is RoleTypes.Impostor)
-                        {
-                            replacement =
-                                $"{fontTag}<b>{role.TeamColor.ToTextColor()}{role.GetRoleName()}</color></b></font>";
-                            shouldHyperlink = false;
-                        }
-                        else
-                        {
-                            replacement =
-                                $"{fontTag}<b>{role.TeamColor.ToTextColor()}<link={$"AmongUs.Roles.{role.Role.ToString()}"}:{linkIndex}>{role.GetRoleName()}</link></color></b></font>";
-                            shouldHyperlink = true;
-                        }
-                    }
                 }
             }
             else if (match.Value[0] == '&') // Modifier tag
@@ -148,5 +135,10 @@ public static class WikiHyperLinkPatches
         {
             text = CheckForTags(text, __instance.chatText);
         }
+    }
+
+    public static string RemoveTMPTags(string input) // Idk how this works, Chat GPT cooked this up for me so... Thank that for the cool Starspawn gradient tag.
+    {
+        return Regex.Replace(input, "<.*?>", string.Empty);
     }
 }

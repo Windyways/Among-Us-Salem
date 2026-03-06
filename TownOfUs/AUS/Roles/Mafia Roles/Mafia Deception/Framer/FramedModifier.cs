@@ -13,3 +13,14 @@ public sealed class FramedModifier(PlayerControl c) : BaseModifier
             Player.RpcRemoveModifier<FramedModifier>();
     }
 }
+
+public static class FramedModifier_Events
+{
+    [RegisterEvent]
+    public static void RoundStartEvent(RoundStartEvent @event)
+    {
+        foreach (var player in ModifierUtils.GetPlayersWithModifier<FramedModifier>())
+            if (!OptionGroupSingleton<Framer_Options>.Instance.RemovedOnVisit)
+                player.RpcRemoveModifier<FramedModifier>();
+    }
+}

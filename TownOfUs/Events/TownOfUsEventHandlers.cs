@@ -211,7 +211,7 @@ public static class TownOfUsEventHandlers
         }
     }
 
-    [RegisterEvent]
+    /*[RegisterEvent]
     public static void PlayerCanUseEventHandler(PlayerCanUseEvent @event)
     {
         if (!PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.Data ||
@@ -237,7 +237,7 @@ public static class TownOfUsEventHandlers
                 @event.Cancel();
             }
         }
-    }
+    }*/
 
     [RegisterEvent]
     public static void PlayerLeaveEventHandler(PlayerLeaveEvent @event)

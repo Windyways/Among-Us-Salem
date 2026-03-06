@@ -1,5 +1,4 @@
 ﻿using AmongUsSalem.MafiaRoles;
-using AmongUsSalem.Mechanics;
 using Il2CppInterop.Runtime.Attributes;
 using Reactor.Utilities.Extensions;
 using System.Text;
@@ -11,7 +10,7 @@ public sealed class Godfather(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURo
 {
     public string RoleName { get; set; } = "Godfather";
     public string revealText => "is the leader of the Mafia.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem";
     public string RoleLongDescription => "You are the leader of organized crime.";
     public Color RoleColor { get; set; } = RoleColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;

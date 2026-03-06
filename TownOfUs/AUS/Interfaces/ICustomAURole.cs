@@ -37,7 +37,7 @@ public interface ICustomAURole : ICustomRole
         }
     }
 
-    void ApplyDefense(Defense defense, bool perma = false, bool overrideValue = false)
+    void ApplyDefense(PlayerControl player, Defense defense, bool perma = false, bool overrideValue = false, bool visualize = false)
     {
         if (overrideValue)
         {
@@ -49,6 +49,8 @@ public interface ICustomAURole : ICustomRole
             if (Defense < defense) Defense = defense;
             if (perma && ogDefense < defense) ogDefense = defense;
         }
+
+        if (visualize && defense > ogDefense) player.AddModifier<VisualizeDefense>((int)defense);
     }
 
 
@@ -137,9 +139,10 @@ public interface ICustomAURole : ICustomRole
 
         if (role is ICustomAURole ausRole)
         {
-            string defense = ausRole.Defense.ToString();
-            if (PlayerControl.LocalPlayer.TryGetModifier<OverrideDefense>(out var od)) defense = od.defense.ToString();
-            else if (PlayerControl.LocalPlayer.HasModifier<HideGainedDefense>()) defense = ausRole.ogDefense.ToString();
+            string defense = ausRole.ogDefense.ToString();
+            if (PlayerControl.LocalPlayer.TryGetModifier<VisualizeDefense>(out var vd)) defense = vd.defense.ToString();
+            //else if (PlayerControl.LocalPlayer.TryGetModifier<OverrideDefense>(out var od)) defense = od.defense.ToString();
+            //else if (PlayerControl.LocalPlayer.HasModifier<HideGainedDefense>()) defense = ausRole.ogDefense.ToString();
 
             stringB.AppendLine(CultureInfo.InvariantCulture, $"<color=#e70052>Attack: {ausRole.Attack}</color>");
             stringB.AppendLine(CultureInfo.InvariantCulture, $"<color=#0000ff>Defense: {defense}</color>");
@@ -187,6 +190,10 @@ public interface ICustomAURole : ICustomRole
     }
 
     void Role_OnRoundStart()
+    {
+    }
+
+    void Role_AfterMurder(PlayerControl victim)
     {
     }
 }

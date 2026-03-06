@@ -9,6 +9,12 @@ public enum AUSRpc : uint
     RpcResetMafiosoCooldown,
     RpcResetGodfatherCooldown,
     RpcDaybreak,
+    RpcPerformInteraction,
+    RpcPerformDoubleInteraction,
+    RpcTryStartProtest,
+    RpcEmpowerGrimoire,
+    RpcPerformInteractionTracked,
+    RpcQuotaLynch,
 
     // Notifications
     RpcNotifyBodyguard,
@@ -18,6 +24,12 @@ public enum AUSRpc : uint
     RpcNotifyCrusader,
     RpcNotifyWar,
     RpcNotifyStarspawn,
+    RpcNotifyPestilence,
+    RpcNotifyPlaguebearer,
+    RpcNotifyLeaveTown,
+    RpcNotifyWarlock,
+    RpcNotifyDeath,
+    RpcTMDNotify,
 
     // Mechanics
     StartDayOne,

@@ -9,7 +9,7 @@ public sealed class SerialKiller(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
 {
     public string RoleName { get; set; } = "Serial Killer";
     public string revealText => "wants to kill everyone.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a psychopath who wants everyone in the town to die.";
     public Color RoleColor { get; set; } = RoleColors.SerialKiller;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
@@ -47,6 +47,13 @@ public sealed class SerialKiller(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
             MiscUtils.AppendOptionsText(GetType());
     }
 
+    public string GetAttributes()
+    {
+        return
+            $"- If you do not kill at Night, your Bloodlust will reset.\n" +
+            $"- You will automatically counterattack RoleBlockers.";
+    }
+
     [HideFromIl2Cpp]
     public List<CustomButtonWikiDescription> Abilities { get; } =
     [
@@ -70,7 +77,7 @@ public sealed class SerialKiller(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
         if (aliveNK == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveNK && MiscUtils.KillersAliveCount == aliveNK;
-        return result || LogicGameFlowPatches.EndGameEarlyCheck(role);
+        return result;
     }
 
     public static bool AnyWon(GameOverReason gameOverReason)
@@ -90,8 +97,8 @@ public sealed class SerialKiller(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
 
     public static string Info(int kills)
     {
-        if (kills < 2) return "Your bloodlust is sated.";
-        if (kills == 2) return "Your bloodlust is swelling.";
+        if (kills == 0) return "Your bloodlust is sated.";
+        if (kills == 1) return "Your bloodlust is swelling.";
         return "Your bloodlust has reached its apex. You will deal a rampaging powerful attack tonight.";
     }
 
@@ -105,7 +112,7 @@ public sealed class SerialKiller(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
 
     public void Role_OnRoundStart()
     {
-        if (Player.AmOwner() && !Player.HasDied())
+        if (Player.AmOwner && !Player.HasDied())
             Player.Notify(Info(Bloodlust), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SerialKillerRoleCard.LoadAsset());
     }
 
@@ -175,7 +182,7 @@ public sealed class SerialKiller_Attack : TownOfUsRoleButton<SerialKiller, Playe
             Player.RpcCustomMurder(Target);
             VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.StabbedByASerialKiller);
 
-            Player.Notify(SerialKiller.Info(Role.Bloodlust + 1), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SerialKillerRoleCard.LoadAsset());
+            Player.Notify(SerialKiller.Info(Role.Bloodlust), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SerialKillerRoleCard.LoadAsset());
         }
         else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
 
@@ -193,7 +200,7 @@ public sealed class SerialKiller_Cautious : TownOfUsRoleButton<SerialKiller>
     public override string Name => "Cautious";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
     public override Color TextOutlineColor => RoleColors.SerialKiller;
-    public override float Cooldown => OptionGroupSingleton<SerialKiller_Options>.Instance.Cooldown;
+    public override float Cooldown => 1f;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.SerialKiller_Cautious;
 
     public override void ClickHandler()

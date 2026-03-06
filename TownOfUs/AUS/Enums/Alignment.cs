@@ -28,4 +28,6 @@ public enum Alignment
     CovenOutlier,
     CovenPower,
     CovenUtility,
+
+    None,
 }

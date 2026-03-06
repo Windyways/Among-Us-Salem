@@ -45,6 +45,27 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> WarRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.WarRoleCard.png");
     public static LoadableAsset<Sprite> SerialKillerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.SerialKillerRoleCard.png");
     public static LoadableAsset<Sprite> StarspawnRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.StarspawnRoleCard.png");
+    public static LoadableAsset<Sprite> LookoutRoleCard_TOS2 { get; } = new LoadableResourceAsset($"{RoleCard}.LookoutRoleCard.png");
+    public static LoadableAsset<Sprite> TrackerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.TrackerRoleCard.png");
+    public static LoadableAsset<Sprite> AgentRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.AgentRoleCard.png");
+    public static LoadableAsset<Sprite> WildlingRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.WildlingRoleCard.png");
+    public static LoadableAsset<Sprite> WerewolfRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.WerewolfRoleCard.png");
+    public static LoadableAsset<Sprite> PlaguebearerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.PlaguebearerRoleCard.png");
+    public static LoadableAsset<Sprite> PestilenceRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.PestilenceRoleCard.png");
+    public static LoadableAsset<Sprite> PacifistRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.PacifistRoleCard.png");
+    public static LoadableAsset<Sprite> WarlockRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.WarlockRoleCard.png");
+    public static LoadableAsset<Sprite> DeathRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.DeathRoleCard.png");
+    public static LoadableAsset<Sprite> LookoutRoleCard_TOS1 { get; } = new LoadableResourceAsset($"{RoleCard}.LookoutRoleCard_TOS1.png");
+
+    // --- ROLE CARDS: MULTIPLE ---
+    public static LoadableAsset<Sprite> LookoutRoleCard
+    {
+        get
+        {
+            if (OptionGroupSingleton<Lookout_Options>.Instance.Mode == LookoutMode.TOS1) return LookoutRoleCard_TOS1;
+            return LookoutRoleCard_TOS2;
+        }
+    }
 
     // ABILITIES
     public static LoadableAsset<Sprite> Mafioso_Kill { get; } = new LoadableResourceAsset($"{Abilities}.Mafioso_Kill.png");
@@ -81,6 +102,29 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> SerialKiller_Cautious { get; } = new LoadableResourceAsset($"{Abilities}.SerialKiller_Cautious.png");
     public static LoadableAsset<Sprite> Starspawn_Isolate { get; } = new LoadableResourceAsset($"{Abilities}.Starspawn_Isolate.png");
     public static LoadableAsset<Sprite> Starspawn_Daybreak { get; } = new LoadableResourceAsset($"{Abilities}.Starspawn_Daybreak.png");
+    public static LoadableAsset<Sprite> Lookout_Watch_TOS2 { get; } = new LoadableResourceAsset($"{Abilities}.Lookout_Watch.png");
+    public static LoadableAsset<Sprite> Lookout_Watch_TOS1 { get; } = new LoadableResourceAsset($"{Abilities}.Lookout_Watch_TOS1.png");
+    public static LoadableAsset<Sprite> Tracker_Track { get; } = new LoadableResourceAsset($"{Abilities}.Tracker_Track.png");
+    public static LoadableAsset<Sprite> Agent_Stalk { get; } = new LoadableResourceAsset($"{Abilities}.Agent_Stalk.png");
+    public static LoadableAsset<Sprite> Wildling_Sense { get; } = new LoadableResourceAsset($"{Abilities}.Wildling_Sense.png");
+    public static LoadableAsset<Sprite> Werewolf_Maul { get; } = new LoadableResourceAsset($"{Abilities}.Werewolf_Maul.png");
+    public static LoadableAsset<Sprite> Werewolf_TrackScent { get; } = new LoadableResourceAsset($"{Abilities}.Werewolf_TrackScent.png");
+    public static LoadableAsset<Sprite> Plaguebearer_Infect { get; } = new LoadableResourceAsset($"{Abilities}.Plaguebearer_Infect.png");
+    public static LoadableAsset<Sprite> Pestilence_SpreadPestilence { get; } = new LoadableResourceAsset($"{Abilities}.Pestilence_SpreadPestilence.png");
+    public static LoadableAsset<Sprite> Pacifist_Rally { get; } = new LoadableResourceAsset($"{Abilities}.Pacifist_Rally.png");
+    public static LoadableAsset<Sprite> Pacifist_SelfReflection { get; } = new LoadableResourceAsset($"{Abilities}.Pacifist_SelfReflection.png");
+    public static LoadableAsset<Sprite> Warlock_Curse { get; } = new LoadableResourceAsset($"{Abilities}.Warlock_Curse.png");
+    public static LoadableAsset<Sprite> Death_Armageddon { get; } = new LoadableResourceAsset($"{Abilities}.Death_Armageddon.png");
+
+    // --- ABILITIES: MULTIPLE ---
+    public static LoadableAsset<Sprite> Lookout_Watch
+    {
+        get
+        {
+            if (OptionGroupSingleton<Lookout_Options>.Instance.Mode == LookoutMode.TOS1) return Lookout_Watch_TOS1;
+            return Lookout_Watch_TOS2;
+        }
+    }
 
     // Audio
     public static LoadableAsset<AudioClip> Mayor_Reveal_SFX { get; } = new LoadableAudioResourceAsset($"{Audio}.Mayor_Reveal_SFX.wav");

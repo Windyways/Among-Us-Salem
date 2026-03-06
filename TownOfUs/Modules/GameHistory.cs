@@ -6,11 +6,12 @@ namespace TownOfUs.Modules;
 
 public record PlayerEvent(byte PlayerId, float Unix, Vector3 Position);
 
-public record DeadPlayer(byte KillerId, byte VictimId, DateTime KillTime);
+public record DeadPlayer(byte KillerId, byte VictimId, DateTime KillTime, RoleBehaviour killerRole);
 
 public sealed class PlayerStats(byte playerId)
 {
     public byte PlayerId { get; set; } = playerId;
+    public RoleBehaviour killerRole { get; set; }
     public int CorrectKills { get; set; }
     public int IncorrectKills { get; set; }
     public int CorrectAssassinKills { get; set; }
@@ -24,37 +25,6 @@ public sealed class BodyReport
     public PlayerControl? Reporter { get; set; }
     public PlayerControl? Body { get; set; }
     public float KillAge { get; set; }
-
-    public static string ParseDetectiveReport(BodyReport br)
-    {
-        if (br.Killer!.PlayerId == br.Body!.PlayerId)
-        {
-            return
-                $"Body Report: The kill appears to have been a suicide! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        // if the killer died, they would still appear correctly here
-        var role = br.Killer.GetRoleWhenAlive();
-
-        var prefix = "a";
-        if (role.NiceName.StartsWithVowel())
-        {
-            prefix = "an";
-        }
-
-        if (br.Killer.IsNeutral())
-        {
-            return
-                $"Body Report: The killer appears to be a Neutral Role! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        if (br.Killer.IsCrewmate())
-        {
-            return $"Body Report: The killer appears to be a Crewmate! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-        }
-
-        return $"Body Report: The killer appears to be an Impostor! (Killed {Math.Round(br.KillAge / 1000)}s ago)";
-    }
 }
 
 public static class GameHistory
@@ -100,7 +70,7 @@ public static class GameHistory
 
     public static void AddMurder(PlayerControl killer, PlayerControl victim)
     {
-        var deadBody = new DeadPlayer(killer.PlayerId, victim.PlayerId, DateTime.UtcNow);
+        var deadBody = new DeadPlayer(killer.PlayerId, victim.PlayerId, DateTime.UtcNow, killer.GetRoleWhenAlive());
 
         KilledPlayers.Add(deadBody);
     }

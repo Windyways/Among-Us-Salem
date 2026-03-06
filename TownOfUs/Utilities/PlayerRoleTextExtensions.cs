@@ -33,10 +33,43 @@ public static class PlayerRoleTextExtensions
             color = RoleColors.Town;
         }
 
+        if ((PlayerControl.LocalPlayer.Data.Role is Lookout lookout && player.HasModifier<WatchedModifier>(x => x.Caster == lookout.Player)))
+        {
+            color = RoleColors.Town;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Tracker tracker && player.HasModifier<TrackedModifier>(x => x.Caster == tracker.Player)))
+        {
+            color = RoleColors.Town;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Pacifist pacifist && player.HasModifier<RalliedModifier>(x => x.Caster == pacifist.Player)) ||
+            (player.HasModifier<ProtestModifier>()))
+        {
+            color = RoleColors.Town;
+        }
+
         // Neutral
         if ((PlayerControl.LocalPlayer.Data.Role is Starspawn starspawn && player.HasModifier<IsolatedModifier>(x => x.Caster == starspawn.Player)))
         {
             color = RoleColors.Starspawn;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Werewolf werewolf && player.HasModifier<TrackedModifier>(x => x.Caster == werewolf.Player)))
+        {
+            color = RoleColors.Werewolf;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Plaguebearer plaguebearer && player.HasModifier<InfectedModifier>(x => x.Caster == plaguebearer.Player))
+            || (player.HasModifier<InfectedModifier>() && PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse)))
+        {
+            color = RoleColors.Apocalypse;
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Warlock warlock && player.HasModifier<CursedModifier>(x => x.Caster == warlock.Player))
+            || (player.HasModifier<CursedModifier>() && PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse)))
+        {
+            color = RoleColors.Apocalypse;
         }
 
         // Mafia
@@ -131,11 +164,35 @@ public static class PlayerRoleTextExtensions
             name += "<color=#06e00c> Ⓕ</color>";
         }
 
+        if ((PlayerControl.LocalPlayer.Data.Role is Lookout lookout && player.HasModifier<WatchedModifier>(x => x.Caster == lookout.Player))
+            || (player.HasModifier<WatchedModifier>(x => x.Caster.Is(Faction.Town)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06e00c> Ⓦ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Tracker tracker && player.HasModifier<TrackedModifier>(x => x.Caster == tracker.Player))
+            || (player.HasModifier<TrackedModifier>(x => x.Caster.Is(Faction.Town)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06e00c> Ⓣ</color>";
+        }
+
         // Neutral -------------------------------------------------------------------------------------------------------
         if ((PlayerControl.LocalPlayer.Data.Role is Starspawn starspawn && player.HasModifier<IsolatedModifier>(x => x.Caster == starspawn.Player))
             || (player.HasModifier<IsolatedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#a4a4f4> Ⓘ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Werewolf werewolf && player.HasModifier<TrackedModifier>(x => x.Caster == werewolf.Player))
+            || (player.HasModifier<TrackedModifier>(x => x.Caster.IsRole<Werewolf>()) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#aa6d06> ⓉⓈ</color>";
+        }
+        if ((PlayerControl.LocalPlayer.Data.Role is Warlock warlock && player.HasModifier<CursedModifier>(x => x.Caster == warlock.Player))
+            || (player.HasModifier<CursedModifier>() && PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse))
+            || (player.HasModifier<CursedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#ff004e> Ⓒ</color>";
         }
 
         // Mafia -------------------------------------------------------------------------------------------------------
@@ -144,6 +201,13 @@ public static class PlayerRoleTextExtensions
             || (player.HasModifier<FramedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#DD0000> Ⓕ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Agent agent && player.HasModifier<WatchedModifier>(x => x.Caster == agent.Player))
+            || (player.HasModifier<WatchedModifier>(x => x.Caster.Is(Faction.Mafia)) && PlayerControl.LocalPlayer.Is(Faction.Mafia))
+            || (player.HasModifier<WatchedModifier>(x => x.Caster.Is(Faction.Mafia)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#DD0000> Ⓢ</color>";
         }
 
         // Coven -------------------------------------------------------------------------------------------------------
@@ -172,6 +236,13 @@ public static class PlayerRoleTextExtensions
             || (player.HasModifier<BarrieredModifier>(x => x.Caster.Is(Faction.Coven)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#B545FF> Ⓑ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Wildling wildling && player.HasModifier<WatchedModifier>(x => x.Caster == wildling.Player))
+            || (player.HasModifier<WatchedModifier>(x => x.Caster.Is(Faction.Coven)) && PlayerControl.LocalPlayer.Is(Faction.Coven))
+            || (player.HasModifier<WatchedModifier>(x => x.Caster.Is(Faction.Coven)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#B545FF> Ⓢ</color>";
         }
         return name;
     }

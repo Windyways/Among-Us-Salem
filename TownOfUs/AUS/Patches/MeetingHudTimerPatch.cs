@@ -26,9 +26,12 @@ public static class MeetingHudTimerPatch
                 newText = $"\nProsecutes Left: {prosecutor.Charges}";
                 break;
             case Jester jester:
-                string text = $"\nChatterBox: {jester.MessagesSent} / {jester.ChatterBoxQuota}";
-                newText = text;
-                if (jester.MessagesSent >= jester.ChatterBoxQuota) newText = $"<color=#00ff00>{text}</color>";
+                if (OptionGroupSingleton<Jester_Options>.Instance.EnableChatterbox)
+                {
+                    string text = $"\nChatterBox: {jester.MessagesSent} / {jester.ChatterBoxQuota}";
+                    newText = text;
+                    if (jester.MessagesSent >= jester.ChatterBoxQuota) newText = $"<color=#00ff00>{text}</color>";
+                }
                 break;
             case Starspawn starspawn:
                 newText = $"\nDaybreaks Left: {starspawn.Charges}";

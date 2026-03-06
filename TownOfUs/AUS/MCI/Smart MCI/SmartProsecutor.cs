@@ -31,12 +31,12 @@ public static class SmartProsecutor
         {
             var allPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x != prosecutor.Player).ToList();
 
-            var incriminatingEvidence = IncriminatingEvidence.GetRandom();
+            var incriminatingEvidence = ModifierUtils.GetActiveModifiers<IncriminatingEvidence>(x => x.Player != prosecutor.Player);
             var seenKill = SeenKill.GetAll();
             var confirmedEvil = ConfirmedEvil.GetAll();
 
             if (confirmedEvil != null) prosecutor.DoProsecute(confirmedEvil.Player);
-            else if (incriminatingEvidence != null) prosecutor.DoProsecute(incriminatingEvidence.Player);
+            else if (incriminatingEvidence != null && incriminatingEvidence.Count() > 0) prosecutor.DoProsecute(incriminatingEvidence.Random().Player);
             else if (seenKill != null) prosecutor.DoProsecute(seenKill.killer);
             else if (allPlayers.Count <= 6) prosecutor.DoProsecute(allPlayers.Random());
         }

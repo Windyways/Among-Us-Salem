@@ -41,38 +41,71 @@ namespace AmongUsSalem.Misc
         public static void Initialize()
         {
             // --- TOWN ---
-            roleStats.Add("Pilgrim", new RoleStats("Pilgrim", RoleColors.Town));
-            roleStats.Add("Sheriff", new RoleStats("Sheriff", RoleColors.Town));
-            roleStats.Add("Bodyguard", new RoleStats("Bodyguard", RoleColors.Town));
+            // -- TE --
+            roleStats.Add("Prosecutor", new RoleStats("Prosecutor", RoleColors.Town));
+            // -- TG --
             roleStats.Add("Mayor", new RoleStats("Mayor", RoleColors.Town));
-            roleStats.Add("Amnesiac", new RoleStats("Amnesiac", RoleColors.Town));
-            roleStats.Add("Deputy", new RoleStats("Deputy", RoleColors.Town));
-            roleStats.Add("Cleric", new RoleStats("Cleric", RoleColors.Town));
+            roleStats.Add("Pacifist", new RoleStats("Pacifist", RoleColors.Town));
+            // -- TI --
+            roleStats.Add("Sheriff", new RoleStats("Sheriff", RoleColors.Town));
             roleStats.Add("Seer", new RoleStats("Seer", RoleColors.Town));
+            roleStats.Add("Lookout", new RoleStats("Lookout", RoleColors.Town));
+            roleStats.Add("Tracker", new RoleStats("Tracker", RoleColors.Town));
+            // -- TK --
+            roleStats.Add("Deputy", new RoleStats("Deputy", RoleColors.Town));
+            // -- TO --
+            roleStats.Add("Pilgrim", new RoleStats("Pilgrim", RoleColors.Town));
             roleStats.Add("Catalyst", new RoleStats("Catalyst", RoleColors.Town));
+            // -- TP --
+            roleStats.Add("Bodyguard", new RoleStats("Bodyguard", RoleColors.Town));
+            roleStats.Add("Cleric", new RoleStats("Cleric", RoleColors.Town));
             roleStats.Add("Crusader", new RoleStats("Crusader", RoleColors.Town));
+            // -- TS --
+            roleStats.Add("Amnesiac", new RoleStats("Amnesiac", RoleColors.Town));
 
             // --- NEUTRAL ---
-            roleStats.Add("Survivor", new RoleStats("Survivor", RoleColors.Survivor));
-            roleStats.Add("Jester", new RoleStats("Jester", RoleColors.Jester));
+            // -- NA --
             roleStats.Add("Berserker", new RoleStats("Berserker", RoleColors.Apocalypse));
             roleStats.Add("War", new RoleStats("War", RoleColors.Apocalypse));
+            roleStats.Add("Plaguebearer", new RoleStats("Plaguebearer", RoleColors.Apocalypse));
+            roleStats.Add("Pestilence", new RoleStats("Pestilence", RoleColors.Apocalypse));
+            roleStats.Add("Warlock", new RoleStats("Warlock", RoleColors.Apocalypse));
+            roleStats.Add("Death", new RoleStats("Death", RoleColors.Apocalypse));
+            // -- NB --
+            roleStats.Add("Survivor", new RoleStats("Survivor", RoleColors.Survivor));
+            // -- NC --
+            // -- NE --
+            roleStats.Add("Jester", new RoleStats("Jester", RoleColors.Jester));
+            // -- NK --
             roleStats.Add("Serial Killer", new RoleStats("Serial Killer", RoleColors.SerialKiller));
+            roleStats.Add("Werewolf", new RoleStats("Werewolf", RoleColors.Werewolf));
+            // -- NO --
+            // -- NP --
             roleStats.Add("Starspawn", new RoleStats(RoleColors.StarspawnNameInGradient, RoleColors.Starspawn));
 
             // --- MAFIA ---
-            roleStats.Add("Mafioso", new RoleStats("Mafioso", RoleColors.Mafia));
+            // -- MD --
             roleStats.Add("Framer", new RoleStats("Framer", RoleColors.Mafia));
-            roleStats.Add("Consigliere", new RoleStats("Consigliere", RoleColors.Mafia));
+            // -- MK --
             roleStats.Add("Godfather", new RoleStats("Godfather", RoleColors.Mafia));
+            roleStats.Add("Mafioso", new RoleStats("Mafioso", RoleColors.Mafia));
+            // -- MS --
+            roleStats.Add("Agent", new RoleStats("Agent", RoleColors.Mafia));
+            roleStats.Add("Consigliere", new RoleStats("Consigliere", RoleColors.Mafia));
 
             // --- COVEN ---
-            roleStats.Add("Covenite", new RoleStats("Covenite", RoleColors.Coven));
+            // -- CD --
             roleStats.Add("Illusionist", new RoleStats("Illusionist", RoleColors.Coven));
-            roleStats.Add("Hex Master", new RoleStats("Hex Master", RoleColors.Coven));
-            roleStats.Add("Jinx", new RoleStats("Jinx", RoleColors.Coven));
-            roleStats.Add("Potion Master", new RoleStats("Potion Master", RoleColors.Coven));
+            // -- CK --
             roleStats.Add("Ritualist", new RoleStats("Ritualist", RoleColors.Coven));
+            roleStats.Add("Jinx", new RoleStats("Jinx", RoleColors.Coven));
+            // -- CO --
+            roleStats.Add("Covenite", new RoleStats("Covenite", RoleColors.Coven));
+            // -- CPow --
+            roleStats.Add("Hex Master", new RoleStats("Hex Master", RoleColors.Coven));
+            // -- CU --
+            roleStats.Add("Potion Master", new RoleStats("Potion Master", RoleColors.Coven));
+            roleStats.Add("Wildling", new RoleStats("Wildling", RoleColors.Coven));
 
             LoadRoleStats(filePath);
         }
@@ -81,9 +114,9 @@ namespace AmongUsSalem.Misc
         public static void UpdateRoleResult(RoleBehaviour roleBehaviour, int kills, bool won)
         {
             string roleName = roleBehaviour.NiceName;
-            if (!CountRoundToLeaderboard)
+            if (!CountRoundToLeaderboard || !Debugger.IsDebuggerActive)
             {
-                AUSPlugin.DebugLogMessage("CountRoundToLeaderboard is false, wins and loses do not count this game.");
+                AUSPlugin.DebugLogMessage("CountRoundToLeaderboard is false or Debugger is inactive, wins and loses do not count this game.");
                 return;
             }
 

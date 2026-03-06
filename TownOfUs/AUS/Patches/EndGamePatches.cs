@@ -68,7 +68,7 @@ public static class EndGamePatches
             var playerRoleType = lastRole!.Role;
             var playerTeam = ModdedRoleTeams.Crewmate;
 
-            if (lastRole is ITownOfUsRole touRole)
+            if (lastRole is ICustomAURole touRole)
             {
                 playerTeam = touRole.Team;
             }
@@ -129,30 +129,6 @@ public static class EndGamePatches
                     playerRoleString.Append(AUSPlugin.Culture,
                         $" |{TownOfUsColors.Impostor.ToTextColor()} Kills: {killedPlayers}</color>");
                 }
-
-                if (stats.CorrectKills > 0)
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" | {Color.green.ToTextColor()}Kills: {stats.CorrectKills}</color>");
-                }
-
-                if (stats.IncorrectKills > 0)
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" | {TownOfUsColors.Impostor.ToTextColor()}Mis-kills: {stats.IncorrectKills}</color>");
-                }
-
-                if (stats.CorrectAssassinKills > 0)
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" | {Color.green.ToTextColor()}Guesses: {stats.CorrectAssassinKills}</color>");
-                }
-
-                if (stats.IncorrectAssassinKills > 0)
-                {
-                    playerRoleString.Append(AUSPlugin.Culture,
-                        $" | {TownOfUsColors.Impostor.ToTextColor()}Misguesses: {stats.IncorrectAssassinKills}</color>");
-                }
             }
 
             if (playerControl.TryGetModifier<DeathHandlerModifier>(out var deathHandler))
@@ -181,15 +157,33 @@ public static class EndGamePatches
                 playerName.Append(AUSPlugin.Culture, $"<color=#EFBF04>{playerControl.Data.PlayerName}</color>");
                 playerWinner = true;
 
-                var logRole = playerControl.GetRoleWhenAlive();
-                RoleReferences.UpdateRoleResult(logRole, killedPlayers, true);
+                foreach (var role in GameHistory.RoleHistory.Where(x => x.Key == playerControl.PlayerId).Select(x => x.Value))
+                {
+                    if (role.Role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost ||
+                        role.Role == (RoleTypes)RoleId.Get<NeutralGhostRole>())
+                    {
+                        continue;
+                    }
+
+                    var kills = GameHistory.KilledPlayers.Count(x => x.KillerId == playerControl.PlayerId && x.VictimId != playerControl.PlayerId && x.killerRole == role);
+                    RoleReferences.UpdateRoleResult(role, kills, true);
+                }
             }
             else
             {
                 playerName.Append(playerControl.Data.PlayerName);
 
-                var logRole = playerControl.GetRoleWhenAlive();
-                RoleReferences.UpdateRoleResult(logRole, killedPlayers, false);
+                foreach (var role in GameHistory.RoleHistory.Where(x => x.Key == playerControl.PlayerId).Select(x => x.Value))
+                {
+                    if (role.Role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost ||
+                        role.Role == (RoleTypes)RoleId.Get<NeutralGhostRole>())
+                    {
+                        continue;
+                    }
+
+                    var kills = GameHistory.KilledPlayers.Count(x => x.KillerId == playerControl.PlayerId && x.VictimId != playerControl.PlayerId && x.killerRole == role);
+                    RoleReferences.UpdateRoleResult(role, kills, false);
+                }
             }
 
             EndGameData.PlayerRecords.Add(new EndGameData.PlayerRecord

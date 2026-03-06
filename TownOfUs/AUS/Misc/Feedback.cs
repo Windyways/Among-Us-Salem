@@ -1,5 +1,3 @@
-using Reactor.Utilities.Extensions;
-using TownOfUs.Utilities.Appearances;
 using UnityEngine;
 
 namespace AmongUsSalem.Misc;
@@ -24,10 +22,18 @@ public static class Feedback
                 text += "is versed in the ways of hexes.";
                 endText = $" They must be a <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>!";
             }
+            else if (player.TryGetModifier<SelfReflectionModifier>(out var selfReflect))
+            {
+                roleName = selfReflect.GetRole().NiceName;
+                roleColor = RoleColors.Town;
+                text += selfReflect.GetICustom().revealText;
+                endText = $" They must be a <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>!";
+            }
             else
             {
                 text += customRole.revealText;
-                if (player.IsRole<War>()) endText = $" They must be <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>, Horseman of the Apocalypse.";
+                if (player.IsRole<War>() || player.IsRole<Pestilence>() || player.IsRole<Death>()) 
+                    endText = $" They must be <color=#" + roleColor.ToHtmlStringRGBA() + $"><b>{roleName}</b>, Horseman of the Apocalypse.";
             }
 
             return text + endText;
@@ -39,6 +45,11 @@ public static class Feedback
     public static string UnknownObstacle(PlayerControl target)
     {
         return "There was an Unknown Obstacle when visiting " + target.GetDefaultAppearance().PlayerName + "!";
+    }
+
+    public static string LeaveTown(PlayerControl player)
+    {
+        return $"{player.Name()} has accomplished their goal as {player.Data.Role.NiceName} and left town.";
     }
 
     public static string AttackedButDefense()
@@ -61,7 +72,7 @@ public static class Feedback
         {
             return target.GetDefaultAppearance().PlayerName + " was immune to your attack.";
         }*/
-        
+
         if (target.HasModifier<SelfProtectedModifier>()) Bodyguard.RpcNotify(target, (int)NotificationType.Bodyguard_SelfProtect);
         else if (target.HasModifier<VestedModifier>()) Survivor.RpcNotify(target, (int)NotificationType.Bodyguard_SelfProtect);
         else if (target.TryGetModifier<BarrieredModifier>(out var barriered))
@@ -69,7 +80,7 @@ public static class Feedback
             PotionMaster.RpcNotify(target, (int)NotificationType.PotionMaster_AttackAndBarriered, barriered.Caster);
             PotionMaster.RpcNotify(barriered.Caster, (int)NotificationType.PotionMaster_TargetAttacked, target);
         }
-        else target.Notify(AttackedButDefense(), NotifyMode.OnlyMeeting);
+        else RpcTMDNotify(target); //target.Notify(AttackedButDefense(), NotifyMode.OnlyMeeting);
 
         return target.GetDefaultAppearance().PlayerName + "'s defense was too high to kill!";
     }
@@ -85,6 +96,24 @@ public static class Feedback
                 MiscUtils.AddFakeChat(basePlayer == null ? player.CachedPlayerData : basePlayer, "FEEDBACK", feedback);
             }
             if (type == NotifyMode.OnlyMeeting) MiscUtils.AddFakeChat(basePlayer == null ? player.CachedPlayerData : basePlayer, "FEEDBACK", feedback);
+        }
+    }
+
+    [MethodRpc((uint)AUSRpc.RpcNotifyLeaveTown)]
+    public static void RpcLeaveTownNotify(PlayerControl player)
+    {
+        if (player.Data.Role is ICustomAURole customRole)
+        {
+            PlayerControl.LocalPlayer.Notify(LeaveTown(player), NotifyMode.InstantlyAndMeeting, sprite: customRole.Configuration.Icon.LoadAsset());
+        }
+    }
+
+    [MethodRpc((uint)AUSRpc.RpcTMDNotify)]
+    public static void RpcTMDNotify(PlayerControl player)
+    {
+        if (player.AmOwner())
+        {
+            player.Notify(AttackedButDefense(), NotifyMode.OnlyMeeting);
         }
     }
 }

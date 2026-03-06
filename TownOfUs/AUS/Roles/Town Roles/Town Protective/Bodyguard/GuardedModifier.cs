@@ -19,9 +19,8 @@ public sealed class GuardedModifier(PlayerControl c) : BaseModifier
 
     public override void OnMeetingStart()
     {
-        Player.RpcRemoveModifier<GuardedModifier>();
+        Player.GetModifiers<GuardedModifier>().Do(x => Player.RemoveModifier(x));
     }
-
 
     public int PerformInteraction(PlayerControl attacker, PlayerControl target)
     {
@@ -30,8 +29,8 @@ public sealed class GuardedModifier(PlayerControl c) : BaseModifier
         if (Caster.CanKill(attacker)) bgKills = true;
         if (attacker.CanKill(Caster)) aKills = true;
 
+        Caster.AddModifier<Confirmed>();
         Bodyguard.RpcNotify(target, (int)NotificationType.Bodyguard_Protect);
-        target.RpcRemoveModifier<GuardedModifier>();
 
         if (bgKills)
         {
@@ -41,10 +40,11 @@ public sealed class GuardedModifier(PlayerControl c) : BaseModifier
         }
         if (aKills)
         {
-            attacker.RpcCustomMurder(Caster);
+            attacker.RpcCustomMurder(Caster, teleportMurderer: attacker.HasDied());
             VisitingMechanic.RpcAddDeathReason(Caster, (int)DeathReasonShow.DiedWhileDefendingTheirTarget);
         }
 
+        target.RpcRemoveModifier<GuardedModifier>();
         return 1; // Block visit.
     }
 }

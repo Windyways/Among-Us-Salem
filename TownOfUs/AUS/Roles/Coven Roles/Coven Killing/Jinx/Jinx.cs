@@ -10,7 +10,7 @@ public sealed class Jinx(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWik
 {
     public string RoleName { get; set; } = "Jinx";
     public string revealText => "lies in wait.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a bad omen who causes harm to those around you.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
@@ -74,7 +74,7 @@ public sealed class Jinx(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWik
     public static string Info(NotificationType type, PlayerControl jinx, PlayerControl target)
     {
         if (type == NotificationType.Jinx_FoundJinx) return $"You saw the Jinx {jinx.GetDefaultAppearance().PlayerName} visit {target.GetDefaultAppearance().PlayerName}!";
-        return $"You jinxed someone that visited {target.GetDefaultAppearance().PlayerName}!";
+        return $"You jinxed someone who visited {target.GetDefaultAppearance().PlayerName}!";
     }
 
     [MethodRpc((uint)AUSRpc.RpcNotifyJinx)]

@@ -8,7 +8,7 @@ public sealed class Cleric(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
 {
     public string RoleName { get; set; } = "Cleric";
     public string revealText => "is skilled in protective magic.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a healer providing protection to the town.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -86,7 +86,7 @@ public sealed class Cleric_Barrier : TownOfUsRoleButton<Cleric, PlayerControl>
             return;
 
         Target.RpcAddModifier<BarrieredModifier>(Player);
-        Target.RpcAddModifier<HideGainedDefense>();
+        //Target.RpcAddModifier<HideGainedDefense>();
         AttackDefenseMechanic.RpcApplyDefense(Target, Defense.Powerful);
 
         CustomButtonSingleton<Cleric_SelfBarrier>.Instance.ResetCooldownAndOrEffect();
@@ -116,8 +116,8 @@ public sealed class Cleric_SelfBarrier : TownOfUsRoleButton<Cleric>
     protected override void OnClick()
     {
         Player.RpcAddModifier<BarrieredModifier>(Player);
-        Player.RpcAddModifier<OverrideDefense>((int)Defense.Powerful);
-        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful);
+        //Player.RpcAddModifier<OverrideDefense>((int)Defense.Powerful);
+        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful, visualize: true);
 
         CustomButtonSingleton<Cleric_Barrier>.Instance.ResetCooldownAndOrEffect();
     }

@@ -1,4 +1,5 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
+using MiraAPI.GameOptions.OptionTypes;
 using System.Collections;
 using System.Text;
 using UnityEngine;
@@ -9,7 +10,7 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
 {
     public string RoleName { get; set; } = "Deputy";
     public string revealText => "is a powerful force for Justice.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are an enforcer of the law who won't hesitate to kill in broad daylight.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -39,7 +40,7 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
     public string GetAdvancedDescription()
     {
         return
-            $"Attack: {Attack}\n" +
+            (OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.ShootAndReveal ? $"Attack: Powerful\n" : $"Attack: {Attack}\n") +
             $"Defense: {Defense}\n" +
             $"The {RoleName} is a {Alignment.ToSpacedString()} role that can Shoot players during the day to kill them, being a threat to evils in case they get information stacked against them.\n" +
             "Hang every criminal and evildoer." +
@@ -48,21 +49,49 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
 
     public string GetAttributes()
     {
-        return
-            $"- You cannot Shoot Day 1.\n" +
-            $"- Illusionists can make your targets appear innocent.\n" +
-            $"- Enchanters & Framers can make your targets appear evil.";
+        return ShowAttributes();
     }
 
     [HideFromIl2Cpp]
-    public List<CustomButtonWikiDescription> Abilities { get; } =
+    public List<CustomButtonWikiDescription> Abilities =>
     [
-        new("High Noon",
+        new(GetAbilityName(), GetShootDescription(), AUSAssets.Deputy_HighNoon),
+    ];
+
+    private static string ShowAttributes()
+    {
+        if (OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.ShootAndReveal) return $"- You cannot Shoot Day 1.";
+        return
+            $"- You cannot Shoot Day 1.\n" +
+            $"- Illusionists can make your targets appear innocent.\n" +
+            $"- Enchanters, Warlocks, Soul Collectors, & Framers can make your targets appear evil.";
+    }
+
+    private static string GetAbilityName()
+    {
+        if (OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.ShootAndReveal) return "Shoot";
+        return "High Noon";
+    }
+
+    private static string GetShootDescription()
+    {
+        var opt = OptionGroupSingleton<Deputy_Options>.Instance;
+
+        if (opt.Mode == DeputyMode.ShootAndReveal)
+        {
+            return
+                "You can Shoot a player during the Day.\n" +
+                $"You will deal a Powerful Attack to your target.\n" +
+                $"If you kill a Town member, you will be lynched by the town Hangman.\n" +
+                $"Everyone will know your identity.\n" +
+                $"If you are evil, you will not face Hangman penalties.";
+        }
+
+        return
             "You can Shoot a player during the Day.\n" +
             "If your target has defense or is a Town member, you will miss your shot. Else, your target will be dealt a Basic Attack.\n" +
-            "Only one Deputy can Shoot per Day.",
-            AUSAssets.Deputy_HighNoon),
-    ];
+            "Only one Deputy can Shoot per Day.";
+    }
 
     [MethodRpc((uint)AUSRpc.Deputy_HighNoon)]
     public static void RpcDeputy_HighNoon(PlayerControl player, PlayerControl target)
@@ -74,6 +103,38 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
         }
 
         var deputy = player.GetRole<Deputy>();
+        if (OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.ShootAndReveal)
+        {
+            deputy.Player.AddModifier<GlobalReveal>();
+            if (player.CanKill(target))
+            {
+                AUSAssets.PlaySound(AUSAssets.Deputy_HighNoon_SFX);
+                PlayerControl.LocalPlayer.Notify(Info(NotificationType.Deputy_Shoot, target, deputy.Player), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.DeputyRoleCard.LoadAsset());
+
+                player.RpcCustomMurder(target, teleportMurderer: false);
+                if (player.AmOwner()) // Hopefully fixes it?
+                {
+                    VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.ShotByADeputy);
+                }
+
+                if (target.Is(Faction.Town))
+                {
+                    player.RpcCustomMurder(player, teleportMurderer: false);
+                    if (player.AmOwner()) VisitingMechanic.RpcAddDeathReason(player, (int)DeathReasonShow.DishonoredTheTown);
+                }
+
+                var meetingHud = MeetingHud.Instance;
+                foreach (PlayerVoteArea playerVoteArea in meetingHud.playerStates)
+                {
+                    if (OptionGroupSingleton<Deputy_Options>.Instance.ClearVotes)
+                    {
+                        playerVoteArea.UnsetVote();
+                        meetingHud.ClearVote();
+                    }
+                }
+            }
+            return;
+        }
 
         // Prevent other Deputies from shooting today.
         foreach (var player2 in PlayerControl.AllPlayerControls)
@@ -89,7 +150,7 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
 
         if (player.CanKill(target))
         {
-            if ((!target.Is(Faction.Town) || target.HasModifier<FramedModifier>()) && !target.HasModifier<IllusionedModifier>())
+            if ((!target.Is(Faction.Town) || target.HasModifier<FramedModifier>() || target.HasModifier<WarlockFramedModifier>()) && !target.HasModifier<IllusionedModifier>())
             {
                 deputy.Player.AddModifier<Confirmed>();
                 AUSAssets.PlaySound(AUSAssets.Deputy_HighNoon_SFX);
@@ -108,9 +169,13 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
         deputy.Player.Notify(Info(NotificationType.Deputy_MissedShot, target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.DeputyRoleCard.LoadAsset());
     }
 
-    public static string Info(NotificationType type, PlayerControl target)
+    public static string Info(NotificationType type, PlayerControl target, PlayerControl deputy = null)
     {
-        if (type == NotificationType.Deputy_Shoot) return "A Deputy decided to fire their Revolver!";
+        if (type == NotificationType.Deputy_Shoot)
+        {
+            if (OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.ShootAndReveal) return deputy.Name() + " decided to fire their Revolver!";
+            return "A Deputy decided to fire their Revolver!";
+        }
         return $"You missed your shot! This could be because {target.Name()} has Defense or is immune.";
     }
 
@@ -118,6 +183,8 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
     {
         RoleBehaviourStubs.Initialize(this, player);
 
+        var opt = OptionGroupSingleton<Deputy_Options>.Instance;
+        if (opt.Mode == DeputyMode.ShootAndReveal) AttackDefenseMechanic.RpcApplyAttack(Player, Attack.Powerful, true, true);
         if (Player.AmOwner())
         {
             meetingMenu = new MeetingMenu(
@@ -133,15 +200,13 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
         }
     }
 
-    public override void OnMeetingStart()
+    public void Role_OnMeetingStart()
     {
-        AUSPlugin.DebugLogMessage("Deputy OnMeetingStart called!");
-        SmartDeputy.Start();
+        if (Player.HasDied())
+            return;
 
-        if (Player.AmOwner)
-        {
-            Coroutines.Start(GenButtons());
-        }
+        SmartDeputy.Start();
+        if (Player.AmOwner) Coroutines.Start(GenButtons());
     }
 
     public IEnumerator GenButtons(float delay = 3f)
@@ -190,13 +255,32 @@ public sealed class Deputy(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
     }
 
     public MeetingMenu meetingMenu;
-    public int Charges = (int)OptionGroupSingleton<Deputy_Options>.Instance.Charges;
+    public int Charges = OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.ShootAndReveal ?
+        (int)OptionGroupSingleton<Deputy_Options>.Instance.Charges :
+        (int)OptionGroupSingleton<Deputy_Options>.Instance.Charges_SAR;
 }
 
 public sealed class Deputy_Options : AbstractOptionGroup<Deputy>
 {
     public override string GroupName => "Deputy";
 
-    [ModdedNumberOption("Deputy Max High Noons", 0f, 30f, 1f, MiraNumberSuffixes.None, zeroInfinity: true)]
-    public float Charges { get; set; } = 1;
+    [ModdedEnumOption("Deputy Mode", typeof(DeputyMode), ["Shoot & Reveal", "High Noon"])]
+    public DeputyMode Mode { get; set; } = DeputyMode.HighNoon;
+
+    // --- SHOOT AND REVEAL ---
+    public ModdedNumberOption Charges_SAR { get; } = new("Deputy Max Shots", 1f, 0f, 15f, 1f, MiraNumberSuffixes.None, zeroInfinity: true)
+    { Visible = () => OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.ShootAndReveal };
+
+    public ModdedToggleOption ClearVotes { get; } = new("Deputy Clears Votes After Shooting", true)
+    { Visible = () => OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.ShootAndReveal };
+
+    // --- HIGH NOON ---
+    public ModdedNumberOption Charges { get; } = new("Deputy Max High Noons", 1f, 0f, 15f, 1f, MiraNumberSuffixes.None, zeroInfinity: true)
+    { Visible = () => OptionGroupSingleton<Deputy_Options>.Instance.Mode == DeputyMode.HighNoon };
+}
+
+public enum DeputyMode
+{
+    ShootAndReveal,
+    HighNoon
 }

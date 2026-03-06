@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
-using MiraAPI.Events.Vanilla.Meeting.Voting;
 using Reactor.Utilities.Extensions;
 using System.Text;
 using TownOfUs.Modifiers;
@@ -12,7 +11,7 @@ public sealed class Jester(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IW
 {
     public string RoleName { get; set; } = "Jester";
     public string revealText => "wants to be hanged.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a chaotic spirit who's power can only be unleashed from the gallows.";
     public Color RoleColor { get; set; } = RoleColors.Jester;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
@@ -51,10 +50,17 @@ public sealed class Jester(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IW
 
     public string GetAttributes()
     {
+        return ShowAttributes();
+    }
+
+    private static string ShowAttributes()
+    {
+        if (!OptionGroupSingleton<Jester_Options>.Instance.EnableChatterbox) return $"- You will lose your Defense on Day 3.";
         return
             $"- At the start of each Day, your Chatterbox requires you to send 1-4 messages.\n" +
             $"- You cannot win until your Chatterbox is completed.\n" +
-            $"- You will die of boredom if you do not complete your Chatterbox.";
+            $"- You will die of boredom if you do not complete your Chatterbox.\n" +
+            $"- You will lose your Defense on Day 3.";
     }
 
     [HideFromIl2Cpp]
@@ -66,6 +72,19 @@ public sealed class Jester(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IW
             "If you do not pick a player by the end of the Night, a random player will be chosen.",
             AUSAssets.Jester_Haunt),
     ];
+
+    [MethodRpc((uint)AUSRpc.RpcQuotaLynch)]
+    public static void RpcQuotaLynch(PlayerControl player)
+    {
+        if (player.Data.Role is not Jester)
+        {
+            Logger<AUSPlugin>.Error("RpcQuotaLynch - Invalid Jester");
+            return;
+        }
+
+        var jester = player.GetRole<Jester>();
+        jester.CompletedQuotaWhenLynched = true;
+    }
 
     public bool Lynched()
     {
@@ -93,6 +112,7 @@ public sealed class Jester(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IW
             AUSPlugin.DebugLogMessage("Jester Hauntable targets: " + hauntable.Count);
 
             if (hauntable.Count > 0) hauntable.Random().RpcAddModifier<HauntedModifier>(Player, true);
+            foreach (var haunt in hauntable) haunt.RpcRemoveModifier<HauntableModifier>();
         }
 
         if (DayNightMechanic.DayCount < 2)
@@ -107,7 +127,7 @@ public sealed class Jester(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IW
         {
             MessagesSent = 0;
             ChatterBoxQuota = UnityEngine.Random.Range(1, 5); // 1-4.
-            if (Debugger.IsDebuggerActive && Debugger.SmartBotsEnabled) ChatterBoxQuota = 0;
+            if (!OptionGroupSingleton<Jester_Options>.Instance.EnableChatterbox) ChatterBoxQuota = 0;
         }
 
         // Lose Defense D3.
@@ -200,7 +220,7 @@ public static class Jester_Events
             {
                 if (jester.MessagesSent >= jester.ChatterBoxQuota)
                 {
-                    jester.CompletedQuotaWhenLynched = true;
+                    Jester.RpcQuotaLynch(jester.Player);
                     PlayerControl.LocalPlayer.Notify(Jester.Info(), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.JesterRoleCard.LoadAsset());
 
                     // Abstainers or voters of the Jester can be Haunted.
@@ -258,4 +278,12 @@ public static class Jester_Events
 
         targetJester.Voters.Add(votingPlayer.PlayerId);
     }
+}
+
+public sealed class Jester_Options : AbstractOptionGroup<Jester>
+{
+    public override string GroupName => "Jester";
+
+    [ModdedToggleOption("Enable Jester Chatterbox")]
+    public bool EnableChatterbox { get; set; } = true;
 }

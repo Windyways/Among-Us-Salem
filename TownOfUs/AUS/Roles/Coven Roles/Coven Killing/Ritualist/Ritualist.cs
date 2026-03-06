@@ -11,7 +11,7 @@ public sealed class Ritualist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
 {
     public string RoleName { get; set; } = "Ritualist";
     public string revealText => "casts deadly rituals with specific knowledge.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a sorcerer who sacrifices members of the town to the Old Ones.";
     public Color RoleColor { get; set; } = RoleColors.Coven;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
@@ -74,7 +74,7 @@ public sealed class Ritualist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
 
     public IEnumerator OpenMenu()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.4f);
         if (Minigame.Instance != null)
             yield break;
 
@@ -106,10 +106,9 @@ public sealed class Ritualist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     {
         if (role.IsDead) return false;
         if (role is IGhostRole) return false;
+        if (role is not ICustomAURole) return false;
         if (role is ICustomAURole customRole && customRole.Alignment == Alignment.TownInvestigative) return false;
         if (role is ICustomAURole customRole2 && customRole2.Faction == Faction.Coven) return false;
-        if (role.NiceName == "Crewmate") return false;
-        if (role.NiceName == "Impostor") return false;
         return true;
     }
 

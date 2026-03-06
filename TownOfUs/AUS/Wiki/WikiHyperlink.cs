@@ -2,7 +2,6 @@
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 using TMPro;
-using TownOfUs.Utilities;
 
 namespace AmongUsSalem.Wiki;
 
@@ -59,9 +58,21 @@ public class WikiHyperlink(IntPtr cppPtr) : MonoBehaviour(cppPtr)
             id = id.Substring("AmongUs.Roles.".Length);
         }
 
-        var role = MiscUtils.AllRoles.FirstOrDefault(x => x.GetType().FullName == id) ??
+        /*var role = MiscUtils.AllRoles.FirstOrDefault(x => x.GetType().FullName == id) ??
                    MiscUtils.AllRegisteredRoles.FirstOrDefault(x => x.Role.ToString() == id) ??
-                   RoleManager.Instance.GetRole(RoleTypes.Crewmate); // i hate il2cpp
+                   RoleManager.Instance.GetRole(RoleTypes.Crewmate); // i hate il2cpp*/
+        var role =
+            MiscUtils.AllRoles.FirstOrDefault(x =>
+                x.GetRoleName().Equals(id, StringComparison.OrdinalIgnoreCase)) ??
+
+            MiscUtils.AllRoles.FirstOrDefault(x =>
+                x.GetType().FullName == id) ??
+
+            MiscUtils.AllRegisteredRoles.FirstOrDefault(x =>
+                x.Role.ToString().Equals(id, StringComparison.OrdinalIgnoreCase)) ??
+
+            RoleManager.Instance.GetRole(RoleTypes.Crewmate);
+
         var modifier = MiscUtils.AllModifiers.FirstOrDefault(x => x.GetType().FullName == id);
 
         dynamic wikiEntry;

@@ -8,7 +8,7 @@ public static class AUS_BeforeMurderEvent
         var target = @event.Target;
         if (target is ICustomAURole customRole)
         {
-            target.RpcAddModifier<LinkStatAD>((int)customRole.Attack, (int)customRole.Defense);
+            target.RpcAddModifier<LinkStatAD>((int)customRole.Attack, (int)customRole.Defense, (int)customRole.EtherealDefense);
         }
     }
 }

@@ -8,7 +8,7 @@ public sealed class Catalyst(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
 {
     public string RoleName { get; set; } = "Catalyst";
     public string revealText => "is overflowing with energy.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a crazed galvanist overflowing with energy.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;

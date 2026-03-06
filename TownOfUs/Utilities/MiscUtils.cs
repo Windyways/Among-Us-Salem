@@ -22,10 +22,15 @@ namespace TownOfUs.Utilities;
 
 public static class MiscUtils
 {
+    public static void EndGame(GameOverReason reason = GameOverReason.ImpostorsByVote, bool showAds = false)
+    {
+        GameManager.Instance.RpcEndGame(reason, showAds);
+    }
+
     public static void AddBotFakeChat(PlayerControl bot, string message,
         bool showHeadsup = false, bool altColors = false, bool onLeft = true)
     {
-        if (Debugger.IsDebuggerActive && Debugger.SmartBotsEnabled)
+        if (Debugger.IsDebuggerActive && Debugger.SmartBotsEnabled && !bot.HasDied())
         {
             var basePlayer = bot.CachedPlayerData;
             AddFakeChat(basePlayer, bot.Name(), message, showHeadsup, altColors, onLeft);
@@ -945,36 +950,7 @@ public static class MiscUtils
             return true;
         }
 
-        if (OptionGroupSingleton<GeneralOptions>.Instance.CamouflageComms)
-        {
-            if (!ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Comms, out var commsSystem) ||
-                commsSystem == null)
-            {
-                return false;
-            }
-
-            var isActive = false;
-            if (ShipStatus.Instance.Type == ShipStatus.MapType.Hq ||
-                ShipStatus.Instance.Type == ShipStatus.MapType.Fungle)
-            {
-                var hqSystem = commsSystem.Cast<HqHudSystemType>();
-                if (hqSystem != null)
-                {
-                    isActive = hqSystem.IsActive;
-                }
-            }
-            else
-            {
-                var hudSystem = commsSystem.Cast<HudOverrideSystemType>();
-                if (hudSystem != null)
-                {
-                    isActive = hudSystem.IsActive;
-                }
-            }
-
-            return isActive;
-        }
-
+        
         return false;
     }
 

@@ -33,7 +33,7 @@ public sealed class HauntedModifier(PlayerControl c, bool random) : BaseModifier
             AUSPlugin.DebugLogMessage("Jester could kill!");
 
             Caster.RpcCustomMurder(Player);
-           // Caster.RpcGhostRoleMurder(Player);
+            // Caster.RpcGhostRoleMurder(Player);
             VisitingMechanic.RpcAddDeathReason(Player, (int)DeathReasonShow.HauntedByAJester);
         }
 

@@ -9,7 +9,7 @@ public sealed class Survivor(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
 {
     public string RoleName { get; set; } = "Survivor";
     public string revealText => "simply wants to live.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem";
     public string RoleLongDescription => "You are a neutral character who just wants to live.";
     public Color RoleColor { get; set; } = RoleColors.Survivor;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
@@ -71,7 +71,6 @@ public sealed class Survivor(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
         return "You were attacked, but your bulletproof Vest saved you!";
     }
 
-
     [MethodRpc((uint)AUSRpc.RpcNotifySurvivor)]
     public static void RpcNotify(PlayerControl player, int notifyType)
     {
@@ -105,8 +104,8 @@ public sealed class Survivor_Vest : TownOfUsRoleButton<Survivor>
     protected override void OnClick()
     {
         Player.RpcAddModifier<VestedModifier>(Player);
-        Player.RpcAddModifier<OverrideDefense>((int)Defense.Basic);
-        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic);
+        //Player.RpcAddModifier<OverrideDefense>((int)Defense.Basic);
+        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
     }
 }
 

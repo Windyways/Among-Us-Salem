@@ -10,4 +10,8 @@ public class OverrideDefense(int def) : BaseModifier
     }
 
     public Defense defense => (Defense)def;
+    public override void OnMeetingStart()
+    {
+        Player.RpcRemoveModifier<OverrideDefense>();
+    }
 }

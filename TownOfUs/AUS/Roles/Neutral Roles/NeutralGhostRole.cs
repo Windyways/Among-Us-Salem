@@ -142,6 +142,7 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), ICustomAUR
         {
             AttackDefenseMechanic.RpcApplyAttack(Player, stat.attack, true, true);
             AttackDefenseMechanic.RpcApplyDefense(Player, stat.defense, true, true);
+            AttackDefenseMechanic.RpcApplyDefense(Player, stat.defense, true, true);
         }
     }
 }

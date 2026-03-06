@@ -46,6 +46,12 @@ public class Necronomicon : BaseModifier
                     button.OverrideSprite(AUSAssets.Necronomicon.LoadAsset());
                     button.OverrideName("Attack & Jinx");
                 }
+                else if (Player.IsRole<Wildling>())
+                {
+                    var button = CustomButtonSingleton<Wildling_Sense>.Instance;
+                    button.OverrideSprite(AUSAssets.Necronomicon.LoadAsset());
+                    button.OverrideName("Attack & Sense");
+                }
             }
         }
     }
@@ -79,6 +85,12 @@ public class Necronomicon : BaseModifier
                     var button = CustomButtonSingleton<Jinx_Jinx>.Instance;
                     button.OverrideSprite(AUSAssets.Jinx_Jinx.LoadAsset());
                     button.OverrideName("Jinx");
+                }
+                else if (Player.IsRole<Wildling>())
+                {
+                    var button = CustomButtonSingleton<Wildling_Sense>.Instance;
+                    button.OverrideSprite(AUSAssets.Wildling_Sense.LoadAsset());
+                    button.OverrideName("Sense");
                 }
             }
         }

@@ -20,6 +20,9 @@ public static class TextColorizer
         { "Amnesiac", "#06e00c" },
         { "Prosecutor", "#06e00c" },
         { "Crusader", "#06e00c" },
+        { "Lookout", "#06e00c" },
+        { "Tracker", "#06e00c" },
+        { "Pacifist", "#06e00c" },
 
         // Mafia
         { "Mafioso", "#dd0000" }, { "Mafiosos", "#dd0000" },
@@ -27,6 +30,7 @@ public static class TextColorizer
         { "Mafia", "#dd0000" },
         { "Framers", "#dd0000" }, { "Framer", "#dd0000" },
         { "Consigliere", "#dd0000" },
+        { "Agent", "#dd0000" },
 
         // Coven
         { "Covenite", "#ab42ef" },
@@ -37,6 +41,7 @@ public static class TextColorizer
         { "Jinx", "#ab42ef" },
         { "Potion Master", "#ab42ef" },
         { "Ritualist", "#ab42ef" },
+        { "Wildling", "#ab42ef" },
 
         // Neutral
         { "Neutral", "#a9a9a9" },
@@ -45,15 +50,21 @@ public static class TextColorizer
         { "Survivor", "#dddd00" },
         { "Jester", "#f5a6d4" },
         { "Serial Killer", "#1d4dfc" },
+        { "Werewolf", "#aa6d06" }, { "Werewolves", "#aa6d06" },
+        { "Starspawn", "#aa6d06" },
 
         // Apocalypse
         { "Apocalypse", "#ff004e" },
         { "Soul Collectors", "#ff004e" },
         { "Berserker", "#ff004e" },
         { "War", "#ff004e" },
+        { "Plaguebearer", "#ff004e" },
+        { "Pestilence", "#ff004e" },
+        { "Warlock", "#ff004e" }, { "Warlocks", "#ff004e" },
+        { "Death", "#ff004e" },
 
         // Alignments
-        { "Investigative", "#4a86e8" },
+        { "Investigative", "#4a86e8" }, { "Investigatives", "#4a86e8" },
         { "Evils", "#4a86e8" }, { "Evil", "#4a86e8" },
         { "Killing", "#4a86e8" },
         { "Outlier", "#4a86e8" },
@@ -88,11 +99,11 @@ public static class TextColorizer
         { "Barrier", "#4a86e8" },
         { "Reveal", "#4a86e8" }, { "Revealed", "#4a86e8" },
         { "Illuminated", "#4a86e8" },
-        { "Self Barrier", "#4a86e8" },
+        { "Self Barrier", "#4a86e8" }, { "Self Barriers", "#4a86e8" },
         { "Poison", "#4a86e8" },
         { "Blood Ritual", "#4a86e8" }, { "Blood Rituals", "#4a86e8" },
         { "TT Hunt", "#4a86e8" },
-        { "Shoot", "#4a86e8" },
+        { "Shoot", "#4a86e8" }, { "Shooting", "#4a86e8" },
         { "High Noon", "#4a86e8" }, { "High Noons", "#4a86e8" },
         { "Remember", "#4a86e8" }, { "Remembered", "#4a86e8" }, { "Remembering", "#4a86e8" },
         { "Graveyard", "#4a64e8" },
@@ -104,11 +115,28 @@ public static class TextColorizer
         { "Chatterbox", "#4a86e8" },
         { "Rampage", "#4a86e8" },
         { "Bloodlust", "#4a86e8" },
-        { "RoleBlocked", "#f1c232" }, { "RoleBlockers", "#f1c232" },
+        { "RoleBlocked", "#f1c232" }, { "RoleBlockers", "#f1c232" }, { "RoleBlock", "#f1c232" },
         { "Cautious", "#4a86e8" },
         { "Isolate", "#4a86e8" },
         { "Daybreak", "#4a86e8" }, { "Daybreaks", "#4a86e8" },
         { "Unknown Obstacle", "#4a86e8" },
+        { "Watch", "#4a86e8" },
+        { "Track", "#4a86e8" },
+        { "Stalk", "#4a86e8" },
+        { "Sense", "#4a86e8" },
+        { "Track Scent", "#4a86e8" },
+        { "Maul", "#4a86e8" },
+        { "Infect", "#4a86e8" }, { "Infected", "#4a86e8" }, { "Infection", "#4a86e8" }, { "Infections", "#4a86e8" },
+        { "Plague", "#4a86e8" },
+        { "Spread Pestilence", "#4a86e8" },
+        { "Rally", "#4a86e8" }, { "Rallied", "#4a86e8" },
+        { "Protest", "#4a86e8" },
+        { "Self Reflect", "#4a86e8" }, { "Self Reflection", "#4a86e8" },
+        { "Curse", "#4a86e8" }, { "Cursed", "#4a86e8" },
+        { "Grimoire", "#4a86e8" }, { "Grimoires", "#4a86e8" },
+        { "Armageddon", "#4a86e8" },
+        { "Starbound", "#4a86e8" },
+        { "Attack", "#4a86e8" },
 
         // Attack
         { "Basic Attack", "#e70052" },
@@ -147,6 +175,8 @@ public static class TextColorizer
             {
                 var word = match.Value;
                 var color = colorMap[word];
+
+                if (word == "Starspawn") return $"<b>{RoleColors.StarspawnNameInGradient}</b>";
                 return $"<b><color={color}>{word}</color></b>";
             }
         );

@@ -11,6 +11,6 @@ public sealed class IlluminatedModifier(PlayerControl c) : BaseModifier
     public override void OnMeetingStart()
     {
         NightCount++;
-        if (NightCount == 2) Player.RpcRemoveModifier<IlluminatedModifier>();
+        if (NightCount == 3) Player.RpcRemoveModifier<IlluminatedModifier>();
     }
 }

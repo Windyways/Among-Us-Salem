@@ -67,6 +67,6 @@ public sealed class CovenGameOver : CustomGameOver
         if (aliveCoven == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveCoven && MiscUtils.KillersAliveCount == aliveCoven;
-        return result || LogicGameFlowPatches.EndGameEarlyCheck(role);
+        return result;
     }
 }

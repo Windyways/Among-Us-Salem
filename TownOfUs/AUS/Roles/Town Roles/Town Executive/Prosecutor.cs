@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -9,7 +10,7 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
 {
     public string RoleName { get; set; } = "Prosecutor";
     public string revealText => "will stop at nothing to see justice served.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a powerful member of the court who ensures that justice prevails.";
     public Color RoleColor { get; set; } = RoleColors.Town;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
@@ -98,15 +99,13 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
         }
     }
 
-    public override void OnMeetingStart()
+    public void Role_OnMeetingStart()
     {
-        AUSPlugin.DebugLogMessage("Prosecutor OnMeetingStart called!");
-        SmartProsecutor.Start();
+        if (Player.HasDied())
+            return;
 
-        if (Player.AmOwner)
-        {
-            Coroutines.Start(GenButtons());
-        }
+        SmartProsecutor.Start();
+        if (Player.AmOwner) Coroutines.Start(GenButtons());
     }
 
     public IEnumerator GenButtons(float delay = 3f)
@@ -177,7 +176,15 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
         yield return new WaitForSeconds(2.5f);
         HudManager.Instance.Chat.gameObject.SetActive(true);
 
-        if (VotedPlayer.Is(Faction.Town)) prosecutor.Charges = 0;
+        if (VotedPlayer.Is(Faction.Town))
+        {
+            prosecutor.Charges = 0;
+            if (OptionGroupSingleton<Prosecutor_Options>.Instance.DieOnMislynch)
+            {
+                prosecutor.Player.RpcCustomMurder(prosecutor.Player, createDeadBody: false, showKillAnim: false, playKillSound: false);
+                VisitingMechanic.RpcAddDeathReason(prosecutor.Player, (int)DeathReasonShow.DishonoredTheTown);
+            }
+        }
         if (VotedPlayer.IsRole<Jester>()) prosecutor.Player.AddModifier<HauntableModifier>(VotedPlayer);
 
         SmartProsecutor.IsActive = false;
@@ -193,4 +200,7 @@ public sealed class Prosecutor_Options : AbstractOptionGroup<Prosecutor>
 
     [ModdedNumberOption("Prosecutor Max Prosecutes", 0f, 30f, 1f, MiraNumberSuffixes.None, zeroInfinity: true)]
     public float Charges { get; set; } = 2;
+
+    [ModdedToggleOption("Prosecutor Dies When Prosecuting Town")]
+    public bool DieOnMislynch { get; set; } = false;
 }

@@ -8,7 +8,7 @@ public sealed class Consigliere(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAU
 {
     public string RoleName { get; set; } = "Consigliere";
     public string revealText => "gathers information for the Mafia.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem";
     public string RoleLongDescription => "You are a corrupted investigator who gathers information for the Mafia.";
     public Color RoleColor { get; set; } = RoleColors.Mafia;
     public ModdedRoleTeams Team => ModdedRoleTeams.Impostor;
@@ -91,6 +91,16 @@ public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerC
                     Target.RpcAddModifier<DeepfakeRole>(player, "Hex Master", RoleColors.Coven);
             }
         }
+        else if (Target.TryGetModifier<SelfReflectionModifier>(out var selfReflection))
+        {
+            // Since all Mafia member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.Is(Faction.Mafia) && player.AmOwner())
+                    Target.RpcAddModifier<DeepfakeRole>(player, selfReflection.GetRole().NiceName, RoleColors.Town);
+            }
+        }
+
         Target.RpcAddModifier<RoleLearn>(Player, true);
     }
 

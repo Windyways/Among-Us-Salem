@@ -19,15 +19,18 @@ public sealed class IsolatedModifier(PlayerControl c) : BaseModifier
     public int PerformInteraction(CustomActionButton button, PlayerControl visitor, PlayerControl target)
     {
         if (Caster.AmOwner()) Starspawn.RpcNotify(Caster, (int)NotificationType.Starspawn_Isolate, visitor);
-        visitor.Notify(Feedback.UnknownObstacle(target), NotifyMode.InstantlyAndMeeting);
 
-        if (visitor.AmOwner())
+        if (visitor.Is(Faction.Town))
         {
-            if (visitor.Data.Role is Seer seer) seer.fullCooldown = true;
-            button.ResetCooldownAndOrEffect();
-        }
+            visitor.Notify(Feedback.UnknownObstacle(target), NotifyMode.InstantlyAndMeeting);
 
-        if (visitor.Is(Faction.Town)) return 100; // Block visit and everything else.
+            if (visitor.AmOwner() && button != null)
+            {
+                if (visitor.Data.Role is Seer seer) seer.fullCooldown = true;
+                button.ResetCooldownAndOrEffect();
+            }
+            return 100; // Block visit and everything else.
+        }
 
         if (visitor.AmOwner()) Starspawn.RpcNotify(visitor, (int)NotificationType.Starspawn_IsolateButImmune, visitor);
         return 0; // Do not Block evil visits.

@@ -18,7 +18,7 @@ public sealed class FortifiedModifier(PlayerControl c) : BaseModifier
 
     public override void OnMeetingStart()
     {
-        Player.RpcRemoveModifier<FortifiedModifier>();
+        Player.GetModifiers<FortifiedModifier>().Do(x => Player.RemoveModifier(x));
     }
 
     public int PerformInteraction(PlayerControl attacker, PlayerControl target, bool isAttacking)

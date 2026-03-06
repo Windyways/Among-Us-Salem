@@ -1,7 +1,6 @@
 using System.Collections;
 using TownOfUs.Modifiers;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Mechanics;
 
@@ -26,13 +25,22 @@ public static class VisitingMechanic
 
         if (blockVisit < 100)
         {
+            // --- NON BLOCKING INTERACTIONS --- (ANY ORDER, user first tho since its neater)
+            if (isVisiting && user.TryGetModifier<InfectedModifier>(out var infected)) blockVisit += infected.PerformInteraction(user, target);
+            if (isVisiting && user.TryGetModifier<CursedModifier>(out var cursed)) blockVisit += cursed.PerformInteraction(user, target);
+            if (isVisiting && user.TryGetModifier<TrackedModifier>(out var tracked)) blockVisit += TrackedModifier.RpcPerformInteraction(tracked.Caster, user, target);
+            if (isVisiting && target.TryGetModifier<StackOfPestilenceModifier>(out var pestiStack)) blockVisit += pestiStack.PerformInteraction(user, target);
+            if (isVisiting && target.TryGetModifier<InfectedModifier>(out var infected2)) blockVisit += infected2.PerformInteraction(target, user);
+            if (isVisiting && target.TryGetModifier<WatchedModifier>(out var watched) && !user.HasModifier<Camouflage>()) blockVisit += WatchedModifier.RpcPerformInteraction(watched.Caster, user, target);
+
             // --- PROTECTION INTERACTIONS ---
             if (isAttacking && isVisiting && target.TryGetModifier<GuardedModifier>(out var guarded) && !user.HasModifier<IllusionedModifier>())
                 blockVisit += guarded.PerformInteraction(user, target);
 
-            // --- COUNTERATTACK INTERACTIONS ---
+            // --- COUNTERATTACK INTERACTIONS --- (Order does NOT matter!)
             if (isVisiting && target.TryGetModifier<FortifiedModifier>(out var fortified) && fortified.Caster != user) blockVisit += fortified.PerformInteraction(user, target, isAttacking);
             if (isVisiting && target.TryGetModifier<JinxedModifier>(out var jinxed) && !user.Is(Faction.Coven)) blockVisit += jinxed.PerformInteraction(user);
+            if (isVisiting && target.Data.Role is Werewolf werewolf) blockVisit += werewolf.PerformInteraction(user);
         }
 
         if (blockVisit > 0) return false;
@@ -50,14 +58,5 @@ public static class VisitingMechanic
     public static void RpcAddDeathReason(PlayerControl player, int deathReasonShow)
     {
         DeathHandlerModifier.UpdateDeathHandler(player, (DeathReasonShow)deathReasonShow, DeathHandlerOverride.SetFalse);
-    }
-
-    public static void LeaveTown(this PlayerControl player)
-    {
-        if (player.AmOwner())
-        {
-            player.RpcCustomMurder(player);
-            RpcAddDeathReason(player, (int)DeathReasonShow.LeftTown);
-        }
     }
 }

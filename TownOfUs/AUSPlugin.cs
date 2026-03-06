@@ -58,7 +58,7 @@ public partial class AUSPlugin : BasePlugin, IMiraPlugin
     /// <summary>
     ///     Determines if the current build is a dev build or not. This will change certain visuals as well as always grab news locally to be up to date.
     /// </summary>
-    public static bool IsDevBuild => true;
+    public static bool IsDevBuild => false;
     
     /// <inheritdoc />
     public string OptionsTitleText => "Among Us\nSalem";
@@ -126,6 +126,8 @@ public partial class AUSPlugin : BasePlugin, IMiraPlugin
         ClassInjector.RegisterTypeInIl2Cpp<Component>();
         AddComponent<Component>();
         Debugger = AddComponent<Debugger>();
+
+        RoleReferences.Initialize();
     }
 
     public enum MsgType { Message, Warning, Error }

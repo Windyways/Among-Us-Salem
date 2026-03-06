@@ -10,7 +10,7 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
 {
     public string RoleName { get; set; } = RoleColors.StarspawnNameInGradient;
     public string revealText => "radiates cosmic energy.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Better Town Of Salem 2";
     public string RoleLongDescription => "You are a cosmic being who has the power to stop anything at will.";
     public Color RoleColor { get; set; } = RoleColors.Starspawn;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
@@ -69,9 +69,11 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
 
     public override bool DidWin(GameOverReason gameOverReason)
     {
-        var allTown = PlayerControl.AllPlayerControls.ToArray().Count(x => x.Is(Faction.Town) && !x.HasDied());
-        if (allTown == 0 && !Player.HasDied()) Player.LeaveTown();
-        return allTown == 0;
+        return
+            gameOverReason != GameOverReason.CrewmatesByVote &&
+            gameOverReason != GameOverReason.CrewmateDisconnect &&
+            gameOverReason != GameOverReason.CrewmatesByTask &&
+            gameOverReason != GameOverReason.HideAndSeek_CrewmatesByTimer;
     }
 
     public static string Info(NotificationType type, string text)
@@ -123,8 +125,7 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
         {
             if (player.AmOwner)
             {
-                necroPassing.meetingMenu?.Dispose();
-                necroPassing.meetingMenu = null!;
+                necroPassing.meetingMenu.HideButtons();
             }
         }
 
@@ -133,8 +134,7 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
         {
             if (player.AmOwner)
             {
-                deputy.meetingMenu?.Dispose();
-                deputy.meetingMenu = null!;
+                deputy.meetingMenu.HideButtons();
             }
         }
 
@@ -143,8 +143,7 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
         {
             if (player.AmOwner)
             {
-                mayor.meetingMenu?.Dispose();
-                mayor.meetingMenu = null!;
+                mayor.meetingMenu.HideButtons();
             }
         }
 
@@ -153,8 +152,7 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
         {
             if (player.AmOwner)
             {
-                prosecutor.meetingMenu?.Dispose();
-                prosecutor.meetingMenu = null!;
+                prosecutor.meetingMenu.HideButtons();
             }
         }
 
@@ -163,8 +161,7 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
         {
             if (player.AmOwner)
             {
-                starspawn.meetingMenu?.Dispose();
-                starspawn.meetingMenu = null!;
+                starspawn.meetingMenu.HideButtons();
             }
         }
     }
@@ -189,11 +186,12 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
         }
     }
 
-    public override void OnMeetingStart()
+    public void Role_OnMeetingStart()
     {
-        AUSPlugin.DebugLogMessage("Starspawn OnMeetingStart called!");
-        SmartStarspawn.Start();
+        if (Player.HasDied())
+            return;
 
+        SmartStarspawn.Start();
         if (Player.AmOwner)
         {
             Coroutines.Start(GenButtons());
@@ -243,6 +241,18 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
         return voteArea?.TargetPlayerId != Player.PlayerId || Player.Data.IsDead || voteArea!.AmDead;
     }
 
+
+    public void FixedUpdate()
+    {
+        if (Player == null || Player.Data.Role is not Starspawn || Player.HasDied() || !Player.AmOwner())
+        {
+            return;
+        }
+
+        var allTown = PlayerControl.AllPlayerControls.ToArray().Count(x => x.Is(Faction.Town) && !x.HasDied());
+        if (allTown == 0) Player.LeaveTown();
+    }
+
     public MeetingMenu meetingMenu;
     public int Charges = (int)OptionGroupSingleton<Starspawn_Options>.Instance.Charges;
 }
@@ -252,7 +262,7 @@ public sealed class Starspawn_Isolate : TownOfUsRoleButton<Starspawn, PlayerCont
     public override string Name => "Isolate";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => RoleColors.Starspawn;
-    public override float Cooldown => OptionGroupSingleton<Cleric_Options>.Instance.Cooldown;
+    public override float Cooldown => OptionGroupSingleton<Starspawn_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Starspawn_Isolate;
 
     public override void ClickHandler()

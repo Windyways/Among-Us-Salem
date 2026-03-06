@@ -7,4 +7,7 @@ public sealed class RoleGenOptions : AbstractOptionGroup
 
     [ModdedToggleOption("Enable All Outliers")]
     public bool EnableAllOutliers { get; set; } = false;
+
+    [ModdedToggleOption("Legacy Role Generation")]
+    public bool LegacyRoleGen { get; set; } = false;
 }

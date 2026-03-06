@@ -18,7 +18,7 @@ public static class MafiosoPromotionMechanic
         PromoteMafia();
     }
 
-    [RegisterEvent]
+    [RegisterEvent(2)]
     public static void StartMeetingEvent(StartMeetingEvent @event)
     {
         PromoteMafia();
@@ -43,7 +43,6 @@ public static class MafiosoPromotionMechanic
             }
             else if (aliveGodfathers == 0 && aliveMafiosos > 0 && player.IsRole<Mafioso>() && GodfatherDied && !player.HasDied() && totalGodfathers < 2)
             {
-                GodfatherDied = false;
                 if (player.AmOwner())
                 {
                     player.RpcChangeRole(RoleId.Get<Godfather>());
@@ -53,5 +52,7 @@ public static class MafiosoPromotionMechanic
                 break;
             }
         }
+
+        GodfatherDied = false;
     }
 }

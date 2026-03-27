@@ -54,7 +54,7 @@ public sealed class ApocGameOver : CustomGameOver
 
     public static bool WinConditionMet(RoleBehaviour role)
     {
-        var aliveApoc = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Alignment.NeutralApocalypse));
+        var aliveApoc = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.Is(Faction.Apocalypse));
         if (aliveApoc == 0) return false;
 
         var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveApoc && MiscUtils.KillersAliveCount == aliveApoc;
@@ -65,7 +65,7 @@ public sealed class ApocGameOver : CustomGameOver
     {
         foreach (var player in PlayerControl.AllPlayerControls)
         {
-            if (player.Is(Alignment.NeutralApocalypse) && WinConditionMet(player.Data.Role)) return true;
+            if (player.Is(Faction.Apocalypse) && WinConditionMet(player.Data.Role)) return true;
         }
         return false;
     }

@@ -2,20 +2,19 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Pestilence(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable, ISpawnChange
+public sealed class Pestilence(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable, ISpawnChange
 {
     public string RoleName { get; set; } = "Pestilence";
     public string revealText => "reeks of disease.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "";
     public Color RoleColor { get; set; } = RoleColors.Apocalypse;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction Faction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Apocalypse;
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.None;
@@ -113,7 +112,7 @@ public sealed class Pestilence(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole
     }
 }
 
-public sealed class Pestilence_SpreadPestilence : TownOfUsRoleButton<Pestilence, PlayerControl>
+public sealed class Pestilence_SpreadPestilence : TownOfUsRoleButton<Pestilence, PlayerControl>, IButtonClick
 {
     public override string Name => "Spread Pestilence";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -126,18 +125,19 @@ public sealed class Pestilence_SpreadPestilence : TownOfUsRoleButton<Pestilence,
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.Is(Faction.Apocalypse));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         if (Target.TryGetModifier<StackOfPestilenceModifier>(out var stackOP)) stackOP.AddStack(3);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-            !x.Is(Alignment.NeutralApocalypse));
     }
 }
 

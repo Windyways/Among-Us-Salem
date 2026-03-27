@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
-using TownOfUs.Utilities.Appearances;
 using UnityEngine;
 
 namespace AmongUsSalem.Roles;
@@ -100,13 +99,13 @@ public sealed class Jinx(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWik
         RpcNotify(visitor, (int)NotificationType.Jinx_FoundJinx, Player, target);
         if (!visitor.HasDied() && visitor.AmOwner())
         {
-            Player.RpcAddModifier<RoleLearn>(visitor, true);
+            Player.RpcAddModifier<RoleLearn>(visitor, false);
             Player.RpcAddModifier<ConfirmedEvil>();
         }
     }
 }
 
-public sealed class Jinx_Jinx : TownOfUsRoleButton<Jinx, PlayerControl>
+public sealed class Jinx_Jinx : TownOfUsRoleButton<Jinx, PlayerControl>, IButtonClick
 {
     public override string Name => "Jinx";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -120,7 +119,18 @@ public sealed class Jinx_Jinx : TownOfUsRoleButton<Jinx, PlayerControl>
         if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        if (Player.HasNecronomicon())
+            return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+                !x.Is(Faction.Coven));
+
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.Is(Faction.Coven) && !x.HasModifier<JinxedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -135,16 +145,6 @@ public sealed class Jinx_Jinx : TownOfUsRoleButton<Jinx, PlayerControl>
             }
             else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
         }
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        if (Player.HasNecronomicon())
-            return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-                !x.Is(Faction.Coven));
-
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-            !x.Is(Faction.Coven) && !x.HasModifier<JinxedModifier>(x => x.Caster == Player));
     }
 }
 

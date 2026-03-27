@@ -2,10 +2,14 @@
 
 public enum Faction
 {
-    None,
-
     Town,
+    Coven,
+
+    Apocalypse,
+    SerialKiller,
+    Werewolf,
+
     Neutral,
     Mafia,
-    Coven
+    None,
 }

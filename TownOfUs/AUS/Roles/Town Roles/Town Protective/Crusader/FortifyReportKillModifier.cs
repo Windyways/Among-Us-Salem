@@ -16,7 +16,7 @@ public sealed class FortifyReportKillModifier(PlayerControl c, PlayerControl t) 
             {
                 Caster.RpcCustomMurder(Player, teleportMurderer: false);
                 VisitingMechanic.RpcAddDeathReason(Player, (int)DeathReasonShow.KilledByACrusader);
-                if (AmongUsClient.Instance.AmHost) DayNightMechanic.StartDayOne(PlayerControl.LocalPlayer);
+                //if (AmongUsClient.Instance.AmHost) DayNightMechanic.StartDayOne(PlayerControl.LocalPlayer);
             }
 
             Crusader.RpcNotify(Caster, (int)NotificationType.Crusader_AttackedVisitor, Target);

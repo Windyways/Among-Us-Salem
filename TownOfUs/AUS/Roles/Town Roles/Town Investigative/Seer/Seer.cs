@@ -50,7 +50,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
         else
         {
             info.AppendLine();
-            info.AppendLine("No Compare results yet.");
+            info.AppendLine("No investigative results yet.");
         }
 
         return info;
@@ -146,7 +146,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
         if (player.HasModifier<FramedModifier>())
             return SeerAlignment.Mafia;
 
-        if (player.HasModifier<WarlockFramedModifier>() || player.Is(Alignment.NeutralApocalypse))
+        if (player.HasModifier<WarlockFramedModifier>() || player.Is(Faction.Apocalypse))
             return SeerAlignment.Apocalypse;
 
         if (player.Is(Faction.Town) || player.IsRole<Jester>())
@@ -161,7 +161,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
         if (player.Is(Alignment.NeutralPariah))
             return SeerAlignment.NeutralPariah;
 
-        if (player.Is(Faction.Neutral))
+        if (player.IsFactionNeutral())
             return SeerAlignment.UniqueNeutral;
 
         return SeerAlignment.None;
@@ -174,7 +174,7 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
     public List<((PlayerControl, PlayerControl), bool)> Information = new List<((PlayerControl, PlayerControl), bool)>();
 }
 
-public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
+public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>, IButtonClick
 {
     public override string Name => "Intuit";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -188,7 +188,14 @@ public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
         if (button.IsTargetingValid(Player, Target, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && !x.HasModifier<GlobalReveal>());
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -215,15 +222,9 @@ public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
             CustomButtonSingleton<Seer_Gaze>.Instance.ResetCooldownAndOrEffect();
         }
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && !x.HasModifier<GlobalReveal>());
-    }
 }
 
-public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
+public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>, IButtonClick
 {
     public override string Name => "Gaze";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -237,7 +238,15 @@ public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
         if (button.IsTargetingValid(Player, Target, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && 
+            !(x.HasModifier<GlobalReveal>(x => x.Player.Is(Faction.Town)) && !OptionGroupSingleton<Seer_Options>.Instance.RevealedTownComparable));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -263,13 +272,6 @@ public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
             CustomButtonSingleton<Seer_Intuit>.Instance.ResetCooldownAndOrEffect();
             CustomButtonSingleton<Seer_Gaze>.Instance.ResetCooldownAndOrEffect();
         }
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && 
-            !(x.HasModifier<GlobalReveal>(x => x.Player.Is(Faction.Town)) && !OptionGroupSingleton<Seer_Options>.Instance.RevealedTownComparable));
     }
 }
 

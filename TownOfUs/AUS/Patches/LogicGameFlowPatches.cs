@@ -176,7 +176,7 @@ public static class LogicGameFlowPatches
 
         // If any apoc win condition is met -> game over
         if (CustomRoleUtils.GetActiveRolesOfTeam(ModdedRoleTeams.Custom)
-            .FirstOrDefault(x => x is ICustomAURole role && role.WinConditionMet() && role.Alignment == Alignment.NeutralApocalypse) is { } winner5)
+            .FirstOrDefault(x => x is ICustomAURole role && role.WinConditionMet() && role.Faction == Faction.Apocalypse) is { } winner5)
         {
             Logger<AUSPlugin>.Message($"Game Over");
             CustomGameOver.Trigger<ApocGameOver>([winner5.Player.Data]);

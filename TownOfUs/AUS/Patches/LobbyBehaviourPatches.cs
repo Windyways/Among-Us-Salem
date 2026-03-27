@@ -11,7 +11,7 @@ public static class LobbyBehaviourPatches
     {
         foreach (var role in GameHistory.AllRoles)
         {
-            if (!role || role is not ITownOfUsRole touRole)
+            if (!role || role is not ICustomAURole touRole)
             {
                 continue;
             }
@@ -22,6 +22,8 @@ public static class LobbyBehaviourPatches
         GameHistory.ClearAll();
         ScreenFlash.Clear();
         MeetingMenu.ClearAll();
+
+        ShowRoleIcon.ClearAll();
 
         // --- ROLES ---
         MafiosoPromotionMechanic.GodfatherDied = false;
@@ -42,5 +44,7 @@ public static class LobbyBehaviourPatches
 
             RoleReferences.PendingNotifications.Clear(); // prevent repeats
         }
+
+        Debugger.RandomizeModes();
     }
 }

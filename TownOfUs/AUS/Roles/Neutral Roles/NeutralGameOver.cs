@@ -3,7 +3,7 @@ using Reactor.Utilities.Extensions;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace TownOfUs.GameOver;
+namespace AmongUsSalem.NeutralRoles;
 
 public sealed class NeutralGameOver : CustomGameOver
 {
@@ -50,5 +50,14 @@ public sealed class NeutralGameOver : CustomGameOver
 
         text.transform.position = pos;
         text.text = $"<size=4>{text.text}</size>";
+    }
+
+    public static bool WinConditionMet(RoleBehaviour role)
+    {
+        var aliveNK = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsSameFaction(role.Player));
+        if (aliveNK == 0) return false;
+
+        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveNK && MiscUtils.KillersAliveCount == aliveNK;
+        return result;
     }
 }

@@ -101,7 +101,7 @@ public sealed class PotionMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
     }
 }
 
-public sealed class PotionMaster_Harmful : TownOfUsRoleButton<PotionMaster, PlayerControl>
+public sealed class PotionMaster_Harmful : TownOfUsRoleButton<PotionMaster, PlayerControl>, IButtonClick
 {
     public override string Name => "Harmful";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -114,7 +114,19 @@ public sealed class PotionMaster_Harmful : TownOfUsRoleButton<PotionMaster, Play
         if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.Is(Faction.Coven));
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && Player.HasNecronomicon();
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -133,20 +145,9 @@ public sealed class PotionMaster_Harmful : TownOfUsRoleButton<PotionMaster, Play
         CustomButtonSingleton<PotionMaster_SelfBarrier>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_Reveal>.Instance.ResetCooldownAndOrEffect();
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-            !x.Is(Faction.Coven));
-    }
-
-    public override bool CanUse()
-    {
-        return base.CanUse() && Player.HasNecronomicon();
-    }
 }
 
-public sealed class PotionMaster_Barrier : TownOfUsRoleButton<PotionMaster, PlayerControl>
+public sealed class PotionMaster_Barrier : TownOfUsRoleButton<PotionMaster, PlayerControl>, IButtonClick
 {
     public override string Name => "Barrier";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -159,27 +160,27 @@ public sealed class PotionMaster_Barrier : TownOfUsRoleButton<PotionMaster, Play
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance);
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Target.RpcAddModifier<BarrieredModifier>(Player);
-        //Target.RpcAddModifier<HideGainedDefense>();
         AttackDefenseMechanic.RpcApplyDefense(Target, Defense.Powerful);
 
         CustomButtonSingleton<PotionMaster_Harmful>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_SelfBarrier>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_Reveal>.Instance.ResetCooldownAndOrEffect();
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance);
-    }
 }
 
-public sealed class PotionMaster_Reveal : TownOfUsRoleButton<PotionMaster, PlayerControl>
+public sealed class PotionMaster_Reveal : TownOfUsRoleButton<PotionMaster, PlayerControl>, IButtonClick
 {
     public override string Name => "Reveal";
     public override BaseKeybind Keybind => Keybinds.TertiaryAction;
@@ -192,7 +193,15 @@ public sealed class PotionMaster_Reveal : TownOfUsRoleButton<PotionMaster, Playe
         if (button.IsTargetingValid(Player, Target,false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.Is(Faction.Coven) && !x.HasModifier<RoleLearn>(x => x.Visitor == Player) && !x.HasModifier<GlobalReveal>());
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -202,10 +211,10 @@ public sealed class PotionMaster_Reveal : TownOfUsRoleButton<PotionMaster, Playe
         if (Target.TryGetModifier<SelfReflectionModifier>(out var selfReflection))
         {
             // Since all Coven member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
-            foreach (var player in PlayerControl.AllPlayerControls)
+            foreach (var players in PlayerControl.AllPlayerControls)
             {
-                if (player.Is(Faction.Coven) && player.AmOwner())
-                    Target.RpcAddModifier<DeepfakeRole>(player, selfReflection.GetRole().NiceName, RoleColors.Town);
+                if (players.Is(Faction.Coven) && players.AmOwner())
+                    Target.RpcAddModifier<DeepfakeRole>(players, selfReflection.GetRole().NiceName, RoleColors.Town);
             }
         }
         Target.RpcAddModifier<RoleLearn>(Player, true);
@@ -214,15 +223,9 @@ public sealed class PotionMaster_Reveal : TownOfUsRoleButton<PotionMaster, Playe
         CustomButtonSingleton<PotionMaster_Barrier>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_SelfBarrier>.Instance.ResetCooldownAndOrEffect();
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.Is(Faction.Coven) && !x.HasModifier<RoleLearn>(x => x.Visitor == Player) && !x.HasModifier<GlobalReveal>());
-    }
 }
 
-public sealed class PotionMaster_SelfBarrier : TownOfUsRoleButton<PotionMaster>
+public sealed class PotionMaster_SelfBarrier : TownOfUsRoleButton<PotionMaster>, IButtonClick
 {
     public override string Name => "Self Barrier";
     public override BaseKeybind Keybind => Keybinds.ModifierAction;
@@ -236,7 +239,8 @@ public sealed class PotionMaster_SelfBarrier : TownOfUsRoleButton<PotionMaster>
         if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    protected override void OnClick() => Click(Player);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         Player.RpcAddModifier<BarrieredModifier>(Player);
         AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful, visualize: true);
@@ -244,12 +248,6 @@ public sealed class PotionMaster_SelfBarrier : TownOfUsRoleButton<PotionMaster>
         CustomButtonSingleton<PotionMaster_Harmful>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_Barrier>.Instance.ResetCooldownAndOrEffect();
         CustomButtonSingleton<PotionMaster_Reveal>.Instance.ResetCooldownAndOrEffect();
-    }
-
-    public override bool CanUse()
-    {
-        if (Player.HasModifier<IsolatedModifier>(x => x.Caster == Player)) return false;
-        return base.CanUse();
     }
 }
 

@@ -9,6 +9,8 @@ public enum DeathReasonShow
     DiedWhileDefendingTheirTarget,
     ShotByADeputy,
     KilledByACrusader,
+    ShotByAVigilante,
+    ShotByAVeteran,
 
     HauntedByAJester,
     DiedOfBoredom,
@@ -20,6 +22,7 @@ public enum DeathReasonShow
     KilledByDeathHorsemanOfApocalypse,
 
     KilledByAMemberOfTheMafia,
+    KilledByAnAmbusher,
 
     KilledByTheCoven,
     BombedByAHexMaster,

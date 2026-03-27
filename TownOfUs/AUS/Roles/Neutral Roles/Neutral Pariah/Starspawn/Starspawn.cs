@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable, INotThreatable
+public sealed class Starspawn(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable, INotThreatable
 {
     public string RoleName { get; set; } = RoleColors.StarspawnNameInGradient;
     public string revealText => "radiates cosmic energy.";
@@ -162,6 +162,15 @@ public sealed class Starspawn(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
             if (player.AmOwner)
             {
                 starspawn.meetingMenu.HideButtons();
+            }
+        }
+
+        // --- ADMIRER ---
+        if (player.Data.Role is Admirer admirer)
+        {
+            if (player.AmOwner)
+            {
+                admirer.meetingMenu.HideButtons();
             }
         }
     }

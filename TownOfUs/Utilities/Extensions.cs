@@ -304,8 +304,8 @@ public static class Extensions
         //    teamName = teamName.Replace("Neutral", $"<color=#8A8A8AFF>Neutral</color>");
         //}
 
-        var alignment = roleBehaviour is ITownOfUsRole touRole
-            ? touRole.RoleAlignment.ToDisplayString()
+        var alignment = roleBehaviour is ICustomAURole touRole
+            ? touRole.Alignment.ToSpacedString()
             : roleBehaviour.TeamType.ToDisplayString();
 
         if (alignment.Contains("Crewmate"))
@@ -473,6 +473,9 @@ public static class Extensions
     public static void RpcChangeRole(this PlayerControl player, ushort newRoleType, bool recordRole = true)
     {
         ChangeRole(player, newRoleType, recordRole);
+
+        var icon = player.GetIcon();
+        if (icon != null) icon.UpdateIcon();
     }
 
     public static void ChangeRole(this PlayerControl player, ushort newRoleType, bool recordRole = true)

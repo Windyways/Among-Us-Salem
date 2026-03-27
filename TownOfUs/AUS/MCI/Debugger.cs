@@ -102,23 +102,11 @@ public class Debugger : MonoBehaviour
                 }
             }
 
-            if (GUILayout.Button("Auto Use Ability Everyone"))
-            {
-                foreach (var player in PlayerControl.AllPlayerControls)
-                {
-                    foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role)))
-                    {
-                        button.ClickHandler();
-                    }
-                }
-            }
-
             if (GUILayout.Button("Gain Charge"))
             {
                 foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(PlayerControl.LocalPlayer.Data.Role)))
                 {
                     button.IncreaseUses();
-                    button.ClickHandler();
                 }
             }
 
@@ -196,6 +184,17 @@ public class Debugger : MonoBehaviour
 
             HudManager.Instance.OpenMeetingRoom(player);
             player.RpcStartMeeting(null);
+        }
+    }
+
+    public static void RandomizeModes()
+    {
+        if (Debugger.IsDebuggerActive && Debugger.smartSwapping)
+        {
+            OptionGroupSingleton<Lookout_Options>.Instance.Mode = (LookoutMode)UnityEngine.Random.Range(0, 1 + 1);
+            OptionGroupSingleton<Deputy_Options>.Instance.Mode = (DeputyMode)UnityEngine.Random.Range(0, 1 + 1);
+            OptionGroupSingleton<SerialKiller_Options>.Instance.Mode = (SerialKillerMode)UnityEngine.Random.Range(0, 1 + 1);
+            OptionGroupSingleton<Amnesiac_Options>.Instance.Mode = (AmnesiacMode)UnityEngine.Random.Range(0, 1 + 1);
         }
     }
 }

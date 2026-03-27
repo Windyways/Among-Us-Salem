@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Jester(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable, INotThreatable
+public sealed class Jester(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable, INotThreatable
 {
     public string RoleName { get; set; } = "Jester";
     public string revealText => "wants to be hanged.";

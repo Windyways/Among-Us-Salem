@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Death(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable, ISpawnChange
+public sealed class Death(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable, ISpawnChange
 {
     public string RoleName { get; set; } = "Death";
     public string revealText => "fills you with a sense of dread.";
@@ -14,7 +14,7 @@ public sealed class Death(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWi
     public Color RoleColor { get; set; } = RoleColors.Apocalypse;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction Faction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Apocalypse;
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.None;
@@ -107,7 +107,7 @@ public sealed class Death(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWi
     {
         if (!Player.HasDied())
         {
-            var nonApoc = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Alignment.NeutralApocalypse)).ToList();
+            var nonApoc = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && !x.Is(Faction.Apocalypse)).ToList();
             foreach (var player in nonApoc)
             {
                 Player.RpcCustomMurder(player, teleportMurderer: false);

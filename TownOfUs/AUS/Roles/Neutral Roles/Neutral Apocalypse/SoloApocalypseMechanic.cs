@@ -16,7 +16,7 @@ public static class SoloApocalypseMechanic
 
     public static void CheckForSoloApocalypse()
     {
-        var allApocalypse = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x.Is(Alignment.NeutralApocalypse)).ToList();
+        var allApocalypse = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied() && x.Is(Faction.Apocalypse)).ToList();
 
         if (allApocalypse.Count <= 1)
         {

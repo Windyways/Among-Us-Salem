@@ -13,7 +13,8 @@ public static class WitnessKill
             PlayerControl player = exiled.Object;
             if (player.TryGetModifier<ComparedModifier>(out var compared))
             {
-                if (player.Is(Faction.Town)) compared.comparedTo.AddModifier<ConfirmedEvil>();
+                if (((player.Is(Faction.Town) || player.IsRole<Jester>()) && compared.isFriends) ||
+                    (!player.Is(Faction.Town) && !player.IsRole<Jester>() && !compared.isFriends)) compared.comparedTo.AddModifier<SoftCleared>();
                 else compared.comparedTo.RemoveModifier<IncriminatingEvidence>();
             }
         }
@@ -64,7 +65,7 @@ public static class WitnessKill
             {
                 if (!IgnoreKill(killer, witness) && BotCanSeeKill(killer, witness, target.transform.position) && witness != target)
                 {
-                    if (killer.IsRole<Bodyguard>()) killer.AddModifier<Confirmed>();
+                    if (killer.IsRole<Bodyguard>() || killer.IsRole<Veteran>() || killer.IsRole<Vigilante>()) killer.AddModifier<Confirmed>();
                     else
                     {
                         // Add murder see modifier here.
@@ -83,7 +84,7 @@ public static class WitnessKill
     {
         if (killer.Is(Faction.Mafia) && witness.Is(Faction.Mafia)) return true;
         if (killer.Is(Faction.Coven) && witness.Is(Faction.Coven)) return true;
-        if (killer.Is(Alignment.NeutralApocalypse) && witness.Is(Alignment.NeutralApocalypse)) return true;
+        if (killer.Is(Faction.Apocalypse) && witness.Is(Faction.Apocalypse)) return true;
         return false;
     }
 

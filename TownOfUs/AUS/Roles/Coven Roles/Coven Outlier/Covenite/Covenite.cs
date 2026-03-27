@@ -61,7 +61,7 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     }
 }
 
-public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl>
+public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl>, IButtonClick
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -74,7 +74,19 @@ public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl
         if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, 
+            predicate: x => !x.Is(Faction.Coven));
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && Player.HasModifier<Necronomicon>();
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -85,16 +97,5 @@ public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl
             VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByTheCoven);
         }
         else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, 
-            predicate: x => !x.Is(Faction.Coven));
-    }
-
-    public override bool CanUse()
-    {
-        return base.CanUse() && Player.HasModifier<Necronomicon>();
     }
 }

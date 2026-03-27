@@ -30,7 +30,7 @@ public static class HudManagerPatches
             //(PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.HasModifier<VampireRecruit>()) ||
             //(PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.IsRole<Vampire>()) ||
 
-            (localPlayer.Is(Alignment.NeutralApocalypse) && player.Is(Alignment.NeutralApocalypse)) ||
+            (localPlayer.Is(Faction.Apocalypse) && player.Is(Faction.Apocalypse)) ||
             (!localPlayer.Is(Faction.None) && player.HasDied()) ||
 
             (!localPlayer.Is(Faction.None) && player.HasModifier<GlobalReveal>()) ||
@@ -53,7 +53,7 @@ public static class HudManagerPatches
             //(PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.HasModifier<VampireRecruit>()) ||
             //(PlayerControl.LocalPlayer.HasModifier<VampireRecruit>() && player.IsRole<Vampire>()) ||
 
-            (PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse) && player.Is(Alignment.NeutralApocalypse)) ||
+            (PlayerControl.LocalPlayer.Is(Faction.Apocalypse) && player.Is(Faction.Apocalypse)) ||
             (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasDied()) ||
 
             (!PlayerControl.LocalPlayer.Is(Faction.None) && player.HasModifier<GlobalReveal>()) ||
@@ -241,14 +241,14 @@ public static class HudManagerPatches
         aspectPosition.AdjustPosition();
         TeamChatButton.transform.Find("Selected").gameObject.SetActive(false);
 
-        if (!TeamChatPatches.TeamChatActive)
+        /*if (!TeamChatPatches.TeamChatActive)
         {
             return;
         }
 
         TeamChatButton.transform.Find("Inactive").gameObject.SetActive(false);
         TeamChatButton.transform.Find("Active").gameObject.SetActive(false);
-        TeamChatButton.transform.Find("Selected").gameObject.SetActive(true);
+        TeamChatButton.transform.Find("Selected").gameObject.SetActive(true);*/
     }
 
     public static void UpdateRoleNameText()
@@ -650,7 +650,7 @@ public static class HudManagerPatches
         }
     }
 
-    public static void CreateTeamChatButton(HudManager instance)
+    /*public static void CreateTeamChatButton(HudManager instance)
     {
         if (TeamChatButton)
         {
@@ -668,7 +668,7 @@ public static class HudManagerPatches
             TouAssets.TeamChatActive.LoadAsset();
         TeamChatButton.transform.Find("Selected").GetComponent<SpriteRenderer>().sprite =
             TouAssets.TeamChatSelected.LoadAsset();
-    }
+    }*/
 
     public static void CreateWikiButton(HudManager instance)
     {
@@ -708,11 +708,6 @@ public static class HudManagerPatches
                 distanceFromEdge.x += 0.84f;
             }
 
-            if (TeamChatButton.active)
-            {
-                distanceFromEdge.x += 0.84f;
-            }
-
             distanceFromEdge.y = 0.485f;
             WikiButton.SetActive(true);
             aspectPosition.DistanceFromEdge = distanceFromEdge;
@@ -725,7 +720,7 @@ public static class HudManagerPatches
     public static void HudManagerUpdatePatch(HudManager __instance)
     {
         CreateZoomButton(__instance);
-        CreateTeamChatButton(__instance);
+        //CreateTeamChatButton(__instance);
         CreateWikiButton(__instance);
 
         UpdateRoleList(__instance);

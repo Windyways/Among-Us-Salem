@@ -1,12 +1,11 @@
 using AmongUs.GameOptions;
-using Reactor.Utilities.Extensions;
 using TownOfUs.Options;
 
 namespace AmongUsSalem.Mechanics;
 
 public static class RolelistMechanic
 {
-    public static int CovenCount = 0;
+    public static int CovenCount;
     public static void GenerateRoleListAndApplyRoles(List<NetworkedPlayerInfo> infected)
     {
         var impostors = MiscUtils.GetImpostors(infected);
@@ -54,6 +53,7 @@ public static class RolelistMechanic
             if (bucket is RoleListOption.CovenUtility) AssignCovenRole(rolesAssigned, Alignment.CovenUtility);
             if (bucket is RoleListOption.RandomCoven or RoleListOption.CommonCoven) AssignCovenRole(rolesAssigned, Alignment.None, bucket);
 
+            if (bucket is RoleListOption.NK_RC) AssignTownRole(rolesAssigned, Alignment.TownOutlier, bucket);
             if (bucket is RoleListOption.Any) AssignAnyRole(rolesAssigned, mafiaCount);
         }
 
@@ -157,8 +157,17 @@ public static class RolelistMechanic
 
     public static void AssignNeutralRole(List<ushort> rolesAssigned, Alignment alignment, RoleListOption bucket = RoleListOption.None)
     {
+        var faction = Faction.Neutral;
+        if (alignment == Alignment.NeutralApocalypse) faction = Faction.Apocalypse;
+        
         var allRoles = MiscUtils.AllRoles.Where(x => x is ICustomAURole customRole && x is not ISpawnChange &&
             customRole.Alignment == alignment).ToList();
+
+        if (faction == Faction.Apocalypse)
+        {
+            allRoles = MiscUtils.AllRoles.Where(x => x is ICustomAURole customRole && x is not ISpawnChange &&
+                customRole.Faction == faction).ToList();
+        }
 
         if (bucket == RoleListOption.RandomNeutral) allRoles = MiscUtils.AllRoles.Where(x => x is ICustomAURole customRole && x is not ISpawnChange && customRole.IsNeutral()).ToList();
         if (bucket == RoleListOption.NA_RN) allRoles = MiscUtils.AllRoles.Where(x => x is ICustomAURole customRole && x is not ISpawnChange && customRole.IsNeutral(true)).ToList();

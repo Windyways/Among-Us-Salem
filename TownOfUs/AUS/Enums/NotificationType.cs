@@ -52,5 +52,26 @@ public enum NotificationType
     Warlock_PassiveGain,
     Warlock_TargetVoted,
 
-    Death_Reveal
+    Death_Reveal,
+
+    Vigilante_Kill,
+    Vigilante_Reload,
+    Vigilante_BulletsLeft,
+    Vigilante_KillTown,
+
+    Amnesiac_RememberIWasLike,
+    Amnesiac_RememberingRoleReminder,
+    Amnesiac_GlobalReveal,
+
+    Ambusher_Kill,
+    Ambusher_FoundAmbusher,
+
+    Veteran_Shot,
+    Veteran_Attacked,
+    Veteran_Kill,
+    Veteran_TT,
+
+    Admirer_Obsession,
+    Admirer_Rejected,
+    Admirer_Accepted,
 }

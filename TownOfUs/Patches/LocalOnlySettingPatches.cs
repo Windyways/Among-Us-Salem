@@ -25,13 +25,6 @@ public static class LocalSettings
         },
         new()
         {
-            Title = "Show Vents On Map",
-            ObjName = "ShowVentsToggle",
-            OnClick = () => { return AUSPlugin.ShowVents.Value = !AUSPlugin.ShowVents.Value; },
-            DefaultValue = AUSPlugin.ShowVents.Value
-        },
-        new()
-        {
             Title = "Show Welcome Msg",
             ObjName = "WelcomeMsgToggle",
             OnClick = () =>
@@ -73,15 +66,6 @@ public static class LocalSettings
                 return AUSPlugin.UseCrewmateTeamColor.Value = !AUSPlugin.UseCrewmateTeamColor.Value;
             },
             DefaultValue = AUSPlugin.UseCrewmateTeamColor.Value
-        },
-        new()
-        {
-            Title = "Show Shields On Hud",
-            //Enabled = new(0f, 1f, 0.7f, 1f),
-            //Hover = new(0f, 0.4f, 0f, 1f),
-            ObjName = "ShieldsHudToggle",
-            OnClick = () => { return AUSPlugin.ShowShieldHud.Value = !AUSPlugin.ShowShieldHud.Value; },
-            DefaultValue = AUSPlugin.ShowShieldHud.Value
         },
         new()
         {
@@ -143,13 +127,6 @@ public static class LocalSettings
         },
         new()
         {
-            Title = "Button Cooldowns are in Decimal Under 10s",
-            ObjName = "PreciseCooldowns",
-            OnClick = () => { return AUSPlugin.PreciseCooldowns.Value = !AUSPlugin.PreciseCooldowns.Value; },
-            DefaultValue = AUSPlugin.PreciseCooldowns.Value
-        },
-        new()
-        {
             Title = $"Arrow Style: {TouAssets.ArrowSpriteName}",
             ObjName = "ArrowStyle",
             OnClick = () =>
@@ -176,6 +153,35 @@ public static class LocalSettings
                 return AUSPlugin.ArrowStyle.Value <= 0;
             },
             DefaultValue = AUSPlugin.ArrowStyle.Value <= 0
+        },
+        new()
+        {
+            Title = $"Role Icon Position: {AUSAssets.RoleIconPosName}",
+            ObjName = "IconPos",
+            OnClick = () =>
+            {
+                var newVal = AUSPlugin.RoleIconSpot.Value + 1;
+                if (newVal is < 0 or > 1)
+                {
+                    newVal = 0;
+                }
+
+                AUSPlugin.RoleIconSpot.Value = newVal;
+
+                var optionsMenu = GameObject.Find("Menu(Clone)") ? GameObject.Find("Menu(Clone)") : GameObject.Find("OptionsMenu(Clone)");
+
+                if (optionsMenu != null)
+                {
+                    var title = optionsMenu.transform.FindChild("IconPos");
+                    if (title != null && title.transform.GetChild(2).TryGetComponent<TextMeshPro>(out var txt))
+                    {
+                        txt.text = $"Role Icon Position: {AUSAssets.RoleIconPosName}";
+                    }
+                }
+
+                return AUSPlugin.RoleIconSpot.Value <= 0;
+            },
+            DefaultValue = AUSPlugin.RoleIconSpot.Value <= 0
         }
     ];
 

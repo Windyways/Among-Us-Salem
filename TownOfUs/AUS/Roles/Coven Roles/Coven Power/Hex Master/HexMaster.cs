@@ -70,9 +70,18 @@ public sealed class HexMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
         return WinConditionMet() || CovenGameOver.AnyCovenWon(gameOverReason);
     }
 
-    public override void OnMeetingStart()
+    public void Role_OnMeetingStart()
     {
-        RoleBehaviourStubs.OnMeetingStart(this);
+        CheckForHexBomb();
+    }
+
+    public void Role_AfterMurder(PlayerControl victim)
+    {
+        if (MeetingHud.Instance) CheckForHexBomb();
+    }
+
+    private void CheckForHexBomb()
+    {
         if (!Player.HasDied())
         {
             var nonHexed = PlayerControl.AllPlayerControls.ToArray().Where(x =>
@@ -91,7 +100,7 @@ public sealed class HexMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     }
 }
 
-public sealed class HexMaster_Hex : TownOfUsRoleButton<HexMaster, PlayerControl>
+public sealed class HexMaster_Hex : TownOfUsRoleButton<HexMaster, PlayerControl>, IButtonClick
 {
     public override string Name => "Hex";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -105,7 +114,18 @@ public sealed class HexMaster_Hex : TownOfUsRoleButton<HexMaster, PlayerControl>
         if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), !Player.HasNecronomicon())) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        if (Player.HasNecronomicon())
+            return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+                !x.Is(Faction.Coven));
+
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.Is(Faction.Coven) && !x.HasModifier<HexedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -120,16 +140,6 @@ public sealed class HexMaster_Hex : TownOfUsRoleButton<HexMaster, PlayerControl>
             }
             else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
         }
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        if (Player.HasNecronomicon())
-            return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-                !x.Is(Faction.Coven));
-
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-            !x.Is(Faction.Coven) && !x.HasModifier<HexedModifier>(x => x.Caster == Player));
     }
 }
 

@@ -49,10 +49,15 @@ namespace AmongUsSalem.Misc
             // -- TI --
             roleStats.Add("Sheriff", new RoleStats("Sheriff", RoleColors.Town));
             roleStats.Add("Seer", new RoleStats("Seer", RoleColors.Town));
-            roleStats.Add("Lookout", new RoleStats("Lookout", RoleColors.Town));
+            roleStats.Add("Lookout (TOS2)", new RoleStats("Lookout (TOS2)", RoleColors.Town));
             roleStats.Add("Tracker", new RoleStats("Tracker", RoleColors.Town));
+            roleStats.Add("Lookout (TOS1)", new RoleStats("Lookout (TOS1)", RoleColors.Town));
+            roleStats.Add("Investigator", new RoleStats("Investigator", RoleColors.Town));
             // -- TK --
-            roleStats.Add("Deputy", new RoleStats("Deputy", RoleColors.Town));
+            roleStats.Add("Deputy (High Noon)", new RoleStats("Deputy (High Noon)", RoleColors.Town));
+            roleStats.Add("Deputy (Shoot And Reveal)", new RoleStats("Deputy (Shoot And Reveal)", RoleColors.Town));
+            roleStats.Add("Vigilante", new RoleStats("Vigilante", RoleColors.Town));
+            roleStats.Add("Veteran", new RoleStats("Veteran", RoleColors.Town));
             // -- TO --
             roleStats.Add("Pilgrim", new RoleStats("Pilgrim", RoleColors.Town));
             roleStats.Add("Catalyst", new RoleStats("Catalyst", RoleColors.Town));
@@ -61,7 +66,8 @@ namespace AmongUsSalem.Misc
             roleStats.Add("Cleric", new RoleStats("Cleric", RoleColors.Town));
             roleStats.Add("Crusader", new RoleStats("Crusader", RoleColors.Town));
             // -- TS --
-            roleStats.Add("Amnesiac", new RoleStats("Amnesiac", RoleColors.Town));
+            roleStats.Add("Amnesiac (TOS2)", new RoleStats("Amnesiac", RoleColors.Amnesiac(AmnesiacMode.TOS2)));
+            roleStats.Add("Admirer", new RoleStats("Admirer", RoleColors.Town));
 
             // --- NEUTRAL ---
             // -- NA --
@@ -73,12 +79,14 @@ namespace AmongUsSalem.Misc
             roleStats.Add("Death", new RoleStats("Death", RoleColors.Apocalypse));
             // -- NB --
             roleStats.Add("Survivor", new RoleStats("Survivor", RoleColors.Survivor));
+            roleStats.Add("Amnesiac (TOS1)", new RoleStats("Amnesiac", RoleColors.Amnesiac(AmnesiacMode.TOS1)));
             // -- NC --
             // -- NE --
             roleStats.Add("Jester", new RoleStats("Jester", RoleColors.Jester));
             // -- NK --
-            roleStats.Add("Serial Killer", new RoleStats("Serial Killer", RoleColors.SerialKiller));
+            roleStats.Add("Serial Killer (TOS2)", new RoleStats("Serial Killer (TOS2)", RoleColors.SerialKiller(SerialKillerMode.TOS2)));
             roleStats.Add("Werewolf", new RoleStats("Werewolf", RoleColors.Werewolf));
+            roleStats.Add("Serial Killer (TOS1)", new RoleStats("Serial Killer (TOS1)", RoleColors.SerialKiller(SerialKillerMode.TOS1)));
             // -- NO --
             // -- NP --
             roleStats.Add("Starspawn", new RoleStats(RoleColors.StarspawnNameInGradient, RoleColors.Starspawn));
@@ -89,6 +97,7 @@ namespace AmongUsSalem.Misc
             // -- MK --
             roleStats.Add("Godfather", new RoleStats("Godfather", RoleColors.Mafia));
             roleStats.Add("Mafioso", new RoleStats("Mafioso", RoleColors.Mafia));
+            roleStats.Add("Ambusher", new RoleStats("Ambusher", RoleColors.Mafia));
             // -- MS --
             roleStats.Add("Agent", new RoleStats("Agent", RoleColors.Mafia));
             roleStats.Add("Consigliere", new RoleStats("Consigliere", RoleColors.Mafia));
@@ -110,6 +119,15 @@ namespace AmongUsSalem.Misc
             LoadRoleStats(filePath);
         }
 
+        public static string RoleModeModify(this string name)
+        {
+            if (name == "Lookout") return name += $" ({OptionGroupSingleton<Lookout_Options>.Instance.Mode.ToSpacedString()})";
+            if (name == "Deputy") return name += $" ({OptionGroupSingleton<Deputy_Options>.Instance.Mode.ToSpacedString()})";
+            if (name == "Serial Killer") return name += $" ({OptionGroupSingleton<SerialKiller_Options>.Instance.Mode.ToSpacedString()})";
+            if (name == "Amnesiac") return name += $" ({OptionGroupSingleton<Amnesiac_Options>.Instance.Mode.ToSpacedString()})";
+            return name;
+        }
+
         public static List<string> PendingNotifications = new List<string>();
         public static void UpdateRoleResult(RoleBehaviour roleBehaviour, int kills, bool won)
         {
@@ -120,6 +138,7 @@ namespace AmongUsSalem.Misc
                 return;
             }
 
+            roleName = roleName.RoleModeModify();
             if (roleStats.TryGetValue(roleName, out RoleStats? stats))
             {
                 // Store snapshot before updating
@@ -295,12 +314,12 @@ namespace AmongUsSalem.Misc
                 string hexColor = ColorUtility.ToHtmlStringRGB(role.Color);
                 string coloredRoleName = $"<b><color=#{hexColor}>{role.RoleName}</color></b>";
 
-                string KillsMSG = role.Kills > 0 ? $" <b><color=#ff5050>{role.Kills} kills</color></b> |" : "";
+                string KillsMSG = "";
                 rates += $"{coloredRoleName} | <b><color=#ff0000>{role.GamesPlayed - role.Wins}</color></b> | <b><color=#00ff00>{role.Wins}</color></b> |{KillsMSG} {role.WinRate * 100:F2}% |\n";
             }
 
             if (rates == "") rates = "There are no data logged on this slot.";
-            return rates;
+            return "<size=62%>" + rates + "</size>";
         }
 
         public static string ResetLeaderboard()

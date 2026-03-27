@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
-using MiraAPI.GameOptions.OptionTypes;
 using System.Text;
 using UnityEngine;
 
@@ -116,7 +115,7 @@ public sealed class Wildling(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
                 foreach (var info in TrackerVisitedInfo)
                 {
                     Player.Notify(Tracker.Info(NotificationType.Tracker_TargetVisited, info.Item1, info.Item2), NotifyMode.OnlyMeeting, sprite: AUSAssets.AgentRoleCard.LoadAsset());
-                    if (info.Item2.HasDied() && MeetingHud.Instance.reporterId != info.Item2.PlayerId) info.Item1.RpcAddModifier<IncriminatingEvidence>();
+                    if (info.Item2.HasDied() && MeetingHud.Instance.reporterId != info.Item1.PlayerId) info.Item1.RpcAddModifier<IncriminatingEvidence>();
                 }
                 foreach (var info in TrackerDoubleVisitedInfo)
                 {
@@ -136,7 +135,7 @@ public sealed class Wildling(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     public List<(PlayerControl, (PlayerControl, PlayerControl))> TrackerDoubleVisitedInfo = new List<(PlayerControl, (PlayerControl, PlayerControl))>();
 }
 
-public sealed class Wildling_Sense : TownOfUsRoleButton<Wildling, PlayerControl>
+public sealed class Wildling_Sense : TownOfUsRoleButton<Wildling, PlayerControl>, IButtonClick
 {
     public override string Name => "Sense";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -150,7 +149,19 @@ public sealed class Wildling_Sense : TownOfUsRoleButton<Wildling, PlayerControl>
         if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        if (Player.HasNecronomicon())
+            return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+                !x.Is(Faction.Coven));
+
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.HasModifier<WatchedModifier>(x => x.Caster == Player) &&
+            !x.HasModifier<TrackedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -166,17 +177,6 @@ public sealed class Wildling_Sense : TownOfUsRoleButton<Wildling, PlayerControl>
             }
             else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
         }
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        if (Player.HasNecronomicon())
-            return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-                !x.Is(Faction.Coven));
-
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.HasModifier<WatchedModifier>(x => x.Caster == Player) &&
-            !x.HasModifier<TrackedModifier>(x => x.Caster == Player));
     }
 }
 

@@ -52,15 +52,17 @@ public static class CalculatedVoting
             {
                 if (!player.Is(Faction.Town) && anyProtest) voted = ProtestVoting(player, __instance);
                 else if (player.Is(Faction.Mafia)) voted = MafiaVoting(player, __instance);
+                else if (player.IsRole<Admirer>()) voted = AdmirerVoting(player, __instance);
                 else if (player.Is(Faction.Town)) voted = TownVoting(player, __instance);
                 else if (player.IsRole<HexMaster>()) voted = HexMasterVoting(player, __instance);
                 else if (player.Is(Faction.Coven)) voted = CovenVoting(player, __instance);
                 else if (player.IsRole<Survivor>()) voted = SurvivorVoting(player, __instance);
                 else if (player.IsRole<Jester>()) voted = JesterVoting(player, __instance);
-                else if (player.Is(Alignment.NeutralApocalypse)) voted = ApocVoting(player, __instance);
-                else if (player.IsRole<SerialKiller>()) voted = SerialKillerVoting(player, __instance);
+                else if (player.Is(Faction.Apocalypse)) voted = ApocVoting(player, __instance);
+                else if (player.Is(Faction.SerialKiller)) voted = SerialKillerVoting(player, __instance);
                 else if (player.IsRole<Starspawn>()) voted = StarspawnVoting(player, __instance);
-                else if (player.IsRole<Werewolf>()) voted = WerewolfVoting(player, __instance);
+                else if (player.Is(Faction.Werewolf)) voted = WerewolfVoting(player, __instance);
+                else if (player.IsRole<Amnesiac>()) voted = AmnesiacVoting(player, __instance); // NB Amnesiac!
 
                 if (voted == MeetingHud.Instance.SkipVoteButton.TargetPlayerId) AUS_AfterVoteEvent.RoleFunctionOnSkip(player);
                 else AUS_AfterVoteEvent.RoleFunctionOnVote(player, MiscUtils.PlayerById(voted));
@@ -247,7 +249,7 @@ public static class CalculatedVoting
     {
         var allPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied()).ToList();
         var validPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x =>
-            !x.HasDied() && !x.Is(Alignment.NeutralApocalypse)).ToList();
+            !x.HasDied() && !x.Is(Faction.Apocalypse)).ToList();
 
         var seenKill = SeenKill.GetAll();
 
@@ -255,7 +257,7 @@ public static class CalculatedVoting
         if (incriminatingEvidence != null && incriminatingEvidence.Count >= 2)
         {
             // If one is Apoc and one isn't -> vote the non-Apoc
-            var nonApocTarget = incriminatingEvidence.FirstOrDefault(p => !p.Player.Is(Alignment.NeutralApocalypse));
+            var nonApocTarget = incriminatingEvidence.FirstOrDefault(p => !p.Player.Is(Faction.Apocalypse));
             if (nonApocTarget != null)
             {
                 lastApocVoteTarget = (TryCastVote(player, __instance, nonApocTarget.Player), true);
@@ -264,7 +266,7 @@ public static class CalculatedVoting
         }
 
         if (lastApocVoteTarget.Item2 && ChanceIs(30)) return TryCastVote(player, __instance, lastApocVoteTarget.Item1);
-        else if (seenKill != null && !seenKill.killer.Is(Alignment.NeutralApocalypse) && !seenKill.Player.HasDied()) lastApocVoteTarget = (TryCastVote(player, __instance, seenKill.killer.PlayerId), true);
+        else if (seenKill != null && !seenKill.killer.Is(Faction.Apocalypse) && !seenKill.Player.HasDied()) lastApocVoteTarget = (TryCastVote(player, __instance, seenKill.killer.PlayerId), true);
         else if (allPlayers.Count < 12 && validPlayers.Count > 0) lastApocVoteTarget = (RandomVote(player, __instance, validPlayers, allPlayers.Count >= 7), true);
         else lastApocVoteTarget = (SkipVote(player, __instance), true);
 
@@ -343,9 +345,49 @@ public static class CalculatedVoting
 
         if (lastCovenVoteTarget.Item2 && ChanceIs(90) && player.Is(Faction.Coven)) return TryCastVote(player, __instance, lastCovenVoteTarget.Item1);
         else if (lastMafiaVoteTarget.Item2 && ChanceIs(90) && player.Is(Faction.Mafia)) return TryCastVote(player, __instance, lastMafiaVoteTarget.Item1);
-        else if (lastApocVoteTarget.Item2 && ChanceIs(90) && player.Is(Alignment.NeutralApocalypse)) return TryCastVote(player, __instance, lastApocVoteTarget.Item1);
+        else if (lastApocVoteTarget.Item2 && ChanceIs(90) && player.Is(Faction.Apocalypse)) return TryCastVote(player, __instance, lastApocVoteTarget.Item1);
         else if (validPlayers.Count > 0) return RandomVote(player, __instance, validPlayers, false);
         return SkipVote(player, __instance);
+    }
+
+    public static byte AmnesiacVoting(PlayerControl player, MeetingHud __instance) => SurvivorVoting(player, __instance);
+    public static byte AdmirerVoting(PlayerControl player, MeetingHud __instance)
+    {
+        var admirer = player.GetRole<Admirer>();
+        var allPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.HasDied()).ToList();
+        var validPlayers = PlayerControl.AllPlayerControls.ToArray().Where(x =>
+            !x.HasDied() && x != player && !x.HasModifier<TI>() && !x.HasModifier<Confirmed>() && !x.HasModifier<SoftCleared>() &&
+            !(x.Is(Faction.Town) && x.HasModifier<GlobalReveal>()) &&
+            !(admirer.Obsession == x && admirer.foundObsession)).ToList();
+
+        var seenKill = SeenKill.GetAll();
+        var confirmedEvil = ConfirmedEvil.GetAll();
+        var incriminatingEvidence = ModifierUtils.GetPlayersWithModifier<IncriminatingEvidence>(x => validPlayers.Contains(x.Player)).ToList();
+        var icTarget = incriminatingEvidence.Random();
+
+        if (declaredTownTarget.Item2 && ChanceIs(80)) return TryCastVote(player, __instance, declaredTownTarget.Item1);
+        else if (confirmedEvil != null) declaredTownTarget = (TryCastVote(player, __instance, confirmedEvil.Player), true);
+        else if (icTarget != null && !icTarget.HasDied()) declaredTownTarget = (TryCastVote(player, __instance, icTarget), true);
+        else if (seenKill != null)
+        {
+            var a = seenKill.killer;
+            var b = seenKill.Player;
+
+            int suspicionA = SeenKill.GetSuspicion(a);
+            int suspicionB = SeenKill.GetSuspicion(b);
+
+            // Bias by the witness credibility
+            if (ChanceIs(seenKill.voteChance)) suspicionA += 25;
+            else suspicionB += 25;
+
+            if (suspicionA > suspicionB) return TryCastVote(player, __instance, a);
+            else if (suspicionB > suspicionA) return TryCastVote(player, __instance, b);
+            else return TryCastVote(player, __instance, UnityEngine.Random.value < 0.5f ? a : b);
+        }
+        else if (allPlayers.Count < 12 && validPlayers.Count > 0) return RandomVote(player, __instance, validPlayers, allPlayers.Count >= 7);
+        else return SkipVote(player, __instance);
+
+        return declaredTownTarget.Item1;
     }
 
     public static bool ChanceIsNull(int? num)

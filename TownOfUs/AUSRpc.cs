@@ -15,6 +15,8 @@ public enum AUSRpc : uint
     RpcEmpowerGrimoire,
     RpcPerformInteractionTracked,
     RpcQuotaLynch,
+    RpcGlobalRemember,
+    RpcAlert,
 
     // Notifications
     RpcNotifyBodyguard,
@@ -30,6 +32,9 @@ public enum AUSRpc : uint
     RpcNotifyWarlock,
     RpcNotifyDeath,
     RpcTMDNotify,
+    RpcNotifyVigilante,
+    RpcNotifyAmbusher,
+    RpcNotifyVeteran,
 
     // Mechanics
     StartDayOne,
@@ -41,6 +46,9 @@ public enum AUSRpc : uint
     NecroPassing_PassNecronomicon,
     NecroPassing_AssignNecronomicon,
     RpcAddDeathReason,
+
+    // Chat
+    RpcSendCustomChat,
 
     // Misc
     RequestDeathStateValidation,

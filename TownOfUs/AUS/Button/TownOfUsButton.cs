@@ -18,8 +18,7 @@ public abstract class TownOfUsButton : CustomActionButton
     public override float InitialCooldown => 10;
     public override ButtonLocation Location => ButtonLocation.BottomRight;
 
-    public override string CooldownTimerFormatString =>
-        Timer <= 10f && AUSPlugin.PreciseCooldowns.Value ? "0.0" : "0";
+    public override string CooldownTimerFormatString => "0";
 
     public virtual bool UsableInDeath => false;
     public virtual bool ShouldPauseInVent => true;
@@ -219,8 +218,7 @@ public abstract class TownOfUsTargetButton<T> : CustomActionButton<T> where T : 
     public override float InitialCooldown => 10;
     public override ButtonLocation Location => ButtonLocation.BottomRight;
 
-    public override string CooldownTimerFormatString =>
-        Timer <= 10f && AUSPlugin.PreciseCooldowns.Value ? "0.0" : "0";
+    public override string CooldownTimerFormatString => "0";
 
     public virtual bool ShouldPauseInVent => true;
     public virtual bool UsableInDeath => false;

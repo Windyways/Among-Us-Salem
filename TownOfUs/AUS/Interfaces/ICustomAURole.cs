@@ -1,5 +1,4 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using Reactor.Utilities.Extensions;
 using System.Globalization;
 using System.Text;
 using UnityEngine;
@@ -78,12 +77,14 @@ public interface ICustomAURole : ICustomRole
             if (Alignment == Alignment.TownOutlier) return TouRoleGroups.TO;
             if (Alignment == Alignment.TownProtective) return TouRoleGroups.TP;
             if (Alignment == Alignment.TownSupport) return TouRoleGroups.TS;
+            if (Faction == Faction.Town) return TouRoleGroups.TO;
 
             if (Alignment == Alignment.NeutralApocalypse) return TouRoleGroups.NA;
             if (Alignment == Alignment.NeutralBenign) return TouRoleGroups.NB;
             if (Alignment == Alignment.NeutralChaos) return TouRoleGroups.NC;
             if (Alignment == Alignment.NeutralEvil) return TouRoleGroups.NE;
-            if (Alignment == Alignment.NeutralKilling) return TouRoleGroups.NK;
+            if (Alignment == Alignment.NeutralKilling ||
+                Faction == Faction.Werewolf || Faction == Faction.SerialKiller) return TouRoleGroups.NK;
             if (Alignment == Alignment.NeutralOutlier) return TouRoleGroups.NO;
             if (Alignment == Alignment.NeutralPariah) return TouRoleGroups.NP;
 
@@ -97,6 +98,7 @@ public interface ICustomAURole : ICustomRole
             if (Alignment == Alignment.CovenOutlier) return TouRoleGroups.CO;
             if (Alignment == Alignment.CovenPower) return TouRoleGroups.CPow;
             if (Alignment == Alignment.CovenUtility) return TouRoleGroups.CU;
+            if (Faction == Faction.Coven) return TouRoleGroups.CO;
 
             return Team switch
             {

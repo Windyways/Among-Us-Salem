@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TownOfUs.Modifiers;
 using TownOfUs.Options;
+using TownOfUs.Patches.Options;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -69,16 +70,16 @@ public static class MiscUtils
     }
 
     public static int KillersAliveCount => Helpers.GetAlivePlayers().Count(x => x.IsImpostor() ||
-        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling) || x.Is(Alignment.NeutralApocalypse))
+        x.Is(Faction.Coven) || x.Is(Faction.Werewolf) || x.Is(Faction.SerialKiller) || x.Is(Faction.Apocalypse))
     ;
 
     public static int RealKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling) || x.Is(Alignment.NeutralApocalypse) ||
+        x.Is(Faction.Coven) || x.Is(Faction.Werewolf) || x.Is(Faction.SerialKiller) || x.Is(Faction.Apocalypse) ||
 
         x.IsImpostor());
 
     public static int NKillersAliveCount => Helpers.GetAlivePlayers().Count(x =>
-        x.Is(Faction.Coven) || x.Is(Alignment.NeutralKilling) || x.Is(Alignment.NeutralApocalypse));
+        x.Is(Faction.Coven) || x.Is(Faction.Werewolf) || x.Is(Faction.SerialKiller) || x.Is(Faction.Apocalypse));
 
     public static int ImpAliveCount => Helpers.GetAlivePlayers().Count(x => x.IsImpostor());
 
@@ -355,55 +356,6 @@ public static class MiscUtils
         {
             SoundManager.Instance.PlaySound(chat.messageSound, false).pitch =
                 0.5f + PlayerControl.LocalPlayer.PlayerId / 15f;
-            chat.chatNotification.SetUp(PlayerControl.LocalPlayer, message);
-        }
-    }
-
-    public static void AddTeamChat(NetworkedPlayerInfo basePlayer, string nameText, string message,
-        bool showHeadsup = false, bool onLeft = true)
-    {
-        var chat = HudManager.Instance.Chat;
-
-        var pooledBubble = chat.GetPooledBubble();
-
-        pooledBubble.transform.SetParent(chat.scroller.Inner);
-        pooledBubble.transform.localScale = Vector3.one;
-        if (onLeft)
-        {
-            pooledBubble.SetLeft();
-        }
-        else
-        {
-            pooledBubble.SetRight();
-        }
-
-        pooledBubble.SetCosmetics(basePlayer);
-        pooledBubble.NameText.text = nameText;
-        pooledBubble.NameText.color = Color.white;
-        pooledBubble.NameText.ForceMeshUpdate(true, true);
-        pooledBubble.votedMark.enabled = false;
-        pooledBubble.Xmark.enabled = false;
-        pooledBubble.TextArea.text = message;
-        pooledBubble.TextArea.ForceMeshUpdate(true, true);
-        pooledBubble.Background.size = new Vector2(5.52f,
-            0.2f + pooledBubble.NameText.GetNotDumbRenderedHeight() + pooledBubble.TextArea.GetNotDumbRenderedHeight());
-        pooledBubble.MaskArea.size = pooledBubble.Background.size - new Vector2(0, 0.03f);
-
-        pooledBubble.Background.color = new Color(0.2f, 0.2f, 0.27f, 1f);
-        pooledBubble.TextArea.color = Color.white;
-
-        pooledBubble.AlignChildren();
-        var pos = pooledBubble.NameText.transform.localPosition;
-        pooledBubble.NameText.transform.localPosition = pos;
-        chat.AlignAllBubbles();
-        if (chat is { IsOpenOrOpening: false, notificationRoutine: null })
-        {
-            chat.notificationRoutine = chat.StartCoroutine(chat.BounceDot());
-        }
-
-        if (showHeadsup && !chat.IsOpenOrOpening)
-        {
-            SoundManager.Instance.PlaySound(chat.messageSound, false).pitch = 0.1f;
             chat.chatNotification.SetUp(PlayerControl.LocalPlayer, message);
         }
     }

@@ -18,6 +18,8 @@ public sealed class IsolatedModifier(PlayerControl c) : BaseModifier
 
     public int PerformInteraction(CustomActionButton button, PlayerControl visitor, PlayerControl target)
     {
+        if (state == State.Isolated) return 0; // Do not Block visit.
+
         if (Caster.AmOwner()) Starspawn.RpcNotify(Caster, (int)NotificationType.Starspawn_Isolate, visitor);
 
         if (visitor.Is(Faction.Town))

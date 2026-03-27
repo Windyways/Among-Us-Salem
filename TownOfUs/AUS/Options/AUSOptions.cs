@@ -1,4 +1,7 @@
 ﻿using MiraAPI.GameOptions.OptionTypes;
+using System.Xml;
+using static Il2CppSystem.Xml.Schema.FacetsChecker.FacetsCompiler;
+using static UnityEngine.UIElements.UIR.Allocator2D;
 
 namespace AmongUsSalem.Options;
 
@@ -18,4 +21,13 @@ public sealed class AUSOptions : AbstractOptionGroup
 
     [ModdedNumberOption("Rampage Radius", 0.25f, 15f, 0.25f, MiraNumberSuffixes.Multiplier, "0.00")]
     public float RampageRadius { get; set; } = 1f;
+
+    [ModdedEnumOption("How Roles Are Considered Unique", typeof(UniqueMode), ["No Unique", "1 Max Is Unique"])]
+    public UniqueMode UniqueRoleMode { get; set; } = UniqueMode.RolesOverOneAreUnique;
+}
+
+public enum UniqueMode
+{
+    AllNotUnique,
+    RolesOverOneAreUnique
 }

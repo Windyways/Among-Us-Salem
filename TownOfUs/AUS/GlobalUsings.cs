@@ -11,7 +11,9 @@ global using AmongUsSalem.CovenRoles;
 global using AmongUsSalem.Patches;
 global using AmongUsSalem.Events;
 global using AmongUsSalem.Wiki;
+global using AmongUsSalem.MafiaRoles;
 global using AmongUsSalem.ApocalypseRoles;
+global using AmongUsSalem.NeutralRoles;
 
 global using TownOfUs.Roles;
 global using TownOfUs.Buttons;
@@ -37,6 +39,7 @@ global using MiraAPI.Events.Vanilla.Gameplay;
 global using MiraAPI.Patches.Stubs;
 global using MiraAPI.Events.Vanilla.Usables;
 global using MiraAPI.Events.Vanilla.Meeting.Voting;
+global using MiraAPI.GameOptions.OptionTypes; 
 
 global using HarmonyLib;
 

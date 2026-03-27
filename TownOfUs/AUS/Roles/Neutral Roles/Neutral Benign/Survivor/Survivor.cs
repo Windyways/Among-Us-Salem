@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Survivor(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable, INotThreatable
+public sealed class Survivor(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable, INotThreatable
 {
     public string RoleName { get; set; } = "Survivor";
     public string revealText => "simply wants to live.";
@@ -87,7 +87,7 @@ public sealed class Survivor(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     }
 }
 
-public sealed class Survivor_Vest : TownOfUsRoleButton<Survivor>
+public sealed class Survivor_Vest : TownOfUsRoleButton<Survivor>, IButtonClick
 {
     public override string Name => "Vest";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -101,10 +101,10 @@ public sealed class Survivor_Vest : TownOfUsRoleButton<Survivor>
         if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    protected override void OnClick() => Click(Player);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         Player.RpcAddModifier<VestedModifier>(Player);
-        //Player.RpcAddModifier<OverrideDefense>((int)Defense.Basic);
         AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
     }
 }

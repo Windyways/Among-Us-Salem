@@ -88,7 +88,7 @@ public sealed class Crusader(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     }
 }
 
-public sealed class Crusader_Fortify : TownOfUsRoleButton<Crusader, PlayerControl>
+public sealed class Crusader_Fortify : TownOfUsRoleButton<Crusader, PlayerControl>, IButtonClick
 {
     public override string Name => "Fortify";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -101,20 +101,20 @@ public sealed class Crusader_Fortify : TownOfUsRoleButton<Crusader, PlayerContro
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.HasModifier<FortifiedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Target.RpcAddModifier<FortifiedModifier>(Player);
-        //Target.RpcAddModifier<HideGainedDefense>();
         AttackDefenseMechanic.RpcApplyDefense(Target, Defense.Powerful);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-            !x.HasModifier<FortifiedModifier>(x => x.Caster == Player));
     }
 }
 

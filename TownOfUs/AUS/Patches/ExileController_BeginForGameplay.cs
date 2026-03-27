@@ -18,5 +18,7 @@ public static class ExileController_BeginForGameplay
                 __instance.completeString = player.Name() + "'s Role Was <b><color=#" + ausRole.RoleColor.ToHtmlStringRGBA() + $">{ausRole.RoleName}</color></b>!";
             }
         }
+
+        __instance.ImpostorText.text = "";
     }
 }

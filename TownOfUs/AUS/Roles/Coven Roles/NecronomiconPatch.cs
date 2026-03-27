@@ -6,7 +6,7 @@ public static class NecronomiconPatch
     {
         foreach (var player in PlayerControl.AllPlayerControls)
         {
-            if (player.Is(Faction.Coven) && OptionGroupSingleton<CovenOptions>.Instance.EnableNecroPassing)
+            if (player.Is(Faction.Coven) && OptionGroupSingleton<CovenOptions>.Instance.EnableNecroPassing && !player.HasModifier<NecroPassing>())
                 player.RpcAddModifier<NecroPassing>();
         }
     }
@@ -74,6 +74,7 @@ public static class NecronomiconPatch
             //.ThenBy(x => x.IsRole<Covenite>()) // Cultist
             .ThenByDescending(x => x.IsRole<Covenite>())
             //.ThenByDescending(x => x.IsRole<Covenite>()) // Indocrinated
+            .ThenBy(x => UnityEngine.Random.value)
             .ToList();
 
         if (coven.Count > 0)

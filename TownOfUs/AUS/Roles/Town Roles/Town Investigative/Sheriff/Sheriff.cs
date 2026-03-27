@@ -49,7 +49,7 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
         else
         {
             info.AppendLine();
-            info.AppendLine("No Search results yet.");
+            info.AppendLine("No investigative results yet.");
         }
 
         return info;
@@ -92,7 +92,8 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
         if (target.Is(Faction.Coven) && !target.HasModifier<Necronomicon>()) return true;
 
         if (target.Is(Alignment.NeutralEvil) && !target.IsRole<Jester>()) return true;
-        if (target.Is(Alignment.NeutralApocalypse) && !target.HasModifier<SoloApocModifier>()) return true;
+        if (target.Is(Faction.Apocalypse) && !target.HasModifier<SoloApocModifier>()) return true;
+        if (target.IsRole<SerialKiller>() && OptionGroupSingleton<SerialKiller_Options>.Instance.Mode == SerialKillerMode.TOS1) return true;
 
         return false;
     }
@@ -111,7 +112,7 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public List<(PlayerControl, bool)> Information = new List<(PlayerControl, bool)>();
 }
 
-public sealed class Sheriff_Search : TownOfUsRoleButton<Sheriff, PlayerControl>
+public sealed class Sheriff_Search : TownOfUsRoleButton<Sheriff, PlayerControl>, IButtonClick
 {
     public override string Name => "Search";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -124,18 +125,19 @@ public sealed class Sheriff_Search : TownOfUsRoleButton<Sheriff, PlayerControl>
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance);
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Role.Information.Add((Target, Sheriff.IsSuspicious(Target)));
         Player.Notify(Sheriff.Info(Player, Target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SheriffRoleCard.LoadAsset());
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance);
     }
 }
 

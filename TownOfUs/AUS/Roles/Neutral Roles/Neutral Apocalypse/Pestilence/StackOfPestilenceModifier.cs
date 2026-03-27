@@ -12,12 +12,12 @@ public sealed class StackOfPestilenceModifier(PlayerControl c) : BaseModifier
     public PlayerControl Caster => c;
     public int PerformInteraction(PlayerControl visitor, PlayerControl target)
     {
-        if (target.IsRole<Pestilence>() && !visitor.Is(Alignment.NeutralApocalypse))
+        if (target.IsRole<Pestilence>() && !visitor.Is(Faction.Apocalypse))
         {
             if (visitor.TryGetModifier<StackOfPestilenceModifier>(out var vstackOP)) vstackOP.AddStack();
         }
 
-        if (target.Is(Alignment.NeutralApocalypse))
+        if (target.Is(Faction.Apocalypse))
             return 0;
 
         if (target.TryGetModifier<StackOfPestilenceModifier>(out var stackOP)) stackOP.AddStack();

@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Plaguebearer(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable
+public sealed class Plaguebearer(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable
 {
     public string RoleName { get; set; } = "Plaguebearer";
     public string revealText => "is a carrier of disease.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are an acolyte of Pestilence, infecting the town with a deadly disease.";
     public Color RoleColor { get; set; } = RoleColors.Apocalypse;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction Faction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Apocalypse;
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.None;
@@ -107,7 +107,7 @@ public sealed class Plaguebearer(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
         if (!Player.HasDied())
         {
             var nonInfected = PlayerControl.AllPlayerControls.ToArray().Where(x =>
-                !x.HasDied() && !x.Is(Alignment.NeutralApocalypse) && !x.HasModifier<InfectedModifier>(x => x.Caster == Player)).ToList();
+                !x.HasDied() && !x.IsSameFaction(Player) && !x.HasModifier<InfectedModifier>(x => x.Caster == Player)).ToList();
 
             if (nonInfected.Count <= 0)
             {
@@ -118,7 +118,7 @@ public sealed class Plaguebearer(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURo
     }
 }
 
-public sealed class Plaguebearer_Infect : TownOfUsRoleButton<Plaguebearer, PlayerControl>
+public sealed class Plaguebearer_Infect : TownOfUsRoleButton<Plaguebearer, PlayerControl>, IButtonClick
 {
     public override string Name => "Infect";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -140,7 +140,7 @@ public sealed class Plaguebearer_Infect : TownOfUsRoleButton<Plaguebearer, Playe
         if (playerControl.IsRole<Plaguebearer>())
         {
             var nonInfected = PlayerControl.AllPlayerControls.ToArray().Where(x =>
-                !x.HasDied() && !x.Is(Alignment.NeutralApocalypse) && !x.HasModifier<InfectedModifier>(x => x.Caster == Player)).ToList();
+                !x.HasDied() && !x.Is(Faction.Apocalypse) && !x.HasModifier<InfectedModifier>(x => x.Caster == Player)).ToList();
 
             Button?.usesRemainingText.gameObject.SetActive(true);
             Button?.usesRemainingSprite.gameObject.SetActive(true);
@@ -155,18 +155,19 @@ public sealed class Plaguebearer_Infect : TownOfUsRoleButton<Plaguebearer, Playe
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.Is(Faction.Apocalypse) && !x.HasModifier<InfectedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Target.RpcAddModifier<InfectedModifier>(Player);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.Is(Alignment.NeutralApocalypse) && !x.HasModifier<InfectedModifier>(x => x.Caster == Player));
     }
 }
 

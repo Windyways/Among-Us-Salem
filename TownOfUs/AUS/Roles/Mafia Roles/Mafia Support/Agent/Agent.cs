@@ -131,7 +131,7 @@ public sealed class Agent(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole, 
     public List<(PlayerControl, (PlayerControl, PlayerControl))> TrackerDoubleVisitedInfo = new List<(PlayerControl, (PlayerControl, PlayerControl))>();
 }
 
-public sealed class Agent_Stalk : TownOfUsRoleButton<Agent, PlayerControl>
+public sealed class Agent_Stalk : TownOfUsRoleButton<Agent, PlayerControl>, IButtonClick
 {
     public override string Name => "Stalk";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -144,20 +144,21 @@ public sealed class Agent_Stalk : TownOfUsRoleButton<Agent, PlayerControl>
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
+            !x.HasModifier<WatchedModifier>(x => x.Caster == Player) &&
+            !x.HasModifier<TrackedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Target.RpcAddModifier<WatchedModifier>(Player);
         Target.RpcAddModifier<TrackedModifier>(Player);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
-            !x.HasModifier<WatchedModifier>(x => x.Caster == Player) &&
-            !x.HasModifier<TrackedModifier>(x => x.Caster == Player));
     }
 }
 

@@ -61,7 +61,7 @@ public sealed class Catalyst(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     }
 }
 
-public sealed class Catalyst_Overcharge : TownOfUsRoleButton<Catalyst, PlayerControl>
+public sealed class Catalyst_Overcharge : TownOfUsRoleButton<Catalyst, PlayerControl>, IButtonClick
 {
     public override string Name => "Overcharge";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -74,18 +74,19 @@ public sealed class Catalyst_Overcharge : TownOfUsRoleButton<Catalyst, PlayerCon
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.HasModifier<OverchargedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Target.RpcAddModifier<OverchargedModifier>(Player);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.HasModifier<OverchargedModifier>(x => x.Caster == Player));
     }
 }
 

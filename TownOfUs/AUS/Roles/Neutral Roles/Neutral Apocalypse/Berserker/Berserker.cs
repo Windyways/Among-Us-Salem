@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Berserker(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable
+public sealed class Berserker(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable
 {
     public string RoleName { get; set; } = "Berserker";
     public string revealText => "gets more powerful with each kill.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are an acolyte of War, embodying nothing but raw power.";
-    public Color RoleColor { get; set; } = RoleColors.Apocalypse;
-    public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
+    public Color RoleColor { get => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item2; set { } }
+    public ModdedRoleTeams Team => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item3;
 
-    public Faction Faction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item1;
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.Powerful;
@@ -61,10 +61,10 @@ public sealed class Berserker(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
             AUSAssets.Berserker_Attack),
     ];
 
-    public bool WinConditionMet() => ApocGameOver.WinConditionMet(this);
+    public bool WinConditionMet() => FlexibleFactions.GetWinConditionMet(this, Faction);
     public override bool DidWin(GameOverReason gameOverReason)
     {
-        return WinConditionMet() || ApocGameOver.AnyApocWon(gameOverReason);
+        return WinConditionMet() || FlexibleFactions.GetDidWin(Faction, gameOverReason);
     }
 
     public static string Info(int kills)
@@ -82,7 +82,7 @@ public sealed class Berserker(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     public int Kills;
 }
 
-public sealed class Berserker_Attack : TownOfUsRoleButton<Berserker, PlayerControl>
+public sealed class Berserker_Attack : TownOfUsRoleButton<Berserker, PlayerControl>, IButtonClick
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -117,7 +117,20 @@ public sealed class Berserker_Attack : TownOfUsRoleButton<Berserker, PlayerContr
         if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.Is(Faction.Apocalypse));
+    }
+
+    public override bool CanUse()
+    {
+        if (Role.Kills == 0 && !DayNightMechanic.FullMoon()) return false;
+        return base.CanUse();
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -136,23 +149,13 @@ public sealed class Berserker_Attack : TownOfUsRoleButton<Berserker, PlayerContr
         }
         else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.Is(Alignment.NeutralApocalypse));
-    }
-
-    public override bool CanUse()
-    {
-        if (Role.Kills == 0 && !DayNightMechanic.FullMoon()) return false;
-        return base.CanUse();
-    }
 }
 
 public sealed class Berserker_Options : AbstractOptionGroup<Berserker>
 {
     public override string GroupName => "Berserker";
+    public ModdedEnumOption faction { get; set; } = new("[FLEXIBLE FACTIONS] Berserker Faction",
+        (int)Faction.Apocalypse, typeof(Faction), ["Town", "Coven", "Apocalypse", "Serial Killer", "Werewolf"]);
 
     [ModdedNumberOption("Berserker Attack Cooldown", 2.5f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

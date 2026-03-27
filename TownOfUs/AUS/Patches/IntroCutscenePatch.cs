@@ -23,7 +23,7 @@ public static class IntroCutscene_ShowTeam__d_MoveNext
                 __instance.__4__this.TeamTitle.color = RoleColors.Coven;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
             }
-            else if (ausRole.Alignment == Alignment.NeutralApocalypse)
+            else if (ausRole.Faction == Faction.Apocalypse)
             {
                 __instance.__4__this.TeamTitle.text = "Apocalypse";
                 __instance.__4__this.TeamTitle.color = RoleColors.Apocalypse;
@@ -53,7 +53,7 @@ public static class IntroCutscene_ShowRole_d__24
                 __instance.__4__this.TeamTitle.color = RoleColors.Coven;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = IntroCutscene_ShowTeam__d_MoveNext.GetIntroSound(RoleTypes.Shapeshifter);
             }
-            else if (ausRole.Alignment == Alignment.NeutralApocalypse)
+            else if (ausRole.Faction == Faction.Apocalypse)
             {
                 __instance.__4__this.TeamTitle.text = "Apocalypse";
                 __instance.__4__this.TeamTitle.color = RoleColors.Apocalypse;
@@ -84,7 +84,7 @@ public static class IntroCutscene_CoBegin_d__29
                 __instance.__4__this.TeamTitle.color = RoleColors.Coven;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = IntroCutscene_ShowTeam__d_MoveNext.GetIntroSound(RoleTypes.Shapeshifter);
             }
-            else if (ausRole.Alignment == Alignment.NeutralApocalypse)
+            else if (ausRole.Faction == Faction.Apocalypse)
             {
                 __instance.__4__this.TeamTitle.text = "Apocalypse";
                 __instance.__4__this.TeamTitle.color = RoleColors.Apocalypse;

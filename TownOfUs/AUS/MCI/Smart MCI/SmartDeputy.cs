@@ -1,5 +1,3 @@
-using AmongUsSalem.Roles;
-using Reactor.Utilities.Extensions;
 using System.Collections;
 using UnityEngine;
 

@@ -1,4 +1,7 @@
-﻿namespace AmongUsSalem.Modifiers;
+﻿using System.Collections;
+using UnityEngine;
+
+namespace AmongUsSalem.Modifiers;
 
 public sealed class FortifiedModifier(PlayerControl c) : BaseModifier
 {
@@ -19,6 +22,12 @@ public sealed class FortifiedModifier(PlayerControl c) : BaseModifier
     public override void OnMeetingStart()
     {
         Player.GetModifiers<FortifiedModifier>().Do(x => Player.RemoveModifier(x));
+    }
+
+    public IEnumerator CoPerformInteraction(PlayerControl attacker, PlayerControl target, bool isAttacking)
+    {
+        yield return new WaitForSeconds(0.1f);
+        PerformInteraction(attacker, target, isAttacking);
     }
 
     public int PerformInteraction(PlayerControl attacker, PlayerControl target, bool isAttacking)

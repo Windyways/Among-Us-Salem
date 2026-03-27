@@ -4,6 +4,7 @@ using System.Collections;
 using System.Text;
 using TownOfUs.Modules.Components;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -115,7 +116,7 @@ public sealed class Ritualist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     public PlayerControl currentTarget;
 }
 
-public sealed class Ritualist_Attack : TownOfUsRoleButton<Ritualist, PlayerControl>
+public sealed class Ritualist_Attack : TownOfUsRoleButton<Ritualist, PlayerControl>, IButtonClick
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -128,7 +129,19 @@ public sealed class Ritualist_Attack : TownOfUsRoleButton<Ritualist, PlayerContr
         if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance,
+            predicate: x => !x.Is(Faction.Coven));
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && Player.HasModifier<Necronomicon>();
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -142,20 +155,9 @@ public sealed class Ritualist_Attack : TownOfUsRoleButton<Ritualist, PlayerContr
 
         CustomButtonSingleton<Ritualist_BloodRitual>.Instance.ResetCooldownAndOrEffect();
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance,
-            predicate: x => !x.Is(Faction.Coven));
-    }
-
-    public override bool CanUse()
-    {
-        return base.CanUse() && Player.HasModifier<Necronomicon>();
-    }
 }
 
-public sealed class Ritualist_BloodRitual : TownOfUsRoleButton<Ritualist>
+public sealed class Ritualist_BloodRitual : TownOfUsRoleButton<Ritualist>, IButtonClick
 {
     public override string Name => "Blood Ritual";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -169,7 +171,8 @@ public sealed class Ritualist_BloodRitual : TownOfUsRoleButton<Ritualist>
         if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    protected override void OnClick() => Click(Player);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         var player1Menu = CustomPlayerMenu.Create();
         player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =

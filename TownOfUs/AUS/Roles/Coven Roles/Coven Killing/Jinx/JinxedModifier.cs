@@ -1,4 +1,6 @@
-﻿using static UnityEngine.GraphicsBuffer;
+﻿using System.Collections;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Modifiers;
 
@@ -26,6 +28,12 @@ public sealed class JinxedModifier(PlayerControl c) : BaseModifier
         Player.GetModifiers<JinxedModifier>().Do(x => Player.RemoveModifier(x));
     }
 
+    public IEnumerator CoPerformInteraction(PlayerControl visitor)
+    {
+        yield return new WaitForSeconds(0.1f);
+        PerformInteraction(visitor);
+    }
+
     public int PerformInteraction(PlayerControl visitor)
     {
         if (currentState == State.KillVisitor)
@@ -33,7 +41,7 @@ public sealed class JinxedModifier(PlayerControl c) : BaseModifier
             if (Caster.CanKill(visitor))
             {
                 Caster.RpcAddModifier<InvisibleStatus>();
-                Caster.RpcCustomMurder(visitor);
+                Caster.RpcCustomMurder(visitor, teleportMurderer: !MeetingHud.Instance);
                 VisitingMechanic.RpcAddDeathReason(visitor, (int)DeathReasonShow.KilledByAJinx);
             }
 

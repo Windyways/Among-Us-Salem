@@ -75,7 +75,7 @@ public static class DayNightMechanic
         if (!SmartProsecutor.IsActive) NightCount++;
         SmartClientSwapping.RoundStart();
     }
-
+    
     [RegisterEvent]
     public static void GameStartHandler(RoundStartEvent @event)
     {
@@ -84,7 +84,18 @@ public static class DayNightMechanic
             return; // Only run when game starts.
         }
 
-        if (AmongUsClient.Instance.AmHost) StartDayOne(PlayerControl.LocalPlayer);
+        foreach (var player in PlayerControl.AllPlayerControls) 
+            ShowRoleIcon.Add(player);
+
+        // Hopefully delaying would prevent abilities to be seen during the first Day.
+        // Would fix issues like not being able to pass Necronomicon to Player 14 or Jail them.
+        if (AmongUsClient.Instance.AmHost) Coroutines.Start(DelaySDO());
+    }
+
+    private static IEnumerator DelaySDO()
+    {
+        yield return new WaitForSeconds(0.2f);
+        StartDayOne(PlayerControl.LocalPlayer);
     }
 }
 

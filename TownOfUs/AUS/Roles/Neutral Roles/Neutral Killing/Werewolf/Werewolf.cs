@@ -1,11 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
+using System.Collections;
 using System.Text;
 using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Werewolf(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable
+public sealed class Werewolf(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable
 {
     public string RoleName { get; set; } = "Werewolf";
     public string revealText => "howls at the moon.";
@@ -14,7 +15,7 @@ public sealed class Werewolf(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     public Color RoleColor { get; set; } = RoleColors.Werewolf;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction Faction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Werewolf;
     public Alignment Alignment => Alignment.NeutralKilling;
 
     public Attack Attack { get; set; } = Attack.Powerful;
@@ -62,25 +63,16 @@ public sealed class Werewolf(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
             AUSAssets.Werewolf_Maul),
     ];
 
-    public static bool WinConditionMet(RoleBehaviour role)
-    {
-        var aliveNK = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Werewolf>());
-        if (aliveNK == 0) return false;
-
-        var result = MiscUtils.GetAlivePlayersToEnd().Count <= aliveNK && MiscUtils.KillersAliveCount == aliveNK;
-        return result;
-    }
-
     public static bool AnyWon(GameOverReason gameOverReason)
     {
         foreach (var player in PlayerControl.AllPlayerControls)
         {
-            if (player.IsRole<Werewolf>() && WinConditionMet(player.Data.Role)) return true;
+            if (player.IsRole<Werewolf>() && NeutralGameOver.WinConditionMet(player.Data.Role)) return true;
         }
         return false;
     }
 
-    public bool WinConditionMet() => WinConditionMet(this);
+    public bool WinConditionMet() => NeutralGameOver.WinConditionMet(this);
     public override bool DidWin(GameOverReason gameOverReason)
     {
         return WinConditionMet() || AnyWon(gameOverReason);
@@ -96,7 +88,7 @@ public sealed class Werewolf(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
                 foreach (var info in VisitedInfo)
                 {
                     Player.Notify(Tracker.Info(NotificationType.Tracker_TargetVisited, info.Item1, info.Item2), NotifyMode.OnlyMeeting, sprite: AUSAssets.TrackerRoleCard.LoadAsset());
-                    if (info.Item2.HasDied() && MeetingHud.Instance.reporterId != info.Item2.PlayerId) info.Item1.RpcAddModifier<IncriminatingEvidence>();
+                    if (info.Item2.HasDied() && MeetingHud.Instance.reporterId != info.Item1.PlayerId) info.Item1.RpcAddModifier<IncriminatingEvidence>();
                 }
                 foreach (var info in DoubleVisitedInfo)
                 {
@@ -118,7 +110,7 @@ public sealed class Werewolf(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
         if (Player.AmOwner) CustomButtonSingleton<Werewolf_Maul>.Instance.ResetCooldownAndOrEffect();
 
         Player.RpcAddModifier<MauledModifier>(Player);
-        Player.Rampage(visitor, DeathReasonShow.MauledByAWerewolf);
+        Player.Rampage(visitor, DeathReasonShow.MauledByAWerewolf, lunge: !MeetingHud.Instance);
         return 0; // Do not Block visits.
     }
 
@@ -126,7 +118,7 @@ public sealed class Werewolf(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     public List<(PlayerControl, (PlayerControl, PlayerControl))> DoubleVisitedInfo = new List<(PlayerControl, (PlayerControl, PlayerControl))>();
 }
 
-public sealed class Werewolf_TrackScent : TownOfUsRoleButton<Werewolf, PlayerControl>
+public sealed class Werewolf_TrackScent : TownOfUsRoleButton<Werewolf, PlayerControl>, IButtonClick
 {
     public override string Name => "Track Scent";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -139,14 +131,6 @@ public sealed class Werewolf_TrackScent : TownOfUsRoleButton<Werewolf, PlayerCon
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<TrackedModifier>(Player);
-    }
-
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
@@ -157,9 +141,18 @@ public sealed class Werewolf_TrackScent : TownOfUsRoleButton<Werewolf, PlayerCon
     {
         return base.Enabled(role) && DayNightMechanic.HalfMoon();
     }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
+    {
+        if (Target == null)
+            return;
+
+        Target.RpcAddModifier<TrackedModifier>(Player);
+    }
 }
 
-public sealed class Werewolf_Maul : TownOfUsRoleButton<Werewolf, PlayerControl>
+public sealed class Werewolf_Maul : TownOfUsRoleButton<Werewolf, PlayerControl>, IButtonClick
 {
     public override string Name => "Maul";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -172,15 +165,6 @@ public sealed class Werewolf_Maul : TownOfUsRoleButton<Werewolf, PlayerControl>
         if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
-    {
-        if (Target == null)
-            return;
-
-        Player.RpcAddModifier<MauledModifier>(Player);
-        Player.Rampage(Target, DeathReasonShow.MauledByAWerewolf);
-    }
-
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance);
@@ -189,6 +173,16 @@ public sealed class Werewolf_Maul : TownOfUsRoleButton<Werewolf, PlayerControl>
     public override bool Enabled(RoleBehaviour? role)
     {
         return base.Enabled(role) && DayNightMechanic.FullMoon();
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
+    {
+        if (Target == null)
+            return;
+
+        Player.RpcAddModifier<MauledModifier>(Player);
+        Player.Rampage(Target, DeathReasonShow.MauledByAWerewolf);
     }
 }
 

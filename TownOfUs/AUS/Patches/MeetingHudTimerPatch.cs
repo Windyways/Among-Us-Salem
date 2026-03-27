@@ -36,6 +36,9 @@ public static class MeetingHudTimerPatch
             case Starspawn starspawn:
                 newText = $"\nDaybreaks Left: {starspawn.Charges}";
                 break;
+            case Admirer admirer:
+                newText = $"\nBestows Left: {admirer.Charges}";
+                break;
         }
 
         if (newText != string.Empty) __instance.TimerText.text += $"<color=#FFFFFF>{newText}</color>";

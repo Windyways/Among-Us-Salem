@@ -37,12 +37,14 @@ public sealed class RoleOptions : AbstractOptionGroup
         "<color=#B545FF>Coven</color> <color=#4a86e8>Power</color>",
         "<color=#B545FF>Coven</color> <color=#4a86e8>Utility</color>",
         "<color=#4a86e8>Random</color> <color=#B545FF>Coven</color>",
-        "<color=#4a86e8>Common</color> <color=#ab42ef>Coven</color>",
+        "<color=#4a86e8>Common</color> <color=#B545FF>Coven</color>",
 
         "Any",
         "<color=#06E00C>T</color><color=#4a86e8>E</color>-<color=#06E00C>T</color><color=#4a86e8>G</color>",
         "<color=#06E00C>T</color><color=#4a86e8>E</color>-<color=#06E00C>T</color><color=#4a86e8>G</color>-<color=#06E00C>T</color><color=#4a86e8>O</color>",
         "<color=#4a86e8>R</color><color=#ff004e>A</color>-<color=#4a86e8>R</color><color=#a9a9a9>N</color>",
+        "<color=#a9a9a9>N</color><color=#4a86e8>K</color>-<color=#4a86e8>R</color><color=#B545FF>C</color>",
+        "<color=#4a86e8>R</color><color=#dd0000>M</color>-<color=#4a86e8>R</color><color=#B545FF>C</color>",
         "Not <color=#DD0000>Mafia</color>"
     ];
 
@@ -179,6 +181,8 @@ public enum RoleListOption
     TE_TG,
     TE_TG_TO,
     NA_RN,
+    NK_RC,
+    RM_RC,
 
 
     NotMafia,

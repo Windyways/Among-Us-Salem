@@ -15,6 +15,9 @@ public sealed class InfectedModifier(PlayerControl c) : BaseModifier
 
     public int PerformInteraction(PlayerControl visitor, PlayerControl target)
     {
+        if (visitor == Caster)
+            return 0;
+
         if (visitor.HasModifier<InfectedModifier>())
         {
             Plaguebearer.RpcNotify(Caster, visitor, target, (int)NotificationType.Plaguebearer_SpreadPlague);

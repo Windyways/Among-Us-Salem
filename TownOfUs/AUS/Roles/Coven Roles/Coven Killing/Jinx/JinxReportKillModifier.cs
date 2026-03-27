@@ -16,7 +16,7 @@ public sealed class JinxReportKillModifier(PlayerControl c, PlayerControl t) : B
             {
                 Caster.RpcCustomMurder(Player, teleportMurderer: false);
                 VisitingMechanic.RpcAddDeathReason(Player, (int)DeathReasonShow.KilledByAJinx);
-                if (AmongUsClient.Instance.AmHost) DayNightMechanic.StartDayOne(PlayerControl.LocalPlayer);
+                //if (AmongUsClient.Instance.AmHost) DayNightMechanic.StartDayOne(PlayerControl.LocalPlayer);
             }
 
             Jinx.RpcNotify(Caster, (int)NotificationType.Jinx_JinxedVisitor, Player, Player);

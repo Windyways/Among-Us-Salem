@@ -3,6 +3,7 @@ using Il2CppInterop.Runtime.Attributes;
 using Reactor.Utilities.Extensions;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -115,7 +116,7 @@ public sealed class Godfather_Kill : TownOfUsRoleButton<Godfather, PlayerControl
     }
 }
 
-public sealed class Godfather_Order : TownOfUsRoleButton<Godfather>
+public sealed class Godfather_Order : TownOfUsRoleButton<Godfather>, IButtonClick
 {
     public override string Name => "Order";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -128,7 +129,13 @@ public sealed class Godfather_Order : TownOfUsRoleButton<Godfather>
         if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override bool Enabled(RoleBehaviour? role)
+    {
+        return base.Enabled(role) && MiscUtils.GetRoles<Mafioso>().Count > 0;
+    }
+
+    protected override void OnClick() => Click(Player);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         var player1Menu = CustomPlayerMenu.Create();
         player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
@@ -185,33 +192,6 @@ public sealed class Godfather_Order : TownOfUsRoleButton<Godfather>
                 panel.NameText.color = Color.white;
             }
         }
-    }
-
-    public override bool Enabled(RoleBehaviour? role)
-    {
-        return base.Enabled(role) && MiscUtils.GetRoles<Mafioso>().Count > 0;
-    }
-}
-
-public static class Godfather_Events
-{
-    [RegisterEvent]
-    public static void EjectionEvent(EjectionEvent @event)
-    {
-        NetworkedPlayerInfo exiled = @event.ExileController.initData.networkedPlayer;
-        if (exiled != null)
-        {
-            PlayerControl player = exiled.Object;
-            if (player.IsRole<Godfather>()) MafiosoPromotionMechanic.GodfatherDied = true;
-        }
-    }
-
-    [RegisterEvent]
-    public static void AfterMurderEvent(AfterMurderEvent @event)
-    {
-        var role = @event.Target.GetRoleWhenAlive();
-        var aliveMafiosos = PlayerControl.AllPlayerControls.ToArray().Count(x => !x.HasDied() && x.IsRole<Mafioso>());
-        if (role is Godfather && aliveMafiosos > 0) MafiosoPromotionMechanic.GodfatherDied = true;
     }
 }
 

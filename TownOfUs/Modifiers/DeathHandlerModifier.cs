@@ -49,15 +49,15 @@ public sealed class DeathHandlerModifier : BaseModifier
     {
         if (causeOfDeath == DeathReasonShow.LeftTown) return RoleColors.Auditor;
 
-        if (causeOfDeath == DeathReasonShow.KilledByAMemberOfTheMafia/* || causeOfDeath == DeathReasonShow.KilledByAnAmbusher*/) return RoleColors.Mafia;
+        if (causeOfDeath == DeathReasonShow.KilledByAMemberOfTheMafia || causeOfDeath == DeathReasonShow.KilledByAnAmbusher) return RoleColors.Mafia;
         //if (causeOfDeath == DeathReasonShow.IncineratedByAnArsonist) return AUSColors.Arsonist;
         //if (causeOfDeath == DeathReasonShow.KilledByAShroud) return AUSColors.Shroud;
         //if (causeOfDeath == DeathReasonShow.BittenByAVampire) return AUSColors.Vampire;
         //if (causeOfDeath == DeathReasonShow.AssassinatedByAJackal || causeOfDeath == DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate) return AUSColors.Neutral;
-        if (causeOfDeath == DeathReasonShow.KilledByABodyguard || causeOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget || causeOfDeath == DeathReasonShow.ShotByADeputy || causeOfDeath == DeathReasonShow.KilledByACrusader || causeOfDeath == DeathReasonShow.DishonoredTheTown) return RoleColors.Town;
+        if (causeOfDeath == DeathReasonShow.ShotByAVeteran || causeOfDeath == DeathReasonShow.ShotByAVigilante || causeOfDeath == DeathReasonShow.KilledByABodyguard || causeOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget || causeOfDeath == DeathReasonShow.ShotByADeputy || causeOfDeath == DeathReasonShow.KilledByACrusader || causeOfDeath == DeathReasonShow.DishonoredTheTown) return RoleColors.Town;
         if (causeOfDeath == DeathReasonShow.KilledByTheCoven || causeOfDeath == DeathReasonShow.BombedByAHexMaster || causeOfDeath == DeathReasonShow.KilledByAJinx || causeOfDeath == DeathReasonShow.KilledByARitualist) return RoleColors.Coven;
         if (causeOfDeath == DeathReasonShow.HauntedByAJester || causeOfDeath == DeathReasonShow.DiedOfBoredom) return RoleColors.Jester;
-        if (causeOfDeath == DeathReasonShow.StabbedByASerialKiller) return RoleColors.SerialKiller;
+        if (causeOfDeath == DeathReasonShow.StabbedByASerialKiller) return RoleColors.SerialKiller();
         if (causeOfDeath == DeathReasonShow.MauledByAWerewolf) return RoleColors.Werewolf;
         return RoleColors.Apocalypse;
     }
@@ -83,6 +83,21 @@ public sealed class DeathHandlerModifier : BaseModifier
         else if (deathHandler.ThirdDeathColor == RoleColors.Town) deathHandler.ThirdDeathColor = col;
 
         IsCoroutineRunning = false;
+    }
+
+    public static bool IsFullyDead(PlayerControl player)
+    {
+        if (!player.HasDied())
+        {
+            return false;
+        }
+
+        if (player.TryGetModifier<DeathHandlerModifier>(out var deathHandler))
+        {
+            return !deathHandler.DiedThisRound;
+        }
+
+        return false;
     }
 }
 

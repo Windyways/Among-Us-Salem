@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -92,7 +93,7 @@ public sealed class Bodyguard(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
     }
 }
 
-public sealed class Bodyguard_Guard : TownOfUsRoleButton<Bodyguard, PlayerControl>
+public sealed class Bodyguard_Guard : TownOfUsRoleButton<Bodyguard, PlayerControl>, IButtonClick
 {
     public override string Name => "Guard";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -105,7 +106,14 @@ public sealed class Bodyguard_Guard : TownOfUsRoleButton<Bodyguard, PlayerContro
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.HasModifier<GuardedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -113,15 +121,9 @@ public sealed class Bodyguard_Guard : TownOfUsRoleButton<Bodyguard, PlayerContro
         Target.RpcAddModifier<GuardedModifier>(Player);
         CustomButtonSingleton<Bodyguard_SelfProtect>.Instance.ResetCooldownAndOrEffect();
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-            !x.HasModifier<GuardedModifier>(x => x.Caster == Player));
-    }
 }
 
-public sealed class Bodyguard_SelfProtect : TownOfUsRoleButton<Bodyguard>
+public sealed class Bodyguard_SelfProtect : TownOfUsRoleButton<Bodyguard>, IButtonClick
 {
     public override string Name => "Self Protect";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -135,10 +137,10 @@ public sealed class Bodyguard_SelfProtect : TownOfUsRoleButton<Bodyguard>
         if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    protected override void OnClick() => Click(Player);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         Player.RpcAddModifier<SelfProtectedModifier>(Player);
-        //Player.RpcAddModifier<OverrideDefense>((int)Defense.Basic);
         AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
         CustomButtonSingleton<Bodyguard_Guard>.Instance.ResetCooldownAndOrEffect();
     }

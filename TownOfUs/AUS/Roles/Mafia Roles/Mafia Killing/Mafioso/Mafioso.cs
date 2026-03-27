@@ -76,7 +76,7 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
     }
 }
 
-public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>
+public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>, IButtonClick
 {
     public override string Name => "Kill";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -89,7 +89,18 @@ public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>
         if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(false, Distance);
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && !Player.HasModifier<OrderedModifier>();
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -101,16 +112,6 @@ public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>
             VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByAMemberOfTheMafia);
         }
         else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(false, Distance);
-    }
-
-    public override bool CanUse()
-    {
-        return base.CanUse() && !Player.HasModifier<OrderedModifier>();
     }
 }
 

@@ -44,12 +44,12 @@ public static class IntroScenePatches
             var yourTeam = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Coven)).ToList();
             GenerateYourTeam(__instance, yourTeam);
         }
-        else if (PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse))
+        else if (PlayerControl.LocalPlayer.Is(Faction.Apocalypse))
         {
             __instance.TeamTitle.text = "Apocalypse";
             __instance.TeamTitle.color = RoleColors.Apocalypse;
 
-            var yourTeam = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Alignment.NeutralApocalypse)).ToList();
+            var yourTeam = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Apocalypse)).ToList();
             GenerateYourTeam(__instance, yourTeam);
         }
         else

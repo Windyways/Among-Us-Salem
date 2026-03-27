@@ -1,4 +1,5 @@
-﻿using TownOfUs.Options;
+﻿using AmongUsSalem.Roles;
+using TownOfUs.Options;
 using UnityEngine;
 
 namespace TownOfUs.Utilities;
@@ -61,13 +62,13 @@ public static class PlayerRoleTextExtensions
         }
 
         if ((PlayerControl.LocalPlayer.Data.Role is Plaguebearer plaguebearer && player.HasModifier<InfectedModifier>(x => x.Caster == plaguebearer.Player))
-            || (player.HasModifier<InfectedModifier>() && PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse)))
+            || (player.HasModifier<InfectedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Apocalypse)))
         {
             color = RoleColors.Apocalypse;
         }
 
         if ((PlayerControl.LocalPlayer.Data.Role is Warlock warlock && player.HasModifier<CursedModifier>(x => x.Caster == warlock.Player))
-            || (player.HasModifier<CursedModifier>() && PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse)))
+            || (player.HasModifier<CursedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Apocalypse)))
         {
             color = RoleColors.Apocalypse;
         }
@@ -176,6 +177,28 @@ public static class PlayerRoleTextExtensions
             name += "<color=#06e00c> Ⓣ</color>";
         }
 
+        if ((PlayerControl.LocalPlayer.Data.Role is Pacifist pacifist && player.HasModifier<RalliedModifier>(x => x.Caster == pacifist.Player))
+            || (player.HasModifier<RalliedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06e00c> Ⓡ</color>";
+        }
+
+        if (player.HasModifier<ProtestModifier>() && !player.HasDied())
+        {
+            name += "<color=#06e00c> Ⓟ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Admirer admirer && player.HasModifier<BestowedModifier>(x => x.Caster == admirer.Player))
+            || (player.HasModifier<BestowedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#06e00c> Ⓑ</color>";
+        }
+
+        if (PlayerControl.LocalPlayer.Data.Role is Admirer admirer2 && admirer2.Obsession == player && admirer2.foundObsession)
+        {
+            name += "<color=#06e00c> Ⓞ</color>";
+        }
+
         // Neutral -------------------------------------------------------------------------------------------------------
         if ((PlayerControl.LocalPlayer.Data.Role is Starspawn starspawn && player.HasModifier<IsolatedModifier>(x => x.Caster == starspawn.Player))
             || (player.HasModifier<IsolatedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
@@ -189,7 +212,7 @@ public static class PlayerRoleTextExtensions
             name += "<color=#aa6d06> ⓉⓈ</color>";
         }
         if ((PlayerControl.LocalPlayer.Data.Role is Warlock warlock && player.HasModifier<CursedModifier>(x => x.Caster == warlock.Player))
-            || (player.HasModifier<CursedModifier>() && PlayerControl.LocalPlayer.Is(Alignment.NeutralApocalypse))
+            || (player.HasModifier<CursedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Apocalypse))
             || (player.HasModifier<CursedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#ff004e> Ⓒ</color>";
@@ -208,6 +231,13 @@ public static class PlayerRoleTextExtensions
             || (player.HasModifier<WatchedModifier>(x => x.Caster.Is(Faction.Mafia)) && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
         {
             name += "<color=#DD0000> Ⓢ</color>";
+        }
+
+        if ((PlayerControl.LocalPlayer.Data.Role is Ambusher ambusher && player.HasModifier<AmbushedModifier>(x => x.Caster == ambusher.Player))
+            || (player.HasModifier<AmbushedModifier>() && PlayerControl.LocalPlayer.Is(Faction.Mafia))
+            || (player.HasModifier<AmbushedModifier>() && PlayerControl.LocalPlayer.HasDied() && genOpt.TheDeadKnow && !hidden))
+        {
+            name += "<color=#DD0000> Ⓐ</color>";
         }
 
         // Coven -------------------------------------------------------------------------------------------------------

@@ -2,7 +2,6 @@
 
 public enum Alignment
 {
-
     TownInvestigative,
     TownExecutive,
     TownGovernment,
@@ -10,6 +9,7 @@ public enum Alignment
     TownProtective,
     TownOutlier,
     TownSupport,
+    Town, // For BTOS2 Amnesiac when it had no alignment.
 
     NeutralApocalypse,
     NeutralBenign,

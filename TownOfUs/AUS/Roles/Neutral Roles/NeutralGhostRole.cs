@@ -57,9 +57,9 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), ICustomAUR
     public StringBuilder SetTabText()
     {
         var stringB = new StringBuilder();
-        if (Player.GetRoleWhenAlive() is ITownOfUsRole touRole)
+        if (Player.GetRoleWhenAlive() is ICustomAURole touRole)
         {
-            stringB = ITownOfUsRole.SetDeadTabText(touRole);
+            stringB = ICustomAURole.SetDeadTabText(touRole);
             if (touRole.MetWinCon)
             {
                 stringB.Append("<b>You have already won.</b>");
@@ -81,7 +81,7 @@ public class NeutralGhostRole(IntPtr cppPtr) : RoleBehaviour(cppPtr), ICustomAUR
     {
         var role = Player.GetRoleWhenAlive();
 
-        return role is ITownOfUsRole tRole && tRole.WinConditionMet();
+        return role is ICustomAURole tRole && tRole.WinConditionMet();
     }
 
     public override void AppendTaskHint(Il2CppSystem.Text.StringBuilder taskStringBuilder)

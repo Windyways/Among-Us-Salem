@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class War(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable, ISpawnChange
+public sealed class War(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable, ISpawnChange
 {
     public string RoleName { get; set; } = "War";
     public string revealText => "fills you with hate towards everyone.";
-    public string RoleDescription => "";
+    public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "";
-    public Color RoleColor { get; set; } = RoleColors.Apocalypse;
-    public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
+    public Color RoleColor { get => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item2; set { } }
+    public ModdedRoleTeams Team => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item3;
 
-    public Faction Faction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item1;
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.Unstoppable;
@@ -103,7 +103,7 @@ public sealed class War(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWiki
     }
 }
 
-public sealed class War_Attack : TownOfUsRoleButton<War, PlayerControl>
+public sealed class War_Attack : TownOfUsRoleButton<War, PlayerControl>, IButtonClick
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -116,22 +116,23 @@ public sealed class War_Attack : TownOfUsRoleButton<War, PlayerControl>
         if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.Is(Faction.Apocalypse));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Player.Rampage(Target, DeathReasonShow.DestroyedByWarHorsemanOfTheApocalypse);
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-            !x.Is(Alignment.NeutralApocalypse));
-    }
 }
 
-public sealed class War_Attack2 : TownOfUsRoleButton<War, PlayerControl>
+public sealed class War_Attack2 : TownOfUsRoleButton<War, PlayerControl>, IButtonClick
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -144,18 +145,19 @@ public sealed class War_Attack2 : TownOfUsRoleButton<War, PlayerControl>
         if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.Is(Faction.Apocalypse));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Player.Rampage(Target, DeathReasonShow.DestroyedByWarHorsemanOfTheApocalypse);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.Is(Alignment.NeutralApocalypse));
     }
 }
 

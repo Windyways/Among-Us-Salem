@@ -72,7 +72,7 @@ public sealed class Illusionist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURol
     }
 }
 
-public sealed class Illusionist_Cast : TownOfUsRoleButton<Illusionist, PlayerControl>
+public sealed class Illusionist_Cast : TownOfUsRoleButton<Illusionist, PlayerControl>, IButtonClick
 {
     public override string Name => "Cast";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -87,7 +87,16 @@ public sealed class Illusionist_Cast : TownOfUsRoleButton<Illusionist, PlayerCon
         if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), isAstral)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        if (Player.HasNecronomicon()) 
+            return Player.GetClosestLivingPlayer(true, Distance);
+
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => x.Is(Faction.Coven));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -105,17 +114,9 @@ public sealed class Illusionist_Cast : TownOfUsRoleButton<Illusionist, PlayerCon
 
         CustomButtonSingleton<Illusionist_SelfIllusion>.Instance.ResetCooldownAndOrEffect();
     }
-
-    public override PlayerControl? GetTarget()
-    {
-        if (Player.HasNecronomicon()) 
-            return Player.GetClosestLivingPlayer(true, Distance);
-
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => x.Is(Faction.Coven));
-    }
 }
 
-public sealed class Illusionist_SelfIllusion : TownOfUsRoleButton<Illusionist>
+public sealed class Illusionist_SelfIllusion : TownOfUsRoleButton<Illusionist>, IButtonClick
 {
     public override string Name => "Self Illusion";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -129,7 +130,8 @@ public sealed class Illusionist_SelfIllusion : TownOfUsRoleButton<Illusionist>
         if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    protected override void OnClick() => Click(Player);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         Player.RpcAddModifier<IllusionedModifier>(Player);
 

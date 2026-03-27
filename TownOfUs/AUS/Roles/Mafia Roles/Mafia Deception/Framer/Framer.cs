@@ -62,7 +62,7 @@ public sealed class Framer(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole,
     ];
 }
 
-public sealed class Framer_Frame : TownOfUsRoleButton<Framer, PlayerControl>
+public sealed class Framer_Frame : TownOfUsRoleButton<Framer, PlayerControl>, IButtonClick
 {
     public override string Name => "Frame";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -75,18 +75,19 @@ public sealed class Framer_Frame : TownOfUsRoleButton<Framer, PlayerControl>
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
+            !x.HasModifier<FramedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Target.RpcAddModifier<FramedModifier>(Player);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
-            !x.HasModifier<FramedModifier>(x => x.Caster == Player));
     }
 }
 

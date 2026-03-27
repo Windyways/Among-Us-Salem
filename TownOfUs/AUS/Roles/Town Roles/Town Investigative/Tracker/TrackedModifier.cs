@@ -28,7 +28,7 @@ public sealed class TrackedModifier(PlayerControl c) : BaseModifier
     [MethodRpc((uint)AUSRpc.RpcPerformInteractionTracked)]
     public static int RpcPerformInteraction(PlayerControl Caster, PlayerControl visitor, PlayerControl target)
     {
-        if (visitor.IsRole<Seer>()) return 0; // Ignore double target visits, this will be handled elsewhere.
+        if (visitor.Data.Role is Seer) return 0; // Ignore double target visits, this will be handled elsewhere.
 
         if (Caster.Data.Role is Tracker tracker) tracker.VisitedInfo.Add((visitor, target));
         if (Caster.Data.Role is Agent agent) agent.TrackerVisitedInfo.Add((visitor, target));
@@ -40,26 +40,6 @@ public sealed class TrackedModifier(PlayerControl c) : BaseModifier
 
     [MethodRpc((uint)AUSRpc.RpcPerformDoubleInteraction)]
     public static void RpcPerformDoubleInteraction(PlayerControl Caster, PlayerControl visitor, PlayerControl target1, PlayerControl target2)
-    {
-        if (Caster.Data.Role is Tracker tracker) tracker.DoubleVisitedInfo.Add((visitor, (target1, target2)));
-        if (Caster.Data.Role is Agent agent) agent.TrackerDoubleVisitedInfo.Add((visitor, (target1, target2)));
-        if (Caster.Data.Role is Wildling wildling) wildling.TrackerDoubleVisitedInfo.Add((visitor, (target1, target2)));
-        if (Caster.Data.Role is Werewolf werewolf) werewolf.DoubleVisitedInfo.Add((visitor, (target1, target2)));
-    }
-
-    public int PerformInteraction(PlayerControl visitor, PlayerControl target)
-    {
-        if (visitor.IsRole<Seer>()) return 0; // Ignore double target visits, this will be handled elsewhere.
-
-        if (Caster.Data.Role is Tracker tracker) tracker.VisitedInfo.Add((visitor, target));
-        if (Caster.Data.Role is Agent agent) agent.TrackerVisitedInfo.Add((visitor, target));
-        if (Caster.Data.Role is Wildling wildling) wildling.TrackerVisitedInfo.Add((visitor, target));
-        if (Caster.Data.Role is Werewolf werewolf) werewolf.VisitedInfo.Add((visitor, target));
-
-        return 0; // Don't block visit.
-    }
-
-    public void PerformDoubleInteraction(PlayerControl visitor, PlayerControl target1, PlayerControl target2)
     {
         if (Caster.Data.Role is Tracker tracker) tracker.DoubleVisitedInfo.Add((visitor, (target1, target2)));
         if (Caster.Data.Role is Agent agent) agent.TrackerDoubleVisitedInfo.Add((visitor, (target1, target2)));

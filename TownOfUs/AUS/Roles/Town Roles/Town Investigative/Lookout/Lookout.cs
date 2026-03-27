@@ -1,5 +1,4 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
-using MiraAPI.GameOptions.OptionTypes;
 using System.Text;
 using UnityEngine;
 
@@ -112,7 +111,7 @@ public sealed class Lookout(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public List<(PlayerControl, PlayerControl)> VisitedInfo = new List<(PlayerControl, PlayerControl)>();
 }
 
-public sealed class Lookout_Watch : TownOfUsRoleButton<Lookout, PlayerControl>
+public sealed class Lookout_Watch : TownOfUsRoleButton<Lookout, PlayerControl>, IButtonClick
 {
     public override string Name => "Watch";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -130,18 +129,19 @@ public sealed class Lookout_Watch : TownOfUsRoleButton<Lookout, PlayerControl>
         if (button.IsTargetingValid(Player, Target, false, !isAstral)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
+            !x.HasModifier<WatchedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Target.RpcAddModifier<WatchedModifier>(Player);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
-            !x.HasModifier<WatchedModifier>(x => x.Caster == Player));
     }
 }
 

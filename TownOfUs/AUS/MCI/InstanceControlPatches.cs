@@ -1,9 +1,6 @@
-﻿using InnerNet;
-using RCoroutines = Reactor.Utilities.Coroutines;
+﻿using RCoroutines = Reactor.Utilities.Coroutines;
 using System.Collections;
 using UnityEngine;
-using HarmonyLib;
-using MiraAPI.Modifiers;
 using MiraAPI.Modifiers.Types;
 
 namespace AmongUsSalem.MCI;
@@ -26,7 +23,9 @@ public static class InstanceControlPatches
 
     public static void SwitchTo(byte playerId)
     {
-        OnSwitchPlayer(MiscUtils.PlayerById(PlayerControl.LocalPlayer.PlayerId), MiscUtils.PlayerById(playerId));
+        var bot1 = MiscUtils.PlayerById(PlayerControl.LocalPlayer.PlayerId);
+        var bot2 = MiscUtils.PlayerById(playerId);
+        OnSwitchPlayer(bot1, bot2);
 
         var savedPlayerId = PlayerControl.LocalPlayer.PlayerId;
         PlayerControl savedPlayer = MiscUtils.PlayerById(savedPlayerId)!;
@@ -105,6 +104,8 @@ public static class InstanceControlPatches
             else
                 MeetingHud.Instance.SetForegroundForAlive();
         }
+
+        PostOnSwitchPlayer(bot1, bot2);
     }
 
     public static void CleanUpLoad()
@@ -289,6 +290,13 @@ public static class InstanceControlPatches
         bot.SetVisor(HatManager.Instance.allVisors[UnityEngine.Random.Range(0, HatManager.Instance.allVisors.Count)].ProdId, 0);
 
         AUSPlugin.IsBot.Add(bot);
+    }
+
+    public static void PostOnSwitchPlayer(PlayerControl oldBot, PlayerControl newBot)
+    {
+        ApocalypseNightChat.UpdateApocalypseChat();
+        CovenNightChat.UpdateCovenChat();
+        MafiaNightChat.UpdateMafiaChat();
     }
 
     public static void OnSwitchPlayer(PlayerControl oldBot, PlayerControl newBot)

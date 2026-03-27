@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -120,6 +121,8 @@ public sealed class Pacifist(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
         if (role.IsDead) return false;
         if (role is IGhostRole) return false;
         if (role is not ICustomAURole) return false;
+
+        if (role is Amnesiac && OptionGroupSingleton<Amnesiac_Options>.Instance.Mode == AmnesiacMode.TOS1) return false;
         if (role is ICustomAURole customRole2 && customRole2.Faction != Faction.Town) return false;
         return true;
     }
@@ -170,7 +173,7 @@ public sealed class Pacifist(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     public RoleBehaviour reflectedRole;
 }
 
-public sealed class Pacifist_Rally : TownOfUsRoleButton<Pacifist, PlayerControl>
+public sealed class Pacifist_Rally : TownOfUsRoleButton<Pacifist, PlayerControl>, IButtonClick
 {
     public override string Name => "Rally";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -181,15 +184,6 @@ public sealed class Pacifist_Rally : TownOfUsRoleButton<Pacifist, PlayerControl>
     public override void ClickHandler()
     {
         if (button.IsTargetingValid(Player, Target, false, false)) base.ClickHandler();
-    }
-
-    protected override void OnClick()
-    {
-        if (Target == null)
-            return;
-
-        if (Target.HasModifier<RalliedModifier>(x => x.Caster == Player)) Target.RpcRemoveModifier<RalliedModifier>();
-        else Target.RpcAddModifier<RalliedModifier>(Player);
     }
 
     public override PlayerControl? GetTarget()
@@ -203,9 +197,19 @@ public sealed class Pacifist_Rally : TownOfUsRoleButton<Pacifist, PlayerControl>
         if (deadTown == 0 && DayNightMechanic.DayCount < 4) return false;
         return base.CanUse();
     }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
+    {
+        if (Target == null)
+            return;
+
+        if (Target.HasModifier<RalliedModifier>(x => x.Caster == Player)) Target.RpcRemoveModifier<RalliedModifier>();
+        else Target.RpcAddModifier<RalliedModifier>(Player);
+    }
 }
 
-public sealed class Pacifist_SelfReflection : TownOfUsRoleButton<Pacifist>
+public sealed class Pacifist_SelfReflection : TownOfUsRoleButton<Pacifist>, IButtonClick
 {
     public override string Name => "Self Reflection";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -218,23 +222,9 @@ public sealed class Pacifist_SelfReflection : TownOfUsRoleButton<Pacifist>
         if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    protected override void OnClick() => Click(Player);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         Coroutines.Start(Role.OpenMenu());
-    }
-}
-
-public static class Pacifist_Events
-{
-    [RegisterEvent()]
-    public static void HandleVoteEvent(HandleVoteEvent @event)
-    {
-        if (!@event.VoteData.Owner.HasModifier<ProtestModifier>())
-        {
-            return;
-        }
-
-        @event.VoteData.SetRemainingVotes(0);
-        @event.Cancel();
     }
 }

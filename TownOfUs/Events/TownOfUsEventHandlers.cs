@@ -270,7 +270,7 @@ public static class TownOfUsEventHandlers
         MeetingMenu.Instances.Do(x => x.HideSingle(player.PlayerId));
     }
 
-    private static IEnumerator CoHideHud()
+    public static IEnumerator CoHideHud()
     {
         yield return new WaitForSeconds(0.01f);
         HudManager.Instance.SetHudActive(false);

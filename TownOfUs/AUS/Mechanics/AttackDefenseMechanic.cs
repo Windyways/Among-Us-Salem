@@ -18,41 +18,33 @@ public static class AttackDefenseMechanic
 
     public static bool CanKill(this PlayerControl player, PlayerControl target, Attack overrideAttack = Attack.None)
     {
-        if (player.Data.Role is ICustomAURole role && target.Data.Role is ICustomAURole targetRole)
+        var attack = Attack.None;
+        var defense = Defense.None;
+        var etherealDefense = EtherealDefense.None;
+
+        if (overrideAttack != Attack.None) attack = overrideAttack;
+        else if (player.HasDied() && player.TryGetModifier<LinkStatAD>(out var stat)) attack = stat.attack;
+        else if (player.Data.Role is ICustomAURole customRole) attack = customRole.Attack;
+
+        if (target.HasDied() && target.TryGetModifier<LinkStatAD>(out var stat2))
         {
-            if (player.HasDied())
-            {
-                var deadRole = player.GetRoleWhenAlive();
-                if (deadRole is ICustomAURole cr) role = cr;
-            }
-            if (target.HasDied())
-            {
-                var deadRole = target.GetRoleWhenAlive();
-                if (!target.Is(Faction.Neutral) && !target.Is(Faction.Coven)) return CanKillLinkStat(player, target, overrideAttack);
-                if (deadRole is ICustomAURole cr) targetRole = cr;
-            }
-
-            if (overrideAttack > Attack.None)
-            {
-                if (!player.Is(Faction.Town) && target.Is(Alignment.NeutralPariah))
-                {
-                    if ((int)overrideAttack > (int)targetRole.EtherealDefense) return true;
-                    return false;
-                }
-
-                if ((int)overrideAttack > (int)targetRole.Defense) return true;
-
-                return false;
-            }
-
-            if (!player.Is(Faction.Town) && target.Is(Alignment.NeutralPariah))
-            {
-                if ((int)role.Attack > (int)targetRole.EtherealDefense) return true;
-                return false;
-            }
-
-            if ((int)role.Attack > (int)targetRole.Defense) return true;
+            defense = stat2.defense;
+            etherealDefense = stat2.etherealDefense;
         }
+        else if (target.Data.Role is ICustomAURole customRole2)
+        {
+            defense = customRole2.Defense;
+            etherealDefense = customRole2.EtherealDefense;
+        }
+
+
+        if (!player.Is(Faction.Town) && target.Is(Alignment.NeutralPariah))
+        {
+            if ((int)attack > (int)etherealDefense) return true;
+            return false;
+        }
+
+        if ((int)attack > (int)defense) return true;
         return false;
     }
 
@@ -90,16 +82,19 @@ public static class AttackDefenseMechanic
         return false;
     }
 
-    public static int Rampage(this PlayerControl player, PlayerControl t, DeathReasonShow deathReason)
+    public static int Rampage(this PlayerControl player, PlayerControl t, DeathReasonShow deathReason, bool lunge = true)
     {
         int kills = 0;
         if (player.CanKill(t))
         {
             kills++;
-            player.RpcCustomMurder(t);
+            player.RpcCustomMurder(t, teleportMurderer: lunge);
             VisitingMechanic.RpcAddDeathReason(t, (int)deathReason);
         }
         else player.Notify(Feedback.TooMuchDefense(player, t), NotifyMode.InstantlyAndMeeting);
+
+        if (MeetingHud.Instance)
+            return kills; // Rampages don't work during meetings.
 
         float radius = OptionGroupSingleton<AUSOptions>.Instance.RampageRadius;
         foreach (var target in PlayerControl.AllPlayerControls)

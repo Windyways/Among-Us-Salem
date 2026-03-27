@@ -35,7 +35,7 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> RitualistRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.RitualistRoleCard.png");
     public static LoadableAsset<Sprite> MayorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.MayorRoleCard.png");
     public static LoadableAsset<Sprite> DeputyRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.DeputyRoleCard.png");
-    public static LoadableAsset<Sprite> AmnesiacRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.AmnesiacRoleCard.png");
+    public static LoadableAsset<Sprite> AmnesiacRoleCard_TOS2 { get; } = new LoadableResourceAsset($"{RoleCard}.AmnesiacRoleCard.png");
     public static LoadableAsset<Sprite> ProsecutorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.ProsecutorRoleCard.png");
     public static LoadableAsset<Sprite> SurvivorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.SurvivorRoleCard.png");
     public static LoadableAsset<Sprite> CrusaderRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.CrusaderRoleCard.png");
@@ -43,7 +43,7 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> JesterRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.JesterRoleCard.png");
     public static LoadableAsset<Sprite> BerserkerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.BerserkerRoleCard.png");
     public static LoadableAsset<Sprite> WarRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.WarRoleCard.png");
-    public static LoadableAsset<Sprite> SerialKillerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.SerialKillerRoleCard.png");
+    public static LoadableAsset<Sprite> SerialKillerRoleCard_TOS2 { get; } = new LoadableResourceAsset($"{RoleCard}.SerialKillerRoleCard.png");
     public static LoadableAsset<Sprite> StarspawnRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.StarspawnRoleCard.png");
     public static LoadableAsset<Sprite> LookoutRoleCard_TOS2 { get; } = new LoadableResourceAsset($"{RoleCard}.LookoutRoleCard.png");
     public static LoadableAsset<Sprite> TrackerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.TrackerRoleCard.png");
@@ -56,6 +56,13 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> WarlockRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.WarlockRoleCard.png");
     public static LoadableAsset<Sprite> DeathRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.DeathRoleCard.png");
     public static LoadableAsset<Sprite> LookoutRoleCard_TOS1 { get; } = new LoadableResourceAsset($"{RoleCard}.LookoutRoleCard_TOS1.png");
+    public static LoadableAsset<Sprite> VigilanteRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.VigilanteRoleCard.png");
+    public static LoadableAsset<Sprite> SerialKillerRoleCard_TOS1 { get; } = new LoadableResourceAsset($"{RoleCard}.SerialKillerRoleCard_TOS1.png");
+    public static LoadableAsset<Sprite> AmnesiacRoleCard_TOS1 { get; } = new LoadableResourceAsset($"{RoleCard}.AmnesiacRoleCard_TOS1.png");
+    public static LoadableAsset<Sprite> AmbusherRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.AmbusherRoleCard.png");
+    public static LoadableAsset<Sprite> VeteranRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.VeteranRoleCard.png");
+    public static LoadableAsset<Sprite> AdmirerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.AdmirerRoleCard.png");
+    public static LoadableAsset<Sprite> InvestigatorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.InvestigatorRoleCard.png");
 
     // --- ROLE CARDS: MULTIPLE ---
     public static LoadableAsset<Sprite> LookoutRoleCard
@@ -64,6 +71,24 @@ public static class AUSAssets
         {
             if (OptionGroupSingleton<Lookout_Options>.Instance.Mode == LookoutMode.TOS1) return LookoutRoleCard_TOS1;
             return LookoutRoleCard_TOS2;
+        }
+    }
+
+    public static LoadableAsset<Sprite> SerialKillerRoleCard
+    {
+        get
+        {
+            if (OptionGroupSingleton<SerialKiller_Options>.Instance.Mode == SerialKillerMode.TOS1) return SerialKillerRoleCard_TOS1;
+            return SerialKillerRoleCard_TOS2;
+        }
+    }
+
+    public static LoadableAsset<Sprite> AmnesiacRoleCard
+    {
+        get
+        {
+            if (OptionGroupSingleton<Amnesiac_Options>.Instance.Mode == AmnesiacMode.TOS1) return AmnesiacRoleCard_TOS1;
+            return AmnesiacRoleCard_TOS2;
         }
     }
 
@@ -90,7 +115,7 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> Ritualist_BloodRitual { get; } = new LoadableResourceAsset($"{Abilities}.Ritualist_BloodRitual.png");
     public static LoadableAsset<Sprite> Mayor_Reveal { get; } = new LoadableResourceAsset($"{Abilities}.Mayor_Reveal.png");
     public static LoadableAsset<Sprite> Deputy_HighNoon { get; } = new LoadableResourceAsset($"{Abilities}.Deputy_HighNoon.png");
-    public static LoadableAsset<Sprite> Amnesiac_Remember { get; } = new LoadableResourceAsset($"{Abilities}.Amnesiac_Remember.png");
+    public static LoadableAsset<Sprite> Amnesiac_Remember_TOS2 { get; } = new LoadableResourceAsset($"{Abilities}.Amnesiac_Remember.png");
     public static LoadableAsset<Sprite> Prosecutor_Prosecute { get; } = new LoadableResourceAsset($"{Abilities}.Prosecutor_Prosecute.png");
     public static LoadableAsset<Sprite> Survivor_Vest { get; } = new LoadableResourceAsset($"{Abilities}.Survivor_Vest.png");
     public static LoadableAsset<Sprite> Crusader_Fortify { get; } = new LoadableResourceAsset($"{Abilities}.Crusader_Fortify.png");
@@ -98,8 +123,8 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> Jester_Haunt { get; } = new LoadableResourceAsset($"{Abilities}.Jester_Haunt.png");
     public static LoadableAsset<Sprite> Berserker_Attack { get; } = new LoadableResourceAsset($"{Abilities}.Berserker_Attack.png");
     public static LoadableAsset<Sprite> War_Attack { get; } = new LoadableResourceAsset($"{Abilities}.War_Attack.png");
-    public static LoadableAsset<Sprite> SerialKiller_Attack { get; } = new LoadableResourceAsset($"{Abilities}.SerialKiller_Attack.png");
-    public static LoadableAsset<Sprite> SerialKiller_Cautious { get; } = new LoadableResourceAsset($"{Abilities}.SerialKiller_Cautious.png");
+    public static LoadableAsset<Sprite> SerialKiller_Attack_TOS2 { get; } = new LoadableResourceAsset($"{Abilities}.SerialKiller_Attack.png");
+    public static LoadableAsset<Sprite> SerialKiller_Cautious_TOS2 { get; } = new LoadableResourceAsset($"{Abilities}.SerialKiller_Cautious.png");
     public static LoadableAsset<Sprite> Starspawn_Isolate { get; } = new LoadableResourceAsset($"{Abilities}.Starspawn_Isolate.png");
     public static LoadableAsset<Sprite> Starspawn_Daybreak { get; } = new LoadableResourceAsset($"{Abilities}.Starspawn_Daybreak.png");
     public static LoadableAsset<Sprite> Lookout_Watch_TOS2 { get; } = new LoadableResourceAsset($"{Abilities}.Lookout_Watch.png");
@@ -115,6 +140,15 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> Pacifist_SelfReflection { get; } = new LoadableResourceAsset($"{Abilities}.Pacifist_SelfReflection.png");
     public static LoadableAsset<Sprite> Warlock_Curse { get; } = new LoadableResourceAsset($"{Abilities}.Warlock_Curse.png");
     public static LoadableAsset<Sprite> Death_Armageddon { get; } = new LoadableResourceAsset($"{Abilities}.Death_Armageddon.png");
+    public static LoadableAsset<Sprite> Vigilante_Shoot { get; } = new LoadableResourceAsset($"{Abilities}.Vigilante_Shoot.png");
+    public static LoadableAsset<Sprite> SerialKiller_Cautious_TOS1 { get; } = new LoadableResourceAsset($"{Abilities}.SerialKiller_Cautious_TOS1.png");
+    public static LoadableAsset<Sprite> Amnesiac_Remember_TOS1 { get; } = new LoadableResourceAsset($"{Abilities}.Amnesiac_Remember_TOS1.png");
+    public static LoadableAsset<Sprite> Ambusher_Ambush { get; } = new LoadableResourceAsset($"{Abilities}.Ambusher_Ambush.png");
+    public static LoadableAsset<Sprite> Veteran_Alert { get; } = new LoadableResourceAsset($"{Abilities}.Veteran_Alert.png");
+    public static LoadableAsset<Sprite> Admirer_Admire { get; } = new LoadableResourceAsset($"{Abilities}.Admirer_Admire.png");
+    public static LoadableAsset<Sprite> Admirer_Care { get; } = new LoadableResourceAsset($"{Abilities}.Admirer_Care.png");
+    public static LoadableAsset<Sprite> Admirer_Bestow { get; } = new LoadableResourceAsset($"{Abilities}.Admirer_Bestow.png");
+    public static LoadableAsset<Sprite> Investigator_Investigate { get; } = new LoadableResourceAsset($"{Abilities}.Investigator_Investigate.png");
 
     // --- ABILITIES: MULTIPLE ---
     public static LoadableAsset<Sprite> Lookout_Watch
@@ -126,10 +160,51 @@ public static class AUSAssets
         }
     }
 
+    public static LoadableAsset<Sprite> SerialKiller_Attack
+    {
+        get
+        {
+            if (OptionGroupSingleton<SerialKiller_Options>.Instance.Mode == SerialKillerMode.TOS1) return SerialKiller_Cautious_TOS1;
+            return SerialKiller_Attack_TOS2;
+        }
+    }
+
+    public static LoadableAsset<Sprite> SerialKiller_Cautious
+    {
+        get
+        {
+            if (OptionGroupSingleton<SerialKiller_Options>.Instance.Mode == SerialKillerMode.TOS1) return SerialKiller_Cautious_TOS1;
+            return SerialKiller_Cautious_TOS2;
+        }
+    }
+
+    public static LoadableAsset<Sprite> Amnesiac_Remember
+    {
+        get
+        {
+            if (OptionGroupSingleton<Amnesiac_Options>.Instance.Mode == AmnesiacMode.TOS1) return Amnesiac_Remember_TOS1;
+            return Amnesiac_Remember_TOS2;
+        }
+    }
+
     // Audio
     public static LoadableAsset<AudioClip> Mayor_Reveal_SFX { get; } = new LoadableAudioResourceAsset($"{Audio}.Mayor_Reveal_SFX.wav");
     public static LoadableAsset<AudioClip> Deputy_HighNoon_SFX { get; } = new LoadableAudioResourceAsset($"{Audio}.Deputy_Shoot_SFX.wav");
 
     // OTHER
     public static LoadableAsset<Sprite> NecronomiconIcon { get; } = new LoadableResourceAsset($"{Other}.NecronomiconNotif.png");
+    public static string RoleIconPosName
+    {
+        get
+        {
+            var name = "Next To Role";
+            switch (AUSPlugin.RoleIconSpot.Value)
+            {
+                case 1:
+                    name = "Next To Name";
+                    break;
+            }
+            return name;
+        }
+    }
 }

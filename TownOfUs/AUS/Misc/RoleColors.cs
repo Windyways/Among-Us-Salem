@@ -14,10 +14,21 @@ public static class RoleColors
 
     public static Color Survivor => new Color32(221, 221, 0, 255);
     public static Color Jester => new Color32(245, 166, 212, 255);
-    public static Color SerialKiller => new Color32(29, 77, 252, 255);
+    public static Color SerialKiller(SerialKillerMode mode = SerialKillerMode.Empty)
+    {
+        if (mode == SerialKillerMode.BTOS2 || mode == SerialKillerMode.TOS2) return new Color32(29, 77, 252, 255);
+        if (mode == SerialKillerMode.TOS1 || OptionGroupSingleton<SerialKiller_Options>.Instance.Mode == SerialKillerMode.TOS1) return new Color32(51, 110, 255, 255);
+        return new Color32(29, 77, 252, 255);
+    }
     public static Color Starspawn => new Color32(164, 164, 244, 255);
     public static Color Auditor => new Color32(174, 186, 135, 255);
-    public static Color Werewolf => new Color32(170, 109, 6, 255);
+    public static Color Werewolf => new Color32(193, 138, 69, 255); // new Color32(170, 109, 6, 255); - TOS1
+    public static Color Amnesiac(AmnesiacMode mode = AmnesiacMode.Empty) 
+    {
+        if (mode == AmnesiacMode.TOS2) return Town;
+        if (mode == AmnesiacMode.TOS1 || OptionGroupSingleton<Amnesiac_Options>.Instance.Mode == AmnesiacMode.TOS1) return new Color32(34, 255, 255, 255);
+        return Town;
+    }
 
     // Other Colors
     public static Color Keyword => new Color32(74, 134, 232, 255);

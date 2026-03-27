@@ -1,7 +1,9 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using System.Text;
+using TownOfUs.Events;
 using UnityEngine;
+using static Rewired.Demos.CustomPlatform.MyPlatformControllerExtension;
 using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
@@ -153,7 +155,7 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
         return voteArea?.TargetPlayerId == Player.PlayerId || Player.Data.IsDead || voteArea!.AmDead;
     }
 
-    public static IEnumerator ProsecuteCoroutine(MeetingHud __instance, PlayerControl VotedPlayer, Prosecutor prosecutor)
+    public static IEnumerator ProsecuteCoroutine(MeetingHud __instance, PlayerControl target, Prosecutor prosecutor)
     {
         SmartProsecutor.IsActive = true;
         ConsoleJoystick.SetMode_Task();
@@ -165,7 +167,7 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
         exileController.transform.localPosition = new Vector3(0f, 0f, -60f);
         MeetingHud.Instance.gameObject.SetActive(false);
         HudManager.Instance.Chat.gameObject.SetActive(false);
-        exileController.BeginForGameplay(VotedPlayer.Data, false);
+        exileController.BeginForGameplay(target.Data, false);
 
         yield return new WaitForSeconds(5f);
 
@@ -174,9 +176,84 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
         MeetingHud.Instance.gameObject.SetActive(true);
 
         yield return new WaitForSeconds(2.5f);
+
+        // This right here is to make it so they appear dead to clients.
+        var instance = MeetingHud.Instance;
+        var source = prosecutor.Player;
+
+        var targetVoteArea = instance.playerStates.First(x => x.TargetPlayerId == target.PlayerId);
+
+        if (!targetVoteArea)
+            yield break;
+
+        if (targetVoteArea.DidVote) targetVoteArea.UnsetVote();
+
+        targetVoteArea.AmDead = true;
+        targetVoteArea.Overlay.gameObject.SetActive(true);
+        targetVoteArea.Overlay.color = Color.white;
+        targetVoteArea.XMark.gameObject.SetActive(false);
+        targetVoteArea.XMark.transform.localScale = Vector3.one;
+
+        if (Minigame.Instance != null)
+        {
+            Minigame.Instance.Close();
+            Minigame.Instance.Close();
+        }
+
+        targetVoteArea.Overlay.gameObject.SetActive(false);
+
+        // hide meeting menu buttons on the victim's screen
+        if (target.AmOwner)
+        {
+            MeetingMenu.Instances.Do(x => x.HideButtons());
+            Coroutines.Start(TownOfUsEventHandlers.CoHideHud());
+        }
+
+        // hide meeting menu button for victim
+        else if (!source.AmOwner && !target.AmOwner)
+        {
+            MeetingMenu.Instances.Do(x => x.HideSingle(target.PlayerId));
+        }
+
+        foreach (var pva in instance.playerStates)
+        {
+            if (pva.VotedFor != target.PlayerId || pva.AmDead)
+            {
+                continue;
+            }
+
+            pva.UnsetVote();
+
+            var voteAreaPlayer = MiscUtils.PlayerById(pva.TargetPlayerId);
+
+            if (voteAreaPlayer == null)
+            {
+                continue;
+            }
+
+            var voteData = voteAreaPlayer.GetVoteData();
+            var votes = voteData.Votes.RemoveAll(x => x.Suspect == target.PlayerId);
+            voteData.VotesRemaining += votes;
+
+            if (!voteAreaPlayer.AmOwner)
+            {
+                continue;
+            }
+
+            instance.ClearVote();
+        }
+
+        instance.SetDirtyBit(1U);
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            instance.CheckForEndVoting();
+        }
+
+        // ---
         HudManager.Instance.Chat.gameObject.SetActive(true);
 
-        if (VotedPlayer.Is(Faction.Town))
+        if (target.Is(Faction.Town))
         {
             prosecutor.Charges = 0;
             if (OptionGroupSingleton<Prosecutor_Options>.Instance.DieOnMislynch)
@@ -185,7 +262,7 @@ public sealed class Prosecutor(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAUR
                 VisitingMechanic.RpcAddDeathReason(prosecutor.Player, (int)DeathReasonShow.DishonoredTheTown);
             }
         }
-        if (VotedPlayer.IsRole<Jester>()) prosecutor.Player.AddModifier<HauntableModifier>(VotedPlayer);
+        if (target.IsRole<Jester>()) prosecutor.Player.AddModifier<HauntableModifier>(target);
 
         SmartProsecutor.IsActive = false;
     }

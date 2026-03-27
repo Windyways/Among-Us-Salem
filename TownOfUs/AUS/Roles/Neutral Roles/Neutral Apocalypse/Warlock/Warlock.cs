@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Warlock(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWikiDiscoverable
+public sealed class Warlock(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWikiDiscoverable
 {
     public string RoleName { get; set; } = "Warlock";
     public string revealText => "is a sorcerer who curses people.";
@@ -14,7 +14,7 @@ public sealed class Warlock(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, I
     public Color RoleColor { get; set; } = RoleColors.Apocalypse;
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
-    public Faction Faction { get; set; } = Faction.Neutral;
+    public Faction Faction { get; set; } = Faction.Apocalypse;
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.None;
@@ -145,7 +145,7 @@ public sealed class Warlock(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, I
     public int Grimoires;
 }
 
-public sealed class Warlock_Curse : TownOfUsRoleButton<Warlock, PlayerControl>
+public sealed class Warlock_Curse : TownOfUsRoleButton<Warlock, PlayerControl>, IButtonClick
 {
     public override string Name => "Curse";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -180,19 +180,20 @@ public sealed class Warlock_Curse : TownOfUsRoleButton<Warlock, PlayerControl>
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
+            !x.Is(Faction.Apocalypse) && !x.HasModifier<CursedModifier>(x => x.Caster == Player));
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
 
         Target.RpcAddModifier<WarlockFramedModifier>(Player);
         Target.RpcAddModifier<CursedModifier>(Player);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
-            !x.Is(Alignment.NeutralApocalypse) && !x.HasModifier<CursedModifier>(x => x.Caster == Player));
     }
 }
 

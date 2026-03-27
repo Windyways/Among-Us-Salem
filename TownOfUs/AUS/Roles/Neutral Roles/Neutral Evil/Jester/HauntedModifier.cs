@@ -27,13 +27,15 @@ public sealed class HauntedModifier(PlayerControl c, bool random) : BaseModifier
 
     public override void OnMeetingStart()
     {
+        if (IsRandom)
+            return;
+
         AUSPlugin.DebugLogMessage("Haunted meeting started.");
         if (Caster.CanKill(Player))
         {
             AUSPlugin.DebugLogMessage("Jester could kill!");
 
             Caster.RpcCustomMurder(Player);
-            // Caster.RpcGhostRoleMurder(Player);
             VisitingMechanic.RpcAddDeathReason(Player, (int)DeathReasonShow.HauntedByAJester);
         }
 

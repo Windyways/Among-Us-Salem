@@ -64,7 +64,7 @@ public sealed class Consigliere(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAU
     ];
 }
 
-public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerControl>
+public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerControl>, IButtonClick
 {
     public override string Name => "Size Up";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -77,7 +77,14 @@ public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerC
         if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
     }
 
-    protected override void OnClick()
+    public override PlayerControl? GetTarget()
+    {
+        return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
+            !x.HasModifier<RoleLearn>(x => x.Visitor == Player) && !x.HasModifier<GlobalReveal>());
+    }
+
+    protected override void OnClick() => Click(Player, Target);
+    public void Click(PlayerControl player, PlayerControl Target = null)
     {
         if (Target == null)
             return;
@@ -85,29 +92,23 @@ public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerC
         if (Target.HasModifier<HexedModifier>())
         {
             // Since all Mafia member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
-            foreach (var player in PlayerControl.AllPlayerControls)
+            foreach (var players in PlayerControl.AllPlayerControls)
             {
-                if (player.Is(Faction.Mafia) && player.AmOwner()) 
-                    Target.RpcAddModifier<DeepfakeRole>(player, "Hex Master", RoleColors.Coven);
+                if (players.Is(Faction.Mafia) && players.AmOwner())
+                    Target.RpcAddModifier<DeepfakeRole>(players, "Hex Master", RoleColors.Coven);
             }
         }
         else if (Target.TryGetModifier<SelfReflectionModifier>(out var selfReflection))
         {
             // Since all Mafia member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
-            foreach (var player in PlayerControl.AllPlayerControls)
+            foreach (var players in PlayerControl.AllPlayerControls)
             {
-                if (player.Is(Faction.Mafia) && player.AmOwner())
-                    Target.RpcAddModifier<DeepfakeRole>(player, selfReflection.GetRole().NiceName, RoleColors.Town);
+                if (players.Is(Faction.Mafia) && player.AmOwner())
+                    Target.RpcAddModifier<DeepfakeRole>(players, selfReflection.GetRole().NiceName, RoleColors.Town);
             }
         }
 
         Target.RpcAddModifier<RoleLearn>(Player, true);
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
-            !x.HasModifier<RoleLearn>(x => x.Visitor == Player) && !x.HasModifier<GlobalReveal>());
     }
 }
 

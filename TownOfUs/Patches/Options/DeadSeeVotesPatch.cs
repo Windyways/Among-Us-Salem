@@ -1,3 +1,4 @@
+using AmongUsSalem.Misc;
 using HarmonyLib;
 using TownOfUs.Options;
 using UnityEngine;
@@ -16,9 +17,10 @@ public static class DeadSeeVoteColorsPatch
         if (Debugger.IsDebuggerActive && player != null)
         {
             if (player.Is(Faction.Town)) PlayerMaterial.SetColors(RoleColors.Town, spriteRenderer);
-            if (player.Is(Faction.Neutral)) PlayerMaterial.SetColors(RoleColors.Neutral, spriteRenderer);
+            if (player.IsFactionNeutral()) PlayerMaterial.SetColors(RoleColors.Neutral, spriteRenderer);
             if (player.Is(Faction.Mafia)) PlayerMaterial.SetColors(RoleColors.Mafia, spriteRenderer);
             if (player.Is(Faction.Coven)) PlayerMaterial.SetColors(RoleColors.Coven, spriteRenderer);
+            if (player.Is(Faction.Apocalypse)) PlayerMaterial.SetColors(RoleColors.Apocalypse, spriteRenderer);
         }
         else if (GameOptionsManager.Instance.currentNormalGameOptions.AnonymousVotes && (!OptionGroupSingleton<GeneralOptions>.Instance.TheDeadKnow || !PlayerControl.LocalPlayer.Data.IsDead))
         {

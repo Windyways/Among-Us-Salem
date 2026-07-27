@@ -149,9 +149,45 @@ public sealed class SerialKiller(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAU
         if (Bloodlust >= 2) AttackDefenseMechanic.RpcApplyAttack(Player, Attack.Powerful, true, true);
         else AttackDefenseMechanic.RpcApplyAttack(Player, Attack.Basic, true, true);
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            if (Bloodlust >= 2)
+            {
+                int kills = Player.Rampage(target, DeathReasonShow.StabbedByASerialKiller);
+                Bloodlust += kills;
+                Bloodlust -= 2;
+
+                if (kills > 0) killedThisNight = true;
+            }
+            else if (Player.CanKill(target))
+            {
+                if (OptionGroupSingleton<SerialKiller_Options>.Instance.Mode == SerialKillerMode.TOS2)
+                {
+                    Bloodlust++;
+                    killedThisNight = true;
+
+                    Player.Notify(Info(Bloodlust), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SerialKillerRoleCard.LoadAsset());
+                }
+
+                Player.RpcCustomMurder(target);
+                VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.StabbedByASerialKiller);
+            }
+            else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+
+            ManageAttack();
+        }
+        else if (Button is 2)
+        {
+            if (Player.HasModifier<CautiousModifier>()) Player.RpcRemoveModifier<CautiousModifier>();
+            else Player.RpcAddModifier<CautiousModifier>(Player);
+        }
+    }
 }
 
-public sealed class SerialKiller_Attack : TownOfUsRoleButton<SerialKiller, PlayerControl>, IButtonClick
+public sealed class SerialKiller_Attack : TownOfUsRoleButton<SerialKiller, PlayerControl>
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -184,50 +220,14 @@ public sealed class SerialKiller_Attack : TownOfUsRoleButton<SerialKiller, Playe
         base.FixedUpdate(playerControl);
     }
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, true, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance);
     }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        if (Role.Bloodlust >= 2)
-        {
-            int kills = Player.Rampage(Target, DeathReasonShow.StabbedByASerialKiller);
-            Role.Bloodlust += kills;
-            Role.Bloodlust -= 2;
-
-            if (kills > 0) Role.killedThisNight = true;
-        }
-        else if (Player.CanKill(Target))
-        {
-            if (OptionGroupSingleton<SerialKiller_Options>.Instance.Mode == SerialKillerMode.TOS2)
-            {
-                Role.Bloodlust++;
-                Role.killedThisNight = true;
-
-                Player.Notify(SerialKiller.Info(Role.Bloodlust), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SerialKillerRoleCard.LoadAsset());
-            }
-
-            Player.RpcCustomMurder(Target);
-            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.StabbedByASerialKiller);
-        }
-        else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-
-        Role.ManageAttack();
-    }
 }
 
-public sealed class SerialKiller_Cautious : TownOfUsRoleButton<SerialKiller>, IButtonClick
+public sealed class SerialKiller_Cautious : TownOfUsRoleButton<SerialKiller>
 {
     public override string Name => "Cautious";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -235,17 +235,7 @@ public sealed class SerialKiller_Cautious : TownOfUsRoleButton<SerialKiller>, IB
     public override float Cooldown => 1f;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.SerialKiller_Cautious;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Player.HasModifier<CautiousModifier>()) Player.RpcRemoveModifier<CautiousModifier>();
-        else Player.RpcAddModifier<CautiousModifier>(Player);
-    }
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 2, false, false);
 }
 
 public sealed class SerialKiller_Options : AbstractOptionGroup<SerialKiller>

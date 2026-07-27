@@ -55,7 +55,7 @@ public sealed class DeathHandlerModifier : BaseModifier
         //if (causeOfDeath == DeathReasonShow.BittenByAVampire) return AUSColors.Vampire;
         //if (causeOfDeath == DeathReasonShow.AssassinatedByAJackal || causeOfDeath == DeathReasonShow.ARecruitOfTheJackalAndHaveFailedTheirTeammate) return AUSColors.Neutral;
         if (causeOfDeath == DeathReasonShow.ShotByAVeteran || causeOfDeath == DeathReasonShow.ShotByAVigilante || causeOfDeath == DeathReasonShow.KilledByABodyguard || causeOfDeath == DeathReasonShow.DiedWhileDefendingTheirTarget || causeOfDeath == DeathReasonShow.ShotByADeputy || causeOfDeath == DeathReasonShow.KilledByACrusader || causeOfDeath == DeathReasonShow.DishonoredTheTown) return RoleColors.Town;
-        if (causeOfDeath == DeathReasonShow.KilledByTheCoven || causeOfDeath == DeathReasonShow.BombedByAHexMaster || causeOfDeath == DeathReasonShow.KilledByAJinx || causeOfDeath == DeathReasonShow.KilledByARitualist) return RoleColors.Coven;
+        if (causeOfDeath == DeathReasonShow.KilledByTheCoven || causeOfDeath == DeathReasonShow.DisintegratedByAHexMaster || causeOfDeath == DeathReasonShow.KilledByAJinx || causeOfDeath == DeathReasonShow.KilledByARitualist) return RoleColors.Coven;
         if (causeOfDeath == DeathReasonShow.HauntedByAJester || causeOfDeath == DeathReasonShow.DiedOfBoredom) return RoleColors.Jester;
         if (causeOfDeath == DeathReasonShow.StabbedByASerialKiller) return RoleColors.SerialKiller();
         if (causeOfDeath == DeathReasonShow.MauledByAWerewolf) return RoleColors.Werewolf;

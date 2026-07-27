@@ -34,7 +34,7 @@ public sealed class Death(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, I
         DefaultChance = 0,
         DefaultRoleCount = 0,
 
-        CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
+        //CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.DeathRoleCard
     };
@@ -111,7 +111,7 @@ public sealed class Death(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, I
             foreach (var player in nonApoc)
             {
                 Player.RpcCustomMurder(player, teleportMurderer: false);
-                VisitingMechanic.RpcAddDeathReason(player, (int)DeathReasonShow.KilledByDeathHorsemanOfApocalypse);
+                VisitingMechanic.RpcAddDeathReason(player, (int)DeathReasonShow.DeathHasBroughtAboutTheApocalypseKillingThem);
             }
         }
     }

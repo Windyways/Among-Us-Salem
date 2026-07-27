@@ -114,7 +114,7 @@ public sealed class Inquisitor(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURo
     }
 }
 
-public sealed class Inquisitor_Attack : TownOfUsRoleButton<Inquisitor, PlayerControl>, IButtonClick
+public sealed class Inquisitor_Attack : TownOfUsRoleButton<Inquisitor, PlayerControl>
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -190,7 +190,7 @@ public sealed class Inquisitor_Attack : TownOfUsRoleButton<Inquisitor, PlayerCon
     }
 }
 
-public sealed class Inquisitor_Cautious : TownOfUsRoleButton<Inquisitor>, IButtonClick
+public sealed class Inquisitor_Cautious : TownOfUsRoleButton<Inquisitor>
 {
     public override string Name => "Cautious";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;

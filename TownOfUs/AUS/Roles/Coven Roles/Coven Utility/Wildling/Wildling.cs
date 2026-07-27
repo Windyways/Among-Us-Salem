@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,7 +27,7 @@ public sealed class Wildling(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        // CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.WildlingRoleCard
@@ -133,9 +134,27 @@ public sealed class Wildling(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     public List<(PlayerControl, PlayerControl)> LookoutVisitedInfo = new List<(PlayerControl, PlayerControl)>();
     public List<(PlayerControl, PlayerControl)> TrackerVisitedInfo = new List<(PlayerControl, PlayerControl)>();
     public List<(PlayerControl, (PlayerControl, PlayerControl))> TrackerDoubleVisitedInfo = new List<(PlayerControl, (PlayerControl, PlayerControl))>();
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            target.RpcAddModifier<WatchedModifier>(Player);
+            target.RpcAddModifier<TrackedModifier>(Player);
+            if (Player.HasNecronomicon())
+            {
+                if (Player.CanKill(target))
+                {
+                    Player.RpcCustomMurder(target);
+                    VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByTheCoven);
+                }
+                else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+            }
+        }
+    }
 }
 
-public sealed class Wildling_Sense : TownOfUsRoleButton<Wildling, PlayerControl>, IButtonClick
+public sealed class Wildling_Sense : TownOfUsRoleButton<Wildling, PlayerControl>
 {
     public override string Name => "Sense";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -144,11 +163,7 @@ public sealed class Wildling_Sense : TownOfUsRoleButton<Wildling, PlayerControl>
         OptionGroupSingleton<Wildling_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Wildling_Sense;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, Player.HasNecronomicon(), true);
     public override PlayerControl? GetTarget()
     {
         if (Player.HasNecronomicon())
@@ -158,25 +173,6 @@ public sealed class Wildling_Sense : TownOfUsRoleButton<Wildling, PlayerControl>
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !x.HasModifier<WatchedModifier>(x => x.Caster == Player) &&
             !x.HasModifier<TrackedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<WatchedModifier>(Player);
-        Target.RpcAddModifier<TrackedModifier>(Player);
-        if (Player.HasNecronomicon())
-        {
-            if (Player.CanKill(Target))
-            {
-                Player.RpcCustomMurder(Target);
-                VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByTheCoven);
-            }
-            else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-        }
     }
 }
 

@@ -1270,7 +1270,6 @@ Once the game reaches a point where it is impossible for either to still be aliv
     <Entry key="GUI_ROLE_SHORTNAME_255">Unknown</Entry>
 
 	<Entry key="GUI_ROLE_BLURB_0">You are... nothing. Please report this as a bug if you see this.</Entry> <!--NONE! NOTHING! NOTHING AT ALL!-->
-	<Entry key="GUI_ROLE_BLURB_5">You are an anatomist who uncovers the truth behind a townie's death.</Entry> <!--Coroner-->
 	<Entry key="GUI_ROLE_BLURB_9">You are a prison guard who secretly detains suspects.</Entry> <!--Jailor-->
 	<Entry key="GUI_ROLE_BLURB_12">You are royalty, blessing knighthood upon deserving townies.</Entry> <!--Monarch-->
 	<Entry key="GUI_ROLE_BLURB_14">You are a fortune teller who glimpses into the future.</Entry> <!--Psychic-->
@@ -1383,9 +1382,6 @@ Once the game reaches a point where it is impossible for either to still be aliv
 	<Entry key="GAME_65" style="bad_alert">You jailed [[#251]] and were obliterated. Flummery!</Entry><!--War-->
 	<Entry key="GAME_68" style="good_alert"></Entry>
 	<Entry key="GAME_69" style="bad_alert"></Entry>
-	<Entry key="GAME_70" style="bad_alert">You found evidence that shows %name% is a killer and their role is a %role%.</Entry><!--Coroner-->
-	<Entry key="GAME_71" style="good_alert">You couldn't find any evidence that %name% is a killer.</Entry><!--Coroner-->
-	<Entry key="GAME_72" style="good_alert">You have added a %role% to your list of autopsy results. You can now find them at night.</Entry><!--Coroner-->
 	<Entry key="GAME_73" style="good_alert"></Entry>
 	<Entry key="GAME_74" style="good_alert"></Entry>
 	<Entry key="GAME_75" style="good_alert"></Entry>
@@ -1446,7 +1442,6 @@ Once the game reaches a point where it is impossible for either to still be aliv
 	<Entry key="GAME_135" style="identity_alert">%name% does not remember their role. They must be an %role%.</Entry><!--Amnesiac-->
 	<Entry key="GAME_136" style="identity_alert">%name% is a trained protector. They must be a %role%.</Entry><!--Bodyguard-->
 	<Entry key="GAME_137" style="identity_alert">%name% is skilled in protective magic. They must be a %role%.</Entry><!--Cleric-->
-	<Entry key="GAME_138" style="identity_alert">%name% is a skilled surgeon. They must be a %role%.</Entry><!--Coroner-->
 	<Entry key="GAME_139" style="identity_alert">%name% is a divine protector. They must be a %role%.</Entry><!--Crusader-->
 	<Entry key="GAME_140" style="identity_alert">%name% is a powerful force for Justice. They must be a %role%.</Entry><!--Deputy-->
 	<Entry key="GAME_142" style="identity_alert">%name% detains people at night. They must be a %role%.</Entry><!--Jailor-->

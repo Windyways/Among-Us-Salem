@@ -91,9 +91,24 @@ public sealed class Bodyguard(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
             }
         }
     }
+
+    public int Charges = (int)OptionGroupSingleton<Bodyguard_Options>.Instance.Charges;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<GuardedModifier>(Player);
+        }
+        else if (Button is 2)
+        {
+            Charges--;
+            Player.RpcAddModifier<SelfProtectedModifier>(Player);
+            AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
+        }
+    }
 }
 
-public sealed class Bodyguard_Guard : TownOfUsRoleButton<Bodyguard, PlayerControl>, IButtonClick
+public sealed class Bodyguard_Guard : TownOfUsRoleButton<Bodyguard, PlayerControl>
 {
     public override string Name => "Guard";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -101,49 +116,50 @@ public sealed class Bodyguard_Guard : TownOfUsRoleButton<Bodyguard, PlayerContro
     public override float Cooldown => OptionGroupSingleton<Bodyguard_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Bodyguard_Guard;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
             !x.HasModifier<GuardedModifier>(x => x.Caster == Player));
     }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<GuardedModifier>(Player);
-        CustomButtonSingleton<Bodyguard_SelfProtect>.Instance.ResetCooldownAndOrEffect();
-    }
 }
 
-public sealed class Bodyguard_SelfProtect : TownOfUsRoleButton<Bodyguard>, IButtonClick
+public sealed class Bodyguard_SelfProtect : TownOfUsRoleButton<Bodyguard>
 {
     public override string Name => "Self Protect";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
     public override Color TextOutlineColor => RoleColors.Town;
     public override float Cooldown => OptionGroupSingleton<Bodyguard_Options>.Instance.SelfProtectCD;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Bodyguard_SelfProtect;
-    public override int MaxUses => (int)OptionGroupSingleton<Bodyguard_Options>.Instance.Charges;
 
-    public override void ClickHandler()
+    public override void CreateButton(Transform parent)
     {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
+        base.CreateButton(parent);
+        if (KeybindIcon != null)
+        {
+            KeybindIcon.transform.localPosition = new Vector3(0.4f, 0.45f, -9f);
+        }
     }
 
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
+    protected override void FixedUpdate(PlayerControl playerControl)
     {
-        Player.RpcAddModifier<SelfProtectedModifier>(Player);
-        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
-        CustomButtonSingleton<Bodyguard_Guard>.Instance.ResetCooldownAndOrEffect();
+        if (playerControl == Player)
+        {
+            Button?.usesRemainingText.gameObject.SetActive(true);
+            Button?.usesRemainingSprite.gameObject.SetActive(true);
+
+            Button!.usesRemainingText.text = Role.Charges.ToString() + $"";
+        }
+
+        base.FixedUpdate(playerControl);
     }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && Role.Charges > 0;
+    }
+
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 2, false, false);
 }
 
 public sealed class Bodyguard_Options : AbstractOptionGroup<Bodyguard>

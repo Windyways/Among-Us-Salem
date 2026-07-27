@@ -4,6 +4,7 @@ using Reactor.Utilities.Extensions;
 using System.Text;
 using TownOfUs.Modifiers;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -106,13 +107,18 @@ public sealed class Jester(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, 
     {
         AUSPlugin.DebugLogMessage("Jester OnMeetingStart called!");
 
-        if (Lynched() && ModifierUtils.GetActiveModifiers<HauntableModifier>().Any())
+        if (Lynched() && !haunted)
         {
             var hauntable = PlayerControl.AllPlayerControls.ToArray().Where(x => x.HasModifier<HauntableModifier>(h => h.Caster == Player)).ToList();
             AUSPlugin.DebugLogMessage("Jester Hauntable targets: " + hauntable.Count);
 
-            if (hauntable.Count > 0) hauntable.Random().RpcAddModifier<HauntedModifier>(Player, true);
-            foreach (var haunt in hauntable) haunt.RpcRemoveModifier<HauntableModifier>();
+            haunted = true;
+            if (target == null) target = hauntable.Random();
+            if (target != null)
+            {
+                Player.RpcCustomMurder(target, createDeadBody: false, teleportMurderer: false);
+                VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.HauntedByAJester);
+            }
         }
 
         if (DayNightMechanic.DayCount < 2)
@@ -138,6 +144,43 @@ public sealed class Jester(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, 
     public int ChatterBoxQuota;
     public bool CompletedQuotaWhenLynched;
     public List<byte> Voters = new List<byte>();
+    public PlayerControl target;
+    public bool haunted;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            var player1Menu = CustomPlayerMenu.Create();
+            player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
+                PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
+            player1Menu.transform.FindChild("PhoneUI").GetChild(1).GetComponent<SpriteRenderer>().material =
+                PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
+
+            player1Menu.Begin(
+                plr => !plr.HasDied() && plr.HasModifier<HauntableModifier>(x => x.Caster == Player),
+                plr =>
+                {
+                    player1Menu.ForceClose();
+
+                    if (plr == null)
+                    {
+                        return;
+                    }
+
+                    target = plr;
+                    //plr.RpcAddModifier<HauntedModifier>(Player, false);
+                }
+            );
+            foreach (var panel in player1Menu.potentialVictims)
+            {
+                panel.PlayerIcon.cosmetics.SetPhantomRoleAlpha(1f);
+                if (panel.NameText.text != PlayerControl.LocalPlayer.Data.PlayerName)
+                {
+                    panel.NameText.color = Color.white;
+                }
+            }
+        }
+    }
 
     public void OnMessageSend(ChatController __instance)
     {
@@ -163,43 +206,7 @@ public sealed class Jester_Haunt : TownOfUsRoleButton<Jester>
         return Show && ModifierUtils.GetActiveModifiers<HauntableModifier>().Any();
     }
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
-    protected override void OnClick()
-    {
-        var player1Menu = CustomPlayerMenu.Create();
-        player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
-            PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
-        player1Menu.transform.FindChild("PhoneUI").GetChild(1).GetComponent<SpriteRenderer>().material =
-            PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
-
-        player1Menu.Begin(
-            plr => !plr.HasDied() && plr.HasModifier<HauntableModifier>(x => x.Caster == Player),
-            plr =>
-            {
-                player1Menu.ForceClose();
-
-                if (plr == null)
-                {
-                    return;
-                }
-
-                plr.RpcAddModifier<HauntedModifier>(Player, false);
-            }
-        );
-        foreach (var panel in player1Menu.potentialVictims)
-        {
-            panel.PlayerIcon.cosmetics.SetPhantomRoleAlpha(1f);
-            if (panel.NameText.text != PlayerControl.LocalPlayer.Data.PlayerName)
-            {
-                panel.NameText.color = Color.white;
-            }
-        }
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 1, false, false);
     public override bool CanUse()
     {
         return ModifierUtils.GetActiveModifiers<HauntableModifier>().Any();

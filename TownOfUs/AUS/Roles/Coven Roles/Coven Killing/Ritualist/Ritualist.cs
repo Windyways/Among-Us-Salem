@@ -29,7 +29,7 @@ public sealed class Ritualist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        // CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.RitualistRoleCard
@@ -114,20 +114,62 @@ public sealed class Ritualist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     }
 
     public PlayerControl currentTarget;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            if (Player.CanKill(target))
+            {
+                Player.RpcCustomMurder(target);
+                VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByTheCoven);
+            }
+            else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+        }
+        else if (Button == 2)
+        {
+            CustomButtonSingleton<Ritualist_BloodRitual>.Instance.IncreaseUses(); // patch for now.
+
+            var player1Menu = CustomPlayerMenu.Create();
+            player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
+                PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
+            player1Menu.transform.FindChild("PhoneUI").GetChild(1).GetComponent<SpriteRenderer>().material =
+                PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
+
+            player1Menu.Begin(
+                plr => (!plr.HasDied() && !plr.Is(Faction.Coven) && !plr.HasModifier<IlluminatedModifier>()),
+                plr =>
+                {
+                    player1Menu.ForceClose();
+
+                    if (plr == null)
+                    {
+                        return;
+                    }
+
+                    // Stuff here.
+                    currentTarget = plr;
+                    Coroutines.Start(OpenMenu());
+                }
+            );
+            foreach (var panel in player1Menu.potentialVictims)
+            {
+                panel.PlayerIcon.cosmetics.SetPhantomRoleAlpha(1f);
+                if (panel.NameText.text != PlayerControl.LocalPlayer.Data.PlayerName)
+                {
+                    panel.NameText.color = Color.white;
+                }
+            }
+        }
+    }
 }
 
-public sealed class Ritualist_Attack : TownOfUsRoleButton<Ritualist, PlayerControl>, IButtonClick
+public sealed class Ritualist_Attack : TownOfUsRoleButton<Ritualist, PlayerControl>
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => RoleColors.Coven;
     public override float Cooldown => OptionGroupSingleton<CovenOptions>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Necronomicon;
-
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
 
     public override PlayerControl? GetTarget()
     {
@@ -140,24 +182,10 @@ public sealed class Ritualist_Attack : TownOfUsRoleButton<Ritualist, PlayerContr
         return base.CanUse() && Player.HasModifier<Necronomicon>();
     }
 
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        if (Player.CanKill(Target))
-        {
-            Player.RpcCustomMurder(Target);
-            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByTheCoven);
-        }
-        else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-
-        CustomButtonSingleton<Ritualist_BloodRitual>.Instance.ResetCooldownAndOrEffect();
-    }
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, true, true);
 }
 
-public sealed class Ritualist_BloodRitual : TownOfUsRoleButton<Ritualist>, IButtonClick
+public sealed class Ritualist_BloodRitual : TownOfUsRoleButton<Ritualist>
 {
     public override string Name => "Blood Ritual";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -166,47 +194,7 @@ public sealed class Ritualist_BloodRitual : TownOfUsRoleButton<Ritualist>, IButt
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Ritualist_BloodRitual;
     public override int MaxUses => (int)OptionGroupSingleton<Ritualist_Options>.Instance.Charges;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        var player1Menu = CustomPlayerMenu.Create();
-        player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
-            PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
-        player1Menu.transform.FindChild("PhoneUI").GetChild(1).GetComponent<SpriteRenderer>().material =
-            PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
-
-        player1Menu.Begin(
-            plr => (!plr.HasDied() && !plr.Is(Faction.Coven) && !plr.HasModifier<IlluminatedModifier>()),
-            plr =>
-            {
-                player1Menu.ForceClose();
-
-                if (plr == null)
-                {
-                    return;
-                }
-
-                // Stuff here.
-                Role.currentTarget = plr;
-                Coroutines.Start(Role.OpenMenu());
-            }
-        );
-        foreach (var panel in player1Menu.potentialVictims)
-        {
-            panel.PlayerIcon.cosmetics.SetPhantomRoleAlpha(1f);
-            if (panel.NameText.text != PlayerControl.LocalPlayer.Data.PlayerName)
-            {
-                panel.NameText.color = Color.white;
-            }
-        }
-
-        IncreaseUses();
-    }
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 2, false, false);
 }
 
 public sealed class Ritualist_Options : AbstractOptionGroup<Ritualist>

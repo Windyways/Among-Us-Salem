@@ -9,29 +9,31 @@ public static class WhisperPatches
         {
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
+                string command = string.Empty;
+                if (chatText.Contains("/w " + player.Data.PlayerName)) command = "/w ";
+                if (chatText.Contains("/whisper " + player.Data.PlayerName)) command = "/whisper ";
+
                 // if (player.IsBlackmailed() && player.AmOwner) chatText = ""; - test for Banshee maybe.
-                if (chatText.Contains("/w " + player.Data.PlayerName))
+                if (chatText.Contains(command + player.Data.PlayerName))
                 {
                     if (player.HasDied() || sourcePlayer.HasDied())
-                    {
                         break;
-                    }
 
                     if (player.Data.PlayerName == PlayerControl.LocalPlayer.Data.PlayerName)
                     {
-                        chatText = chatText.Replace("/w " + player.Data.PlayerName, "<color=#9a71e6>From " + sourcePlayer.Data.PlayerName + ": ");
+                        chatText = chatText.Replace(command + player.Data.PlayerName, "<color=#9a71e6>From " + sourcePlayer.Data.PlayerName + ": ");
                     }
                     else if (sourcePlayer == PlayerControl.LocalPlayer)
                     {
-                        chatText = chatText.Replace("/w " + player.Data.PlayerName, "<color=#9a71e6>To " + player.Data.PlayerName + ":");
+                        chatText = chatText.Replace(command + player.Data.PlayerName, "<color=#9a71e6>To " + player.Data.PlayerName + ":");
                     }
                     /*else if (PlayerControl.LocalPlayer.IsRole<Blackmailer>() && OptionGroupSingleton<Blackmailer_Options>.Instance.SeeWhispers)
                     {
-                        chatText = chatText.Replace("/w " + player.Data.PlayerName, "<color=#DD0000>From " + sourcePlayer.Data.PlayerName + ": ");
+                        chatText = chatText.Replace(command + player.Data.PlayerName, "<color=#DD0000>From " + sourcePlayer.Data.PlayerName + ": ");
                     }*/
                     else if (PlayerControl.LocalPlayer.IsRole<Wildling>())
                     {
-                        chatText = chatText.Replace("/w " + player.Data.PlayerName, "<color=#DD0000>From " + sourcePlayer.Data.PlayerName + ": ");
+                        chatText = chatText.Replace(command + player.Data.PlayerName, "<color=#DD0000>From " + sourcePlayer.Data.PlayerName + ": ");
                     }
                     else
                     {

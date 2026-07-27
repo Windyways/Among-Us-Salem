@@ -29,6 +29,7 @@ public sealed class Godfather(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURo
     public CustomRoleConfiguration Configuration => new(this)
     {
         UseVanillaKillButton = false,
+        CanUseSabotage = false,
         Icon = AUSAssets.GodfatherRoleCard
     };
 
@@ -77,6 +78,62 @@ public sealed class Godfather(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURo
             CustomButtonSingleton<Mafioso_Kill>.Instance.ResetCooldownAndOrEffect();
         }
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            if (Player.CanKill(target))
+            {
+                Player.RpcCustomMurder(target);
+                VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByAMemberOfTheMafia);
+            }
+            else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+        }
+        else if (Button is 2)
+        {
+            var player1Menu = CustomPlayerMenu.Create();
+            player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
+                PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
+            player1Menu.transform.FindChild("PhoneUI").GetChild(1).GetComponent<SpriteRenderer>().material =
+                PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
+
+            player1Menu.Begin(
+                plr => (!plr.HasDied() && !plr.Is(Faction.Mafia)),
+                plr =>
+                {
+                    player1Menu.ForceClose();
+
+                    if (plr == null)
+                    {
+                        return;
+                    }
+
+                    // Stuff here.
+                    var target = plr;
+                    var mafioso = MiscUtils.GetRoles<Mafioso>().Random();
+                    var mafiosoButton = CustomButtonSingleton<Mafioso_Kill>.Instance;
+
+                    if (VisitingMechanic.CheckVisit(mafioso.Player, target, 1, true, true))
+                    {
+                        mafioso.Player.RpcAddModifier<OrderedModifier>(Player);
+                        if (mafioso.Player.CanKill(target)) mafioso.Player.RpcAddModifier<InvisibleStatus>();
+                    }
+                    else VisitingMechanic.CheckVisit(Player, target, 1, true, true);
+
+                    RpcResetMafiosoCooldown(mafioso.Player);
+                }
+            );
+            foreach (var panel in player1Menu.potentialVictims)
+            {
+                panel.PlayerIcon.cosmetics.SetPhantomRoleAlpha(1f);
+                if (panel.NameText.text != PlayerControl.LocalPlayer.Data.PlayerName)
+                {
+                    panel.NameText.color = Color.white;
+                }
+            }
+        }
+    }
 }
 
 public sealed class Godfather_Kill : TownOfUsRoleButton<Godfather, PlayerControl>
@@ -87,24 +144,7 @@ public sealed class Godfather_Kill : TownOfUsRoleButton<Godfather, PlayerControl
     public override float Cooldown => OptionGroupSingleton<Godfather_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Godfather_Order;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
-
-    protected override void OnClick()
-    {
-        if (Target == null)
-            return;
-
-        if (Player.CanKill(Target))
-        {
-            Player.RpcCustomMurder(Target);
-            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByAMemberOfTheMafia);
-        }
-        else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, true, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(false, Distance);
@@ -116,7 +156,7 @@ public sealed class Godfather_Kill : TownOfUsRoleButton<Godfather, PlayerControl
     }
 }
 
-public sealed class Godfather_Order : TownOfUsRoleButton<Godfather>, IButtonClick
+public sealed class Godfather_Order : TownOfUsRoleButton<Godfather>
 {
     public override string Name => "Order";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -124,74 +164,10 @@ public sealed class Godfather_Order : TownOfUsRoleButton<Godfather>, IButtonClic
     public override float Cooldown => OptionGroupSingleton<Godfather_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Godfather_Order;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 2, false, false);
     public override bool Enabled(RoleBehaviour? role)
     {
         return base.Enabled(role) && MiscUtils.GetRoles<Mafioso>().Count > 0;
-    }
-
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        var player1Menu = CustomPlayerMenu.Create();
-        player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
-            PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
-        player1Menu.transform.FindChild("PhoneUI").GetChild(1).GetComponent<SpriteRenderer>().material =
-            PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
-
-        player1Menu.Begin(
-            plr => (!plr.HasDied() && !plr.Is(Faction.Mafia)),
-            plr =>
-            {
-                player1Menu.ForceClose();
-
-                if (plr == null)
-                {
-                    return;
-                }
-
-                // Stuff here.
-                var target = plr;
-                var mafioso = MiscUtils.GetRoles<Mafioso>().Random();
-                var mafiosoButton = CustomButtonSingleton<Mafioso_Kill>.Instance;
-
-                if (mafiosoButton.IsTargetingValid(mafioso.Player, target, true, true, true))
-                {
-                    if (mafioso.Player.CanKill(target))
-                    {
-                        mafioso.Player.RpcAddModifier<InvisibleStatus>();
-                        mafioso.Player.RpcAddModifier<OrderedModifier>(Player);
-                        mafioso.Player.RpcCustomMurder(target);
-                        VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByAMemberOfTheMafia);
-                    }
-                    else mafioso.Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
-                }
-                else if (button.IsTargetingValid(Player, target, true, true, true))
-                {
-                    if (Player.CanKill(target))
-                    {
-                        Player.RpcAddModifier<InvisibleStatus>();
-                        Player.RpcCustomMurder(target);
-                        VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByAMemberOfTheMafia);
-                    }
-                    else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
-                }
-
-                Godfather.RpcResetMafiosoCooldown(mafioso.Player);
-            }
-        );
-        foreach (var panel in player1Menu.potentialVictims)
-        {
-            panel.PlayerIcon.cosmetics.SetPhantomRoleAlpha(1f);
-            if (panel.NameText.text != PlayerControl.LocalPlayer.Data.PlayerName)
-            {
-                panel.NameText.color = Color.white;
-            }
-        }
     }
 }
 

@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -85,9 +86,18 @@ public sealed class Survivor(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole
             }
         }
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            Player.RpcAddModifier<VestedModifier>(Player);
+            AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
+        }
+    }
 }
 
-public sealed class Survivor_Vest : TownOfUsRoleButton<Survivor>, IButtonClick
+public sealed class Survivor_Vest : TownOfUsRoleButton<Survivor>
 {
     public override string Name => "Vest";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -96,17 +106,7 @@ public sealed class Survivor_Vest : TownOfUsRoleButton<Survivor>, IButtonClick
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Survivor_Vest;
     public override int MaxUses => (int)OptionGroupSingleton<Survivor_Options>.Instance.Charges;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        Player.RpcAddModifier<VestedModifier>(Player);
-        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
-    }
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 1, false, false);
 }
 
 public sealed class Survivor_Options : AbstractOptionGroup<Survivor>

@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,7 +27,7 @@ public sealed class Illusionist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURol
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        // CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.IllusionistRoleCard
@@ -70,9 +71,30 @@ public sealed class Illusionist(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURol
     {
         return WinConditionMet() || CovenGameOver.AnyCovenWon(gameOverReason);
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            if (target.Is(Faction.Coven)) target.RpcAddModifier<IllusionedModifier>(Player);
+            else if (Player.HasNecronomicon())
+            {
+                if (Player.CanKill(target))
+                {
+                    Player.RpcCustomMurder(target);
+                    VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByTheCoven);
+                }
+                else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+            }
+        }
+        else if (Button == 2)
+        {
+            Player.RpcAddModifier<IllusionedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Illusionist_Cast : TownOfUsRoleButton<Illusionist, PlayerControl>, IButtonClick
+public sealed class Illusionist_Cast : TownOfUsRoleButton<Illusionist, PlayerControl>
 {
     public override string Name => "Cast";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -80,12 +102,6 @@ public sealed class Illusionist_Cast : TownOfUsRoleButton<Illusionist, PlayerCon
     public override float Cooldown => Player.HasNecronomicon() ? OptionGroupSingleton<CovenOptions>.Instance.Cooldown : 
         OptionGroupSingleton<Illusionist_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Illusionist_Cast;
-
-    public override void ClickHandler()
-    {
-        bool isAstral = OptionGroupSingleton<Illusionist_Options>.Instance.CastIsAstral && !Target.Is(Faction.Coven);
-        if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), isAstral)) base.ClickHandler();
-    }
 
     public override PlayerControl? GetTarget()
     {
@@ -95,28 +111,14 @@ public sealed class Illusionist_Cast : TownOfUsRoleButton<Illusionist, PlayerCon
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => x.Is(Faction.Coven));
     }
 
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
+    protected override void OnClick()
     {
-        if (Target == null)
-            return;
-
-        if (Target.Is(Faction.Coven)) Target.RpcAddModifier<IllusionedModifier>(Player);
-        else if (Player.HasNecronomicon())
-        {
-            if (Player.CanKill(Target))
-            {
-                Player.RpcCustomMurder(Target);
-                VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByTheCoven);
-            }
-            else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-        }
-
-        CustomButtonSingleton<Illusionist_SelfIllusion>.Instance.ResetCooldownAndOrEffect();
+        bool isAstral = OptionGroupSingleton<Illusionist_Options>.Instance.CastIsAstral && !Target.Is(Faction.Coven);
+        VisitingMechanic.CheckVisit(Player, Target, 1, Player.HasNecronomicon(), isAstral);
     }
 }
 
-public sealed class Illusionist_SelfIllusion : TownOfUsRoleButton<Illusionist>, IButtonClick
+public sealed class Illusionist_SelfIllusion : TownOfUsRoleButton<Illusionist>
 {
     public override string Name => "Self Illusion";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -125,18 +127,7 @@ public sealed class Illusionist_SelfIllusion : TownOfUsRoleButton<Illusionist>, 
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Illusionist_Cast;
     public override ButtonLocation Location => ButtonLocation.BottomLeft;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        Player.RpcAddModifier<IllusionedModifier>(Player);
-
-        CustomButtonSingleton<Illusionist_Cast>.Instance.ResetCooldownAndOrEffect();
-    }
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 2, false, false);
 }
 
 public sealed class Illusionist_Options : AbstractOptionGroup<Illusionist>

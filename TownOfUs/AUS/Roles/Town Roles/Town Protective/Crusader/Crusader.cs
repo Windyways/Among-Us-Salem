@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -86,9 +87,18 @@ public sealed class Crusader(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
             }
         }
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<FortifiedModifier>(Player);
+            AttackDefenseMechanic.RpcApplyDefense(target, Defense.Powerful);
+        }
+    }
 }
 
-public sealed class Crusader_Fortify : TownOfUsRoleButton<Crusader, PlayerControl>, IButtonClick
+public sealed class Crusader_Fortify : TownOfUsRoleButton<Crusader, PlayerControl>
 {
     public override string Name => "Fortify";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -96,25 +106,11 @@ public sealed class Crusader_Fortify : TownOfUsRoleButton<Crusader, PlayerContro
     public override float Cooldown => OptionGroupSingleton<Crusader_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Crusader_Fortify;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
             !x.HasModifier<FortifiedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<FortifiedModifier>(Player);
-        AttackDefenseMechanic.RpcApplyDefense(Target, Defense.Powerful);
     }
 }
 

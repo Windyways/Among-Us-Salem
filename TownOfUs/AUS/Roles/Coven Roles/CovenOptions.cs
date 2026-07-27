@@ -14,8 +14,8 @@ public sealed class CovenOptions : AbstractOptionGroup
     [ModdedToggleOption("Coven Roles Can Vent")]
     public bool CanVent { get; set; } = true;
 
-    [ModdedToggleOption("Coven Roles Can Sabotage")]
-    public bool CanSabotage { get; set; } = true;
+    /*[ModdedToggleOption("Coven Roles Can Sabotage")]
+    public bool CanSabotage { get; set; } = true;*/
 
     [ModdedToggleOption("Enable Necro Passing")]
     public bool EnableNecroPassing { get; set; } = true;

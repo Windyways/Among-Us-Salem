@@ -186,6 +186,10 @@ public interface ICustomAURole : ICustomRole
         return SetNewTabText(this);
     }
 
+    void Function(PlayerControl target, int Button)
+    {
+    }
+
 
     void Role_OnMeetingStart()
     {
@@ -196,6 +200,10 @@ public interface ICustomAURole : ICustomRole
     }
 
     void Role_AfterMurder(PlayerControl victim)
+    {
+    }
+
+    void Role_OnVisitFail(PlayerControl visitor, PlayerControl target, bool isAttacking, bool isVisiting, int blockedVisit)
     {
     }
 }

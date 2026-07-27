@@ -66,9 +66,25 @@ public sealed class Cleric(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole,
             "You will grant yourself Powerful Defense and clear off Poison.",
             AUSAssets.Cleric_SelfBarrier),
     ];
+
+    public int Charges = (int)OptionGroupSingleton<Cleric_Options>.Instance.Charges;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<BarrieredModifier>(Player);
+            AttackDefenseMechanic.RpcApplyDefense(target, Defense.Powerful);
+        }
+        else if (Button is 2)
+        {
+            Charges--;
+            Player.RpcAddModifier<BarrieredModifier>(Player);
+            AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful, visualize: true);
+        }
+    }
 }
 
-public sealed class Cleric_Barrier : TownOfUsRoleButton<Cleric, PlayerControl>, IButtonClick
+public sealed class Cleric_Barrier : TownOfUsRoleButton<Cleric, PlayerControl>
 {
     public override string Name => "Barrier";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -76,52 +92,50 @@ public sealed class Cleric_Barrier : TownOfUsRoleButton<Cleric, PlayerControl>, 
     public override float Cooldown => OptionGroupSingleton<Cleric_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Cleric_Barrier;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
             !x.HasModifier<BarrieredModifier>(x => x.Caster == Player));
     }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<BarrieredModifier>(Player);
-        AttackDefenseMechanic.RpcApplyDefense(Target, Defense.Powerful);
-
-        CustomButtonSingleton<Cleric_SelfBarrier>.Instance.ResetCooldownAndOrEffect();
-    }
 }
 
-public sealed class Cleric_SelfBarrier : TownOfUsRoleButton<Cleric>, IButtonClick
+public sealed class Cleric_SelfBarrier : TownOfUsRoleButton<Cleric>
 {
     public override string Name => "Self Barrier";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
     public override Color TextOutlineColor => RoleColors.Town;
     public override float Cooldown => OptionGroupSingleton<Cleric_Options>.Instance.SelfBarrierCD;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Cleric_SelfBarrier;
-    public override int MaxUses => (int)OptionGroupSingleton<Cleric_Options>.Instance.Charges;
 
-    public override void ClickHandler()
+    public override void CreateButton(Transform parent)
     {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
+        base.CreateButton(parent);
+        if (KeybindIcon != null)
+        {
+            KeybindIcon.transform.localPosition = new Vector3(0.4f, 0.45f, -9f);
+        }
     }
 
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
+    protected override void FixedUpdate(PlayerControl playerControl)
     {
-        Player.RpcAddModifier<BarrieredModifier>(Player);
-        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful, visualize: true);
+        if (playerControl == Player)
+        {
+            Button?.usesRemainingText.gameObject.SetActive(true);
+            Button?.usesRemainingSprite.gameObject.SetActive(true);
 
-        CustomButtonSingleton<Cleric_Barrier>.Instance.ResetCooldownAndOrEffect();
+            Button!.usesRemainingText.text = Role.Charges.ToString() + $"";
+        }
+
+        base.FixedUpdate(playerControl);
     }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && Role.Charges > 0;
+    }
+
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 2, false, false);
 }
 
 public sealed class Cleric_Options : AbstractOptionGroup<Cleric>

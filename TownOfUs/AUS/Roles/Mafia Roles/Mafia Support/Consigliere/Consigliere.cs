@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,6 +27,7 @@ public sealed class Consigliere(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAU
     public CustomRoleConfiguration Configuration => new(this)
     {
         UseVanillaKillButton = false,
+        CanUseSabotage = false,
         Icon = AUSAssets.ConsigliereRoleCard
     };
 
@@ -62,9 +64,36 @@ public sealed class Consigliere(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAU
             "Hexed players appear to be a Hex Master.",
             AUSAssets.Consigliere_SizeUp),
     ];
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            if (target.HasModifier<HexedModifier>())
+            {
+                // Since all Mafia member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
+                foreach (var players in PlayerControl.AllPlayerControls)
+                {
+                    if (players.Is(Faction.Mafia) && players.AmOwner())
+                        target.RpcAddModifier<DeepfakeRole>(players, "Hex Master", RoleColors.Coven);
+                }
+            }
+            else if (target.TryGetModifier<SelfReflectionModifier>(out var selfReflection)) // Pacifist Patch!
+            {
+                // Since all Mafia member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
+                foreach (var players in PlayerControl.AllPlayerControls)
+                {
+                    if (players.Is(Faction.Mafia) && players.AmOwner())
+                        target.RpcAddModifier<DeepfakeRole>(players, selfReflection.GetRole().NiceName, RoleColors.Town);
+                }
+            }
+            // Arso will go here after.
+
+            target.RpcAddModifier<RoleLearn>(Player, true);
+        }
+    }
 }
 
-public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerControl>, IButtonClick
+public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerControl>
 {
     public override string Name => "Size Up";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -72,43 +101,11 @@ public sealed class Consigliere_SizeUp : TownOfUsRoleButton<Consigliere, PlayerC
     public override float Cooldown => OptionGroupSingleton<Consigliere_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Consigliere_SizeUp;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
             !x.HasModifier<RoleLearn>(x => x.Visitor == Player) && !x.HasModifier<GlobalReveal>());
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        if (Target.HasModifier<HexedModifier>())
-        {
-            // Since all Mafia member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
-            foreach (var players in PlayerControl.AllPlayerControls)
-            {
-                if (players.Is(Faction.Mafia) && players.AmOwner())
-                    Target.RpcAddModifier<DeepfakeRole>(players, "Hex Master", RoleColors.Coven);
-            }
-        }
-        else if (Target.TryGetModifier<SelfReflectionModifier>(out var selfReflection))
-        {
-            // Since all Mafia member see revealed players, we have to make sure they get Deepfaked too (Includes this player too).
-            foreach (var players in PlayerControl.AllPlayerControls)
-            {
-                if (players.Is(Faction.Mafia) && player.AmOwner())
-                    Target.RpcAddModifier<DeepfakeRole>(players, selfReflection.GetRole().NiceName, RoleColors.Town);
-            }
-        }
-
-        Target.RpcAddModifier<RoleLearn>(Player, true);
     }
 }
 

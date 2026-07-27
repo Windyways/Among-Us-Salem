@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,6 +27,7 @@ public sealed class Framer(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole,
     public CustomRoleConfiguration Configuration => new(this)
     {
         UseVanillaKillButton = false,
+        CanUseSabotage = false,
         Icon = AUSAssets.FramerRoleCard
     };
 
@@ -60,9 +62,17 @@ public sealed class Framer(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole,
             "Your target will appear as a member of the Mafia to Investigative roles.",
             AUSAssets.Framer_Frame),
     ];
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<FramedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Framer_Frame : TownOfUsRoleButton<Framer, PlayerControl>, IButtonClick
+public sealed class Framer_Frame : TownOfUsRoleButton<Framer, PlayerControl>
 {
     public override string Name => "Frame";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -70,24 +80,11 @@ public sealed class Framer_Frame : TownOfUsRoleButton<Framer, PlayerControl>, IB
     public override float Cooldown => OptionGroupSingleton<Framer_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Framer_Frame;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
             !x.HasModifier<FramedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<FramedModifier>(Player);
     }
 }
 

@@ -2,6 +2,8 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.ProBuilder.AutoUnwrapSettings;
 
 namespace AmongUsSalem.Roles;
 
@@ -34,7 +36,7 @@ public sealed class Pestilence(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURo
         DefaultChance = 0,
         DefaultRoleCount = 0,
 
-        CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
+        //CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<Pestilence_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.PestilenceRoleCard
@@ -110,9 +112,17 @@ public sealed class Pestilence(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURo
     {
         return $"A Plague has consumed the Town, transforming the Plaguebearer into Pestilence, Horseman of the Apocalypse!";
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            if (target.TryGetModifier<StackOfPestilenceModifier>(out var stackOP)) stackOP.AddStack(3);
+        }
+    }
 }
 
-public sealed class Pestilence_SpreadPestilence : TownOfUsRoleButton<Pestilence, PlayerControl>, IButtonClick
+public sealed class Pestilence_SpreadPestilence : TownOfUsRoleButton<Pestilence, PlayerControl>
 {
     public override string Name => "Spread Pestilence";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -120,24 +130,11 @@ public sealed class Pestilence_SpreadPestilence : TownOfUsRoleButton<Pestilence,
     public override float Cooldown => OptionGroupSingleton<Pestilence_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Pestilence_SpreadPestilence;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
             !x.Is(Faction.Apocalypse));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        if (Target.TryGetModifier<StackOfPestilenceModifier>(out var stackOP)) stackOP.AddStack(3);
     }
 }
 

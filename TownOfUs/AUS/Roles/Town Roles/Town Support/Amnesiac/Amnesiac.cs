@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -114,7 +113,6 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     public override void Initialize(PlayerControl player) // This patches the ability sprite since it's loaded on runtime.
     {
         RoleBehaviourStubs.Initialize(this, player);
-
         CustomButtonSingleton<Amnesiac_Remember>.Instance.OverrideSprite(AUSAssets.Amnesiac_Remember.LoadAsset());
     }
 
@@ -170,6 +168,16 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
         if (targetRole.IsUnique()) currentTarget.RpcAddModifier<RememberedModifier>();
     }
 
+    public override bool DidWin(GameOverReason gameOverReason)
+    {
+        if (OptionGroupSingleton<Amnesiac_Options>.Instance.Mode == AmnesiacMode.TOS1) return false;
+        return
+            gameOverReason == GameOverReason.CrewmatesByVote ||
+            gameOverReason == GameOverReason.CrewmateDisconnect ||
+            gameOverReason == GameOverReason.CrewmatesByTask ||
+            gameOverReason == GameOverReason.CrewmatesByVote;
+    }
+
     public void OnTargetDeath(PlayerControl target)
     {
         var targetRole = target.GetRoleWhenAlive();
@@ -187,11 +195,52 @@ public sealed class Amnesiac(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     }
 
     public PlayerControl currentTarget;
-
     public List<PlayerControl> RememberablePlayers = new List<PlayerControl>();
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            var player1Menu = CustomPlayerMenu.Create();
+            player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
+                PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
+            player1Menu.transform.FindChild("PhoneUI").GetChild(1).GetComponent<SpriteRenderer>().material =
+                PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
+            
+            player1Menu.Begin(
+                plr => (plr.HasDied()),
+                plr =>
+                {
+                    player1Menu.ForceClose();
+
+                    if (plr == null)
+                    {
+                        return;
+                    }
+
+                    // Stuff here.
+                    currentTarget = plr;
+
+                    var targetRole = currentTarget.GetRoleWhenAlive();
+                    if (Player.AmOwner())
+                    {
+                        var roleWhenAlive = currentTarget.GetRoleWhenAlive();
+                        Player.Notify(Info(NotificationType.Amnesiac_RememberingRoleReminder, roleWhenAlive.NiceName), NotifyMode.Instantly, sprite: AUSAssets.AmnesiacRoleCard.LoadAsset());
+                    }
+                }
+            );
+            foreach (var panel in player1Menu.potentialVictims)
+            {
+                panel.PlayerIcon.cosmetics.SetPhantomRoleAlpha(1f);
+                if (panel.NameText.text != PlayerControl.LocalPlayer.Data.PlayerName)
+                {
+                    panel.NameText.color = Color.white;
+                }
+            }
+        }
+    }
 }
 
-public sealed class Amnesiac_Remember : TownOfUsRoleButton<Amnesiac>, IButtonClick
+public sealed class Amnesiac_Remember : TownOfUsRoleButton<Amnesiac>
 {
     public override string Name => "Remember";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -199,11 +248,7 @@ public sealed class Amnesiac_Remember : TownOfUsRoleButton<Amnesiac>, IButtonCli
     public override float Cooldown => 1f;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Amnesiac_Remember;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 1, false, false);
     public override bool Enabled(RoleBehaviour? role)
     {
         return base.Enabled(role) && OptionGroupSingleton<Amnesiac_Options>.Instance.Mode == AmnesiacMode.TOS1;
@@ -213,47 +258,6 @@ public sealed class Amnesiac_Remember : TownOfUsRoleButton<Amnesiac>, IButtonCli
     {
         var anyDead = PlayerControl.AllPlayerControls.ToArray().Any(x => x.HasDied());
         return base.CanUse() && anyDead;
-    }
-
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        var player1Menu = CustomPlayerMenu.Create();
-        player1Menu.transform.FindChild("PhoneUI").GetChild(0).GetComponent<SpriteRenderer>().material =
-            PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
-        player1Menu.transform.FindChild("PhoneUI").GetChild(1).GetComponent<SpriteRenderer>().material =
-            PlayerControl.LocalPlayer.cosmetics.currentBodySprite.BodySprite.material;
-
-        player1Menu.Begin(
-            plr => (plr.HasDied()),
-            plr =>
-            {
-                player1Menu.ForceClose();
-
-                if (plr == null)
-                {
-                    return;
-                }
-
-                // Stuff here.
-                Role.currentTarget = plr;
-
-                var targetRole = Role.currentTarget.GetRoleWhenAlive();
-                if (Player.AmOwner())
-                {
-                    var roleWhenAlive = Role.currentTarget.GetRoleWhenAlive();
-                    Player.Notify(Amnesiac.Info(NotificationType.Amnesiac_RememberingRoleReminder, roleWhenAlive.NiceName), NotifyMode.Instantly, sprite: AUSAssets.AmnesiacRoleCard.LoadAsset());
-                }
-            }
-        );
-        foreach (var panel in player1Menu.potentialVictims)
-        {
-            panel.PlayerIcon.cosmetics.SetPhantomRoleAlpha(1f);
-            if (panel.NameText.text != PlayerControl.LocalPlayer.Data.PlayerName)
-            {
-                panel.NameText.color = Color.white;
-            }
-        }
     }
 }
 

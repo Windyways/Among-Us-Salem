@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -11,10 +12,10 @@ public sealed class War(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWi
     public string revealText => "fills you with hate towards everyone.";
     public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "";
-    public Color RoleColor { get => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item2; set { } }
-    public ModdedRoleTeams Team => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item3;
+    public Color RoleColor { get; set; } = RoleColors.Apocalypse;//{ get => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item2; set { } }
+    public ModdedRoleTeams Team => ModdedRoleTeams.Custom;// FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item3;
 
-    public Faction Faction { get; set; } = FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item1;
+    public Faction Faction { get; set; } = Faction.Apocalypse;// FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item1;
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.Unstoppable;
@@ -34,7 +35,7 @@ public sealed class War(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWi
         DefaultChance = 0,
         DefaultRoleCount = 0,
 
-        CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
+        //CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<War_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.WarRoleCard
@@ -101,9 +102,17 @@ public sealed class War(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole, IWi
     {
         return $"The Berserker has transformed into War, Horseman of the Apocalypse! Cry 'Havoc!', and let slip the dogs of war.";
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1 or 2)
+        {
+            Player.Rampage(target, DeathReasonShow.DestroyedByWarHorsemanOfTheApocalypse);
+        }
+    }
 }
 
-public sealed class War_Attack : TownOfUsRoleButton<War, PlayerControl>, IButtonClick
+public sealed class War_Attack : TownOfUsRoleButton<War, PlayerControl>
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -111,28 +120,15 @@ public sealed class War_Attack : TownOfUsRoleButton<War, PlayerControl>, IButton
     public override float Cooldown => OptionGroupSingleton<War_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.War_Attack;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, true, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
             !x.Is(Faction.Apocalypse));
     }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Player.Rampage(Target, DeathReasonShow.DestroyedByWarHorsemanOfTheApocalypse);
-    }
 }
 
-public sealed class War_Attack2 : TownOfUsRoleButton<War, PlayerControl>, IButtonClick
+public sealed class War_Attack2 : TownOfUsRoleButton<War, PlayerControl>
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -140,24 +136,11 @@ public sealed class War_Attack2 : TownOfUsRoleButton<War, PlayerControl>, IButto
     public override float Cooldown => OptionGroupSingleton<War_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.War_Attack;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 2, true, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !x.Is(Faction.Apocalypse));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Player.Rampage(Target, DeathReasonShow.DestroyedByWarHorsemanOfTheApocalypse);
     }
 }
 

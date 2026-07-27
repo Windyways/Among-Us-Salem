@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -11,10 +12,10 @@ public sealed class Berserker(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURol
     public string revealText => "gets more powerful with each kill.";
     public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are an acolyte of War, embodying nothing but raw power.";
-    public Color RoleColor { get => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item2; set { } }
-    public ModdedRoleTeams Team => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item3;
+    public Color RoleColor { get; set; } = RoleColors.Apocalypse;//{ get => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item2; set { } }
+    public ModdedRoleTeams Team => ModdedRoleTeams.Custom;// FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item3;
 
-    public Faction Faction { get; set; } = FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item1;
+    public Faction Faction { get; set; } = Faction.Apocalypse;// FlexibleFactions.GetNewFaction(OptionGroupSingleton<Berserker_Options>.Instance.faction.Value).Item1;
     public Alignment Alignment => Alignment.NeutralApocalypse;
 
     public Attack Attack { get; set; } = Attack.Powerful;
@@ -26,7 +27,7 @@ public sealed class Berserker(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURol
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
+        //CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<Berserker_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.BerserkerRoleCard
@@ -80,9 +81,25 @@ public sealed class Berserker(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURol
     }
 
     public int Kills;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            if (Kills >= 2) Kills += Player.Rampage(target, DeathReasonShow.DestroyedByABeserker);
+            else if (Player.CanKill(target))
+            {
+                Kills++;
+                Player.RpcCustomMurder(target);
+                VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.DestroyedByABeserker);
+
+                Player.Notify(Berserker.Info(Kills), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.BerserkerRoleCard.LoadAsset());
+            }
+            else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+        }
+    }
 }
 
-public sealed class Berserker_Attack : TownOfUsRoleButton<Berserker, PlayerControl>, IButtonClick
+public sealed class Berserker_Attack : TownOfUsRoleButton<Berserker, PlayerControl>
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -112,11 +129,7 @@ public sealed class Berserker_Attack : TownOfUsRoleButton<Berserker, PlayerContr
         base.FixedUpdate(playerControl);
     }
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, true, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
@@ -128,34 +141,13 @@ public sealed class Berserker_Attack : TownOfUsRoleButton<Berserker, PlayerContr
         if (Role.Kills == 0 && !DayNightMechanic.FullMoon()) return false;
         return base.CanUse();
     }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        if (Role.Kills >= 2)
-        {
-            Role.Kills += Player.Rampage(Target, DeathReasonShow.DestroyedByABeserker);
-        }
-        else if (Player.CanKill(Target))
-        {
-            Role.Kills++;
-            Player.RpcCustomMurder(Target);
-            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.DestroyedByABeserker);
-
-            Player.Notify(Berserker.Info(Role.Kills), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.BerserkerRoleCard.LoadAsset());
-        }
-        else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-    }
 }
 
 public sealed class Berserker_Options : AbstractOptionGroup<Berserker>
 {
     public override string GroupName => "Berserker";
     public ModdedEnumOption faction { get; set; } = new("[FLEXIBLE FACTIONS] Berserker Faction",
-        (int)Faction.Apocalypse, typeof(Faction), ["Town", "Coven", "Apocalypse", "Serial Killer", "Werewolf"]);
+        (int)Faction.Apocalypse, typeof(Faction), ["Town", "Coven", "Apocalypse"]);
 
     [ModdedNumberOption("Berserker Attack Cooldown", 2.5f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;

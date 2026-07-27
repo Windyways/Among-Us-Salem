@@ -3,6 +3,7 @@ using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -116,9 +117,21 @@ public sealed class Werewolf(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole
 
     public List<(PlayerControl, PlayerControl)> VisitedInfo = new List<(PlayerControl, PlayerControl)>();
     public List<(PlayerControl, (PlayerControl, PlayerControl))> DoubleVisitedInfo = new List<(PlayerControl, (PlayerControl, PlayerControl))>();
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<TrackedModifier>(Player);
+        }
+        else if (Button is 2)
+        {
+            Player.RpcAddModifier<MauledModifier>(Player);
+            Player.Rampage(target, DeathReasonShow.MauledByAWerewolf);
+        }
+    }
 }
 
-public sealed class Werewolf_TrackScent : TownOfUsRoleButton<Werewolf, PlayerControl>, IButtonClick
+public sealed class Werewolf_TrackScent : TownOfUsRoleButton<Werewolf, PlayerControl>
 {
     public override string Name => "Track Scent";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -126,11 +139,7 @@ public sealed class Werewolf_TrackScent : TownOfUsRoleButton<Werewolf, PlayerCon
     public override float Cooldown => OptionGroupSingleton<Werewolf_Options>.Instance.TrackScentCD;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Werewolf_TrackScent;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
@@ -141,18 +150,9 @@ public sealed class Werewolf_TrackScent : TownOfUsRoleButton<Werewolf, PlayerCon
     {
         return base.Enabled(role) && DayNightMechanic.HalfMoon();
     }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<TrackedModifier>(Player);
-    }
 }
 
-public sealed class Werewolf_Maul : TownOfUsRoleButton<Werewolf, PlayerControl>, IButtonClick
+public sealed class Werewolf_Maul : TownOfUsRoleButton<Werewolf, PlayerControl>
 {
     public override string Name => "Maul";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -160,11 +160,7 @@ public sealed class Werewolf_Maul : TownOfUsRoleButton<Werewolf, PlayerControl>,
     public override float Cooldown => OptionGroupSingleton<Werewolf_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Werewolf_Maul;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 2, true, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance);
@@ -173,16 +169,6 @@ public sealed class Werewolf_Maul : TownOfUsRoleButton<Werewolf, PlayerControl>,
     public override bool Enabled(RoleBehaviour? role)
     {
         return base.Enabled(role) && DayNightMechanic.FullMoon();
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Player.RpcAddModifier<MauledModifier>(Player);
-        Player.Rampage(Target, DeathReasonShow.MauledByAWerewolf);
     }
 }
 

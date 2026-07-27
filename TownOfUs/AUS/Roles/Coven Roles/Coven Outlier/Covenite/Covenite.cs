@@ -26,7 +26,7 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        // CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.CoveniteRoleCard
@@ -59,20 +59,28 @@ public sealed class Covenite(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, 
     {
         return WinConditionMet() || CovenGameOver.AnyCovenWon(gameOverReason);
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            if (Player.CanKill(target))
+            {
+                Player.RpcCustomMurder(target);
+                VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByTheCoven);
+            }
+            else Player.Notify(Feedback.TooMuchDefense(target, target), NotifyMode.InstantlyAndMeeting);
+        }
+    }
 }
 
-public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl>, IButtonClick
+public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl>
 {
     public override string Name => "Attack";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => RoleColors.Coven;
     public override float Cooldown => OptionGroupSingleton<CovenOptions>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Necronomicon;
-
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
 
     public override PlayerControl? GetTarget()
     {
@@ -85,17 +93,5 @@ public sealed class Covenite_Attack : TownOfUsRoleButton<Covenite, PlayerControl
         return base.CanUse() && Player.HasModifier<Necronomicon>();
     }
 
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        if (Player.CanKill(Target))
-        {
-            Player.RpcCustomMurder(Target);
-            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByTheCoven);
-        }
-        else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-    }
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, true, true);
 }

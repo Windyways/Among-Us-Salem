@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -96,9 +97,16 @@ public sealed class Tracker(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
 
     public List<(PlayerControl, PlayerControl)> VisitedInfo = new List<(PlayerControl, PlayerControl)>();
     public List<(PlayerControl, (PlayerControl, PlayerControl))> DoubleVisitedInfo = new List<(PlayerControl, (PlayerControl, PlayerControl))>();
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<TrackedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Tracker_Track : TownOfUsRoleButton<Tracker, PlayerControl>, IButtonClick
+public sealed class Tracker_Track : TownOfUsRoleButton<Tracker, PlayerControl>
 {
     public override string Name => "Track";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -106,24 +114,11 @@ public sealed class Tracker_Track : TownOfUsRoleButton<Tracker, PlayerControl>, 
     public override float Cooldown => OptionGroupSingleton<Tracker_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Tracker_Track;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
             !x.HasModifier<TrackedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<TrackedModifier>(Player);
     }
 }
 

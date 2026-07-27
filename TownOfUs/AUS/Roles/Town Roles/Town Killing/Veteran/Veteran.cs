@@ -91,7 +91,6 @@ public sealed class Veteran(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
         }
     }
 
-    public bool isAlerted;
     public void Role_OnMeetingStart()
     {
         isAlerted = false;
@@ -118,33 +117,56 @@ public sealed class Veteran(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
 
         return 0;
     }
+
+    public bool isAlerted;
+    public int Charges = (int)OptionGroupSingleton<Veteran_Options>.Instance.Charges;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            Charges--;
+            RpcAlert(Player);
+            AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
+        }
+    }
 }
 
-public sealed class Veteran_Alert : TownOfUsRoleButton<Veteran>, IButtonClick
+public sealed class Veteran_Alert : TownOfUsRoleButton<Veteran>
 {
     public override string Name => "Alert";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
     public override Color TextOutlineColor => RoleColors.Town;
     public override float Cooldown => OptionGroupSingleton<Veteran_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Veteran_Alert;
-    public override int MaxUses => (int)OptionGroupSingleton<Veteran_Options>.Instance.Charges;
 
-    public override void ClickHandler()
+    public override void CreateButton(Transform parent)
     {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
+        base.CreateButton(parent);
+        if (KeybindIcon != null)
+        {
+            KeybindIcon.transform.localPosition = new Vector3(0.4f, 0.45f, -9f);
+        }
+    }
+
+    protected override void FixedUpdate(PlayerControl playerControl)
+    {
+        if (playerControl == Player)
+        {
+            Button?.usesRemainingText.gameObject.SetActive(true);
+            Button?.usesRemainingSprite.gameObject.SetActive(true);
+
+            Button!.usesRemainingText.text = Role.Charges.ToString() + $"";
+        }
+
+        base.FixedUpdate(playerControl);
     }
 
     public override bool CanUse()
     {
-        return base.CanUse() && !Role.isAlerted;
+        return base.CanUse() && Role.Charges > 0 && !Role.isAlerted;
     }
 
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        Veteran.RpcAlert(Player);
-        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Basic, visualize: true);
-    }
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 1, false, false);
 }
 
 public sealed class Veteran_Options : AbstractOptionGroup<Veteran>

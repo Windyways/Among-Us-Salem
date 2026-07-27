@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,6 +27,7 @@ public sealed class Agent(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole, 
     public CustomRoleConfiguration Configuration => new(this)
     {
         UseVanillaKillButton = false,
+        CanUseSabotage = false,
         Icon = AUSAssets.AgentRoleCard
     };
 
@@ -129,9 +131,17 @@ public sealed class Agent(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole, 
     public List<(PlayerControl, PlayerControl)> LookoutVisitedInfo = new List<(PlayerControl, PlayerControl)>();
     public List<(PlayerControl, PlayerControl)> TrackerVisitedInfo = new List<(PlayerControl, PlayerControl)>();
     public List<(PlayerControl, (PlayerControl, PlayerControl))> TrackerDoubleVisitedInfo = new List<(PlayerControl, (PlayerControl, PlayerControl))>();
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<WatchedModifier>(Player);
+            target.RpcAddModifier<TrackedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Agent_Stalk : TownOfUsRoleButton<Agent, PlayerControl>, IButtonClick
+public sealed class Agent_Stalk : TownOfUsRoleButton<Agent, PlayerControl>
 {
     public override string Name => "Stalk";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -139,26 +149,12 @@ public sealed class Agent_Stalk : TownOfUsRoleButton<Agent, PlayerControl>, IBut
     public override float Cooldown => OptionGroupSingleton<Agent_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Agent_Stalk;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
             !x.HasModifier<WatchedModifier>(x => x.Caster == Player) &&
             !x.HasModifier<TrackedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<WatchedModifier>(Player);
-        Target.RpcAddModifier<TrackedModifier>(Player);
     }
 }
 

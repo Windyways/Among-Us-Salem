@@ -63,6 +63,7 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> VeteranRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.VeteranRoleCard.png");
     public static LoadableAsset<Sprite> AdmirerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.AdmirerRoleCard.png");
     public static LoadableAsset<Sprite> InvestigatorRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.InvestigatorRoleCard.png");
+    public static LoadableAsset<Sprite> CoronerRoleCard { get; } = new LoadableResourceAsset($"{RoleCard}.CoronerRoleCard.png");
 
     // --- ROLE CARDS: MULTIPLE ---
     public static LoadableAsset<Sprite> LookoutRoleCard
@@ -149,6 +150,8 @@ public static class AUSAssets
     public static LoadableAsset<Sprite> Admirer_Care { get; } = new LoadableResourceAsset($"{Abilities}.Admirer_Care.png");
     public static LoadableAsset<Sprite> Admirer_Bestow { get; } = new LoadableResourceAsset($"{Abilities}.Admirer_Bestow.png");
     public static LoadableAsset<Sprite> Investigator_Investigate { get; } = new LoadableResourceAsset($"{Abilities}.Investigator_Investigate.png");
+    public static LoadableAsset<Sprite> Coroner_Autopsy { get; } = new LoadableResourceAsset($"{Abilities}.Coroner_Autopsy.png");
+    public static LoadableAsset<Sprite> Coroner_Examine { get; } = new LoadableResourceAsset($"{Abilities}.Coroner_Examine.png");
 
     // --- ABILITIES: MULTIPLE ---
     public static LoadableAsset<Sprite> Lookout_Watch

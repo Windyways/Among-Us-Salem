@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,7 +27,7 @@ public sealed class Jinx(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWik
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        // CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.JinxRoleCard
@@ -103,9 +104,26 @@ public sealed class Jinx(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole, IWik
             Player.RpcAddModifier<ConfirmedEvil>();
         }
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            target.RpcAddModifier<JinxedModifier>(Player);
+            if (Player.HasNecronomicon())
+            {
+                if (Player.CanKill(target))
+                {
+                    Player.RpcCustomMurder(target);
+                    VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByTheCoven);
+                }
+                else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+            }
+        }
+    }
 }
 
-public sealed class Jinx_Jinx : TownOfUsRoleButton<Jinx, PlayerControl>, IButtonClick
+public sealed class Jinx_Jinx : TownOfUsRoleButton<Jinx, PlayerControl>
 {
     public override string Name => "Jinx";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -113,11 +131,6 @@ public sealed class Jinx_Jinx : TownOfUsRoleButton<Jinx, PlayerControl>, IButton
     public override float Cooldown => Player.HasNecronomicon() ? OptionGroupSingleton<CovenOptions>.Instance.Cooldown : 
         OptionGroupSingleton<Jinx_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Jinx_Jinx;
-
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), true)) base.ClickHandler();
-    }
 
     public override PlayerControl? GetTarget()
     {
@@ -129,23 +142,7 @@ public sealed class Jinx_Jinx : TownOfUsRoleButton<Jinx, PlayerControl>, IButton
             !x.Is(Faction.Coven) && !x.HasModifier<JinxedModifier>(x => x.Caster == Player));
     }
 
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<JinxedModifier>(Player);
-        if (Player.HasNecronomicon())
-        {
-            if (Player.CanKill(Target))
-            {
-                Player.RpcCustomMurder(Target);
-                VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByTheCoven);
-            }
-            else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-        }
-    }
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, Player.HasNecronomicon(), true);
 }
 
 public sealed class Jinx_Options : AbstractOptionGroup<Jinx>

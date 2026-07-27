@@ -3,6 +3,7 @@ using Il2CppInterop.Runtime.Attributes;
 using System.Collections;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -121,58 +122,22 @@ public sealed class Starspawn(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURol
     public static void ClearDayButtons(PlayerControl player, bool includeNecroPassing = true)
     {
         // --- NECRO PASSING ---
-        if (player.TryGetModifier<NecroPassing>(out var necroPassing) && includeNecroPassing)
-        {
-            if (player.AmOwner)
-            {
-                necroPassing.meetingMenu.HideButtons();
-            }
-        }
+        if (player.TryGetModifier<NecroPassing>(out var necroPassing) && includeNecroPassing && player.AmOwner) necroPassing.meetingMenu.HideButtons();
 
         // --- DEPUTY ---
-        if (player.Data.Role is Deputy deputy)
-        {
-            if (player.AmOwner)
-            {
-                deputy.meetingMenu.HideButtons();
-            }
-        }
+        if (player.Data.Role is Deputy deputy && player.AmOwner) deputy.meetingMenu.HideButtons();
 
         // --- MAYOR ---
-        if (player.Data.Role is Mayor mayor)
-        {
-            if (player.AmOwner)
-            {
-                mayor.meetingMenu.HideButtons();
-            }
-        }
+        if (player.Data.Role is Mayor mayor && player.AmOwner) mayor.meetingMenu.HideButtons();
 
         // --- PROSECUTOR ---
-        if (player.Data.Role is Prosecutor prosecutor)
-        {
-            if (player.AmOwner)
-            {
-                prosecutor.meetingMenu.HideButtons();
-            }
-        }
+        if (player.Data.Role is Prosecutor prosecutor && player.AmOwner) prosecutor.meetingMenu.HideButtons();
 
         // --- STARSPAWN ---
-        if (player.Data.Role is Starspawn starspawn)
-        {
-            if (player.AmOwner)
-            {
-                starspawn.meetingMenu.HideButtons();
-            }
-        }
+        if (player.Data.Role is Starspawn starspawn && player.AmOwner) starspawn.meetingMenu.HideButtons();
 
         // --- ADMIRER ---
-        if (player.Data.Role is Admirer admirer)
-        {
-            if (player.AmOwner)
-            {
-                admirer.meetingMenu.HideButtons();
-            }
-        }
+        if (player.Data.Role is Admirer admirer && player.AmOwner) admirer.meetingMenu.HideButtons();
     }
 
     public override void Initialize(PlayerControl player)
@@ -264,6 +229,14 @@ public sealed class Starspawn(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURol
 
     public MeetingMenu meetingMenu;
     public int Charges = (int)OptionGroupSingleton<Starspawn_Options>.Instance.Charges;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1 or 2)
+        {
+            target.RpcAddModifier<IsolatedModifier>(Player);
+            CustomButtonSingleton<Starspawn_SelfIsolate>.Instance.ResetCooldownAndOrEffect();
+        }
+    }
 }
 
 public sealed class Starspawn_Isolate : TownOfUsRoleButton<Starspawn, PlayerControl>
@@ -274,20 +247,7 @@ public sealed class Starspawn_Isolate : TownOfUsRoleButton<Starspawn, PlayerCont
     public override float Cooldown => OptionGroupSingleton<Starspawn_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Starspawn_Isolate;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
-    protected override void OnClick()
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<IsolatedModifier>(Player);
-        CustomButtonSingleton<Starspawn_SelfIsolate>.Instance.ResetCooldownAndOrEffect();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
@@ -304,17 +264,7 @@ public sealed class Starspawn_SelfIsolate : TownOfUsRoleButton<Starspawn>
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Starspawn_Isolate;
     public override ButtonLocation Location => ButtonLocation.BottomLeft;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
-    protected override void OnClick()
-    {
-        Player.RpcAddModifier<IsolatedModifier>(Player);
-        CustomButtonSingleton<Starspawn_Isolate>.Instance.ResetCooldownAndOrEffect();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 2, false, false);
     public override bool CanUse()
     {
         if (Player.HasModifier<IsolatedModifier>(x => x.Caster == Player)) return false;

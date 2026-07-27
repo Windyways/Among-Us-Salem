@@ -23,7 +23,7 @@ public static class TextColorizer
         { "Lookout", () => "#06e00c" },
         { "Tracker", () => "#06e00c" },
         { "Pacifist", () => "#06e00c" },
-        { "Vigilante", () => $"#{FlexibleFactions.GetNewFaction(OptionGroupSingleton<Vigilante_Options>.Instance.faction.Value).Item2.ToHtmlStringRGBA()}" },
+        { "Vigilante", () => "#06e00c" },
         { "Veteran", () => "#06e00c" },
         { "Admirer", () => "#06e00c" },
         { "Investigator", () => "#06e00c" },

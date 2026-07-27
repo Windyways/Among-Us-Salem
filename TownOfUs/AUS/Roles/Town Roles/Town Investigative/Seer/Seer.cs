@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -172,9 +173,41 @@ public sealed class Seer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, I
     public bool fullCooldown = true;
 
     public List<((PlayerControl, PlayerControl), bool)> Information = new List<((PlayerControl, PlayerControl), bool)>();
+    public void Function(PlayerControl target, int Button)
+    {
+        fullCooldown = false;
+        if (Button is 1)
+        {
+            intuit = target;
+        }
+        else if (Button is 2)
+        {
+            gaze = target;
+        }
+
+        if (intuit != null && gaze != null)
+        {
+            if (VisitingMechanic.CheckVisit(Player, intuit, 1, false, true, false) &&
+                VisitingMechanic.CheckVisit(Player, gaze, 2, false, true, false))
+            {
+                if (Player.TryGetModifier<TrackedModifier>(out var tracked)) TrackedModifier.RpcPerformDoubleInteraction(tracked.Caster, Player, intuit, gaze);
+                Information.Add(((intuit, gaze), !IsFriends(intuit, gaze)));
+
+                fullCooldown = true;
+                intuit.AddModifier<ComparedModifier>(Player, gaze, IsFriends(intuit, gaze));
+                gaze.AddModifier<ComparedModifier>(Player, intuit, IsFriends(intuit, gaze));
+                Player.Notify(Info(Player, intuit, gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
+            }
+
+            intuit = null;
+            gaze = null;
+            CustomButtonSingleton<Seer_Intuit>.Instance.ResetCooldownAndOrEffect();
+            CustomButtonSingleton<Seer_Gaze>.Instance.ResetCooldownAndOrEffect();
+        }
+    }
 }
 
-public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>, IButtonClick
+public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>
 {
     public override string Name => "Intuit";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -182,49 +215,16 @@ public sealed class Seer_Intuit : TownOfUsRoleButton<Seer, PlayerControl>, IButt
     public override float Cooldown => Role.fullCooldown ? OptionGroupSingleton<Seer_Options>.Instance.Cooldown : 1;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Seer_Intuit;
 
-    public override void ClickHandler()
-    {
-        // Seer is astral when picking targets, this is handled when it has both targets set.
-        if (button.IsTargetingValid(Player, Target, false, false)) base.ClickHandler();
-    }
-
+    // Seer is astral when picking targets, this is handled when it has both targets set.
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, false);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && !x.HasModifier<GlobalReveal>());
     }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Role.fullCooldown = false;
-        Role.intuit = Target;
-        if (Role.intuit != null && Role.gaze != null)
-        {
-            if (button.IsTargetingValid(Player, Role.intuit, false, true) &&
-                button.IsTargetingValid(Player, Role.gaze, false, true))
-            {
-                if (Player.TryGetModifier<TrackedModifier>(out var tracked)) TrackedModifier.RpcPerformDoubleInteraction(tracked.Caster, Player, Role.intuit, Role.gaze);
-                Role.Information.Add(((Role.intuit, Role.gaze), !Seer.IsFriends(Role.intuit, Role.gaze)));
-
-                Role.fullCooldown = true;
-                Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze, Seer.IsFriends(Role.intuit, Role.gaze));
-                Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit, Seer.IsFriends(Role.intuit, Role.gaze));
-                Player.Notify(Seer.Info(Player, Role.intuit, Role.gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
-            }
-
-            Role.intuit = null;
-            Role.gaze = null;
-            CustomButtonSingleton<Seer_Intuit>.Instance.ResetCooldownAndOrEffect();
-            CustomButtonSingleton<Seer_Gaze>.Instance.ResetCooldownAndOrEffect();
-        }
-    }
 }
 
-public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>, IButtonClick
+public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>
 {
     public override string Name => "Gaze";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;
@@ -232,46 +232,13 @@ public sealed class Seer_Gaze : TownOfUsRoleButton<Seer, PlayerControl>, IButton
     public override float Cooldown => Role.fullCooldown ? OptionGroupSingleton<Seer_Options>.Instance.Cooldown : 1;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Seer_Gaze;
 
-    public override void ClickHandler()
-    {
-        // Seer is astral when picking targets, this is handled when it has both targets set.
-        if (button.IsTargetingValid(Player, Target, false, false)) base.ClickHandler();
-    }
-
+    // Seer is astral when picking targets, this is handled when it has both targets set.
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 2, false, false);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !x.HasModifier<ComparedModifier>(x => x.Caster == Player) && x != Role.gaze && x != Role.intuit && 
             !(x.HasModifier<GlobalReveal>(x => x.Player.Is(Faction.Town)) && !OptionGroupSingleton<Seer_Options>.Instance.RevealedTownComparable));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Role.fullCooldown = false;
-        Role.gaze = Target;
-        if (Role.intuit != null && Role.gaze != null)
-        {
-            if (button.IsTargetingValid(Player, Role.intuit, false, true) &&
-                button.IsTargetingValid(Player, Role.gaze, false, true))
-            {
-                if (Player.TryGetModifier<TrackedModifier>(out var tracked)) TrackedModifier.RpcPerformDoubleInteraction(tracked.Caster, Player, Role.intuit, Role.gaze);
-                Role.Information.Add(((Role.intuit, Role.gaze), !Seer.IsFriends(Role.intuit, Role.gaze)));
-
-                Role.fullCooldown = true;
-                Role.intuit.AddModifier<ComparedModifier>(Player, Role.gaze, Seer.IsFriends(Role.intuit, Role.gaze));
-                Role.gaze.AddModifier<ComparedModifier>(Player, Role.intuit, Seer.IsFriends(Role.intuit, Role.gaze));
-                Player.Notify(Seer.Info(Player, Role.intuit, Role.gaze), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SeerRoleCard.LoadAsset());
-            }
-
-            Role.intuit = null;
-            Role.gaze = null;
-            CustomButtonSingleton<Seer_Intuit>.Instance.ResetCooldownAndOrEffect();
-            CustomButtonSingleton<Seer_Gaze>.Instance.ResetCooldownAndOrEffect();
-        }
     }
 }
 

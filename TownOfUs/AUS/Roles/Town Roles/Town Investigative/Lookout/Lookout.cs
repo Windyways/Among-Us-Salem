@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -109,9 +110,16 @@ public sealed class Lookout(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     }
 
     public List<(PlayerControl, PlayerControl)> VisitedInfo = new List<(PlayerControl, PlayerControl)>();
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<WatchedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Lookout_Watch : TownOfUsRoleButton<Lookout, PlayerControl>, IButtonClick
+public sealed class Lookout_Watch : TownOfUsRoleButton<Lookout, PlayerControl>
 {
     public override string Name => "Watch";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -122,26 +130,17 @@ public sealed class Lookout_Watch : TownOfUsRoleButton<Lookout, PlayerControl>, 
         OptionGroupSingleton<Lookout_Options>.Instance.Cooldown_TOS2.GetFloatData());
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Lookout_Watch;
 
-    public override void ClickHandler()
+    protected override void OnClick()
     {
         var opt = OptionGroupSingleton<Lookout_Options>.Instance;
         bool isAstral = opt.Mode == LookoutMode.TOS2 && opt.WatchMode == (int)LookoutWatchMode.Astral;
-        if (button.IsTargetingValid(Player, Target, false, !isAstral)) base.ClickHandler();
+        VisitingMechanic.CheckVisit(Player, Target, 1, false, !isAstral);
     }
 
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
             !x.HasModifier<WatchedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<WatchedModifier>(Player);
     }
 }
 
@@ -160,7 +159,7 @@ public sealed class Lookout_Options : AbstractOptionGroup<Lookout>
     { Visible = () => OptionGroupSingleton<Lookout_Options>.Instance.Mode == LookoutMode.TOS1 };
 
     // --- TOS2 ---
-    public ModdedNumberOption Cooldown_TOS2 { get; } = new("Lookout Watch Cooldown", 25f, 0f, 60f, 2.5f, MiraNumberSuffixes.Seconds)
+    public ModdedNumberOption Cooldown_TOS2 { get; } = new("Lookout Watch Cooldown", 25f, 2.5f, 60f, 2.5f, MiraNumberSuffixes.Seconds)
     { Visible = () => OptionGroupSingleton<Lookout_Options>.Instance.Mode == LookoutMode.TOS2 };
 
     public ModdedEnumOption WatchMode { get; set; } = new("Lookout Watch Mode",

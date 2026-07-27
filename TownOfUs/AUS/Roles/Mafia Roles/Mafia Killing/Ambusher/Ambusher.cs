@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,6 +27,7 @@ public sealed class Ambusher(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURol
     public CustomRoleConfiguration Configuration => new(this)
     {
         UseVanillaKillButton = false,
+        CanUseSabotage = false,
         Icon = AUSAssets.AmbusherRoleCard
     };
 
@@ -94,9 +96,17 @@ public sealed class Ambusher(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURol
             Player.RpcAddModifier<ConfirmedEvil>();
         }
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<AmbushedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Ambusher_Ambusher : TownOfUsRoleButton<Ambusher, PlayerControl>, IButtonClick
+public sealed class Ambusher_Ambusher : TownOfUsRoleButton<Ambusher, PlayerControl>
 {
     public override string Name => "Ambush";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -104,24 +114,11 @@ public sealed class Ambusher_Ambusher : TownOfUsRoleButton<Ambusher, PlayerContr
     public override float Cooldown => OptionGroupSingleton<Ambusher_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Ambusher_Ambush;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(false, Distance, predicate: x =>
             !x.HasModifier<AmbushedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<AmbushedModifier>(Player);
     }
 }
 

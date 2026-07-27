@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,7 +27,7 @@ public sealed class Plaguebearer(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAU
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
+        //CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<Plaguebearer_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.PlaguebearerRoleCard
@@ -116,9 +117,17 @@ public sealed class Plaguebearer(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAU
             }
         }
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<InfectedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Plaguebearer_Infect : TownOfUsRoleButton<Plaguebearer, PlayerControl>, IButtonClick
+public sealed class Plaguebearer_Infect : TownOfUsRoleButton<Plaguebearer, PlayerControl>
 {
     public override string Name => "Infect";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -150,25 +159,13 @@ public sealed class Plaguebearer_Infect : TownOfUsRoleButton<Plaguebearer, Playe
         base.FixedUpdate(playerControl);
     }
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !x.Is(Faction.Apocalypse) && !x.HasModifier<InfectedModifier>(x => x.Caster == Player));
     }
 
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<InfectedModifier>(Player);
-    }
 }
 
 public sealed class Plaguebearer_Options : AbstractOptionGroup<Plaguebearer>

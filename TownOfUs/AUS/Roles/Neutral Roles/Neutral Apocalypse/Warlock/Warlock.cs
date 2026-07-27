@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,7 +27,7 @@ public sealed class Warlock(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole,
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
+        //CanUseSabotage = OptionGroupSingleton<ApocOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<Warlock_Options>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.WarlockRoleCard
@@ -143,9 +144,17 @@ public sealed class Warlock(IntPtr cppPtr) : NeutralRole(cppPtr), ICustomAURole,
     }
 
     public int Grimoires;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            target.RpcAddModifier<WarlockFramedModifier>(Player);
+            target.RpcAddModifier<CursedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Warlock_Curse : TownOfUsRoleButton<Warlock, PlayerControl>, IButtonClick
+public sealed class Warlock_Curse : TownOfUsRoleButton<Warlock, PlayerControl>
 {
     public override string Name => "Curse";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -175,25 +184,11 @@ public sealed class Warlock_Curse : TownOfUsRoleButton<Warlock, PlayerControl>, 
         base.FixedUpdate(playerControl);
     }
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !x.Is(Faction.Apocalypse) && !x.HasModifier<CursedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<WarlockFramedModifier>(Player);
-        Target.RpcAddModifier<CursedModifier>(Player);
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -59,9 +60,17 @@ public sealed class Catalyst(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     {
         return $"Your body is overflowing with energy, you are Overcharged!";
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        { 
+            target.RpcAddModifier<OverchargedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Catalyst_Overcharge : TownOfUsRoleButton<Catalyst, PlayerControl>, IButtonClick
+public sealed class Catalyst_Overcharge : TownOfUsRoleButton<Catalyst, PlayerControl>
 {
     public override string Name => "Overcharge";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -69,24 +78,11 @@ public sealed class Catalyst_Overcharge : TownOfUsRoleButton<Catalyst, PlayerCon
     public override float Cooldown => OptionGroupSingleton<Catalyst_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Catalyst_Overcharge;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !x.HasModifier<OverchargedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<OverchargedModifier>(Player);
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -10,10 +11,10 @@ public sealed class Vigilante(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
     public string revealText => "will bend the law to enact justice.";
     public string RoleDescription => "Town Of Salem 2";
     public string RoleLongDescription => "You are a townie taking justice into your own hands.";
-    public Color RoleColor { get => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Vigilante_Options>.Instance.faction.Value).Item2; set { } }
-    public ModdedRoleTeams Team => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Vigilante_Options>.Instance.faction.Value).Item3;
+    public Color RoleColor { get; set; } = RoleColors.Town;//{ get => FlexibleFactions.GetNewFaction(OptionGroupSingleton<Vigilante_Options>.Instance.faction.Value).Item2; set { } }
+    public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;// FlexibleFactions.GetNewFaction(OptionGroupSingleton<Vigilante_Options>.Instance.faction.Value).Item3;
 
-    public Faction Faction { get; set; } = FlexibleFactions.GetNewFaction(OptionGroupSingleton<Vigilante_Options>.Instance.faction.Value).Item1;
+    public Faction Faction { get; set; } = Faction.Town;// FlexibleFactions.GetNewFaction(OptionGroupSingleton<Vigilante_Options>.Instance.faction.Value).Item1;
     public Alignment Alignment => Alignment.TownKilling;
 
     public Attack Attack { get; set; } = Attack.Basic;
@@ -57,16 +58,20 @@ public sealed class Vigilante(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
             AUSAssets.Vigilante_Shoot),
     ];
 
-    public static string Info(NotificationType type, PlayerControl player)
+    public static string Info(NotificationType type, PlayerControl? player)
     {
         if (type == NotificationType.Vigilante_Kill) return $"You were killed by a Vigilante!";
         if (type == NotificationType.Vigilante_KillTown) return $"You have put your gun away for accidentally killing a Town member!";
         if (type == NotificationType.Vigilante_Reload) return $"You have Reloaded a bullet into your gun!";
 
-        var vigilante = player.GetRole<Vigilante>();
-        if (vigilante.Charges == 0) return $"You have no unloaded bullets remaining.";
-        if (vigilante.Charges == 1) return $"You have 1 unloaded bullet remaining.";
-        return $"You have {vigilante.Charges} unloaded bullets remaining.";
+        if (player != null && player.GetRoleWhenAlive() is Vigilante vigilante)
+        {
+            if (vigilante.Charges == 0) return $"You have no unloaded bullets remaining.";
+            if (vigilante.Charges == 1) return $"You have 1 unloaded bullet remaining.";
+            return $"You have {vigilante.Charges} unloaded bullets remaining.";
+        }
+
+        return "Error.";
     }
 
     [MethodRpc((uint)AUSRpc.RpcNotifyVigilante)]
@@ -79,9 +84,6 @@ public sealed class Vigilante(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
         }
     }
 
-    public int bulletsReloaded;
-    public int Charges = (int)OptionGroupSingleton<Vigilante_Options>.Instance.Charges;
-    public bool shotTonight;
     public void Role_OnMeetingStart()
     {
         if (Player.AmOwner() && !Player.HasDied() && DayNightMechanic.DayCount > 1)
@@ -96,9 +98,35 @@ public sealed class Vigilante(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURo
 
         shotTonight = false;
     }
+
+    public int bulletsReloaded;
+    public int Charges = (int)OptionGroupSingleton<Vigilante_Options>.Instance.Charges;
+    public bool shotTonight;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            shotTonight = true;
+            bulletsReloaded--;
+            if (Player.CanKill(target))
+            {
+                Player.RpcCustomMurder(target);
+                VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.ShotByAVigilante);
+                RpcNotify(target, (int)NotificationType.Vigilante_Kill);
+
+                if (target.Is(Faction.Town) && Player.Is(Faction.Town))
+                {
+                    bulletsReloaded = 0;
+                    Charges = 0;
+                    Player.Notify(Info(NotificationType.Vigilante_KillTown, Player), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.VigilanteRoleCard.LoadAsset());
+                }
+            }
+            else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+        }
+    }
 }
 
-public sealed class Vigilante_Shoot : TownOfUsRoleButton<Vigilante, PlayerControl>, IButtonClick
+public sealed class Vigilante_Shoot : TownOfUsRoleButton<Vigilante, PlayerControl>
 {
     public override string Name => "Shoot";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -130,52 +158,24 @@ public sealed class Vigilante_Shoot : TownOfUsRoleButton<Vigilante, PlayerContro
         base.FixedUpdate(playerControl);
     }
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
-
-    public override PlayerControl? GetTarget()
-    {
-        return Player.GetClosestLivingPlayer(true, Distance);
-    }
-
     public override bool CanUse()
     {
         return base.CanUse() && Role.bulletsReloaded > 0;
     }
 
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, true, true);
+    public override PlayerControl? GetTarget()
     {
-        if (Target == null)
-            return;
-
-        Role.shotTonight = true;
-        Role.bulletsReloaded--;
-        if (Player.CanKill(Target))
-        {
-            Player.RpcCustomMurder(Target);
-            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.ShotByAVigilante);
-            Vigilante.RpcNotify(Target, (int)NotificationType.Vigilante_Kill);
-
-            if (Target.Is(Faction.Town) && Player.Is(Faction.Town))
-            {
-                Role.bulletsReloaded = 0;
-                Role.Charges = 0;
-                Player.Notify(Vigilante.Info(NotificationType.Vigilante_KillTown, Player), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.VigilanteRoleCard.LoadAsset());
-            }
-        }
-        else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
+        return Player.GetClosestLivingPlayer(true, Distance);
     }
 }
 
 public sealed class Vigilante_Options : AbstractOptionGroup<Vigilante>
 {
     public override string GroupName => "Vigilante";
-    public ModdedEnumOption faction { get; set; } = new("[FLEXIBLE FACTIONS] Vigilante Faction",
-        (int)Faction.Town, typeof(Faction), ["Town", "Coven", "Apocalypse", "Serial Killer", "Werewolf"]);
-
+    /*public ModdedEnumOption faction { get; set; } = new("[FLEXIBLE FACTIONS] Vigilante Faction",
+        (int)Faction.Town, typeof(Faction), ["Town", "Coven", "Apocalypse"]);
+    */
     [ModdedNumberOption("Vigilante Shoot Cooldown", 2.5f, 60f, 2.5f, MiraNumberSuffixes.Seconds)]
     public float Cooldown { get; set; } = 25f;
 

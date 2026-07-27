@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -110,9 +111,17 @@ public sealed class Sheriff(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     }
 
     public List<(PlayerControl, bool)> Information = new List<(PlayerControl, bool)>();
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            Information.Add((target, Sheriff.IsSuspicious(target)));
+            Player.Notify(Info(Player, target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SheriffRoleCard.LoadAsset());
+        }
+    }
 }
 
-public sealed class Sheriff_Search : TownOfUsRoleButton<Sheriff, PlayerControl>, IButtonClick
+public sealed class Sheriff_Search : TownOfUsRoleButton<Sheriff, PlayerControl>
 {
     public override string Name => "Search";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -120,24 +129,10 @@ public sealed class Sheriff_Search : TownOfUsRoleButton<Sheriff, PlayerControl>,
     public override float Cooldown => OptionGroupSingleton<Sheriff_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Sheriff_Search;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance);
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Role.Information.Add((Target, Sheriff.IsSuspicious(Target)));
-        Player.Notify(Sheriff.Info(Player, Target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.SheriffRoleCard.LoadAsset());
     }
 }
 

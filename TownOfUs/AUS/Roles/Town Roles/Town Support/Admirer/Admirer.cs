@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AmongUsSalem.Roles;
 
-public sealed class Admirer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, IWikiDiscoverable, IAssignableTargets
+public sealed class Admirer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole, IWikiDiscoverable
 {
     public string RoleName { get; set; } = "Admirer";
     public string revealText => "is infatuated.";
@@ -24,23 +24,6 @@ public sealed class Admirer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public Attack ogAttack { get; set; } = Attack.None;
     public Defense ogDefense { get; set; } = Defense.None;
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
-
-    public int Priority { get; set; } = 10;
-    public void AssignTargets()
-    {
-        var admirers = PlayerControl.AllPlayerControls.ToArray().Where(x => x.IsRole<Admirer>() && !x.HasDied());
-        foreach (var player in admirers)
-        {
-            var targets = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Town) && !x.IsTPow(true) && !x.HasDied() && !x.Is(Alignment.TownOutlier)).ToList();
-            if (targets.Count() == 0)
-                return;
-
-            System.Random rndIndex = new();
-            var randomTarget = targets[rndIndex.Next(0, targets.Count)];
-
-            if (player.Data.Role is Admirer admirer) admirer.Obsession = randomTarget;
-        }
-    }
 
     public CustomRoleConfiguration Configuration => new(this)
     {
@@ -130,21 +113,7 @@ public sealed class Admirer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public void Role_AfterMurder(PlayerControl victim)
     {
         // Get new Obsession. This guy falls in love too easily:skull:
-        if (victim == Obsession && !foundObsession)
-        {
-            var targets = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Town) && !x.IsTPow(true) && !x.HasDied() && !x.Is(Alignment.TownOutlier)).ToList();
-            if (targets.Count() == 0)
-                return;
-
-            System.Random rndIndex = new();
-            var randomTarget = targets[rndIndex.Next(0, targets.Count)];
-
-            Obsession = randomTarget;
-            if (Player.AmOwner())
-            {
-                Player.Notify(Info(NotificationType.Admirer_Obsession, Obsession), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.AdmirerRoleCard.LoadAsset());
-            }
-        }
+        if (victim == Obsession && !foundObsession) RollForObsession();
     }
 
     public void Role_OnMeetingStart()
@@ -152,13 +121,24 @@ public sealed class Admirer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
         if (Player.HasDied())
             return;
 
-        if (DayNightMechanic.DayCount == 0 && Player.AmOwner())
-        {
-            Player.Notify(Info(NotificationType.Admirer_Obsession, Obsession), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.AdmirerRoleCard.LoadAsset());
-        }
+        if (DayNightMechanic.DayCount == 0 && Player.AmOwner()) RollForObsession();
 
         SmartAdmirer.Start();
         if (Player.AmOwner) Coroutines.Start(GenButtons());
+    }
+
+    private void RollForObsession()
+    {
+        var targets = PlayerControl.AllPlayerControls.ToArray().Where(x => x != Player && x.Is(Faction.Town) && !x.IsTPow(true) && !x.HasDied()).ToList();
+        if (targets.Count == 0)
+            return;
+
+        System.Random rndIndex = new();
+        var randomTarget = targets[rndIndex.Next(0, targets.Count)];
+
+        Obsession = randomTarget;
+
+        Player.Notify(Info(NotificationType.Admirer_Obsession, Obsession), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.AdmirerRoleCard.LoadAsset());
     }
 
     public IEnumerator GenButtons(float delay = 3f)
@@ -212,9 +192,33 @@ public sealed class Admirer(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
     public bool foundObsession;
     public PlayerControl Obsession;
     public List<PlayerControl> RejectedPlayers = new List<PlayerControl>();
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            if (Obsession == target)
+            {
+                foundObsession = true;
+                Player.Notify(Info(NotificationType.Admirer_Accepted, target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.AdmirerRoleCard.LoadAsset());
+            }
+            else
+            {
+                RejectedPlayers.Add(target);
+                Player.Notify(Info(NotificationType.Admirer_Rejected, target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.AdmirerRoleCard.LoadAsset());
+            }
+        }
+        else if (Button is 2)
+        {
+            Obsession.RpcAddModifier<BarrieredModifier>(Player);
+            AttackDefenseMechanic.RpcApplyDefense(Obsession, Defense.Powerful);
+
+            Player.RpcAddModifier<BarrieredModifier>(Player);
+            AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful, visualize: true);
+        }
+    }
 }
 
-public sealed class Admirer_Admire: TownOfUsRoleButton<Admirer, PlayerControl>, IButtonClick
+public sealed class Admirer_Admire: TownOfUsRoleButton<Admirer, PlayerControl>
 {
     public override string Name => "Admire";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -222,33 +226,11 @@ public sealed class Admirer_Admire: TownOfUsRoleButton<Admirer, PlayerControl>, 
     public override float Cooldown => OptionGroupSingleton<Admirer_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Admirer_Admire;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x =>
             !Role.RejectedPlayers.Contains(x));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        if (Role.Obsession == Target)
-        {
-            Role.foundObsession = true;
-            Player.Notify(Admirer.Info(NotificationType.Admirer_Accepted, Target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.AdmirerRoleCard.LoadAsset());
-        }
-        else
-        {
-            Role.RejectedPlayers.Add(Target);
-            Player.Notify(Admirer.Info(NotificationType.Admirer_Rejected, Target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.AdmirerRoleCard.LoadAsset());
-        }
     }
 
     public override bool Enabled(RoleBehaviour? role)
@@ -257,7 +239,7 @@ public sealed class Admirer_Admire: TownOfUsRoleButton<Admirer, PlayerControl>, 
     }
 }
 
-public sealed class Admirer_Care : TownOfUsRoleButton<Admirer>, IButtonClick
+public sealed class Admirer_Care : TownOfUsRoleButton<Admirer>
 {
     public override string Name => "Care";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -265,21 +247,7 @@ public sealed class Admirer_Care : TownOfUsRoleButton<Admirer>, IButtonClick
     public override float Cooldown => OptionGroupSingleton<Admirer_Options>.Instance.CareCD;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Admirer_Care;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Player, false, false)) base.ClickHandler();
-    }
-
-    protected override void OnClick() => Click(Player);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        Role.Obsession.RpcAddModifier<BarrieredModifier>(Player);
-        AttackDefenseMechanic.RpcApplyDefense(Role.Obsession, Defense.Powerful);
-
-        Player.RpcAddModifier<BarrieredModifier>(Player);
-        AttackDefenseMechanic.RpcApplyDefense(Player, Defense.Powerful, visualize: true);
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Player, 2, false, false);
     public override bool Enabled(RoleBehaviour? role)
     {
         return base.Enabled(role) && Role.foundObsession;

@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,6 +27,7 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
     public CustomRoleConfiguration Configuration => new(this)
     {
         UseVanillaKillButton = false,
+        CanUseSabotage = false,
         Icon = AUSAssets.MafiosoRoleCard
     };
 
@@ -74,9 +76,23 @@ public sealed class Mafioso(IntPtr cppPtr) : ImpostorRole(cppPtr), ICustomAURole
             CustomButtonSingleton<Godfather_Order>.Instance.ResetCooldownAndOrEffect();
         }
     }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            foreach (var godfather in MiscUtils.GetRoles<Godfather>()) Mafioso.RpcResetGodfatherCooldown(godfather.Player);
+            if (Player.CanKill(target))
+            {
+                Player.RpcCustomMurder(target);
+                VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByAMemberOfTheMafia);
+            }
+            else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
+        }
+    }
 }
 
-public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>, IButtonClick
+public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>
 {
     public override string Name => "Kill";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -84,11 +100,7 @@ public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>, I
     public override float Cooldown => OptionGroupSingleton<Mafioso_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Mafioso_Kill;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, true, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, true, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(false, Distance);
@@ -97,21 +109,6 @@ public sealed class Mafioso_Kill : TownOfUsRoleButton<Mafioso, PlayerControl>, I
     public override bool CanUse()
     {
         return base.CanUse() && !Player.HasModifier<OrderedModifier>();
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        foreach (var godfather in MiscUtils.GetRoles<Godfather>()) Mafioso.RpcResetGodfatherCooldown(godfather.Player);
-        if (Player.CanKill(Target))
-        {
-            Player.RpcCustomMurder(Target);
-            VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByAMemberOfTheMafia);
-        }
-        else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
     }
 }
 

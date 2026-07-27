@@ -92,6 +92,13 @@ public class Debugger : MonoBehaviour
                     player.RpcCustomMurder(player, didSucceed: true);
                 }
             }
+            if (GUILayout.Button("Revive Self"))
+            {
+                var pos = new Vector2(PlayerControl.LocalPlayer.transform.localPosition.x, PlayerControl.LocalPlayer.transform.localPosition.y);
+                var roleWhenAlive = PlayerControl.LocalPlayer.GetRoleWhenAlive();
+
+                ReviveUtilities.RevivePlayer(PlayerControl.LocalPlayer, PlayerControl.LocalPlayer, pos, roleWhenAlive, RoleColors.Neutral, "", "");
+            }
 
             if (GUILayout.Button("Remove Cooldowns"))
             {
@@ -102,18 +109,11 @@ public class Debugger : MonoBehaviour
                 }
             }
 
-            if (GUILayout.Button("Gain Charge"))
-            {
-                foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(PlayerControl.LocalPlayer.Data.Role)))
-                {
-                    button.IncreaseUses();
-                }
-            }
-
             isRandomClientSwapping = GUILayout.Toggle(isRandomClientSwapping, "Enable Random Swapping");
             SmartBotsEnabled = GUILayout.Toggle(SmartBotsEnabled, "Enable Smart Bots");
             ShowAllMessages = GUILayout.Toggle(ShowAllMessages, "Show All Messages");
             smartSwapping = GUILayout.Toggle(smartSwapping, "Enable Smart Client Swapping");
+            movingBots = GUILayout.Toggle(movingBots, "Enable Moving Bots");
             RoleReferences.CountRoundToLeaderboard = GUILayout.Toggle(RoleReferences.CountRoundToLeaderboard, "Round Counts To Leaderboard");
         });
     }
@@ -167,6 +167,7 @@ public class Debugger : MonoBehaviour
     public static bool isRandomClientSwapping;
     public static bool SmartBotsEnabled;
     public static bool smartSwapping;
+    public static bool movingBots;
 
 
 

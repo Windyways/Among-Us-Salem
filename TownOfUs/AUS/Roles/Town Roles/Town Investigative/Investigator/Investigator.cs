@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -119,9 +120,17 @@ public sealed class Investigator(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomA
     }
 
     public List<(PlayerControl, bool, bool)> Information = new List<(PlayerControl, bool, bool)>();
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            Information.Add((target, Investigator.IsTrespassing(target), Investigator.IsMurder(target)));
+            Player.Notify(Investigator.Info(Player, target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.InvestigatorRoleCard.LoadAsset());
+        }
+    }
 }
 
-public sealed class Investigator_Investigate : TownOfUsRoleButton<Investigator, PlayerControl>, IButtonClick
+public sealed class Investigator_Investigate : TownOfUsRoleButton<Investigator, PlayerControl>
 {
     public override string Name => "Investigate";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -129,24 +138,10 @@ public sealed class Investigator_Investigate : TownOfUsRoleButton<Investigator, 
     public override float Cooldown => OptionGroupSingleton<Investigator_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Investigator_Investigate;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, true)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, true);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance);
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Role.Information.Add((Target, Investigator.IsTrespassing(Target), Investigator.IsMurder(Target)));
-        Player.Notify(Investigator.Info(Player, Target), NotifyMode.InstantlyAndMeeting, sprite: AUSAssets.InvestigatorRoleCard.LoadAsset());
     }
 }
 

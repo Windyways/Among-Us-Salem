@@ -19,13 +19,13 @@ public enum DeathReasonShow
     StabbedByASerialKiller,
     MauledByAWerewolf,
     SuccumbedToAPestilence,
-    KilledByDeathHorsemanOfApocalypse,
+    DeathHasBroughtAboutTheApocalypseKillingThem,
 
     KilledByAMemberOfTheMafia,
     KilledByAnAmbusher,
 
     KilledByTheCoven,
-    BombedByAHexMaster,
+    DisintegratedByAHexMaster,
     KilledByAJinx,
     KilledByARitualist,
 

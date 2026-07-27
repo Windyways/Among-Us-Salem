@@ -171,9 +171,17 @@ public sealed class Pacifist(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURol
     }
 
     public RoleBehaviour reflectedRole;
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button is 1)
+        {
+            if (target.HasModifier<RalliedModifier>(x => x.Caster == Player)) target.RpcRemoveModifier<RalliedModifier>();
+            else target.RpcAddModifier<RalliedModifier>(Player);
+        }
+    }
 }
 
-public sealed class Pacifist_Rally : TownOfUsRoleButton<Pacifist, PlayerControl>, IButtonClick
+public sealed class Pacifist_Rally : TownOfUsRoleButton<Pacifist, PlayerControl>
 {
     public override string Name => "Rally";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -181,11 +189,7 @@ public sealed class Pacifist_Rally : TownOfUsRoleButton<Pacifist, PlayerControl>
     public override float Cooldown => 0.5f;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.Pacifist_Rally;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, false, false)) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, false, false);
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance);
@@ -197,19 +201,9 @@ public sealed class Pacifist_Rally : TownOfUsRoleButton<Pacifist, PlayerControl>
         if (deadTown == 0 && DayNightMechanic.DayCount < 4) return false;
         return base.CanUse();
     }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        if (Target.HasModifier<RalliedModifier>(x => x.Caster == Player)) Target.RpcRemoveModifier<RalliedModifier>();
-        else Target.RpcAddModifier<RalliedModifier>(Player);
-    }
 }
 
-public sealed class Pacifist_SelfReflection : TownOfUsRoleButton<Pacifist>, IButtonClick
+public sealed class Pacifist_SelfReflection : TownOfUsRoleButton<Pacifist>
 {
     public override string Name => "Self Reflection";
     public override BaseKeybind Keybind => Keybinds.SecondaryAction;

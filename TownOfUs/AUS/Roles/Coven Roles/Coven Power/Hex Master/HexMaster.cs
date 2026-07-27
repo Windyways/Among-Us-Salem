@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace AmongUsSalem.Roles;
 
@@ -26,7 +27,7 @@ public sealed class HexMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
     public EtherealDefense ogEtherealDefense { get; set; } = EtherealDefense.None;
     public CustomRoleConfiguration Configuration => new(this)
     {
-        CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
+        // CanUseSabotage = OptionGroupSingleton<CovenOptions>.Instance.CanSabotage,
         CanUseVent = OptionGroupSingleton<CovenOptions>.Instance.CanVent,
         GhostRole = (RoleTypes)RoleId.Get<NeutralGhostRole>(),
         Icon = AUSAssets.HexMasterRoleCard
@@ -93,14 +94,31 @@ public sealed class HexMaster(IntPtr cppPtr) : CovenRole(cppPtr), ICustomAURole,
                 foreach (var player in nonCoven)
                 {
                     Player.RpcCustomMurder(player);
-                    VisitingMechanic.RpcAddDeathReason(player, (int)DeathReasonShow.BombedByAHexMaster);
+                    VisitingMechanic.RpcAddDeathReason(player, (int)DeathReasonShow.DisintegratedByAHexMaster);
                 }
+            }
+        }
+    }
+
+    public void Function(PlayerControl target, int Button)
+    {
+        if (Button == 1)
+        {
+            target.RpcAddModifier<HexedModifier>(Player);
+            if (Player.HasNecronomicon())
+            {
+                if (Player.CanKill(target))
+                {
+                    Player.RpcCustomMurder(target);
+                    VisitingMechanic.RpcAddDeathReason(target, (int)DeathReasonShow.KilledByTheCoven);
+                }
+                else Player.Notify(Feedback.TooMuchDefense(Player, target), NotifyMode.InstantlyAndMeeting);
             }
         }
     }
 }
 
-public sealed class HexMaster_Hex : TownOfUsRoleButton<HexMaster, PlayerControl>, IButtonClick
+public sealed class HexMaster_Hex : TownOfUsRoleButton<HexMaster, PlayerControl>
 {
     public override string Name => "Hex";
     public override BaseKeybind Keybind => Keybinds.PrimaryAction;
@@ -109,11 +127,7 @@ public sealed class HexMaster_Hex : TownOfUsRoleButton<HexMaster, PlayerControl>
         OptionGroupSingleton<HexMaster_Options>.Instance.Cooldown;
     public override LoadableAsset<Sprite> Sprite => AUSAssets.HexMaster_Hex;
 
-    public override void ClickHandler()
-    {
-        if (button.IsTargetingValid(Player, Target, Player.HasNecronomicon(), !Player.HasNecronomicon())) base.ClickHandler();
-    }
-
+    protected override void OnClick() => VisitingMechanic.CheckVisit(Player, Target, 1, Player.HasNecronomicon(), true);
     public override PlayerControl? GetTarget()
     {
         if (Player.HasNecronomicon())
@@ -122,24 +136,6 @@ public sealed class HexMaster_Hex : TownOfUsRoleButton<HexMaster, PlayerControl>
 
         return Player.GetClosestLivingPlayer(true, Distance, predicate: x => 
             !x.Is(Faction.Coven) && !x.HasModifier<HexedModifier>(x => x.Caster == Player));
-    }
-
-    protected override void OnClick() => Click(Player, Target);
-    public void Click(PlayerControl player, PlayerControl Target = null)
-    {
-        if (Target == null)
-            return;
-
-        Target.RpcAddModifier<HexedModifier>(Player);
-        if (Player.HasNecronomicon())
-        {
-            if (Player.CanKill(Target))
-            {
-                Player.RpcCustomMurder(Target);
-                VisitingMechanic.RpcAddDeathReason(Target, (int)DeathReasonShow.KilledByTheCoven);
-            }
-            else Player.Notify(Feedback.TooMuchDefense(Player, Target), NotifyMode.InstantlyAndMeeting);
-        }
     }
 }
 

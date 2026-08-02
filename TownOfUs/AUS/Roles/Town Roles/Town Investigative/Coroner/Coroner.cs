@@ -46,7 +46,7 @@ public sealed class Coroner(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
 
         if (AutopsiedRoles.Count > 0)
         {
-            info.AppendLine("<color=#FFD966>Autopsied Roles</color>");
+            info.AppendLine("Autopsied Roles");
 
             foreach (var role in AutopsiedRoles.Distinct())
             {
@@ -58,13 +58,12 @@ public sealed class Coroner(IntPtr cppPtr) : CrewmateRole(cppPtr), ICustomAURole
 
         if (ExaminationResults.Count > 0)
         {
-            info.AppendLine("<color=#FFD966>Examined Players</color>");
+            info.AppendLine("Examined Players");
 
             foreach (var result in ExaminationResults)
             {
-                string icon = result.Match ? "<color=#00ff00>Y</color>" : "<color=#ff0000>N</color>";
-
-                info.AppendLine($"{icon} {result.Player.Data.PlayerName}");
+                string icon = result.Match ? "<color=#ff0000>Killer</color>" : "<color=#00ff00>Not Killer</color>";
+                info.AppendLine($"{result.Player.Data.PlayerName} - {icon}");
             }
         }
 
@@ -226,6 +225,11 @@ public sealed class Coroner_Examine : TownOfUsRoleButton<Coroner, PlayerControl>
     public override PlayerControl? GetTarget()
     {
         return Player.GetClosestLivingPlayer(true, Distance);
+    }
+
+    public override bool CanUse()
+    {
+        return base.CanUse() && Role.AutopsiedRoles.Count > 0;
     }
 }
 

@@ -18,6 +18,11 @@ public static class HudManagerPatches
 {
     public static bool LocalVisibilityFlag(PlayerControl localPlayer, PlayerControl player)
     {
+        foreach (var revealed in ModifierUtils.GetActiveModifiers<RoleLearn>())
+        {
+            if (!localPlayer.Is(Faction.None) && revealed.Player == player && revealed.Visitor == localPlayer) return true;
+        }
+
         return
             // Mafia
             (localPlayer.Is(Faction.Mafia) && player.Is(Faction.Mafia)) ||

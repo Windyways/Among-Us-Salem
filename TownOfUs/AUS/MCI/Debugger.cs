@@ -113,11 +113,11 @@ public class Debugger : MonoBehaviour
             SmartBotsEnabled = GUILayout.Toggle(SmartBotsEnabled, "Enable Smart Bots");
             ShowAllMessages = GUILayout.Toggle(ShowAllMessages, "Show All Messages");
             smartSwapping = GUILayout.Toggle(smartSwapping, "Enable Smart Client Swapping");
-            movingBots = GUILayout.Toggle(movingBots, "Enable Moving Bots");
+            //movingBots = GUILayout.Toggle(movingBots, "Enable Moving Bots");
             RoleReferences.CountRoundToLeaderboard = GUILayout.Toggle(RoleReferences.CountRoundToLeaderboard, "Round Counts To Leaderboard");
         });
     }
-
+    
     public void OnGUI()
     {
         if (WindowEnabled) Window.OnGUI();

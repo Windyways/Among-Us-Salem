@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <LangVersion>latest</LangVersion>
+        <Description>Town Of Us Mira</Description>
+        <RootNamespace>TownOfUs</RootNamespace>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\**\*.*" />
+    </ItemGroup>
+
+    <Import Project="../AmongUs.props" />
+
+</Project>
